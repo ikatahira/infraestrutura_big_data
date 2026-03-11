@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S06 · NoSQL | Big Data</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;
+  --green:#3fb950;--green-dim:#1a4a1f;
+  --cyan:#79c0ff;--cyan-dim:#0c2a4a;--yellow:#e3b341;--yellow-dim:#3d2d00;
+  --red:#f85149;--purple:#bc8cff;--purple-dim:#2a1a4a;--orange:#ffa657;
+  --text:#e6edf3;--text-muted:#7d8590;--text-dim:#484f58;
+  --r:8px;--r-sm:6px;
+  --font-mono:'IBM Plex Mono',monospace;--font-sans:'IBM Plex Sans',sans-serif;
+}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.topbar-inner{max-width:1200px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.tb-badge{background:var(--purple-dim);border:1px solid var(--purple);color:var(--purple);border-radius:50px;padding:4px 12px;font-size:.75em;font-weight:700;font-family:var(--font-mono);}
+.tb-title{flex:1;}.tb-title h1{font-size:1em;font-weight:700;}.tb-title p{font-size:.78em;color:var(--text-muted);}
+.xp-widget{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:50px;padding:6px 14px;}
+.xp-label{font-size:.75em;font-weight:700;color:var(--yellow);font-family:var(--font-mono);}
+.xp-bar{width:90px;height:5px;background:var(--border);border-radius:50px;overflow:hidden;}
+.xp-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--purple),var(--cyan));border-radius:50px;transition:width 1s cubic-bezier(.22,1,.36,1);}
+.xp-val{font-size:.75em;font-family:var(--font-mono);color:var(--yellow);}
+.wrap{max-width:1200px;margin:0 auto;padding:28px 24px;display:grid;grid-template-columns:220px 1fr;gap:24px;}
+@media(max-width:900px){.wrap{grid-template-columns:1fr;}.sidebar{display:none;}}
+.sidebar{position:sticky;top:100px;height:fit-content;}
+.sidebar-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px;}
+.sidebar-card h3{font-size:.75em;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;}
+.prog-item{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);}
+.prog-item:last-child{border-bottom:none;}
+.prog-dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0;transition:all .3s;}
+.prog-dot.done{background:var(--green);}
+.prog-dot.active{background:var(--purple);box-shadow:0 0 6px var(--purple);}
+.prog-text{font-size:.8em;color:var(--text-muted);}
+.total-box{text-align:center;padding:12px 0;}
+.total-num{font-size:1.8em;font-weight:700;color:var(--purple);font-family:var(--font-mono);}
+.total-lbl{font-size:.75em;color:var(--text-muted);}
+.prog-bar-track{height:6px;background:var(--surface2);border-radius:50px;overflow:hidden;margin-top:8px;}
+.prog-bar-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--purple),var(--cyan));transition:width .8s ease;}
+.sec{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:20px;overflow:hidden;}
+.sec-head{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--border);background:var(--surface2);}
+.sec-icon{font-size:1.1em;}.sec-title{font-size:.98em;font-weight:700;}
+.sec-body{padding:20px;}
+.hero-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px;margin-bottom:20px;position:relative;overflow:hidden;}
+.hero-card::before{content:'';position:absolute;top:-30px;right:-30px;width:180px;height:180px;background:radial-gradient(circle,rgba(188,140,255,.1) 0%,transparent 70%);border-radius:50%;}
+.hero-label{font-size:.75em;font-weight:700;color:var(--purple);font-family:var(--font-mono);letter-spacing:.08em;margin-bottom:8px;}
+.hero-card h2{font-size:1.6em;font-weight:700;margin-bottom:8px;line-height:1.2;}
+.hero-card h2 span{color:var(--purple);}
+.hero-card p{color:var(--text-muted);font-size:.95em;max-width:600px;margin-bottom:16px;}
+.hero-chips{display:flex;gap:10px;flex-wrap:wrap;}
+.chip{padding:5px 12px;border-radius:50px;font-size:.78em;font-weight:600;border:1px solid;}
+.chip-purple{background:var(--purple-dim);color:var(--purple);border-color:var(--purple);}
+.chip-cyan{background:var(--cyan-dim);color:var(--cyan);border-color:var(--cyan);}
+.chip-yellow{background:var(--yellow-dim);color:var(--yellow);border-color:var(--yellow);}
+.chip-green{background:var(--green-dim);color:var(--green);border-color:var(--green);}
+/* nosql types */
+.nosql-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:14px 0;}
+.nosql-type{background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);padding:18px;transition:all .2s;cursor:default;}
+.nosql-type:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.3);}
+.nosql-type.kv{border-color:#e3b341;}
+.nosql-type.doc{border-color:var(--orange);}
+.nosql-type.col{border-color:var(--cyan);}
+.nosql-type.graph{border-color:var(--green);}
+.nt-icon{font-size:1.8em;margin-bottom:8px;}
+.nt-name{font-size:.9em;font-weight:700;margin-bottom:4px;}
+.nt-name.kv{color:#e3b341;}.nt-name.doc{color:var(--orange);}.nt-name.col{color:var(--cyan);}.nt-name.graph{color:var(--green);}
+.nt-example{font-size:.75em;color:var(--text-muted);margin-bottom:6px;font-family:var(--font-mono);}
+.nt-use{font-size:.78em;color:var(--text-muted);line-height:1.5;}
+/* quiz */
+.quiz-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin:14px 0;}
+.quiz-q{font-size:.95em;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.5;}
+.quiz-opts{display:flex;flex-direction:column;gap:8px;}
+.quiz-opt{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:10px 16px;cursor:pointer;transition:all .15s;text-align:left;color:var(--text);font-size:.88em;font-family:var(--font-sans);}
+.quiz-opt:hover{border-color:var(--purple);}
+.quiz-opt.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);}
+.quiz-opt.wrong{border-color:var(--red);background:rgba(248,81,73,.1);color:var(--red);}
+.quiz-opt.disabled{cursor:default;pointer-events:none;}
+.quiz-feedback{margin-top:12px;padding:10px 14px;border-radius:var(--r-sm);font-size:.85em;display:none;}
+.quiz-feedback.ok{background:var(--green-dim);border:1px solid var(--green);color:var(--green);display:block;}
+.quiz-feedback.fail{background:rgba(248,81,73,.1);border:1px solid var(--red);color:var(--red);display:block;}
+/* CAP theorem interactive */
+.cap-wrap{display:flex;justify-content:center;margin:20px 0;}
+.cap-triangle{position:relative;width:340px;height:300px;}
+.cap-node{position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:all .2s;}
+.cap-node:hover .cap-circle{transform:scale(1.1);}
+.cap-circle{width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4em;border:2px solid transparent;transition:all .2s;}
+.cap-label{font-size:.75em;font-weight:700;font-family:var(--font-mono);}
+.cn-c{top:0;left:50%;transform:translateX(-50%);}
+.cn-c .cap-circle{background:rgba(248,81,73,.15);border-color:var(--red);}
+.cn-c .cap-label{color:var(--red);}
+.cn-a{bottom:0;left:0;}
+.cn-a .cap-circle{background:rgba(63,185,80,.15);border-color:var(--green);}
+.cn-a .cap-label{color:var(--green);}
+.cn-p{bottom:0;right:0;}
+.cn-p .cap-circle{background:rgba(121,192,255,.15);border-color:var(--cyan);}
+.cn-p .cap-label{color:var(--cyan);}
+.cap-lines{position:absolute;top:0;left:0;width:100%;height:100%;}
+.cap-center-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-30%);text-align:center;font-size:.75em;color:var(--text-muted);pointer-events:none;}
+/* db selector */
+.db-selector{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin:14px 0;}
+.db-btn{background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:14px 10px;text-align:center;cursor:pointer;transition:all .18s;font-size:.82em;color:var(--text-muted);}
+.db-btn:hover{border-color:var(--purple);color:var(--text);}
+.db-btn.selected{border-color:var(--purple);background:var(--purple-dim);color:var(--purple);}
+.db-icon{font-size:1.6em;margin-bottom:6px;}
+.db-name{font-weight:700;font-size:.85em;}
+.db-info{background:var(--surface2);border:1px solid var(--purple);border-radius:var(--r);padding:16px;margin-top:14px;display:none;}
+.db-info.show{display:block;}
+.db-info-title{font-size:.95em;font-weight:700;color:var(--purple);margin-bottom:8px;}
+.db-info-desc{font-size:.85em;color:var(--text-muted);line-height:1.55;}
+.db-info-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.di-tag{padding:3px 10px;border-radius:50px;font-size:.72em;font-weight:600;border:1px solid;}
+/* scenario game */
+.scenario-card{background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);padding:20px;margin:8px 0;transition:all .18s;}
+.scenario-card.correct-pick{border-color:var(--green);background:rgba(63,185,80,.05);}
+.scenario-card.wrong-pick{border-color:var(--red);background:rgba(248,81,73,.05);}
+.sc-question{font-size:.9em;font-weight:600;color:var(--text);margin-bottom:12px;}
+.sc-opts{display:flex;gap:8px;flex-wrap:wrap;}
+.sc-opt{padding:7px 14px;border-radius:50px;border:1px solid var(--border);background:var(--surface);color:var(--text-muted);font-size:.8em;font-weight:600;cursor:pointer;transition:all .15s;}
+.sc-opt:hover{border-color:var(--purple);color:var(--text);}
+.sc-opt.pick-ok{border-color:var(--green);background:var(--green-dim);color:var(--green);}
+.sc-opt.pick-bad{border-color:var(--red);background:rgba(248,81,73,.1);color:var(--red);}
+.sc-opt.disabled{pointer-events:none;}
+.sc-feedback{margin-top:10px;font-size:.82em;display:none;padding:8px 12px;border-radius:var(--r-sm);}
+.sc-feedback.ok{background:var(--green-dim);border:1px solid var(--green);color:var(--green);display:block;}
+.sc-feedback.fail{background:rgba(248,81,73,.1);border:1px solid var(--red);color:var(--red);display:block;}
+/* mission */
+.mission{background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-bottom:14px;cursor:pointer;transition:all .18s;display:flex;gap:14px;align-items:flex-start;position:relative;overflow:hidden;}
+.mission::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--border);transition:background .18s;}
+.mission:hover{border-color:var(--purple);}
+.mission:hover::before{background:var(--purple);}
+.mission.done{border-color:var(--green);background:rgba(63,185,80,.05);}
+.mission.done::before{background:var(--green);}
+.m-num{width:34px;height:34px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:.8em;font-weight:700;font-family:var(--font-mono);flex-shrink:0;color:var(--text-muted);}
+.mission.done .m-num{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+.m-body{flex:1;}.m-title{font-size:.95em;font-weight:700;margin-bottom:4px;}
+.m-desc{font-size:.83em;color:var(--text-muted);line-height:1.5;margin-bottom:10px;}
+.m-tags{display:flex;gap:8px;flex-wrap:wrap;}
+.mtag{padding:3px 9px;border-radius:50px;font-size:.72em;font-weight:600;border:1px solid;}
+.t-time{background:#0c2a4a;color:var(--cyan);border-color:var(--cyan);}
+.t-xp{background:var(--yellow-dim);color:var(--yellow);border-color:var(--yellow);}
+.t-diff-e{background:var(--green-dim);color:var(--green);border-color:var(--green);}
+.t-diff-m{background:#3d2d00;color:var(--orange);border-color:var(--orange);}
+.t-diff-h{background:rgba(248,81,73,.1);color:var(--red);border-color:var(--red);}
+.m-check{width:26px;height:26px;border:1.5px solid var(--border);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .18s;margin-top:2px;}
+.mission:hover .m-check{border-color:var(--purple);}
+.mission.done .m-check{background:var(--green);border-color:var(--green);color:#000;font-weight:700;}
+.badges-strip{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.badge{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--surface);min-width:80px;transition:all .2s;}
+.badge.unlocked{border-color:var(--purple);background:var(--purple-dim);box-shadow:0 0 12px rgba(188,140,255,.2);}
+.badge.locked{opacity:.3;filter:grayscale(1);}
+.badge-ico{font-size:1.6em;}.badge-nm{font-size:.7em;font-weight:700;text-align:center;}.badge-xp{font-size:.65em;font-family:var(--font-mono);color:var(--yellow);}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--purple);border-radius:var(--r);padding:14px 18px;z-index:999;transform:translateY(70px);opacity:0;transition:all .3s;pointer-events:none;max-width:260px;box-shadow:0 8px 24px rgba(0,0,0,.4);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast-title{color:var(--purple);font-weight:700;font-size:.85em;margin-bottom:3px;}
+.toast-msg{color:var(--text-muted);font-size:.8em;}
+/* acid vs base */
+.acid-base{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0;}
+@media(max-width:600px){.acid-base{grid-template-columns:1fr;}}
+.ab-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px;}
+.ab-title{font-size:.85em;font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.ab-item{font-size:.8em;color:var(--text-muted);padding:4px 0;display:flex;gap:8px;align-items:flex-start;}
+.ab-key{font-family:var(--font-mono);font-size:.85em;}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <span class="tb-badge">S06 · NoSQL</span>
+    <div class="tb-title">
+      <h1>Bancos NoSQL — Conceitos, Tipos e Teorema CAP</h1>
+      <p>Infraestrutura para Big Data · Ciência de Dados · FATec Ourinhos</p>
+    </div>
+    <div class="xp-widget">
+      <span class="xp-label">XP</span>
+      <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+      <span class="xp-val" id="xpVal">0/380</span>
+    </div>
+  </div>
+</header>
+
+<div style="background:var(--surface2);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+  <a href="semana05.html" style="text-decoration:none;padding:7px 16px;border-radius:6px;border:1px solid var(--border);color:var(--text-muted);font-size:.82em;font-weight:600;">⬅ S05 · DataFrames</a>
+  <a href="../index.html" style="text-decoration:none;padding:7px 16px;border-radius:6px;border:1px solid var(--border);color:var(--text-muted);font-size:.82em;font-weight:600;">🏠 Índice</a>
+  <a href="../guias/semana06_guia.html" style="text-decoration:none;padding:7px 16px;border-radius:6px;background:var(--purple-dim);color:var(--purple);border:1px solid var(--purple);font-size:.82em;font-weight:600;">📚 Guia</a>
+  <a href="semana07.html" style="margin-left:auto;text-decoration:none;padding:7px 16px;border-radius:6px;background:var(--purple-dim);color:var(--purple);border:1px solid var(--purple);font-size:.82em;font-weight:700;">S07 · MongoDB ➡</a>
+</div>
+
+<div class="wrap">
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <h3>Progresso</h3>
+      <div class="prog-item"><div class="prog-dot active" id="pd0"></div><span class="prog-text">Explorar Tipos NoSQL</span></div>
+      <div class="prog-item"><div class="prog-dot" id="pd1"></div><span class="prog-text">Quiz 1: Quando NoSQL?</span></div>
+      <div class="prog-item"><div class="prog-dot" id="pd2"></div><span class="prog-text">Quiz 2: Teorema CAP</span></div>
+      <div class="prog-item"><div class="prog-dot" id="pd3"></div><span class="prog-text">Cenários: Qual NoSQL?</span></div>
+      <div class="prog-item"><div class="prog-dot" id="pd4"></div><span class="prog-text">Missão 1: Análise Casos</span></div>
+      <div class="prog-item"><div class="prog-dot" id="pd5"></div><span class="prog-text">Missão 2: CAP Research</span></div>
+    </div>
+    <div class="sidebar-card">
+      <h3>XP desta semana</h3>
+      <div class="total-box"><div class="total-num" id="sideXP">0</div><div class="total-lbl">de 380 XP</div></div>
+      <div class="prog-bar-track"><div class="prog-bar-fill" id="sideBar" style="width:0%"></div></div>
+    </div>
+    <div class="sidebar-card">
+      <h3>Navegação</h3>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <a href="#tipos" style="color:var(--text-muted);text-decoration:none;font-size:.82em;padding:5px 0;border-bottom:1px solid var(--border);">→ Tipos de NoSQL</a>
+        <a href="#explorar" style="color:var(--text-muted);text-decoration:none;font-size:.82em;padding:5px 0;border-bottom:1px solid var(--border);">→ Explorar BDs</a>
+        <a href="#cap" style="color:var(--text-muted);text-decoration:none;font-size:.82em;padding:5px 0;border-bottom:1px solid var(--border);">→ Teorema CAP</a>
+        <a href="#cenarios" style="color:var(--text-muted);text-decoration:none;font-size:.82em;padding:5px 0;border-bottom:1px solid var(--border);">→ Cenários Práticos</a>
+        <a href="#missoes" style="color:var(--text-muted);text-decoration:none;font-size:.82em;padding:5px 0;">→ Missões</a>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="hero-card">
+      <div class="hero-label">// SEMANA 06 · NOT ONLY SQL</div>
+      <h2>NoSQL: quando <span>SQL não é suficiente</span></h2>
+      <p>Bancos relacionais são ótimos, mas escalar horizontalmente para petabytes é difícil. NoSQL surgiu para resolver isso — mas com trade-offs importantes que você precisa entender antes de escolher.</p>
+      <div class="hero-chips">
+        <span class="chip chip-purple">⚡ 380 XP</span>
+        <span class="chip chip-cyan">🗄️ 4 tipos NoSQL</span>
+        <span class="chip chip-yellow">⏱ ~90 min</span>
+        <span class="chip chip-green">🎮 5 cenários + 2 quizzes</span>
+      </div>
+    </div>
+
+    <div class="badges-strip">
+      <div class="badge locked" id="b0"><div class="badge-ico">🗝️</div><div class="badge-nm">Key-Value</div><div class="badge-xp">+40 XP</div></div>
+      <div class="badge locked" id="b1"><div class="badge-ico">📄</div><div class="badge-nm">Doc Expert</div><div class="badge-xp">+50 XP</div></div>
+      <div class="badge locked" id="b2"><div class="badge-ico">📐</div><div class="badge-nm">CAP Teorist</div><div class="badge-xp">+60 XP</div></div>
+      <div class="badge locked" id="b3"><div class="badge-ico">🎯</div><div class="badge-nm">Cenário Solver</div><div class="badge-xp">+80 XP</div></div>
+      <div class="badge locked" id="b4"><div class="badge-ico">🔬</div><div class="badge-nm">Researcher</div><div class="badge-xp">+70 XP</div></div>
+      <div class="badge locked" id="b5"><div class="badge-ico">🏆</div><div class="badge-nm">NoSQL Master</div><div class="badge-xp">BÔNUS</div></div>
+    </div>
+
+    <!-- TIPOS NOSQL -->
+    <div class="sec" id="tipos">
+      <div class="sec-head"><span class="sec-icon">🗄️</span><span class="sec-title">Os 4 Tipos de Bancos NoSQL</span></div>
+      <div class="sec-body">
+        <p style="color:var(--text-muted);font-size:.88em;margin-bottom:16px;">NoSQL não é um banco de dados — é uma <em>família</em> de abordagens. Cada tipo resolve um problema diferente. Conhecer todos é essencial para escolher a ferramenta certa.</p>
+        <div class="nosql-grid">
+          <div class="nosql-type kv">
+            <div class="nt-icon">🗝️</div>
+            <div class="nt-name kv">Chave-Valor</div>
+            <div class="nt-example">Redis, DynamoDB, Riak</div>
+            <div class="nt-use">Dados simples com acesso ultra-rápido por chave. Cache, sessões, filas.</div>
+          </div>
+          <div class="nosql-type doc">
+            <div class="nt-icon">📄</div>
+            <div class="nt-name doc">Documentos</div>
+            <div class="nt-example">MongoDB, CouchDB, Firestore</div>
+            <div class="nt-use">Documentos JSON flexíveis. Dados semiestruturados, schemas variáveis.</div>
+          </div>
+          <div class="nosql-type col">
+            <div class="nt-icon">📊</div>
+            <div class="nt-name col">Colunar</div>
+            <div class="nt-example">Cassandra, HBase, Bigtable</div>
+            <div class="nt-use">Leitura/escrita massiva por colunas. IoT, logs, séries temporais.</div>
+          </div>
+          <div class="nosql-type graph">
+            <div class="nt-icon">🔗</div>
+            <div class="nt-name graph">Grafos</div>
+            <div class="nt-example">Neo4j, Amazon Neptune, JanusGraph</div>
+            <div class="nt-use">Relacionamentos complexos. Redes sociais, rotas, detecção de fraude.</div>
+          </div>
+        </div>
+
+        <div class="quiz-box">
+          <div class="quiz-q">🧠 Quiz 1 — Uma rede social precisa encontrar "amigos de amigos" eficientemente. Qual tipo de banco NoSQL é mais adequado?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz('q1','a','wrong')">A) Chave-Valor — acesso rápido por ID do usuário</button>
+            <button class="quiz-opt" onclick="quiz('q1','b','wrong')">B) Colunar — ideal para grandes volumes de dados</button>
+            <button class="quiz-opt" onclick="quiz('q1','c','wrong')">C) Documentos — armazena perfis em JSON flexível</button>
+            <button class="quiz-opt" onclick="quiz('q1','d','correct')">D) Grafos — relacionamentos como "amigos de amigos" são nativos em grafos</button>
+          </div>
+          <div class="quiz-feedback ok" id="q1ok">✅ +50 XP! Grafos modelam relacionamentos diretamente. Encontrar "amigos de amigos" em SQL exige JOINs caros; em grafos é uma travessia simples.</div>
+          <div class="quiz-feedback fail" id="q1fail">❌ Pense em "relacionamentos". Quando a query principal é sobre como os dados se conectam, banco de grafos é a resposta.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPLORADOR INTERATIVO -->
+    <div class="sec" id="explorar">
+      <div class="sec-head"><span class="sec-icon">🔍</span><span class="sec-title">Explorador de Bancos NoSQL — Clique para saber mais</span></div>
+      <div class="sec-body">
+        <p style="color:var(--text-muted);font-size:.88em;margin-bottom:14px;">Clique em um banco de dados para ver seus detalhes, casos de uso e características:</p>
+        <div class="db-selector">
+          <div class="db-btn" onclick="showDB('redis')"><div class="db-icon">⚡</div><div class="db-name">Redis</div></div>
+          <div class="db-btn" onclick="showDB('mongo')"><div class="db-icon">🍃</div><div class="db-name">MongoDB</div></div>
+          <div class="db-btn" onclick="showDB('cassandra')"><div class="db-icon">💫</div><div class="db-name">Cassandra</div></div>
+          <div class="db-btn" onclick="showDB('neo4j')"><div class="db-icon">🔗</div><div class="db-name">Neo4j</div></div>
+          <div class="db-btn" onclick="showDB('dynamo')"><div class="db-icon">🌩️</div><div class="db-name">DynamoDB</div></div>
+          <div class="db-btn" onclick="showDB('hbase')"><div class="db-icon">🐘</div><div class="db-name">HBase</div></div>
+        </div>
+        <div class="db-info" id="dbInfo">
+          <div class="db-info-title" id="dbTitle"></div>
+          <div class="db-info-desc" id="dbDesc"></div>
+          <div class="db-info-tags" id="dbTags"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEOREMA CAP -->
+    <div class="sec" id="cap">
+      <div class="sec-head"><span class="sec-icon">⚖️</span><span class="sec-title">Teorema CAP — A Lei dos Trade-offs do Big Data</span></div>
+      <div class="sec-body">
+        <p style="color:var(--text-muted);font-size:.88em;margin-bottom:4px;">O Teorema CAP afirma: um sistema distribuído só pode garantir <strong style="color:var(--text);">2 das 3</strong> propriedades ao mesmo tempo. Escolher um banco é escolher qual propriedade sacrificar.</p>
+        <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;margin:16px 0;">
+          <div style="flex:1;min-width:260px;">
+            <div style="background:var(--surface2);border-radius:var(--r-sm);padding:14px;margin-bottom:10px;border-left:3px solid var(--red);">
+              <div style="font-size:.85em;font-weight:700;color:var(--red);margin-bottom:4px;">C — Consistency (Consistência)</div>
+              <div style="font-size:.8em;color:var(--text-muted);">Todos os nós veem os mesmos dados ao mesmo tempo. Leitura sempre retorna a versão mais recente.</div>
+            </div>
+            <div style="background:var(--surface2);border-radius:var(--r-sm);padding:14px;margin-bottom:10px;border-left:3px solid var(--green);">
+              <div style="font-size:.85em;font-weight:700;color:var(--green);margin-bottom:4px;">A — Availability (Disponibilidade)</div>
+              <div style="font-size:.8em;color:var(--text-muted);">Todo request recebe uma resposta — mesmo que não seja a mais atual. Sistema nunca fica offline.</div>
+            </div>
+            <div style="background:var(--surface2);border-radius:var(--r-sm);padding:14px;border-left:3px solid var(--cyan);">
+              <div style="font-size:.85em;font-weight:700;color:var(--cyan);margin-bottom:4px;">P — Partition Tolerance (Tolerância a Partição)</div>
+              <div style="font-size:.8em;color:var(--text-muted);">Sistema continua funcionando mesmo se a rede entre nós falhar. Essencial em sistemas distribuídos reais.</div>
+            </div>
+          </div>
+          <div style="flex:1;min-width:220px;">
+            <div style="font-size:.78em;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Onde cada banco se encaixa:</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;display:flex;gap:10px;align-items:center;">
+                <span style="font-size:1.2em;">🍃</span>
+                <div>
+                  <div style="font-size:.82em;font-weight:700;color:var(--orange);">MongoDB, CouchDB</div>
+                  <div style="font-size:.75em;color:var(--text-muted);">AP — Disponível + Tolerante a Partição</div>
+                </div>
+              </div>
+              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;display:flex;gap:10px;align-items:center;">
+                <span style="font-size:1.2em;">💫</span>
+                <div>
+                  <div style="font-size:.82em;font-weight:700;color:var(--cyan);">Cassandra, DynamoDB</div>
+                  <div style="font-size:.75em;color:var(--text-muted);">AP — Disponível + Tolerante a Partição</div>
+                </div>
+              </div>
+              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;display:flex;gap:10px;align-items:center;">
+                <span style="font-size:1.2em;">🐘</span>
+                <div>
+                  <div style="font-size:.82em;font-weight:700;color:var(--cyan);">HBase, BigTable</div>
+                  <div style="font-size:.75em;color:var(--text-muted);">CP — Consistente + Tolerante a Partição</div>
+                </div>
+              </div>
+              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;display:flex;gap:10px;align-items:center;">
+                <span style="font-size:1.2em;">🗄️</span>
+                <div>
+                  <div style="font-size:.82em;font-weight:700;color:var(--red);">MySQL, PostgreSQL (tradicional)</div>
+                  <div style="font-size:.75em;color:var(--text-muted);">CA — Consistente + Disponível (não distribuído)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quiz-box">
+          <div class="quiz-q">🧠 Quiz 2 — Um banco de dados financeiro (transferências bancárias) precisa garantir que todos os nós sempre vejam o saldo correto. Qual combinação CAP escolher?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz('q2','a','wrong')">A) AP — Alta disponibilidade é mais importante que consistência em bancos</button>
+            <button class="quiz-opt" onclick="quiz('q2','b','correct')">B) CP — Consistência é crítica: não se pode ter saldo diferente em dois nós</button>
+            <button class="quiz-opt" onclick="quiz('q2','c','wrong')">C) CA — Precisa de consistência e disponibilidade acima de tudo</button>
+            <button class="quiz-opt" onclick="quiz('q2','d','wrong')">D) CAP — Sistemas modernos já garantem as três propriedades</button>
+          </div>
+          <div class="quiz-feedback ok" id="q2ok">✅ +60 XP! Para dados financeiros, CP é a escolha certa. É melhor o sistema ficar indisponível por um instante do que ter saldos inconsistentes — o que poderia permitir transferências inválidas.</div>
+          <div class="quiz-feedback fail" id="q2fail">❌ Pense: o que é pior — site fora por 1 segundo, ou mostrar saldo errado e permitir fraude? Para dados financeiros, CP (Consistency + Partition Tolerance) é obrigatório.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENÁRIOS INTERATIVOS -->
+    <div class="sec" id="cenarios">
+      <div class="sec-head"><span class="sec-icon">🎮</span><span class="sec-title">Jogo: Qual banco NoSQL escolher? — 5 Cenários</span></div>
+      <div class="sec-body">
+        <p style="color:var(--text-muted);font-size:.88em;margin-bottom:16px;">Para cada cenário abaixo, escolha o banco NoSQL mais adequado. Acertar todos desbloqueia o badge Cenário Solver!</p>
+
+        <div class="scenario-card" id="sc0">
+          <div class="sc-question">📱 Cenário 1: Um app de e-commerce precisa de cache ultra-rápido para sessões de usuário (carrinho, login). Qual banco?</div>
+          <div class="sc-opts">
+            <div class="sc-opt" onclick="scenario(0,'redis','redis')">⚡ Redis</div>
+            <div class="sc-opt" onclick="scenario(0,'mongo','redis')">🍃 MongoDB</div>
+            <div class="sc-opt" onclick="scenario(0,'cassandra','redis')">💫 Cassandra</div>
+            <div class="sc-opt" onclick="scenario(0,'neo4j','redis')">🔗 Neo4j</div>
+          </div>
+          <div class="sc-feedback ok" id="sc0ok">✅ Redis! Cache chave-valor in-memory. Sub-milissegundo de latência. Perfeito para sessões e carrinho.</div>
+          <div class="sc-feedback fail" id="sc0fail">❌ Para cache rápido de sessões, Redis (chave-valor in-memory) é a escolha padrão da indústria.</div>
+        </div>
+
+        <div class="scenario-card" id="sc1">
+          <div class="sc-question">📰 Cenário 2: Um CMS de blog com artigos que têm campos variáveis (alguns têm vídeo, outros apenas texto, tags diferentes). Qual banco?</div>
+          <div class="sc-opts">
+            <div class="sc-opt" onclick="scenario(1,'mongo','mongo')">🍃 MongoDB</div>
+            <div class="sc-opt" onclick="scenario(1,'redis','mongo')">⚡ Redis</div>
+            <div class="sc-opt" onclick="scenario(1,'hbase','mongo')">🐘 HBase</div>
+            <div class="sc-opt" onclick="scenario(1,'neo4j','mongo')">🔗 Neo4j</div>
+          </div>
+          <div class="sc-feedback ok" id="sc1ok">✅ MongoDB! Documentos JSON flexíveis — cada artigo pode ter campos diferentes sem alterar o schema.</div>
+          <div class="sc-feedback fail" id="sc1fail">❌ Dados com estrutura variável (campos opcionais) → MongoDB (documentos). Schema flexível é sua característica principal.</div>
+        </div>
+
+        <div class="scenario-card" id="sc2">
+          <div class="sc-question">📊 Cenário 3: Uma plataforma de IoT recebe 500 mil leituras de sensores por segundo, 24/7, armazenadas por data/hora. Qual banco?</div>
+          <div class="sc-opts">
+            <div class="sc-opt" onclick="scenario(2,'cassandra','cassandra')">💫 Cassandra</div>
+            <div class="sc-opt" onclick="scenario(2,'mongo','cassandra')">🍃 MongoDB</div>
+            <div class="sc-opt" onclick="scenario(2,'neo4j','cassandra')">🔗 Neo4j</div>
+            <div class="sc-opt" onclick="scenario(2,'redis','cassandra')">⚡ Redis</div>
+          </div>
+          <div class="sc-feedback ok" id="sc2ok">✅ Cassandra! Colunar distribuído, escrita massiva, sem ponto único de falha. Projetado exatamente para séries temporais e IoT.</div>
+          <div class="sc-feedback fail" id="sc2fail">❌ Alta taxa de escrita + séries temporais = Cassandra. Foi criado para suportar escritas massivas distribuídas (usado pela Netflix, Instagram).</div>
+        </div>
+
+        <div class="scenario-card" id="sc3">
+          <div class="sc-question">🕵️ Cenário 4: Sistema antifraude de banco precisa detectar padrões suspeitos analisando a REDE de transações entre contas. Qual banco?</div>
+          <div class="sc-opts">
+            <div class="sc-opt" onclick="scenario(3,'neo4j','neo4j')">🔗 Neo4j</div>
+            <div class="sc-opt" onclick="scenario(3,'cassandra','neo4j')">💫 Cassandra</div>
+            <div class="sc-opt" onclick="scenario(3,'mongo','neo4j')">🍃 MongoDB</div>
+            <div class="sc-opt" onclick="scenario(3,'redis','neo4j')">⚡ Redis</div>
+          </div>
+          <div class="sc-feedback ok" id="sc3ok">✅ Neo4j! Grafos são perfeitos para análise de redes. "Esta conta transferiu para conta que transferiu para conta suspeita em 3 saltos" é uma query natural em grafos.</div>
+          <div class="sc-feedback fail" id="sc3fail">❌ Quando o problema é sobre RELAÇÕES e REDES → banco de grafos (Neo4j). Detecção de fraude analisa padrões de conexões, não apenas dados isolados.</div>
+        </div>
+
+        <div class="scenario-card" id="sc4">
+          <div class="sc-question">☁️ Cenário 5: Uma startup precisa de um banco totalmente gerenciado na AWS, serverless, que escale automaticamente para uma aplicação móvel global. Qual banco?</div>
+          <div class="sc-opts">
+            <div class="sc-opt" onclick="scenario(4,'dynamo','dynamo')">🌩️ DynamoDB (AWS)</div>
+            <div class="sc-opt" onclick="scenario(4,'mongo','dynamo')">🍃 MongoDB on-premise</div>
+            <div class="sc-opt" onclick="scenario(4,'hbase','dynamo')">🐘 HBase no Hadoop</div>
+            <div class="sc-opt" onclick="scenario(4,'neo4j','dynamo')">🔗 Neo4j</div>
+          </div>
+          <div class="sc-feedback ok" id="sc4ok">✅ DynamoDB! Gerenciado pela AWS, serverless, escala automática, pague pelo uso. Para startups sem equipe de infra é a escolha ideal.</div>
+          <div class="sc-feedback fail" id="sc4fail">❌ "Serverless + AWS + escala automática" = DynamoDB. É o banco NoSQL mais popular da nuvem por ser totalmente gerenciado.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BASE vs ACID -->
+    <div class="sec">
+      <div class="sec-head"><span class="sec-icon">⚗️</span><span class="sec-title">ACID vs BASE — Dois Modelos de Consistência</span></div>
+      <div class="sec-body">
+        <p style="color:var(--text-muted);font-size:.88em;margin-bottom:14px;">SQL segue ACID. NoSQL geralmente segue BASE — um modelo mais relaxado que permite maior escalabilidade.</p>
+        <div class="acid-base">
+          <div class="ab-card" style="border-color:rgba(248,81,73,.3);">
+            <div class="ab-title" style="color:var(--red);">🔒 ACID (SQL Tradicional)</div>
+            <div class="ab-item"><span class="ab-key" style="color:var(--red);">A</span><span>tomicity — tudo ou nada: transação completa ou reverte</span></div>
+            <div class="ab-item"><span class="ab-key" style="color:var(--red);">C</span><span>onsistency — dados sempre em estado válido</span></div>
+            <div class="ab-item"><span class="ab-key" style="color:var(--red);">I</span><span>solation — transações não interferem entre si</span></div>
+            <div class="ab-item"><span class="ab-key" style="color:var(--red);">D</span><span>urability — dado salvo persiste mesmo em falhas</span></div>
+          </div>
+          <div class="ab-card" style="border-color:rgba(121,192,255,.3);">
+            <div class="ab-title" style="color:var(--cyan);">🌊 BASE (NoSQL)</div>
+            <div class="ab-item"><span class="ab-key" style="color:var(--cyan);">BA</span><span>sically Available — sistema responde sempre</span></div>
+            <div class="ab-item"><span class="ab-key" style="color:var(--cyan);">S</span><span>oft state — dados podem estar em transição</span></div>
+            <div class="ab-item"><span class="ab-key" style="color:var(--cyan);">E</span><span>ventually consistent — todos os nós convergem no tempo</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MISSÕES -->
+    <div class="sec" id="missoes">
+      <div class="sec-head"><span class="sec-icon">⚔️</span><span class="sec-title">Missões Práticas</span></div>
+      <div class="sec-body">
+        <div class="mission" id="m1" onclick="completeMission('m1','b4',70,'🔬 Missão 1 completa!','Análise de casos reais dominada!')">
+          <div class="m-num" id="mn1">01</div>
+          <div class="m-body">
+            <div class="m-title">📋 Missão 1 — Análise de 5 Casos de Uso Reais</div>
+            <div class="m-desc">Para cada sistema abaixo, justifique qual tipo de banco NoSQL usaria e por quê: (1) Spotify — playlists de usuários, (2) Twitter/X — timeline em tempo real, (3) Waze — rotas e grafo de ruas, (4) WhatsApp — mensagens de grupo, (5) Netflix — recomendações personalizadas. Entregue documento com justificativas técnicas referenciando CAP e tipo de NoSQL.</div>
+            <div class="m-tags">
+              <span class="mtag t-time">⏱ 30 min</span>
+              <span class="mtag t-xp">+70 XP</span>
+              <span class="mtag t-diff-m">🟡 Intermediário</span>
+            </div>
+          </div>
+          <div class="m-check" id="mc1">○</div>
+        </div>
+
+        <div class="mission" id="m2" onclick="completeMission('m2','b5',80,'📚 Missão 2 completa!','Pesquisa CAP concluída!')">
+          <div class="m-num" id="mn2">02</div>
+          <div class="m-body">
+            <div class="m-title">🔬 Missão 2 — Pesquisa: Teorema CAP na Prática</div>
+            <div class="m-desc">Pesquise como 2 empresas reais (ex: Amazon, Netflix, LinkedIn, Uber) aplicaram o Teorema CAP na escolha dos seus bancos de dados. Para cada uma: qual banco escolheram, qual propriedade CAP sacrificaram e por quê foi a decisão certa para o negócio. Apresente em 5 slides ou documento de 1 página.</div>
+            <div class="m-tags">
+              <span class="mtag t-time">⏱ 40 min</span>
+              <span class="mtag t-xp">+80 XP</span>
+              <span class="mtag t-diff-h">🔴 Desafiador</span>
+            </div>
+          </div>
+          <div class="m-check" id="mc2">○</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+      <a href="semana05.html" style="text-decoration:none;padding:10px 20px;border-radius:6px;border:1px solid var(--border);color:var(--text-muted);font-size:.85em;font-weight:600;">⬅ S05 · DataFrames</a>
+      <a href="../index.html" style="text-decoration:none;padding:10px 20px;border-radius:6px;border:1px solid var(--border);color:var(--text-muted);font-size:.85em;font-weight:600;">🏠 Índice</a>
+      <a href="semana07.html" style="margin-left:auto;text-decoration:none;padding:10px 20px;border-radius:6px;background:var(--purple-dim);color:var(--purple);border:1px solid var(--purple);font-size:.85em;font-weight:700;">S07 · MongoDB ➡</a>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast">
+  <div class="toast-title" id="toastTitle"></div>
+  <div class="toast-msg" id="toastMsg"></div>
+</div>
+
+<script>
+let xp=0,maxXP=380;const done={};let scenarioScore=0;
+const dbData = {
+  redis:   {title:'⚡ Redis — In-Memory Key-Value Store',desc:'Redis armazena pares chave-valor inteiramente na RAM. É o banco mais rápido disponível (sub-milissegundo). Suporta estruturas como listas, conjuntos e hashes. Amplamente usado para cache, filas de mensagens, contadores em tempo real e gerenciamento de sessões. Pode persistir dados em disco como backup.',tags:[{label:'CAP: AP',c:'var(--green)','bc':'var(--green)'},{label:'Chave-Valor',c:'var(--yellow)','bc':'var(--yellow)'},{label:'In-Memory',c:'var(--cyan)','bc':'var(--cyan)'},{label:'Cache',c:'var(--orange)','bc':'var(--orange)'}]},
+  mongo:   {title:'🍃 MongoDB — Document Database',desc:'MongoDB armazena dados como documentos BSON (JSON binário). Cada documento pode ter estrutura diferente — sem schema rígido. Suporta queries ricas, índices, aggregation pipeline e replicação automática. Usado por Airbnb, eBay, Forbes para dados de catálogos, perfis e conteúdo variável.',tags:[{label:'CAP: AP',c:'var(--green)','bc':'var(--green)'},{label:'Documentos',c:'var(--orange)','bc':'var(--orange)'},{label:'JSON/BSON',c:'var(--cyan)','bc':'var(--cyan)'},{label:'Schema-free',c:'var(--purple)','bc':'var(--purple)'}]},
+  cassandra:{title:'💫 Cassandra — Wide-Column Store',desc:'Cassandra foi criada pelo Facebook para suportar bilhões de escritas. Arquitetura masterless (sem ponto único de falha), distribuição automática, escrita em múltiplos nós simultaneamente. Ideal para séries temporais, IoT, logs. Usado por Netflix, Apple, Discord para dados de alta escrita contínua.',tags:[{label:'CAP: AP',c:'var(--green)','bc':'var(--green)'},{label:'Colunar',c:'var(--cyan)','bc':'var(--cyan)'},{label:'Alta Escrita',c:'var(--red)','bc':'var(--red)'},{label:'Masterless',c:'var(--yellow)','bc':'var(--yellow)'}]},
+  neo4j:   {title:'🔗 Neo4j — Graph Database',desc:'Neo4j armazena dados como nós e relacionamentos com propriedades. A linguagem Cypher permite queries de grafos muito expressivas. Usado para redes sociais, detecção de fraude, sistemas de recomendação baseados em relacionamentos, rotas e supply chain. Escala verticalmente muito bem.',tags:[{label:'CAP: CA',c:'var(--red)','bc':'var(--red)'},{label:'Grafos',c:'var(--green)','bc':'var(--green)'},{label:'Cypher Query',c:'var(--purple)','bc':'var(--purple)'},{label:'Relacionamentos',c:'var(--cyan)','bc':'var(--cyan)'}]},
+  dynamo:  {title:'🌩️ DynamoDB — Managed AWS NoSQL',desc:'DynamoDB é o banco NoSQL serverless da Amazon. Escala automaticamente de 0 a milhões de requests por segundo sem configuração. Totalmente gerenciado — sem servidores para administrar. Suporta tabelas chave-valor e documentos. Preço por requests. Usado por Lyft, Snapchat, Duolingo.',tags:[{label:'CAP: AP',c:'var(--green)','bc':'var(--green)'},{label:'Serverless',c:'var(--cyan)','bc':'var(--cyan)'},{label:'AWS Managed',c:'var(--orange)','bc':'var(--orange)'},{label:'Auto-scale',c:'var(--yellow)','bc':'var(--yellow)'}]},
+  hbase:   {title:'🐘 HBase — Hadoop Column Store',desc:'HBase é o banco colunar do ecossistema Hadoop, baseado no BigTable do Google. Armazena dados em tabelas com famílias de colunas, acesso por rowkey. Suporta bilhões de linhas e milhões de colunas. Integra com HDFS e MapReduce. Usado para dados históricos, arquivos de logs, dados de sensores em larga escala.',tags:[{label:'CAP: CP',c:'var(--red)','bc':'var(--red)'},{label:'Colunar',c:'var(--cyan)','bc':'var(--cyan)'},{label:'Hadoop',c:'var(--orange)','bc':'var(--orange)'},{label:'BigTable API',c:'var(--purple)','bc':'var(--purple)'}]}
+};
+
+function showDB(id) {
+  document.querySelectorAll('.db-btn').forEach(b=>b.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  const d = dbData[id];
+  document.getElementById('dbTitle').textContent = d.title;
+  document.getElementById('dbDesc').textContent = d.desc;
+  const tagsEl = document.getElementById('dbTags');
+  tagsEl.innerHTML = d.tags.map(t=>`<span class="di-tag" style="color:${t.c};border-color:${t.bc};background:${t.bc}22;">${t.label}</span>`).join('');
+  document.getElementById('dbInfo').classList.add('show');
+  if(!done['explorer']){done['explorer']=true;xp+=40;unlockBadge('b0');markProg(0);updateXP();toast('🗝️ +40 XP!','Explorador NoSQL ativo!');}
+}
+
+function scenario(idx, choice, correct) {
+  const card = document.getElementById('sc'+idx);
+  if(card.classList.contains('correct-pick')||card.classList.contains('wrong-pick')) return;
+  card.querySelectorAll('.sc-opt').forEach(o=>o.classList.add('disabled'));
+  if(choice === correct) {
+    event.currentTarget.classList.add('pick-ok');
+    card.classList.add('correct-pick');
+    document.getElementById('sc'+idx+'ok').style.display='block';
+    scenarioScore++;
+    xp+=10; updateXP();
+    toast('✅ Acertou!','Cenário '+(idx+1)+' correto!');
+  } else {
+    event.currentTarget.classList.add('pick-bad');
+    card.classList.add('wrong-pick');
+    document.getElementById('sc'+idx+'fail').style.display='block';
+  }
+  if(!done['sc'+idx]) { done['sc'+idx]=true; }
+  if(scenarioScore>=4&&!done['scenarios']) {
+    done['scenarios']=true; xp+=30; unlockBadge('b3'); markProg(3); updateXP();
+    toast('🎯 +80 XP! Cenário Solver!','4+ cenários corretos!');
+  }
+}
+
+function unlockBadge(id){const b=document.getElementById(id);if(b&&!b.classList.contains('unlocked')){b.classList.remove('locked');b.classList.add('unlocked');}}
+function updateXP(){const p=(xp/maxXP)*100;document.getElementById('xpFill').style.width=p+'%';document.getElementById('xpVal').textContent=xp+'/'+maxXP;document.getElementById('sideXP').textContent=xp;document.getElementById('sideBar').style.width=p+'%';}
+function toast(t,m){document.getElementById('toastTitle').textContent=t;document.getElementById('toastMsg').textContent=m;const el=document.getElementById('toast');el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3500);}
+function markProg(i){const d=document.getElementById('pd'+i);if(d){d.classList.remove('active');d.classList.add('done');}}
+function quiz(id,choice,result){
+  if(done[id])return;done[id]=true;
+  document.querySelectorAll('.quiz-opt').forEach(o=>{o.classList.add('disabled');o.style.pointerEvents='none';});
+  event.target.classList.add(result==='correct'?'correct':'wrong');
+  if(result==='correct'){
+    document.getElementById(id+'ok').style.display='block';
+    if(id==='q1'){xp+=50;unlockBadge('b1');markProg(1);toast('📄 +50 XP!','Doc Expert desbloqueado!');}
+    if(id==='q2'){xp+=60;unlockBadge('b2');markProg(2);toast('📐 +60 XP!','CAP Teorist desbloqueado!');}
+  } else {document.getElementById(id+'fail').style.display='block';}
+  updateXP();checkAll();
+}
+function completeMission(mid,bid,pts,t,m){
+  if(done[mid])return;done[mid]=true;
+  const el=document.getElementById(mid);el.classList.add('done');
+  document.getElementById('mc'+mid.slice(1)).textContent='✓';
+  document.getElementById('mn'+mid.slice(1)).textContent='✓';
+  xp+=pts;unlockBadge(bid);
+  if(mid==='m1')markProg(4);if(mid==='m2')markProg(5);
+  updateXP();toast(t,m);checkAll();
+}
+function checkAll(){
+  const total = Object.keys(done).filter(k=>['q1','q2','m1','m2'].includes(k)).length;
+  if(total>=4&&scenarioScore>=3&&!done['master']){
+    done['master']=true;
+    setTimeout(()=>{unlockBadge('b5');toast('🏆 NoSQL Master!','Semana 06 completa!');},800);
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S03 MapReduce | Big Data FATec Ourinhos 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#0d1117;--surf:#161b22;--surf2:#21262d;--bdr:#30363d;
+  --grn:#3fb950;--grn-d:#1a4a1f;--grn-g:rgba(63,185,80,.15);
+  --cyn:#79c0ff;--cyn-d:#0c2a4a;--ylw:#e3b341;--ylw-d:#3d2d00;
+  --red:#f85149;--pur:#bc8cff;--pur-d:#2a1a4a;--org:#ffa657;--org-d:#3d2000;
+  --tx:#e6edf3;--txm:#7d8590;--txd:#484f58;
+  --r:8px;--rs:6px;--mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--tx);line-height:1.65;min-height:100vh;}
+.topbar{background:var(--surf);border-bottom:1px solid var(--bdr);position:sticky;top:0;z-index:200;}
+.tbi{max-width:1240px;margin:0 auto;padding:11px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.tbadge{background:var(--grn-d);border:1px solid var(--grn);color:var(--grn);border-radius:50px;padding:4px 12px;font-size:.73em;font-weight:700;font-family:var(--mono);}
+.tbtl{flex:1;min-width:160px;}.tbtl h1{font-size:.97em;font-weight:700;}.tbtl p{font-size:.74em;color:var(--txm);}
+.xpw{display:flex;align-items:center;gap:9px;background:var(--surf2);border:1px solid var(--bdr);border-radius:50px;padding:5px 13px;}
+.xpl{font-size:.72em;font-weight:700;color:var(--ylw);font-family:var(--mono);}
+.xpt{width:80px;height:5px;background:var(--bdr);border-radius:50px;overflow:hidden;}
+.xpf{height:100%;width:0%;background:linear-gradient(90deg,var(--grn),var(--cyn));border-radius:50px;transition:width 1.1s cubic-bezier(.22,1,.36,1);}
+.xpn{font-size:.72em;font-family:var(--mono);color:var(--ylw);}
+.nav{background:var(--surf2);border-bottom:1px solid var(--bdr);padding:9px 24px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+a.nb{padding:6px 14px;border-radius:var(--rs);text-decoration:none;font-size:.8em;font-weight:600;border:1px solid var(--bdr);transition:all .15s;}
+a.nb-g{color:var(--txm);background:transparent;}a.nb-g:hover{background:var(--surf);color:var(--tx);}
+a.nb-grn{background:var(--grn-d);color:var(--grn);border-color:var(--grn);}a.nb-grn:hover{background:var(--grn);color:#000;}
+.mlA{margin-left:auto;}
+.wrap{max-width:1240px;margin:0 auto;padding:24px;display:grid;grid-template-columns:226px 1fr;gap:22px;}
+@media(max-width:940px){.wrap{grid-template-columns:1fr;}.sbar{display:none;}}
+.sbar{position:sticky;top:96px;height:fit-content;display:flex;flex-direction:column;gap:14px;}
+.sc{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:15px;}
+.sc h3{font-size:.71em;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:.07em;margin-bottom:11px;}
+.pi{display:flex;align-items:center;gap:9px;padding:5px 0;border-bottom:1px solid var(--bdr);}.pi:last-child{border-bottom:none;}
+.pd{width:8px;height:8px;border-radius:50%;background:var(--bdr);flex-shrink:0;transition:all .3s;}
+.pd.done{background:var(--grn);box-shadow:0 0 5px var(--grn);}.pd.active{background:var(--cyn);box-shadow:0 0 6px var(--cyn);}
+.pt{font-size:.77em;color:var(--txm);line-height:1.3;}
+.xpbig{text-align:center;padding:10px 0;}
+.xpbign{font-size:1.9em;font-weight:700;color:var(--grn);font-family:var(--mono);}
+.xpbigl{font-size:.71em;color:var(--txm);}
+.pbt{height:5px;background:var(--surf2);border-radius:50px;overflow:hidden;margin-top:8px;}
+.pbf{height:100%;background:linear-gradient(90deg,var(--grn),var(--cyn));border-radius:50px;transition:width .8s ease;}
+.envl a{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--rs);background:var(--surf2);border:1px solid var(--bdr);text-decoration:none;color:var(--txm);font-size:.8em;font-weight:600;margin-bottom:6px;transition:all .15s;}
+.envl a:last-child{margin-bottom:0;}.envl a:hover{border-color:var(--cyn);color:var(--tx);}
+.sblinks a{display:block;color:var(--txm);text-decoration:none;font-size:.78em;padding:5px 0;border-bottom:1px solid var(--bdr);}.sblinks a:last-child{border-bottom:none;}.sblinks a:hover{color:var(--tx);}
+.sec{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);margin-bottom:18px;overflow:hidden;}
+.sh{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--bdr);background:var(--surf2);}
+.shi{font-size:1.05em;}.sht{font-size:.95em;font-weight:700;}
+.shb{margin-left:auto;font-size:.71em;font-family:var(--mono);padding:3px 9px;border-radius:50px;border:1px solid;}
+.sb{padding:20px;}
+.hero{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:26px;margin-bottom:18px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,var(--grn-g) 0%,transparent 70%);border-radius:50%;pointer-events:none;}
+.hlbl{font-size:.71em;font-weight:700;color:var(--grn);font-family:var(--mono);letter-spacing:.08em;margin-bottom:7px;}
+.hero h2{font-size:1.55em;font-weight:700;margin-bottom:8px;line-height:1.2;}
+.hero h2 em{color:var(--grn);font-style:normal;}
+.hero p{color:var(--txm);font-size:.91em;max-width:580px;margin-bottom:15px;}
+.chips{display:flex;gap:8px;flex-wrap:wrap;}
+.chip{padding:4px 11px;border-radius:50px;font-size:.74em;font-weight:600;border:1px solid;}
+.cg{background:var(--grn-d);color:var(--grn);border-color:var(--grn);}
+.cc{background:var(--cyn-d);color:var(--cyn);border-color:var(--cyn);}
+.cy{background:var(--ylw-d);color:var(--ylw);border-color:var(--ylw);}
+.co{background:var(--org-d);color:var(--org);border-color:var(--org);}
+.cp{background:var(--pur-d);color:var(--pur);border-color:var(--pur);}
+.badges{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:18px;}
+.badge{display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 13px;border:1.5px solid var(--bdr);border-radius:var(--r);background:var(--surf);min-width:76px;transition:all .25s;}
+.badge.unlocked{border-color:var(--grn);background:var(--grn-d);box-shadow:0 0 14px var(--grn-g);}
+.badge.locked{opacity:.28;filter:grayscale(1);}
+.bi{font-size:1.55em;}.bn{font-size:.68em;font-weight:700;text-align:center;}.bx{font-size:.63em;font-family:var(--mono);color:var(--ylw);}
+.pipe{display:flex;align-items:stretch;gap:0;margin:16px 0;flex-wrap:wrap;}
+.ps{flex:1;min-width:100px;background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--rs);padding:12px 10px;text-align:center;}
+.ps.m{border-color:var(--org);background:rgba(255,166,87,.08);}
+.ps.s{border-color:var(--pur);background:rgba(188,140,255,.08);}
+.ps.r{border-color:var(--cyn);background:rgba(121,192,255,.08);}
+.pa{color:var(--txd);font-size:1.2em;padding:0 5px;display:flex;align-items:center;flex-shrink:0;}
+.pic{font-size:1.5em;margin-bottom:5px;}.pn{font-size:.76em;font-weight:700;}
+.pn.m{color:var(--org);}.pn.s{color:var(--pur);}.pn.r{color:var(--cyn);}
+.pdc{font-size:.68em;color:var(--txm);margin-top:4px;line-height:1.4;}
+.cw{background:#010409;border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;margin:12px 0;}
+.cb2{background:var(--surf2);padding:7px 13px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bdr);}
+.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.clbl{font-size:.7em;color:var(--txm);font-family:var(--mono);margin-left:auto;}
+.cpybtn{background:var(--surf);border:1px solid var(--bdr);color:var(--txm);font-size:.7em;padding:3px 9px;border-radius:4px;cursor:pointer;font-family:var(--mono);transition:all .15s;margin-left:6px;}
+.cpybtn:hover{border-color:var(--grn);color:var(--grn);}
+pre.code{padding:15px;font-family:var(--mono);font-size:.79em;line-height:1.8;overflow-x:auto;white-space:pre;margin:0;}
+.kw{color:#ff7b72;}.fn{color:#d2a8ff;}.st{color:#a5d6ff;}.cm{color:#8b949e;}.nu{color:#79c0ff;}.cl{color:#ffa657;}
+.term{background:#010409;border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;margin:12px 0;}
+.termb{background:var(--surf2);padding:7px 13px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--bdr);}
+.terml{font-size:.7em;color:var(--txm);font-family:var(--mono);margin-left:auto;}
+pre.trm{padding:14px;font-family:var(--mono);font-size:.79em;line-height:1.85;margin:0;}
+.tp{color:var(--grn);}.tc{color:var(--tx);}.to{color:var(--txm);}.tok{color:var(--grn);}
+.etabs{display:flex;gap:0;border:1px solid var(--bdr);border-radius:var(--rs);overflow:hidden;margin-bottom:18px;}
+.etab{flex:1;padding:10px 6px;text-align:center;cursor:pointer;background:var(--surf2);border:none;color:var(--txm);font-size:.8em;font-weight:700;font-family:var(--sans);transition:all .15s;border-right:1px solid var(--bdr);}
+.etab:last-child{border-right:none;}.etab.active{background:var(--grn-d);color:var(--grn);}
+.etab:hover:not(.active){background:var(--surf);color:var(--tx);}
+.epanel{display:none;}.epanel.active{display:block;}
+.steps{display:flex;flex-direction:column;gap:0;}
+.step{display:flex;gap:0;position:relative;padding-bottom:4px;}
+.step:not(:last-child)::after{content:'';position:absolute;left:17px;top:42px;bottom:0;width:2px;background:var(--bdr);}
+.snum{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.76em;font-weight:700;font-family:var(--mono);flex-shrink:0;margin-top:3px;z-index:1;background:var(--surf2);border:2px solid var(--bdr);color:var(--txm);}
+.scont{flex:1;padding:0 0 22px 14px;}
+.stit{font-size:.92em;font-weight:700;margin-bottom:5px;}
+.sdesc{font-size:.83em;color:var(--txm);line-height:1.6;margin-bottom:8px;}
+.box-info{background:var(--cyn-d);border-left:3px solid var(--cyn);border-radius:0 5px 5px 0;padding:8px 12px;font-size:.8em;color:var(--cyn);margin:8px 0;line-height:1.5;}
+.box-ok{background:var(--grn-d);border-left:3px solid var(--grn);border-radius:0 5px 5px 0;padding:8px 12px;font-size:.8em;color:var(--grn);margin:8px 0;line-height:1.5;}
+.box-warn{background:var(--org-d);border-left:3px solid var(--org);border-radius:0 5px 5px 0;padding:8px 12px;font-size:.8em;color:var(--org);margin:8px 0;line-height:1.5;}
+.quiz{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--r);padding:18px;margin:14px 0;}
+.qq{font-size:.92em;font-weight:600;margin-bottom:13px;line-height:1.55;}
+.qopts{display:flex;flex-direction:column;gap:7px;}
+.qo{background:var(--surf);border:1.5px solid var(--bdr);border-radius:var(--rs);padding:9px 14px;cursor:pointer;transition:all .15s;text-align:left;color:var(--tx);font-size:.86em;font-family:var(--sans);}
+.qo:hover{border-color:var(--cyn);background:var(--cyn-d);}
+.qo.correct{border-color:var(--grn);background:var(--grn-d);color:var(--grn);}
+.qo.wrong{border-color:var(--red);background:rgba(248,81,73,.1);color:var(--red);}
+.qo.disabled{cursor:default;pointer-events:none;}
+.qfb{margin-top:11px;padding:9px 13px;border-radius:var(--rs);font-size:.82em;display:none;line-height:1.5;}
+.qfb.ok{background:var(--grn-d);border:1px solid var(--grn);color:var(--grn);}
+.qfb.fail{background:rgba(248,81,73,.1);border:1px solid var(--red);color:var(--red);}
+.mwrap{border:1.5px solid var(--bdr);border-radius:var(--r);margin-bottom:14px;overflow:hidden;transition:border-color .2s;}
+.mwrap:hover{border-color:var(--grn);}.mwrap.done{border-color:var(--grn);}
+.mhead{display:flex;gap:12px;align-items:flex-start;padding:16px 18px;position:relative;}
+.mhead::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--bdr);border-radius:3px 0 0 3px;transition:background .2s;}
+.mwrap.done .mhead::before{background:var(--grn);}
+.mnum{width:32px;height:32px;background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:.78em;font-weight:700;font-family:var(--mono);flex-shrink:0;color:var(--txm);transition:all .2s;}
+.mwrap.done .mnum{background:var(--grn-d);border-color:var(--grn);color:var(--grn);}
+.mbody{flex:1;}.mtit{font-size:.93em;font-weight:700;margin-bottom:4px;}
+.mdesc{font-size:.82em;color:var(--txm);line-height:1.55;margin-bottom:9px;}
+.mtags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;}
+.mtag{padding:3px 9px;border-radius:50px;font-size:.7em;font-weight:600;border:1px solid;}
+.tt{background:var(--cyn-d);color:var(--cyn);border-color:var(--cyn);}
+.tx2{background:var(--ylw-d);color:var(--ylw);border-color:var(--ylw);}
+.tg{background:var(--grn-d);color:var(--grn);border-color:var(--grn);}
+.to2{background:var(--org-d);color:var(--org);border-color:var(--org);}
+.mck{width:24px;height:24px;border:1.5px solid var(--bdr);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:3px;font-size:.85em;transition:all .2s;}
+.mwrap.done .mck{background:var(--grn);border-color:var(--grn);color:#000;font-weight:900;}
+.macts{display:flex;gap:8px;flex-wrap:wrap;}
+.bdone{padding:8px 18px;border-radius:var(--rs);background:var(--grn-d);color:var(--grn);border:1px solid var(--grn);font-size:.81em;font-weight:700;cursor:pointer;font-family:var(--sans);transition:all .15s;}
+.bdone:hover{background:var(--grn);color:#000;}
+.bsol{padding:8px 18px;border-radius:var(--rs);background:var(--surf2);color:var(--ylw);border:1px solid rgba(227,179,65,.3);font-size:.81em;font-weight:700;cursor:pointer;font-family:var(--sans);transition:all .15s;}
+.bsol:hover{border-color:var(--ylw);background:var(--ylw-d);}
+.solpanel{border-top:1px solid var(--bdr);background:#010409;display:none;}
+.solpanel.open{display:block;animation:sld .25s ease;}
+@keyframes sld{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+.solhd{background:rgba(227,179,65,.07);border-bottom:1px solid rgba(227,179,65,.2);padding:11px 18px;display:flex;align-items:center;gap:10px;}
+.solhdt{font-size:.83em;font-weight:700;color:var(--ylw);}
+.solhdw{font-size:.74em;color:var(--org);margin-left:auto;}
+.solbody{padding:18px;}
+.sstep{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--bdr);}
+.sstep:last-child{border-bottom:none;padding-bottom:0;}
+.ssn{width:28px;height:28px;border-radius:50%;background:var(--ylw-d);border:1.5px solid var(--ylw);color:var(--ylw);display:flex;align-items:center;justify-content:center;font-size:.72em;font-weight:700;flex-shrink:0;font-family:var(--mono);margin-top:2px;}
+.ssc{flex:1;}.sstt{font-size:.88em;font-weight:700;color:var(--tx);margin-bottom:4px;}
+.ssd{font-size:.81em;color:var(--txm);line-height:1.55;margin-bottom:7px;}
+.expected{background:#0d1117;border:1px solid var(--grn);border-radius:var(--rs);padding:10px 13px;font-family:var(--mono);font-size:.78em;color:var(--grn);white-space:pre;overflow-x:auto;margin-top:7px;line-height:1.7;}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--surf);border:1px solid var(--grn);border-radius:var(--r);padding:13px 17px;z-index:999;transform:translateY(70px);opacity:0;transition:all .3s cubic-bezier(.22,1,.36,1);pointer-events:none;max-width:270px;box-shadow:0 8px 24px rgba(0,0,0,.5);}
+.toast.show{transform:translateY(0);opacity:1;}
+.ttt{color:var(--grn);font-weight:700;font-size:.84em;margin-bottom:3px;}
+.ttm{color:var(--txm);font-size:.78em;}
+c{color:var(--cyn);font-family:var(--mono);font-size:.9em;}hl{color:var(--grn);}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="tbi">
+    <span class="tbadge">S03 MapReduce</span>
+    <div class="tbtl"><h1>MapReduce &mdash; Programacao Distribuida</h1><p>Infraestrutura para Big Data &middot; Ciencia de Dados &middot; FATec Ourinhos 2026</p></div>
+    <div class="xpw"><span class="xpl">&#9889; XP</span><div class="xpt"><div class="xpf" id="xpFill"></div></div><span class="xpn" id="xpNum">0/300</span></div>
+  </div>
+</header>
+<div class="nav">
+  <a href="semana02.html" class="nb nb-g">&#8592; S02 HDFS</a>
+  <a href="../index.html" class="nb nb-g">&#127968; Indice</a>
+  <a href="../guias/semana03_guia.html" class="nb nb-grn">&#128218; Guia</a>
+  <a href="semana04.html" class="nb nb-grn mlA">S04 Spark &#8594;</a>
+</div>
+<div class="wrap">
+<aside class="sbar">
+  <div class="sc">
+    <h3>Progresso</h3>
+    <div class="pi"><div class="pd active" id="pd0"></div><span class="pt">Quiz 1 &mdash; Conceito</span></div>
+    <div class="pi"><div class="pd" id="pd1"></div><span class="pt">Quiz 2 &mdash; Mapper</span></div>
+    <div class="pi"><div class="pd" id="pd2"></div><span class="pt">Quiz 3 &mdash; Pipeline</span></div>
+    <div class="pi"><div class="pd" id="pd3"></div><span class="pt">Missao 1 &mdash; WordCount</span></div>
+    <div class="pi"><div class="pd" id="pd4"></div><span class="pt">Missao 2 &mdash; LogAnalyzer</span></div>
+  </div>
+  <div class="sc">
+    <h3>XP Total</h3>
+    <div class="xpbig"><div class="xpbign" id="sXP">0</div><div class="xpbigl">de 300 XP</div></div>
+    <div class="pbt"><div class="pbf" id="sPB" style="width:0%"></div></div>
+  </div>
+  <div class="sc">
+    <h3>Ambientes</h3>
+    <div class="envl">
+      <a href="https://shell.cloud.google.com/" target="_blank">&#9729; Google Cloud Shell</a>
+      <a href="https://colab.research.google.com/" target="_blank">&#128300; Google Colab</a>
+      <a href="#ubuntu">&#128039; Ubuntu Desktop</a>
+    </div>
+  </div>
+  <div class="sc">
+    <h3>Nesta aula</h3>
+    <div class="sblinks">
+      <a href="#conceito">&#8594; Conceito MapReduce</a>
+      <a href="#codigo">&#8594; Codigo explicado</a>
+      <a href="#ambiente">&#8594; Configurar ambiente</a>
+      <a href="#missao1">&#8594; Missao 1: WordCount</a>
+      <a href="#missao2">&#8594; Missao 2: LogAnalyzer</a>
+    </div>
+  </div>
+</aside>
+<main>
+<div class="hero">
+  <div class="hlbl">// SEMANA 03 &middot; PARADIGMA DISTRIBUIDO</div>
+  <h2>MapReduce: <em>dividir para conquistar</em></h2>
+  <p>Como processar 1 terabyte contando palavras em segundos? Dividindo entre centenas de maquinas em paralelo. Hoje voce vai implementar isso &mdash; do zero, passo a passo, no Cloud Shell ou Colab.</p>
+  <div class="chips">
+    <span class="chip cg">&#9889; 300 XP</span>
+    <span class="chip cc">&#9729; Google Cloud Shell</span>
+    <span class="chip co">&#128300; Google Colab</span>
+    <span class="chip cp">&#128039; Ubuntu Desktop</span>
+    <span class="chip cy">&#9200; 90 min</span>
+  </div>
+</div>
+<div class="badges">
+  <div class="badge locked" id="b0"><div class="bi">&#128506;</div><div class="bn">Mapper</div><div class="bx">+60 XP</div></div>
+  <div class="badge locked" id="b1"><div class="bi">&#128260;</div><div class="bn">Shuffler</div><div class="bx">+60 XP</div></div>
+  <div class="badge locked" id="b2"><div class="bi">&#128202;</div><div class="bn">Pipeline</div><div class="bx">+80 XP</div></div>
+  <div class="badge locked" id="b3"><div class="bi">&#9881;</div><div class="bn">WordCount</div><div class="bx">+80 XP</div></div>
+  <div class="badge locked" id="b4"><div class="bi">&#128269;</div><div class="bn">LogAnalyzer</div><div class="bx">+100 XP</div></div>
+  <div class="badge locked" id="b5"><div class="bi">&#127942;</div><div class="bn">MR Master</div><div class="bx">BONUS</div></div>
+</div>
+<!-- CONCEITO -->
+<div class="sec" id="conceito">
+  <div class="sh"><span class="shi">&#128161;</span><span class="sht">O que e MapReduce &mdash; entenda em 2 minutos</span></div>
+  <div class="sb">
+    <p style="color:var(--txm);font-size:.88em;margin-bottom:12px;">MapReduce e um modelo de programacao criado pelo Google em 2004 para processar grandes volumes de dados em paralelo em centenas de maquinas. O Hadoop implementa esse modelo &mdash; voce escreve apenas duas funcoes (Map e Reduce) e o framework cuida do resto: dividir os dados, distribuir para os nos, coletar os resultados.</p>
+    <div class="box-info">&#128172; <strong>Analogia:</strong> Contar palavras em 1.000 livros. Voce distribui 50 livros para 20 amigos (Map). Cada amigo conta palavras e entrega uma lista: "hadoop: 30, spark: 15...". Voce soma as contagens de todos (Reduce). Pronto &mdash; isso e MapReduce.</div>
+    <div style="margin-top:18px;">
+      <p style="font-size:.79em;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">Pipeline completo do MapReduce:</p>
+      <div class="pipe">
+        <div class="ps m"><div class="pic">&#128194;</div><div class="pn m">INPUT</div><div class="pdc">HDFS divide o arquivo em blocos e distribui para os nos</div></div>
+        <div class="pa">&#8594;</div>
+        <div class="ps m"><div class="pic">&#128506;</div><div class="pn m">MAP</div><div class="pdc">Cada Mapper processa um bloco e emite pares (chave, valor)</div></div>
+        <div class="pa">&#8594;</div>
+        <div class="ps s"><div class="pic">&#128260;</div><div class="pn s">SHUFFLE &amp; SORT</div><div class="pdc">Agrupa valores com mesma chave &mdash; automatico!</div></div>
+        <div class="pa">&#8594;</div>
+        <div class="ps r"><div class="pic">&#9881;</div><div class="pn r">REDUCE</div><div class="pdc">Processa cada grupo e gera o resultado final</div></div>
+        <div class="pa">&#8594;</div>
+        <div class="ps r"><div class="pic">&#128190;</div><div class="pn r">OUTPUT</div><div class="pdc">Resultado salvo no HDFS ou disco</div></div>
+      </div>
+    </div>
+    <div class="quiz">
+      <div class="qq">&#129504; Quiz 1 &mdash; Qual fase e responsavel por <hl>agrupar todos os valores com a mesma chave</hl> antes de envia-los ao Reducer?</div>
+      <div class="qopts">
+        <button class="qo" onclick="quiz('q1',this,'wrong')">A) Map &mdash; o Mapper ja organiza por chave antes de emitir</button>
+        <button class="qo" onclick="quiz('q1',this,'correct')">B) Shuffle &amp; Sort &mdash; fase intermediaria automatica do framework</button>
+        <button class="qo" onclick="quiz('q1',this,'wrong')">C) Reduce &mdash; o proprio Reducer agrupa antes de processar</button>
+        <button class="qo" onclick="quiz('q1',this,'wrong')">D) InputFormat &mdash; fase de leitura do HDFS</button>
+      </div>
+      <div class="qfb ok" id="q1ok">&#9989; Correto! +60 XP. O <strong>Shuffle &amp; Sort</strong> e automatico &mdash; o Hadoop faz isso sem voce programar nada. Garante que todos os ("hadoop", 1) de diferentes Mappers chegam ao mesmo Reducer.</div>
+      <div class="qfb fail" id="q1fail">&#10060; O <strong>Shuffle &amp; Sort</strong> e a fase intermediaria automatica. O Mapper emite pares sem ordem; o Shuffle garante que a mesma chave vai sempre para o mesmo Reducer.</div>
+    </div>
+  </div>
+</div>
+<!-- CODIGO EXPLICADO -->
+<div class="sec" id="codigo">
+  <div class="sh"><span class="shi">&#128300;</span><span class="sht">WordCount &mdash; codigo Python explicado linha a linha</span><span class="shb" style="color:var(--org);border-color:var(--org);background:var(--org-d);">Python + mrjob</span></div>
+  <div class="sb">
+    <p style="color:var(--txm);font-size:.87em;margin-bottom:10px;">Usaremos <strong style="color:var(--tx);">Python + mrjob</strong> &mdash; uma biblioteca que permite escrever MapReduce em Python e rodar no Colab ou Cloud Shell sem instalar Hadoop. Mesma logica, sem burocracia de Java.</p>
+    <div class="box-info">&#128204; <strong>Por que mrjob e nao Java?</strong> MapReduce em Java exige 80+ linhas de codigo repetitivo. Em Python com mrjob sao 12 linhas &mdash; voce foca no conceito que importa.</div>
+    <div class="cw">
+      <div class="cb2">
+        <div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div>
+        <span class="clbl">wordcount.py &mdash; codigo completo comentado</span>
+        <button class="cpybtn" onclick="copyEl('codewc',this)">&#128203; copiar</button>
+      </div>
+      <pre class="code" id="codewc"><span class="kw">from</span> mrjob.job <span class="kw">import</span> MRJob   <span class="cm"># importa a biblioteca mrjob</span>
+<span class="kw">import</span> re                        <span class="cm"># para extrair palavras sem pontuacao</span>
+
+<span class="kw">class</span> <span class="cl">WordCount</span>(MRJob):
+
+    <span class="cm"># ---------------------------------------------------
+    # FASE MAP
+    # Chamada uma vez para cada LINHA do arquivo
+    # _ = numero da linha (ignoramos, nao precisamos)
+    # line = conteudo da linha ex: "big data big"
+    # Emite: par (palavra, 1) para cada palavra
+    # ---------------------------------------------------</span>
+    <span class="kw">def</span> <span class="fn">mapper</span>(self, _, line):
+        palavras = re.<span class="fn">findall</span>(<span class="st">r&#39;\w+&#39;</span>, line.<span class="fn">lower</span>())
+        <span class="kw">for</span> palavra <span class="kw">in</span> palavras:
+            <span class="kw">yield</span> palavra, <span class="nu">1</span>    <span class="cm"># emite ("hadoop",1), ("spark",1), ("big",1)...</span>
+
+    <span class="cm"># ---------------------------------------------------
+    # FASE REDUCE
+    # O Shuffle JA agrupou: ("big", [1, 1, 1])
+    # palavra = chave (ex: "big")
+    # contagens = iterador de valores [1, 1, 1]
+    # Emite: (palavra, total)
+    # ---------------------------------------------------</span>
+    <span class="kw">def</span> <span class="fn">reducer</span>(self, palavra, contagens):
+        <span class="kw">yield</span> palavra, <span class="fn">sum</span>(contagens)   <span class="cm"># ex: sum([1,1,1]) = 3</span>
+
+<span class="kw">if</span> __name__ == <span class="st">'__main__'</span>:
+    WordCount.<span class="fn">run</span>()   <span class="cm"># executa o job MapReduce</span></pre>
+    </div>
+    <p style="font-size:.79em;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 8px;">O que acontece internamente com "big data big":</p>
+    <div class="term">
+      <div class="termb"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="terml">trace de execucao passo a passo</span></div>
+      <pre class="trm"><span class="to">&#128194; INPUT:           linha = "big data big"
+</span>
+<span class="to">&#128506; MAPPER emite:    ("big",  1)   &lt;-- 1a ocorrencia
+                   ("data", 1)
+                   ("big",  1)   &lt;-- 2a ocorrencia (nao soma, so emite!)
+</span>
+<span class="to">&#128260; SHUFFLE agrupa:  "big"  --&gt; [1, 1]    (automatico, voce nao programa isso)
+                   "data" --&gt; [1]
+</span>
+<span class="to">&#9881; REDUCER soma:   "big"  --&gt; sum([1, 1]) = 2
+                   "data" --&gt; sum([1])    = 1
+</span>
+<span class="tok">&#128190; OUTPUT:  "big"   2
+         "data"  1</span></pre>
+    </div>
+    <div class="quiz">
+      <div class="qq">&#129504; Quiz 2 &mdash; O Mapper recebe a linha <c>"hadoop spark hadoop"</c>. Quantas vezes ele emite a chave <c>"hadoop"</c>?</div>
+      <div class="qopts">
+        <button class="qo" onclick="quiz('q2',this,'wrong')">A) 1 vez &mdash; o Mapper e inteligente e ja soma duplicatas</button>
+        <button class="qo" onclick="quiz('q2',this,'correct')">B) 2 vezes &mdash; emite ("hadoop", 1) para CADA ocorrencia encontrada</button>
+        <button class="qo" onclick="quiz('q2',this,'wrong')">C) 3 vezes &mdash; conta todas as palavras da linha</button>
+        <button class="qo" onclick="quiz('q2',this,'wrong')">D) Nenhuma &mdash; o Mapper ignora palavras repetidas</button>
+      </div>
+      <div class="qfb ok" id="q2ok">&#9989; +60 XP! O Mapper nao e "inteligente" &mdash; ele emite (palavra, 1) para CADA palavra. "hadoop spark hadoop" vira 3 pares. O Shuffle e quem vai agrupar. Isso e o que permite o paralelismo: cada no processa sem depender dos outros.</div>
+      <div class="qfb fail" id="q2fail">&#10060; O Mapper emite 1 par por palavra encontrada, sem agrupar. "hadoop spark hadoop" vira ("hadoop",1), ("spark",1), ("hadoop",1). O Shuffle faz o agrupamento posterior.</div>
+    </div>
+  </div>
+</div>
+<!-- AMBIENTE -->
+<div class="sec" id="ambiente">
+  <div class="sh"><span class="shi">&#9881;</span><span class="sht">Configurar o ambiente &mdash; escolha sua plataforma</span></div>
+  <div class="sb">
+    <div class="box-warn">&#9888; <strong>Faca este passo ANTES das missoes!</strong> Escolha apenas UM ambiente. Recomendamos o <strong>Google Cloud Shell</strong> &mdash; ja e Linux completo no navegador, sem instalar nada no computador.</div>
+    <div class="etabs">
+      <button class="etab active" id="tab-gcs" onclick="switchEnv('gcs')">&#9729; Cloud Shell</button>
+      <button class="etab" id="tab-colab" onclick="switchEnv('colab')">&#128300; Colab</button>
+      <button class="etab" id="tab-ubu" onclick="switchEnv('ubu')">&#128039; Ubuntu</button>
+    </div>
+
+    <div class="epanel active" id="env-gcs">
+      <div class="box-info">Acesse: <strong><a href="https://shell.cloud.google.com/" target="_blank" style="color:var(--cyn);">shell.cloud.google.com</a></strong> &mdash; terminal Linux gratuito no navegador, sem instalar nada.</div>
+      <div class="steps">
+        <div class="step"><div class="snum">1</div><div class="scont">
+          <div class="stit">Abra o Google Cloud Shell no navegador</div>
+          <div class="sdesc">Acesse <strong>shell.cloud.google.com</strong>. Faca login com sua conta Google. Um terminal Linux vai aparecer na tela &mdash; e um Ubuntu completo rodando na nuvem do Google, de graca.</div>
+          <div class="box-info">&#128161; Se aparecer a mensagem "Authorize Cloud Shell", clique em <strong>Authorize</strong> e aguarde ~30 segundos. Voce vai ver um prompt verde com seu usuario@cloudshell.</div>
+        </div></div>
+        <div class="step"><div class="snum">2</div><div class="scont">
+          <div class="stit">Verifique o Python e instale o mrjob</div>
+          <div class="sdesc">Cole cada linha no terminal e pressione <strong>Enter</strong>. Aguarde cada comando terminar antes do proximo:</div>
+          <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">Cloud Shell</span><button class="cpybtn" onclick="copyEl('cs1',this)">&#128203; copiar</button></div>
+          <pre class="code" id="cs1"><span class="tp">$</span> <span class="tc">python3 --version</span>         <span class="cm"># deve mostrar Python 3.x</span>
+<span class="tp">$</span> <span class="tc">pip3 install mrjob</span>         <span class="cm"># instala o mrjob (~30 segundos)</span>
+<span class="tp">$</span> <span class="tc">python3 -c "import mrjob; print('mrjob OK')"</span></pre></div>
+          <div class="box-ok">&#9989; Deve imprimir "mrjob OK". Se der erro de permissao: <c>pip3 install mrjob --user</c></div>
+        </div></div>
+        <div class="step"><div class="snum">3</div><div class="scont">
+          <div class="stit">Crie a pasta de trabalho e o arquivo de texto</div>
+          <div class="sdesc">Vamos organizar tudo em uma pasta e criar um arquivo de texto para testar:</div>
+          <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">Cloud Shell</span><button class="cpybtn" onclick="copyEl('cs2',this)">&#128203; copiar</button></div>
+          <pre class="code" id="cs2"><span class="tp">$</span> <span class="tc">mkdir -p ~/bigdata/semana03 &amp;&amp; cd ~/bigdata/semana03</span>
+<span class="tp">$</span> <span class="tc">cat &gt; texto.txt &lt;&lt; 'EOF'</span>
+big data e o futuro da tecnologia
+hadoop processa big data em clusters
+spark e mais rapido que hadoop na memoria
+big data com spark hadoop e python
+machine learning usa big data para aprender
+EOF
+<span class="tp">$</span> <span class="tc">cat texto.txt</span>    <span class="cm"># confirme as 5 linhas</span></pre></div>
+          <div class="box-ok">&#9989; O <c>cat texto.txt</c> deve mostrar as 5 linhas que voce escreveu.</div>
+        </div></div>
+        <div class="step"><div class="snum">4</div><div class="scont">
+          <div class="stit">Crie o arquivo wordcount.py com o editor nano</div>
+          <div class="sdesc">O <strong>nano</strong> e um editor de texto que roda dentro do terminal:</div>
+          <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">Cloud Shell</span><button class="cpybtn" onclick="copyEl('cs3',this)">&#128203; copiar</button></div>
+          <pre class="code" id="cs3"><span class="tp">$</span> <span class="tc">nano wordcount.py</span></pre></div>
+          <div class="box-info">&#128161; O nano vai abrir. Cole o codigo do WordCount acima (botao "copiar" no bloco Python). Para salvar: <strong>Ctrl+O</strong> &rarr; <strong>Enter</strong> &rarr; <strong>Ctrl+X</strong> para sair.</div>
+          <div class="box-ok">&#9989; Confirme: <c>ls -la wordcount.py</c> deve listar o arquivo com tamanho &gt; 0 bytes.</div>
+        </div></div>
+        <div class="step"><div class="snum">5</div><div class="scont">
+          <div class="stit">Execute o WordCount</div>
+          <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">Cloud Shell</span><button class="cpybtn" onclick="copyEl('cs4',this)">&#128203; copiar</button></div>
+          <pre class="code" id="cs4"><span class="tp">$</span> <span class="tc">python3 wordcount.py texto.txt 2&gt;/dev/null</span></pre></div>
+          <div class="box-info">&#128161; O <c>2&gt;/dev/null</c> oculta mensagens internas do mrjob deixando a saida limpa. Sem ele funciona tambem, so aparece mais texto.</div>
+          <div class="box-ok">&#9989; Voce deve ver palavras com contagens. "big" deve aparecer com valor 4, "hadoop" com 3.</div>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="epanel" id="env-colab">
+      <div class="box-info">Acesse: <strong><a href="https://colab.research.google.com/" target="_blank" style="color:var(--cyn);">colab.research.google.com</a></strong> &rarr; <strong>"+ Novo notebook"</strong> &rarr; renomeie para <strong>Semana03_MapReduce</strong> clicando no titulo</div>
+      <div class="steps">
+        <div class="step"><div class="snum">1</div><div class="scont">
+          <div class="stit">Celula 1 &mdash; Instale o mrjob</div>
+          <div class="sdesc">Clique na primeira celula, cole o codigo e pressione <strong>Shift+Enter</strong> para executar:</div>
+          <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">Colab &mdash; Celula 1</span><button class="cpybtn" onclick="copyEl('co1',this)">&#128203; copiar</button></div>
+          <pre class="code" id="co1">!pip install mrjob -q
+print("mrjob instalado com sucesso!")</pre></div>
+          <div class="box-ok">&#9989; Deve aparecer "mrjob instalado com sucesso!" abaixo da celula.</div>
+        </div></div>
+        <div class="step"><div class="snum">2</div><div class="scont">
+          <div class="stit">Celula 2 &mdash; Crie o arquivo de texto</div>
+          <div class="sdesc">Adicione nova celula com o botao "+ Codigo" e cole:</div>
+          <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">Colab &mdash; Celula 2</span><button class="cpybtn" onclick="copyEl('co2',this)">&#128203; copiar</button></div>
+          <pre class="code" id="co2">texto = """big data e o futuro da tecnologia
+hadoop processa big data em clusters
+spark e mais rapido que hadoop na memoria
+big data com spark hadoop e python
+machine learning usa big data para aprender"""
+
+with open("texto.txt", "w") as f:
+    f.write(texto)
+
+print("Arquivo criado! Conteudo:")
+print(open("texto.txt").read())</pre></div>
+        </div></div>
+        <div class="step"><div class="snum">3</div><div class="scont">
+          <div class="stit">Celula 3 &mdash; Salve o codigo WordCount em wordcount.py</div>
+          <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">Colab &mdash; Celula 3</span><button class="cpybtn" onclick="copyEl('co3',this)">&#128203; copiar</button></div>
+          <pre class="code" id="co3">codigo = '''from mrjob.job import MRJob
+import re
+
+class WordCount(MRJob):
+    def mapper(self, _, line):
+        palavras = re.findall(r"\b\w+\b", line.lower())
+        for palavra in palavras:
+            yield palavra, 1
+
+    def reducer(self, palavra, contagens):
+        yield palavra, sum(contagens)
+
+if __name__ == "__main__":
+    WordCount.run()
+'''
+
+with open("wordcount.py", "w") as f:
+    f.write(codigo)
+print("wordcount.py salvo!")</pre></div>
+        </div></div>
+        <div class="step"><div class="snum">4</div><div class="scont">
+          <div class="stit">Celula 4 &mdash; Execute o WordCount</div>
+          <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">Colab &mdash; Celula 4</span><button class="cpybtn" onclick="copyEl('co4',this)">&#128203; copiar</button></div>
+          <pre class="code" id="co4">!python3 wordcount.py texto.txt 2&gt;/dev/null</pre></div>
+          <div class="box-ok">&#9989; Voce vera cada palavra com sua contagem. Tire um print para entregar!</div>
+        </div></div>
+        <div class="step"><div class="snum">5</div><div class="scont">
+          <div class="stit">Celula 5 &mdash; Download do resultado para entregar</div>
+          <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">Colab &mdash; Celula 5</span><button class="cpybtn" onclick="copyEl('co5',this)">&#128203; copiar</button></div>
+          <pre class="code" id="co5">!python3 wordcount.py texto.txt 2&gt;/dev/null &gt; resultado.txt
+print(open("resultado.txt").read())
+from google.colab import files
+files.download("resultado.txt")</pre></div>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="epanel" id="env-ubu" id="ubuntu">
+      <div class="box-info">&#128039; Terminal Ubuntu: pressione <strong>Ctrl+Alt+T</strong> ou procure "Terminal" no menu de aplicativos.</div>
+      <div class="steps">
+        <div class="step"><div class="snum">1</div><div class="scont">
+          <div class="stit">Abra o Terminal</div>
+          <div class="sdesc">Pressione <strong>Ctrl+Alt+T</strong>. Uma janela preta vai abrir &mdash; e o terminal Linux. Mantenha-a aberta durante toda a aula.</div>
+          <div class="box-warn">&#9888; Se aparecer "Permission denied", adicione <c>sudo</c> antes do comando que deu erro.</div>
+        </div></div>
+        <div class="step"><div class="snum">2</div><div class="scont">
+          <div class="stit">Instale o pip e o mrjob</div>
+          <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">Ubuntu Terminal</span><button class="cpybtn" onclick="copyEl('ub1',this)">&#128203; copiar</button></div>
+          <pre class="code" id="ub1"><span class="tp">$</span> <span class="tc">sudo apt update</span>                  <span class="cm"># atualiza lista de pacotes, aguarde ~1 min</span>
+<span class="tp">$</span> <span class="tc">sudo apt install python3-pip -y</span>  <span class="cm"># instala o pip</span>
+<span class="tp">$</span> <span class="tc">pip3 install mrjob</span>               <span class="cm"># instala mrjob</span>
+<span class="tp">$</span> <span class="tc">python3 -c "import mrjob; print('OK')"</span></pre></div>
+          <div class="box-ok">&#9989; Deve imprimir "OK".</div>
+        </div></div>
+        <div class="step"><div class="snum">3</div><div class="scont">
+          <div class="stit">Crie a pasta e o arquivo de texto</div>
+          <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">Ubuntu Terminal</span><button class="cpybtn" onclick="copyEl('ub2',this)">&#128203; copiar</button></div>
+          <pre class="code" id="ub2"><span class="tp">$</span> <span class="tc">mkdir -p ~/bigdata/semana03 &amp;&amp; cd ~/bigdata/semana03</span>
+<span class="tp">$</span> <span class="tc">cat &gt; texto.txt &lt;&lt; 'EOF'</span>
+big data e o futuro da tecnologia
+hadoop processa big data em clusters
+spark e mais rapido que hadoop na memoria
+big data com spark hadoop e python
+machine learning usa big data para aprender
+EOF
+<span class="tp">$</span> <span class="tc">cat texto.txt</span></pre></div>
+        </div></div>
+        <div class="step"><div class="snum">4</div><div class="scont">
+          <div class="stit">Crie o wordcount.py no gedit (editor grafico)</div>
+          <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">Ubuntu Terminal</span><button class="cpybtn" onclick="copyEl('ub3',this)">&#128203; copiar</button></div>
+          <pre class="code" id="ub3"><span class="tp">$</span> <span class="tc">gedit wordcount.py &amp;</span>   <span class="cm"># abre editor grafico</span>
+<span class="cm"># Cole o codigo, salve com Ctrl+S, feche o gedit</span>
+<span class="cm"># Se preferir terminal: nano wordcount.py</span></pre></div>
+        </div></div>
+        <div class="step"><div class="snum">5</div><div class="scont">
+          <div class="stit">Execute e salve o resultado</div>
+          <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">Ubuntu Terminal</span><button class="cpybtn" onclick="copyEl('ub4',this)">&#128203; copiar</button></div>
+          <pre class="code" id="ub4"><span class="tp">$</span> <span class="tc">python3 wordcount.py texto.txt 2&gt;/dev/null</span>
+<span class="cm"># Salvar para entrega:</span>
+<span class="tp">$</span> <span class="tc">python3 wordcount.py texto.txt 2&gt;/dev/null &gt; resultado.txt</span>
+<span class="tp">$</span> <span class="tc">cat resultado.txt</span></pre></div>
+          <div class="box-ok">&#9989; resultado.txt tem a saida para entregar ao professor.</div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- QUIZ 3 -->
+<div class="sec">
+  <div class="sh"><span class="shi">&#129513;</span><span class="sht">Quiz 3 &mdash; Checagem antes das missoes</span></div>
+  <div class="sb">
+    <div class="quiz" style="margin:0;">
+      <div class="qq">&#129504; Quiz 3 &mdash; No arquivo <c>texto.txt</c> criado acima com 5 linhas, qual a contagem da palavra <c>"big"</c> apos executar o WordCount?</div>
+      <div class="qopts">
+        <button class="qo" onclick="quiz('q3',this,'wrong')">A) 1 &mdash; aparece apenas na primeira linha</button>
+        <button class="qo" onclick="quiz('q3',this,'wrong')">B) 2 &mdash; aparece em duas linhas diferentes</button>
+        <button class="qo" onclick="quiz('q3',this,'wrong')">C) 3 &mdash; aparece em tres linhas</button>
+        <button class="qo" onclick="quiz('q3',this,'correct')">D) 4 &mdash; aparece nas linhas 1, 2, 4 e 5 ("big data" em quatro linhas)</button>
+      </div>
+      <div class="qfb ok" id="q3ok">&#9989; +80 XP! "big" aparece 4 vezes: linha 1 ("big data e..."), linha 2 ("hadoop processa big..."), linha 4 ("big data com..."), linha 5 ("usa big data..."). Execute e confirme voce mesmo!</div>
+      <div class="qfb fail" id="q3fail">&#10060; Conte no texto: linha 1 (big), linha 2 (big), linha 4 (big), linha 5 (big). Sao 4 ocorrencias. Execute o WordCount para confirmar!</div>
+    </div>
+  </div>
+</div>
+<!-- MISSOES -->
+<div class="sec" id="missao1">
+  <div class="sh"><span class="shi">&#9876;</span><span class="sht">Missoes Praticas &mdash; Complete, veja a solucao, registre o XP</span></div>
+  <div class="sb" style="padding-bottom:0;">
+
+    <div class="mwrap" id="mw1">
+      <div class="mhead">
+        <div class="mnum" id="mn1">01</div>
+        <div class="mbody">
+          <div class="mtit">&#9881; Missao 1 &mdash; WordCount em um texto real (10+ linhas)</div>
+          <div class="mdesc">Use o WordCount para contar palavras em um arquivo com <strong>pelo menos 10 linhas</strong> de texto. Pode ser qualquer coisa: noticia de jornal, letra de musica, descricao de produto, qualquer texto que voce escolher.<br><br><strong>Entrega:</strong> print do terminal ou arquivo resultado.txt com a contagem de palavras.</div>
+          <div class="mtags">
+            <span class="mtag tt">&#9200; 20 min</span>
+            <span class="mtag tx2">+80 XP</span>
+            <span class="mtag tg">&#9679; Iniciante</span>
+          </div>
+          <div class="macts">
+            <button class="bdone" onclick="completeMission('mw1','b3',80,'Missao 1 concluida!','WordCount executado com sucesso!')">&#10003; Concluida</button>
+            <button class="bsol" id="bsol1" onclick="toggleSol('sol1','bsol1')">&#128161; Ver solucao passo a passo</button>
+          </div>
+        </div>
+        <div class="mck" id="mck1">&#9675;</div>
+      </div>
+      <div class="solpanel" id="sol1">
+        <div class="solhd"><span>&#128161;</span><span class="solhdt">SOLUCAO COMPLETA &mdash; Missao 1</span><span class="solhdw">&#9888; Tente antes de ver!</span></div>
+        <div class="solbody">
+          <div class="sstep"><div class="ssn">1</div><div class="ssc">
+            <div class="sstt">Crie um arquivo de texto com 10+ linhas</div>
+            <div class="ssd">Voce pode usar qualquer texto. Exemplo pronto sobre tecnologia (10 linhas):</div>
+            <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">Cloud Shell ou Ubuntu</span><button class="cpybtn" onclick="copyEl('s1a',this)">&#128203; copiar</button></div>
+            <pre class="code" id="s1a"><span class="tp">$</span> <span class="tc">cat &gt; meu_texto.txt &lt;&lt; 'EOF'</span>
+python e uma linguagem de programacao usada em ciencia de dados
+hadoop e um framework para processamento distribuido de big data
+spark e mais rapido que hadoop porque usa memoria ram
+mapreduce e um paradigma de programacao paralela e distribuida
+ciencia de dados usa python spark e hadoop juntos em producao
+redes neurais artificiais sao usadas em inteligencia artificial
+machine learning usa algoritmos para aprender com dados historicos
+big data tem caracteristicas de volume variedade e velocidade
+nuvem computacional permite escalar sistemas de big data facilmente
+analise de dados gera insights valiosos para tomada de decisao
+EOF
+<span class="tp">$</span> <span class="tc">wc -l meu_texto.txt</span>   <span class="cm"># confirma: deve mostrar 10</span></pre></div>
+            <div class="box-info">&#128161; <strong>No Colab:</strong> use <c>with open("meu_texto.txt","w") as f: f.write(texto)</c> onde texto e uma variavel com as 10 linhas como string multi-linha.</div>
+          </div></div>
+          <div class="sstep"><div class="ssn">2</div><div class="ssc">
+            <div class="sstt">Execute o WordCount no novo arquivo</div>
+            <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">terminal ou colab</span><button class="cpybtn" onclick="copyEl('s1b',this)">&#128203; copiar</button></div>
+            <pre class="code" id="s1b"><span class="tp">$</span> <span class="tc">python3 wordcount.py meu_texto.txt 2&gt;/dev/null</span>
+<span class="cm"># Salvar resultado para entregar ao professor:</span>
+<span class="tp">$</span> <span class="tc">python3 wordcount.py meu_texto.txt 2&gt;/dev/null &gt; resultado_m1.txt</span>
+<span class="tp">$</span> <span class="tc">cat resultado_m1.txt</span></pre></div>
+          </div></div>
+          <div class="sstep"><div class="ssn">3</div><div class="ssc">
+            <div class="sstt">Resultado esperado (palavras mais frequentes do texto de exemplo)</div>
+            <div class="ssd">Com o texto de 10 linhas acima, as palavras mais comuns devem ser:</div>
+            <div class="expected">"dados"    4
+"de"       4
+"e"        4
+"hadoop"   3
+"big"      3
+"spark"    3
+"para"     3
+"python"   2
+"usa"      2</div>
+          </div></div>
+          <div class="sstep"><div class="ssn">4</div><div class="ssc">
+            <div class="sstt">BONUS: ver as 10 palavras mais frequentes em ordem decrescente</div>
+            <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">pipeline com sort</span><button class="cpybtn" onclick="copyEl('s1c',this)">&#128203; copiar</button></div>
+            <pre class="code" id="s1c"><span class="cm"># ordena por frequencia, mais comum primeiro, mostra top 10</span>
+<span class="tp">$</span> <span class="tc">python3 wordcount.py meu_texto.txt 2&gt;/dev/null | sort -t$'\t' -k2 -rn | head -10</span></pre></div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mwrap" id="mw2" style="margin-top:4px;">
+      <div class="mhead" id="missao2">
+        <div class="mnum" id="mn2">02</div>
+        <div class="mbody">
+          <div class="mtit">&#128202; Missao 2 &mdash; LogAnalyzer: conte erros por tipo</div>
+          <div class="mdesc">Crie um <strong>novo arquivo</strong> chamado <c>loganalyzer.py</c> que le um arquivo de logs e conta quantas linhas sao de cada nivel: <c>ERROR</c>, <c>WARN</c>, <c>INFO</c>.<br><br><strong>Formato do log:</strong> <c>2024-03-15 10:23:45 ERROR NullPointerException</c><br>O Mapper deve extrair a <strong>3a palavra de cada linha</strong> (indice 2 apos <c>split()</c>) como chave.<br><br><strong>Entrega:</strong> arquivo loganalyzer.py + print mostrando ERROR/WARN/INFO com contagens.</div>
+          <div class="mtags">
+            <span class="mtag tt">&#9200; 35 min</span>
+            <span class="mtag tx2">+100 XP</span>
+            <span class="mtag to2">&#9679; Intermediario</span>
+          </div>
+          <div class="macts">
+            <button class="bdone" onclick="completeMission('mw2','b4',100,'Missao 2 concluida!','LogAnalyzer funcionando!')">&#10003; Concluida</button>
+            <button class="bsol" id="bsol2" onclick="toggleSol('sol2','bsol2')">&#128161; Ver solucao passo a passo</button>
+          </div>
+        </div>
+        <div class="mck" id="mck2">&#9675;</div>
+      </div>
+      <div class="solpanel" id="sol2">
+        <div class="solhd"><span>&#128161;</span><span class="solhdt">SOLUCAO COMPLETA &mdash; Missao 2</span><span class="solhdw">&#9888; Tente antes de ver!</span></div>
+        <div class="solbody">
+          <div class="sstep"><div class="ssn">1</div><div class="ssc">
+            <div class="sstt">Entenda o formato do log antes de codar</div>
+            <div class="ssd">Cada linha tem campos separados por espaco. Nos queremos o indice 2 (contando do zero):</div>
+            <div class="term"><div class="termb"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="terml">estrutura de uma linha de log</span></div>
+            <pre class="trm"><span class="to">Linha:    "2024-03-15  10:23:45  ERROR  NullPointerException"</span>
+<span class="to">split():  ["2024-03-15","10:23:45","ERROR","NullPointerException"]</span>
+<span class="to">indices:        0            1        2              3</span>
+<span class="tok">                             ^--- queremos este! (indice 2)</span></pre></div>
+          </div></div>
+          <div class="sstep"><div class="ssn">2</div><div class="ssc">
+            <div class="sstt">Crie o arquivo de logs para testar</div>
+            <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">qualquer ambiente</span><button class="cpybtn" onclick="copyEl('s2a',this)">&#128203; copiar</button></div>
+            <pre class="code" id="s2a"><span class="tp">$</span> <span class="tc">cat &gt; app.log &lt;&lt; 'EOF'</span>
+2024-03-15 10:23:45 INFO Servidor iniciado na porta 8080
+2024-03-15 10:23:46 INFO Banco de dados conectado com sucesso
+2024-03-15 10:24:01 WARN Memoria acima de 80 por cento
+2024-03-15 10:24:15 ERROR NullPointerException em UserService
+2024-03-15 10:24:30 INFO Requisicao GET processada em 120ms
+2024-03-15 10:24:45 ERROR Timeout ao conectar com servico externo
+2024-03-15 10:25:00 WARN Resposta lenta detectada 3200ms
+2024-03-15 10:25:15 ERROR NullPointerException em OrderService
+2024-03-15 10:25:30 INFO Cache limpo com sucesso
+2024-03-15 10:25:45 WARN Conexao instavel detectada
+2024-03-15 10:26:00 ERROR Falha ao salvar no banco de dados
+2024-03-15 10:26:15 INFO Backup automatico concluido
+EOF</pre></div>
+          </div></div>
+          <div class="sstep"><div class="ssn">3</div><div class="ssc">
+            <div class="sstt">Crie o loganalyzer.py</div>
+            <div class="ssd">Logica: <c>split()</c> divide a linha por espaco, pegamos o indice 2 (ERROR/WARN/INFO), emitimos (nivel, 1):</div>
+            <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">loganalyzer.py &mdash; solucao completa</span><button class="cpybtn" onclick="copyEl('s2b',this)">&#128203; copiar</button></div>
+            <pre class="code" id="s2b"><span class="kw">from</span> mrjob.job <span class="kw">import</span> MRJob
+
+<span class="kw">class</span> <span class="cl">LogAnalyzer</span>(MRJob):
+
+    <span class="kw">def</span> <span class="fn">mapper</span>(self, _, line):
+        partes = line.<span class="fn">split</span>()           <span class="cm"># divide a linha por espaco</span>
+        <span class="kw">if</span> <span class="fn">len</span>(partes) &gt;= <span class="nu">3</span>:             <span class="cm"># garante que a linha e valida</span>
+            nivel = partes[<span class="nu">2</span>]            <span class="cm"># 3a palavra = ERROR, WARN ou INFO</span>
+            <span class="kw">yield</span> nivel, <span class="nu">1</span>              <span class="cm"># emite ("ERROR",1), ("INFO",1)...</span>
+
+    <span class="kw">def</span> <span class="fn">reducer</span>(self, nivel, contagens):
+        <span class="kw">yield</span> nivel, <span class="fn">sum</span>(contagens)    <span class="cm"># soma: ERROR->4, INFO->5, WARN->3</span>
+
+<span class="kw">if</span> __name__ == <span class="st">'__main__'</span>:
+    LogAnalyzer.<span class="fn">run</span>()</pre></div>
+          </div></div>
+          <div class="sstep"><div class="ssn">4</div><div class="ssc">
+            <div class="sstt">Execute e confira o resultado</div>
+            <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">terminal</span><button class="cpybtn" onclick="copyEl('s2c',this)">&#128203; copiar</button></div>
+            <pre class="code" id="s2c"><span class="tp">$</span> <span class="tc">python3 loganalyzer.py app.log 2&gt;/dev/null</span></pre></div>
+            <div class="ssd">Resultado esperado com o app.log acima (12 linhas):</div>
+            <div class="expected">"ERROR"    4
+"INFO"     5
+"WARN"     3</div>
+            <div class="box-ok">&#9989; 4 ERRORs + 5 INFOs + 3 WARNs = 12 linhas. Bate com o arquivo!</div>
+          </div></div>
+          <div class="sstep"><div class="ssn">5</div><div class="ssc">
+            <div class="sstt">DESAFIO EXTRA &mdash; Listar apenas as mensagens de ERROR</div>
+            <div class="ssd">Modifique o Mapper para filtrar apenas ERRORs e usar a mensagem como chave:</div>
+            <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">loganalyz_erros.py</span><button class="cpybtn" onclick="copyEl('s2d',this)">&#128203; copiar</button></div>
+            <pre class="code" id="s2d"><span class="kw">from</span> mrjob.job <span class="kw">import</span> MRJob
+
+<span class="kw">class</span> <span class="cl">LogErrors</span>(MRJob):
+
+    <span class="kw">def</span> <span class="fn">mapper</span>(self, _, line):
+        partes = line.<span class="fn">split</span>()
+        <span class="kw">if</span> <span class="fn">len</span>(partes) &gt;= <span class="nu">4</span> <span class="kw">and</span> partes[<span class="nu">2</span>] == <span class="st">"ERROR"</span>:
+            mensagem = <span class="st">" "</span>.<span class="fn">join</span>(partes[<span class="nu">3</span>:])  <span class="cm"># captura a mensagem de erro</span>
+            <span class="kw">yield</span> mensagem, <span class="nu">1</span>
+
+    <span class="kw">def</span> <span class="fn">reducer</span>(self, msg, counts):
+        <span class="kw">yield</span> msg, <span class="fn">sum</span>(counts)
+
+<span class="kw">if</span> __name__ == <span class="st">'__main__'</span>:
+    LogErrors.<span class="fn">run</span>()</pre></div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;margin-bottom:8px;">
+  <a href="semana02.html" style="text-decoration:none;padding:10px 18px;border-radius:6px;border:1px solid var(--bdr);color:var(--txm);font-size:.83em;font-weight:600;">&#8592; S02 HDFS</a>
+  <a href="../index.html" style="text-decoration:none;padding:10px 18px;border-radius:6px;border:1px solid var(--bdr);color:var(--txm);font-size:.83em;font-weight:600;">&#127968; Indice</a>
+  <a href="semana04.html" style="margin-left:auto;text-decoration:none;padding:10px 18px;border-radius:6px;background:var(--grn-d);color:var(--grn);border:1px solid var(--grn);font-size:.83em;font-weight:700;">S04 Spark &#8594;</a>
+</div>
+</main>
+</div>
+<div class="toast" id="toast"><div class="ttt" id="ttt"></div><div class="ttm" id="ttm"></div></div>
+<script>
+var xp=0,maxXP=300,done={};
+function updXP(){var p=(xp/maxXP)*100;document.getElementById('xpFill').style.width=p+'%';document.getElementById('xpNum').textContent=xp+'/'+maxXP;document.getElementById('sXP').textContent=xp;document.getElementById('sPB').style.width=p+'%';}
+function showToast(t,m){document.getElementById('ttt').textContent=t;document.getElementById('ttm').textContent=m;var e=document.getElementById('toast');e.classList.add('show');setTimeout(function(){e.classList.remove('show');},3600);}
+function unlock(id){var b=document.getElementById(id);if(b&&!b.classList.contains('unlocked')){b.classList.remove('locked');b.classList.add('unlocked');}}
+function markProg(i){var d=document.getElementById('pd'+i);if(d){d.classList.remove('active');d.classList.add('done');}}
+function quiz(id,btn,result){
+  if(done[id])return;done[id]=true;
+  btn.closest('.quiz').querySelectorAll('.qo').forEach(function(o){o.classList.add('disabled');o.style.pointerEvents='none';});
+  btn.classList.add(result==='correct'?'correct':'wrong');
+  if(result==='correct'){
+    document.getElementById(id+'ok').style.display='block';
+    if(id==='q1'){xp+=60;unlock('b0');markProg(0);showToast('+60 XP! Shuffler','Shuffle & Sort dominado!');}
+    if(id==='q2'){xp+=60;unlock('b1');markProg(1);showToast('+60 XP! Mapper','Mapper entendido!');}
+    if(id==='q3'){xp+=80;unlock('b2');markProg(2);showToast('+80 XP! Pipeline','Pipeline confirmado!');}
+  }else{document.getElementById(id+'fail').style.display='block';}
+  updXP();checkAll();
+}
+function completeMission(wid,bid,pts,t,m){
+  if(done[wid])return;done[wid]=true;
+  document.getElementById(wid).classList.add('done');
+  var idx=wid.slice(-1);
+  document.getElementById('mck'+idx).textContent='\u2713';
+  document.getElementById('mn'+idx).textContent='\u2713';
+  xp+=pts;unlock(bid);
+  if(wid==='mw1')markProg(3);
+  if(wid==='mw2')markProg(4);
+  updXP();showToast(t,m);checkAll();
+}
+function toggleSol(id,btnId){
+  var p=document.getElementById(id),btn=document.getElementById(btnId);
+  var isOpen=p.classList.contains('open');
+  p.classList.toggle('open');
+  btn.textContent=isOpen?'\u{1F4A1} Ver solucao passo a passo':'\u{1F648} Ocultar solucao';
+  if(!isOpen)setTimeout(function(){p.scrollIntoView({behavior:'smooth',block:'start'});},120);
+}
+function switchEnv(env){
+  document.querySelectorAll('.etab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.epanel').forEach(function(p){p.classList.remove('active');});
+  document.getElementById('tab-'+env).classList.add('active');
+  document.getElementById('env-'+env).classList.add('active');
+}
+function copyEl(id,btn){
+  var el=document.getElementById(id);if(!el)return;
+  var text=(el.innerText||el.textContent).split('\n').map(function(l){return l.replace(/^\$\s*/,'');}).join('\n').trim();
+  navigator.clipboard.writeText(text).then(function(){
+    btn.textContent='copiado!';setTimeout(function(){btn.textContent='\u{1F4CB} copiar';},2000);
+  }).catch(function(){var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);});
+}
+function checkAll(){
+  if(done['q1']&&done['q2']&&done['q3']&&done['mw1']&&done['mw2']){unlock('b5');setTimeout(function(){showToast('MAPREDUCE MASTER!','Todas as missoes concluidas!');},800);}
+}
+</script>
+</body>
+</html>

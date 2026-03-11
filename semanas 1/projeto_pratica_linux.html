@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prática Linux – Semana 01 | Infraestrutura para Big Data</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0d1b2a;
+            --navy2: #1b2d44;
+            --blue: #1565c0;
+            --cyan: #00b4d8;
+            --green: #06d6a0;
+            --yellow: #ffd166;
+            --red: #ef476f;
+            --purple: #b388ff;
+            --card: #162032;
+            --border: rgba(0,180,216,0.18);
+            --text: #e2eaf3;
+            --muted: #7b96b2;
+            --mono: 'JetBrains Mono', monospace;
+            --sans: 'Inter', sans-serif;
+            --display: 'Syne', sans-serif;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--sans); background: var(--navy); color: var(--text); line-height: 1.65; min-height: 100vh; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--navy); }
+        ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+        .header { background: rgba(13,27,42,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 14px 0; position: sticky; top:0; z-index:1000; }
+        .header-content { max-width: 1300px; margin:0 auto; padding:0 24px; display:flex; align-items:center; gap:16px; }
+        .header-icon { width:44px; height:44px; background: linear-gradient(135deg, var(--blue), var(--cyan)); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.4em; flex-shrink:0; }
+        .header-text h1 { font-family:var(--display); font-size:1.1em; font-weight:700; color:white; }
+        .header-text p  { font-size:0.78em; color:var(--muted); }
+        .header-back { margin-left:auto; background: rgba(255,255,255,0.07); color:var(--text); text-decoration:none; padding:7px 16px; border-radius:8px; font-size:0.83em; font-weight:600; border: 1px solid var(--border); transition: background 0.2s; white-space:nowrap; }
+        .header-back:hover { background: rgba(255,255,255,0.13); }
+        .container { max-width:1300px; margin:28px auto; padding:0 20px; display:flex; gap:24px; }
+        .sidebar { width:250px; flex-shrink:0; }
+        .sidebar-card { background: var(--card); border: 1px solid var(--border); border-radius:12px; padding:18px; margin-bottom:16px; position:sticky; top:82px; }
+        .sidebar-card h3 { font-family:var(--display); font-size:0.88em; font-weight:700; color:var(--cyan); margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--border); letter-spacing:0.5px; text-transform:uppercase; }
+        .toc-list { list-style:none; }
+        .toc-list li { margin-bottom:4px; }
+        .toc-list a { display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:7px; text-decoration:none; font-size:0.84em; color:var(--muted); transition:all 0.2s; border-left:2px solid transparent; }
+        .toc-list a:hover { background:rgba(0,180,216,0.08); color:var(--cyan); border-left-color:var(--cyan); }
+        .toc-list a.active { background:rgba(21,101,192,0.2); color:var(--cyan); border-left-color:var(--cyan); }
+        .toc-badge { background: var(--blue); color:white; border-radius:8px; padding:1px 7px; font-size:0.72em; flex-shrink:0; font-family:var(--mono); }
+        .info-pill { display:flex; align-items:center; gap:8px; font-size:0.82em; color:var(--muted); margin-bottom:7px; }
+        .content { flex:1; min-width:0; }
+        .hero { background: linear-gradient(135deg, #0a1628 0%, #0d1f3a 50%, #0f2b50 100%); border: 1px solid var(--border); border-radius:16px; padding:36px 40px; margin-bottom:24px; position:relative; overflow:hidden; }
+        .hero::before { content:''; position:absolute; top:-60px; right:-60px; width:300px; height:300px; background: radial-gradient(circle, rgba(0,180,216,0.12) 0%, transparent 70%); pointer-events:none; }
+        .hero-tag { display:inline-block; background: rgba(0,180,216,0.15); border:1px solid rgba(0,180,216,0.3); border-radius:20px; padding:3px 14px; font-size:0.78em; margin-bottom:12px; letter-spacing:1px; font-family:var(--mono); color:var(--cyan); text-transform:uppercase; }
+        .hero h2 { font-family:var(--display); font-size:2em; margin-bottom:8px; font-weight:800; }
+        .hero .meta { color:var(--muted); font-size:0.88em; margin-bottom:20px; }
+        .hero-chips { display:flex; flex-wrap:wrap; gap:10px; }
+        .hero-chip { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius:8px; padding:5px 14px; font-size:0.8em; }
+        .obj-box { background: rgba(21,101,192,0.12); border-left:4px solid var(--blue); border-radius:0 8px 8px 0; padding:16px 20px; margin-bottom:24px; }
+        .obj-box h4 { color:var(--cyan); margin-bottom:8px; font-family:var(--display); font-size:0.95em; }
+        .obj-box ul { padding-left:18px; }
+        .obj-box li { margin-bottom:5px; color:var(--text); font-size:0.93em; }
+        .progress-wrap { background: var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 20px; margin-bottom:24px; }
+        .progress-label { display:flex; justify-content:space-between; font-size:0.82em; color:var(--muted); margin-bottom:10px; }
+        .progress-bar-track { background:rgba(255,255,255,0.06); border-radius:8px; height:8px; margin-bottom:10px; overflow:hidden; }
+        .progress-bar-fill { height:100%; border-radius:8px; background:linear-gradient(90deg,var(--blue),var(--cyan)); width:0%; transition:width 0.5s; }
+        .progress-steps { display:flex; gap:5px; }
+        .prog-step { flex:1; height:8px; border-radius:4px; background:rgba(255,255,255,0.08); cursor:pointer; transition:background 0.2s; }
+        .prog-step.done { background:linear-gradient(90deg,var(--blue),var(--cyan)); }
+        .prog-step:hover { background:rgba(0,180,216,0.4); }
+        .parte { background: var(--card); border:1px solid var(--border); border-radius:14px; margin-bottom:18px; overflow:hidden; scroll-margin-top:96px; }
+        .parte-head { display:flex; align-items:center; gap:14px; background: linear-gradient(90deg, rgba(21,101,192,0.25), rgba(0,180,216,0.1)); padding:15px 20px; cursor:pointer; user-select:none; transition:filter 0.2s; }
+        .parte-head:hover { filter:brightness(1.1); }
+        .parte-num { background: rgba(0,180,216,0.2); border:1px solid rgba(0,180,216,0.3); border-radius:8px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1em; flex-shrink:0; font-family:var(--mono); color:var(--cyan); }
+        .parte-head h3 { flex:1; font-family:var(--display); font-size:1em; margin:0; font-weight:700; }
+        .parte-tag { background:rgba(0,180,216,0.12); border:1px solid rgba(0,180,216,0.2); border-radius:6px; padding:3px 11px; font-size:0.74em; white-space:nowrap; color:var(--cyan); }
+        .parte-chevron { transition:transform 0.3s; font-size:0.9em; color:var(--muted); }
+        .parte-chevron.open { transform:rotate(180deg); }
+        .parte-body { padding:22px 24px; display:none; }
+        .parte-body.open { display:block; }
+        .step { margin-bottom:22px; }
+        .step-title { font-weight:700; color:var(--cyan); display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:0.97em; font-family:var(--display); }
+        .step-desc { color:var(--muted); font-size:0.92em; margin-bottom:10px; }
+        .step-desc a { color:var(--cyan); }
+        .code-block { background:#0a0f1a; color:#cdd6f4; border:1px solid rgba(0,180,216,0.15); border-radius:10px; padding:14px 18px 14px 16px; font-family:var(--mono); font-size:0.87em; position:relative; margin:8px 0 12px; overflow-x:auto; }
+        .code-line { display:flex; gap:8px; margin-bottom:4px; }
+        .prompt { color:#06d6a0; user-select:none; flex-shrink:0; }
+        .cmd    { color:#89dceb; }
+        .cmt    { color:#4a5568; font-style:italic; }
+        .copy-btn { position:absolute; top:9px; right:11px; background:rgba(0,180,216,0.1); color:var(--muted); border:1px solid rgba(0,180,216,0.2); border-radius:5px; padding:3px 11px; font-size:0.73em; cursor:pointer; transition:all 0.2s; font-family:var(--mono); }
+        .copy-btn:hover  { background:rgba(0,180,216,0.2); color:var(--cyan); }
+        .copy-btn.copied { background:rgba(6,214,160,0.2); color:var(--green); border-color:var(--green); }
+        .box { border-radius:8px; padding:13px 17px; font-size:0.89em; margin-top:12px; }
+        .box-green  { background:rgba(6,214,160,0.08); border-left:4px solid var(--green); color:var(--text); }
+        .box-yellow { background:rgba(255,209,102,0.08); border-left:4px solid var(--yellow); color:var(--text); }
+        .box-red    { background:rgba(239,71,111,0.08); border-left:4px solid var(--red); color:var(--text); }
+        .box-purple { background:rgba(179,136,255,0.08); border-left:4px solid var(--purple); color:var(--text); }
+        .box-cyan   { background:rgba(0,180,216,0.08); border-left:4px solid var(--cyan); color:var(--text); }
+        .box strong { display:block; margin-bottom:4px; color:inherit; }
+        .chip-inline { display:inline-block; background:rgba(0,180,216,0.12); border:1px solid rgba(0,180,216,0.2); border-radius:4px; padding:1px 7px; font-family:var(--mono); font-size:0.85em; color:var(--cyan); }
+        #glossario { scroll-margin-top: 96px; }
+        .glossario-section { background: var(--card); border:1px solid var(--border); border-radius:14px; padding:28px; margin-bottom:18px; }
+        .glossario-section h2 { font-family:var(--display); font-size:1.4em; font-weight:800; margin-bottom:6px; background: linear-gradient(90deg,var(--cyan),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .gl-sub { color:var(--muted); font-size:0.88em; margin-bottom:22px; }
+        .gl-filter-wrap { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+        .gl-filter { background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:20px; padding:5px 15px; font-size:0.8em; cursor:pointer; transition:all 0.2s; color:var(--muted); }
+        .gl-filter.active, .gl-filter:hover { background:rgba(0,180,216,0.15); color:var(--cyan); border-color:var(--cyan); }
+        .gl-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
+        .gl-card { background: rgba(10,15,26,0.6); border:1px solid var(--border); border-radius:12px; padding:18px; cursor:pointer; transition: all 0.25s; position:relative; overflow:hidden; }
+        .gl-card::before { content:''; position:absolute; top:0; left:0; width:4px; height:100%; }
+        .gl-card[data-tag="docker"]::before { background: #0db7ed; }
+        .gl-card[data-tag="shell"]::before { background: var(--green); }
+        .gl-card[data-tag="linux"]::before { background: var(--yellow); }
+        .gl-card[data-tag="bigdata"]::before { background: var(--purple); }
+        .gl-card:hover { transform:translateY(-2px); border-color:rgba(0,180,216,0.4); box-shadow:0 8px 24px rgba(0,0,0,0.3); }
+        .gl-card.flipped .gl-front { display:none; }
+        .gl-card.flipped .gl-back { display:block; }
+        .gl-back { display:none; }
+        .gl-card-tag { font-size:0.7em; font-family:var(--mono); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:8px; font-weight:700; }
+        .gl-card[data-tag="docker"] .gl-card-tag  { color:#0db7ed; }
+        .gl-card[data-tag="shell"] .gl-card-tag   { color:var(--green); }
+        .gl-card[data-tag="linux"] .gl-card-tag   { color:var(--yellow); }
+        .gl-card[data-tag="bigdata"] .gl-card-tag { color:var(--purple); }
+        .gl-card-title { font-family:var(--display); font-size:1.05em; font-weight:700; margin-bottom:6px; }
+        .gl-card-short { font-size:0.84em; color:var(--muted); }
+        .gl-card-flip-hint { font-size:0.72em; color:rgba(255,255,255,0.2); margin-top:10px; }
+        .gl-back-text { font-size:0.86em; color:var(--text); line-height:1.6; }
+        .gl-back-text code { font-family:var(--mono); color:var(--cyan); background:rgba(0,180,216,0.1); padding:1px 5px; border-radius:3px; }
+        .gl-back-example { margin-top:10px; background:#0a0f1a; border-radius:7px; padding:10px 14px; font-family:var(--mono); font-size:0.8em; color:#89dceb; }
+        .gl-back-bigdata { margin-top:10px; padding:8px 12px; background:rgba(6,214,160,0.07); border-radius:6px; font-size:0.82em; color:var(--green); border-left:3px solid var(--green); }
+        .gl-card-flip-back { font-size:0.72em; color:rgba(255,255,255,0.2); margin-top:12px; text-align:right; }
+        #quiz { scroll-margin-top: 96px; }
+        .game-section { background: var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; margin-bottom:18px; }
+        .game-header { background: linear-gradient(135deg, #0a1628, #0f1f3d); padding:28px 30px; border-bottom:1px solid var(--border); }
+        .game-header-top { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+        .game-header-icon { font-size:2.2em; }
+        .game-header-text h2 { font-family:var(--display); font-size:1.5em; font-weight:800; }
+        .game-header-text p { color:var(--muted); font-size:0.88em; }
+        .game-stats { display:flex; gap:20px; flex-wrap:wrap; }
+        .game-stat { background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:10px; padding:10px 18px; text-align:center; }
+        .game-stat-val { font-family:var(--mono); font-size:1.5em; font-weight:700; color:var(--cyan); }
+        .game-stat-lbl { font-size:0.72em; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; }
+        .game-body { padding:28px 30px; }
+        .screen { display:none; }
+        .screen.active { display:block; }
+        .start-screen { text-align:center; padding:20px 0; }
+        .start-screen h3 { font-family:var(--display); font-size:1.3em; margin-bottom:10px; }
+        .start-screen p { color:var(--muted); font-size:0.93em; margin-bottom:24px; max-width:500px; margin-left:auto; margin-right:auto; }
+        .difficulty-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; max-width:500px; margin:0 auto 24px; }
+        .diff-btn { background:rgba(255,255,255,0.04); border:2px solid var(--border); border-radius:10px; padding:14px 10px; cursor:pointer; transition:all 0.2s; color:var(--text); }
+        .diff-btn:hover { border-color:var(--cyan); background:rgba(0,180,216,0.08); }
+        .diff-btn.selected { border-color:var(--cyan); background:rgba(0,180,216,0.15); }
+        .diff-icon { font-size:1.6em; margin-bottom:6px; }
+        .diff-name { font-family:var(--display); font-weight:700; font-size:0.9em; }
+        .diff-desc { font-size:0.75em; color:var(--muted); margin-top:3px; }
+        .btn-primary { background: linear-gradient(135deg,var(--blue),var(--cyan)); color:white; border:none; border-radius:10px; padding:12px 32px; font-size:0.95em; font-weight:700; cursor:pointer; font-family:var(--display); transition:all 0.2s; }
+        .btn-primary:hover { filter:brightness(1.1); transform:translateY(-1px); }
+        .btn-secondary { background:rgba(255,255,255,0.06); border:1px solid var(--border); color:var(--text); border-radius:10px; padding:11px 28px; font-size:0.92em; font-weight:600; cursor:pointer; font-family:var(--display); transition:all 0.2s; }
+        .btn-secondary:hover { background:rgba(255,255,255,0.12); }
+        .quiz-progress-wrap { margin-bottom:20px; }
+        .quiz-progress-top { display:flex; justify-content:space-between; align-items:center; font-size:0.82em; color:var(--muted); margin-bottom:8px; }
+        .quiz-bar-track { background:rgba(255,255,255,0.06); border-radius:8px; height:6px; overflow:hidden; }
+        .quiz-bar-fill { height:100%; border-radius:8px; background:linear-gradient(90deg,var(--blue),var(--cyan)); transition:width 0.4s; }
+        .quiz-category { display:inline-block; font-family:var(--mono); font-size:0.75em; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:12px; padding:3px 10px; border-radius:12px; }
+        .cat-docker   { background:rgba(13,183,237,0.15); color:#0db7ed; }
+        .cat-shell    { background:rgba(6,214,160,0.12); color:var(--green); }
+        .cat-linux    { background:rgba(255,209,102,0.12); color:var(--yellow); }
+        .cat-bigdata  { background:rgba(179,136,255,0.12); color:var(--purple); }
+        .quiz-question { font-family:var(--display); font-size:1.15em; font-weight:700; margin-bottom:20px; line-height:1.4; }
+        .quiz-options { display:grid; gap:10px; margin-bottom:20px; }
+        .quiz-option { background:rgba(255,255,255,0.04); border:2px solid rgba(255,255,255,0.08); border-radius:10px; padding:13px 18px; cursor:pointer; transition:all 0.2s; text-align:left; color:var(--text); font-size:0.93em; display:flex; align-items:center; gap:12px; }
+        .quiz-option:hover:not(:disabled) { border-color:var(--cyan); background:rgba(0,180,216,0.08); }
+        .quiz-option.correct { border-color:var(--green); background:rgba(6,214,160,0.12); color:var(--green); }
+        .quiz-option.wrong   { border-color:var(--red); background:rgba(239,71,111,0.1); color:var(--red); }
+        .quiz-option:disabled { cursor:default; }
+        .opt-letter { width:26px; height:26px; border-radius:6px; background:rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:0.82em; font-weight:700; flex-shrink:0; }
+        .correct .opt-letter { background:rgba(6,214,160,0.2); }
+        .wrong .opt-letter   { background:rgba(239,71,111,0.2); }
+        .quiz-feedback { border-radius:10px; padding:14px 18px; margin-top:4px; font-size:0.88em; line-height:1.5; display:none; }
+        .feedback-correct { background:rgba(6,214,160,0.1); border-left:4px solid var(--green); color:var(--text); }
+        .feedback-wrong   { background:rgba(239,71,111,0.1); border-left:4px solid var(--red); color:var(--text); }
+        .quiz-nav { display:flex; justify-content:flex-end; margin-top:16px; }
+        .timer-bar { height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden; margin-bottom:14px; }
+        .timer-fill { height:100%; border-radius:2px; background:var(--cyan); transition:width 0.1s linear; }
+        .results-screen { text-align:center; }
+        .results-medal { font-size:4em; margin-bottom:10px; animation: pop 0.5s ease; }
+        @keyframes pop { 0%{transform:scale(0)} 80%{transform:scale(1.2)} 100%{transform:scale(1)} }
+        .results-title { font-family:var(--display); font-size:1.8em; font-weight:800; margin-bottom:6px; }
+        .results-score-big { font-family:var(--mono); font-size:3em; font-weight:700; margin:16px 0 6px; color:var(--cyan); }
+        .results-msg { color:var(--muted); font-size:0.93em; max-width:480px; margin:0 auto 24px; white-space:pre-line; }
+        .results-breakdown { background:rgba(10,15,26,0.6); border:1px solid var(--border); border-radius:12px; padding:20px; max-width:420px; margin:0 auto 24px; text-align:left; }
+        .results-breakdown h4 { font-family:var(--display); font-size:0.88em; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:14px; }
+        .rb-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-size:0.88em; }
+        .rb-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+        .rb-name { flex:1; margin-left:10px; }
+        .rb-bar { width:120px; height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden; margin-right:10px; }
+        .rb-bar-fill { height:100%; border-radius:3px; }
+        .rb-pct { font-family:var(--mono); font-size:0.85em; color:var(--muted); }
+        .results-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+        .xp-toast { position:fixed; top:100px; right:20px; background:rgba(6,214,160,0.9); color:#0a1628; border-radius:10px; padding:10px 18px; font-family:var(--mono); font-weight:700; font-size:1.1em; z-index:9999; animation: slideIn 0.4s ease, fadeOut 0.4s ease 1.8s forwards; pointer-events:none; }
+        @keyframes slideIn { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+        @keyframes fadeOut { to{opacity:0;transform:translateX(40px)} }
+        .combo-streak { text-align:center; font-family:var(--mono); font-size:0.85em; color:var(--yellow); margin-bottom:10px; min-height:22px; }
+        .badges-row { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:14px 0; }
+        .badge { background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:10px; padding:8px 14px; font-size:0.82em; display:flex; align-items:center; gap:6px; opacity:0.4; transition:all 0.3s; }
+        .badge.unlocked { opacity:1; border-color:var(--yellow); background:rgba(255,209,102,0.1); color:var(--yellow); }
+        .nav-bottom { display:flex; justify-content:space-between; align-items:center; margin-top:28px; padding-top:20px; border-top:1px solid var(--border); }
+        .nav-btn { padding:11px 22px; border-radius:10px; text-decoration:none; font-weight:700; font-size:0.9em; font-family:var(--display); transition:all 0.2s; }
+        .nav-btn-sec { background:rgba(255,255,255,0.05); color:var(--text); border:1px solid var(--border); }
+        .nav-btn-sec:hover { background:rgba(255,255,255,0.1); }
+        .nav-btn-pri { background:linear-gradient(135deg,var(--blue),var(--cyan)); color:white; }
+        .nav-btn-pri:hover { filter:brightness(1.1); }
+        @media (max-width:900px) { .container{flex-direction:column;} .sidebar{width:100%;} .sidebar-card{position:static;} .gl-grid{grid-template-columns:1fr 1fr;} }
+        @media (max-width:600px) { .hero{padding:22px 20px;} .hero h2{font-size:1.4em;} .parte-body{padding:16px;} .gl-grid{grid-template-columns:1fr;} .difficulty-grid{grid-template-columns:1fr;} .game-stats{gap:10px;} .results-score-big{font-size:2em;} }
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="header-content">
+        <div class="header-icon">🐧</div>
+        <div class="header-text">
+            <h1>Prática Linux — Semana 01</h1>
+            <p>Infraestrutura para Big Data · Tecnologia em Ciência de Dados</p>
+        </div>
+        <a href="../index.html" class="header-back">← Voltar ao Índice</a>
+    </div>
+</header>
+
+<div class="container">
+<aside class="sidebar">
+    <div class="sidebar-card">
+        <h3>📋 Conteúdo</h3>
+        <ul class="toc-list">
+            <li><a href="#p1"><span class="toc-badge">1</span> Acessando o Ambiente</a></li>
+            <li><a href="#p2"><span class="toc-badge">2</span> Data Lake Simulado</a></li>
+            <li><a href="#p3"><span class="toc-badge">3</span> Processamento</a></li>
+            <li><a href="#p4"><span class="toc-badge">4</span> Monitoramento</a></li>
+            <li><a href="#p5"><span class="toc-badge">5</span> Containers</a></li>
+            <li><a href="#p6"><span class="toc-badge">6</span> Comunicação</a></li>
+            <li><a href="#p7"><span class="toc-badge">7</span> Automação</a></li>
+            <li><a href="#glossario"><span class="toc-badge">📖</span> Glossário</a></li>
+            <li><a href="#quiz"><span class="toc-badge">🎮</span> Quiz</a></li>
+        </ul>
+    </div>
+    <div class="sidebar-card">
+        <h3>ℹ️ Informações</h3>
+        <div class="info-pill"><span>⏱</span><span>Duração: ~90 min</span></div>
+        <div class="info-pill"><span>☁️</span><span>Google Cloud Shell</span></div>
+        <div class="info-pill"><span>🐳</span><span>Docker</span></div>
+        <div class="info-pill"><span>🐘</span><span>Hadoop/Spark</span></div>
+        <div class="info-pill"><span>📅</span><span>Semana 01 — 2026</span></div>
+    </div>
+    <div class="sidebar-card">
+        <h3>🔗 Links</h3>
+        <div class="info-pill"><span>☁️</span><a href="https://shell.cloud.google.com/" target="_blank" style="color:var(--cyan);font-size:0.88em;">Google Cloud Shell</a></div>
+        <div class="info-pill"><span>📄</span><a href="semana01.html" style="color:var(--cyan);font-size:0.88em;">← Semana 01 (teoria)</a></div>
+    </div>
+</aside>
+
+<main class="content">
+<div class="hero">
+    <div class="hero-tag">🖥️ AULA PRÁTICA</div>
+    <h2>Linux e Infraestrutura de Big Data<br>usando Google Cloud Shell</h2>
+    <p class="meta">Disciplina: Infraestrutura para Big Data &nbsp;·&nbsp; Docente: Isaque Katahira &nbsp;·&nbsp; 6º Termo</p>
+    <div class="hero-chips">
+        <div class="hero-chip">☁️ Google Cloud Shell</div>
+        <div class="hero-chip">🐳 Docker</div>
+        <div class="hero-chip">🐘 Apache Hadoop</div>
+        <div class="hero-chip">⚡ Apache Spark</div>
+        <div class="hero-chip">⏱ ~90 min</div>
+    </div>
+</div>
+
+<div class="obj-box">
+    <h4>🎯 Objetivo</h4>
+    <ul>
+        <li>Compreender como sistemas Linux são utilizados como base para infraestrutura de Big Data, simulando:</li>
+        <li><strong>Organização de armazenamento · Processamento · Monitoramento de recursos · Containers como nós de cluster</strong></li>
+        <li>Ferramentas reais que utilizam essa base: Apache Hadoop e Apache Spark</li>
+    </ul>
+</div>
+
+<div class="progress-wrap">
+    <div class="progress-label"><span>Progresso da prática — 7 partes</span><span id="progLabel">0 / 7 concluídas</span></div>
+    <div class="progress-bar-track"><div class="progress-bar-fill" id="progressBarFill"></div></div>
+    <div class="progress-steps" id="progressSteps">
+        <div class="prog-step" onclick="markDone(this)" title="Parte 1"></div>
+        <div class="prog-step" onclick="markDone(this)" title="Parte 2"></div>
+        <div class="prog-step" onclick="markDone(this)" title="Parte 3"></div>
+        <div class="prog-step" onclick="markDone(this)" title="Parte 4"></div>
+        <div class="prog-step" onclick="markDone(this)" title="Parte 5"></div>
+        <div class="prog-step" onclick="markDone(this)" title="Parte 6"></div>
+        <div class="prog-step" onclick="markDone(this)" title="Parte 7"></div>
+    </div>
+</div>
+
+<!-- PARTE 1 -->
+<div class="parte" id="p1">
+    <div class="parte-head" onclick="toggleParte(this)">
+        <div class="parte-num">1</div>
+        <h3>Acessando o Ambiente (Nível Zero)</h3>
+        <span class="parte-tag">☁️ Configuração inicial</span>
+        <span class="parte-chevron open">▼</span>
+    </div>
+    <div class="parte-body open">
+        <div class="box box-cyan" style="margin-bottom:16px;">
+            <strong>🖥️ O que é o Google Cloud Shell?</strong>
+            O <strong>Google Cloud Shell</strong> é um terminal Linux hospedado na nuvem do Google, acessível pelo navegador sem instalar nada. Por baixo há uma VM Debian com 5 GB de disco persistente e ferramentas de desenvolvimento já instaladas — incluindo o Docker. É o tipo de ambiente que engenheiros de dados usam para gerenciar clusters remotos em produção.
+        </div>
+        <div class="step">
+            <div class="step-title">1️⃣ Acesse o Google Cloud Shell</div>
+            <div class="step-desc">Abra <a href="https://shell.cloud.google.com/" target="_blank">🔗 shell.cloud.google.com</a> e faça login com sua conta Google. Ao abrir, você verá um terminal Linux pronto para uso.</div>
+        </div>
+        <div class="step">
+            <div class="step-title">2️⃣ Verificar o ambiente</div>
+            <div class="step-desc">Digite os comandos abaixo para identificar o sistema operacional e o diretório atual:</div>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">uname -a</span></div>
+                <div class="code-line"><span class="cmt"># Mostra o sistema operacional e arquitetura</span></div>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">pwd</span></div>
+                <div class="code-line"><span class="cmt"># Mostra seu diretório atual</span></div>
+            </div>
+        </div>
+        <div class="box box-green"><strong>📌 Conexão com Big Data</strong>Todos os clusters Hadoop e Spark rodam sobre sistemas Linux. O terminal que você acessou é o mesmo tipo de interface usado por engenheiros ao administrar clusters de produção.</div>
+    </div>
+</div>
+
+<!-- PARTE 2 -->
+<div class="parte" id="p2">
+    <div class="parte-head" onclick="toggleParte(this)">
+        <div class="parte-num">2</div>
+        <h3>Organização de Armazenamento (Data Lake Simulado)</h3>
+        <span class="parte-tag">🗄️ Estrutura HDFS</span>
+        <span class="parte-chevron">▼</span>
+    </div>
+    <div class="parte-body">
+        <div class="box box-cyan" style="margin-bottom:16px;">
+            <strong>📁 Sistema de arquivos Linux</strong>
+            No Linux tudo é arquivo ou diretório. O comando <code style="font-family:var(--mono);color:var(--cyan)">mkdir -p</code> cria um diretório e todos os seus "pais" automaticamente. <code style="font-family:var(--mono);color:var(--cyan)">ls -R</code> lista recursivamente. Essa estrutura espelha a lógica do <strong>HDFS</strong>, onde dados brutos (raw), processados e de log ficam em caminhos separados — formando um <strong>Data Lake</strong>.
+        </div>
+        <div class="step">
+            <div class="step-title">📁 Crie a estrutura de diretórios</div>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">mkdir -p bigdata/raw</span></div>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">mkdir -p bigdata/processed</span></div>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">mkdir -p bigdata/logs</span></div>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">ls -R bigdata</span></div>
+                <div class="code-line"><span class="cmt"># Verifique a estrutura criada</span></div>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-title">📄 Crie um dataset fictício</div>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">echo "id,nome,valor" &gt; bigdata/raw/dados.csv</span></div>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">echo "1,produtoA,100" &gt;&gt; bigdata/raw/dados.csv</span></div>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">cat bigdata/raw/dados.csv</span></div>
+            </div>
+        </div>
+        <div class="box box-green"><strong>📌 Relação com Big Data</strong><span class="chip-inline">raw</span> dados brutos | <span class="chip-inline">processed</span> dados tratados | <span class="chip-inline">logs</span> monitoramento. Essa é a lógica usada em ambientes Hadoop com HDFS e em Data Lakes modernos como S3 e Azure Data Lake.</div>
+    </div>
+</div>
+
+<!-- PARTE 3 -->
+<div class="parte" id="p3">
+    <div class="parte-head" onclick="toggleParte(this)">
+        <div class="parte-num">3</div>
+        <h3>Processamento Simulado</h3>
+        <span class="parte-tag">🔁 Pipeline MapReduce</span>
+        <span class="parte-chevron">▼</span>
+    </div>
+    <div class="parte-body">
+        <div class="box box-cyan" style="margin-bottom:16px;">
+            <strong>🔧 O que é o pipe <code style="font-family:var(--mono)">|</code> ?</strong>
+            O <strong>pipe</strong> (<code style="font-family:var(--mono);color:var(--cyan)">|</code>) conecta a <em>saída</em> de um comando à <em>entrada</em> do próximo, formando um pipeline. É o conceito fundamental de composição no Linux e aparece diretamente no <strong>MapReduce</strong>: dados passam por etapas sequenciais de transformação (Map → Shuffle → Reduce), exatamente como nos pipes do shell.
+        </div>
+        <div class="step">
+            <div class="step-title">🔄 Simule uma transformação de dados via pipeline</div>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">cat bigdata/raw/dados.csv | grep produtoA &gt; bigdata/processed/dados_filtrados.csv</span></div>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">cat bigdata/processed/dados_filtrados.csv</span></div>
+            </div>
+        </div>
+        <div class="box box-green"><strong>📌 Conexão com MapReduce</strong>Pipeline com <span class="chip-inline">|</span>: <strong>Entrada → Processamento → Saída</strong>. É o mesmo conceito estrutural do processamento distribuído — cada etapa é análoga a uma fase Map ou Reduce no Hadoop.</div>
+    </div>
+</div>
+
+        
+
+        <div class="step">
+            <div class="step-title">⚙️ Prática: Simulação de MapReduce</div>
+            <div class="step-desc">Utilizaremos o <code>pipe (|)</code> para encadear comandos, simulando o fluxo Map -> Shuffle -> Reduce descrito no vídeo:</div>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">cat bigdata/raw/dados.csv | grep "produtoA" | wc -l</span></div>
+                <div class="code-line"><span class="cmt"># cat (Map) | grep (Shuffle) | wc (Reduce)</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+        <div class="box box-green">
+            <strong>📌 Conexão com Big Data</strong>
+            O que você fez acima é uma "Pipeline de Dados". No Apache Spark ou Hadoop, a lógica é a mesma, mas distribuída entre milhares de máquinas.
+        </div>
+    </div>
+</div>
+<!-- PARTE 4 -->
+<div class="parte" id="p4">
+    <div class="parte-head" onclick="toggleParte(this)">
+        <div class="parte-num">4</div>
+        <h3>Monitoramento de Recursos</h3>
+        <span class="parte-tag">📊 CPU / Memória</span>
+        <span class="parte-chevron">▼</span>
+    </div>
+    <div class="parte-body">
+        <div class="box box-cyan" style="margin-bottom:16px;">
+            <strong>📊 Comandos de monitoramento Linux</strong>
+            <code style="font-family:var(--mono);color:var(--cyan)">top</code> é um monitor de processos em tempo real — mostra CPU, memória e lista os processos por consumo. Cada linha representa um processo com seu <strong>PID</strong> (Process ID), um número único de identificação. Com <code style="font-family:var(--mono);color:var(--cyan)">kill &lt;PID&gt;</code> você termina qualquer processo. Em clusters Spark/Hadoop reais, o <em>YARN ResourceManager</em> e o <em>Spark UI</em> fazem esse monitoramento de forma distribuída e visual.
+        </div>
+        <div class="step">
+            <div class="step-title">📊 Verificar uso do sistema</div>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">top</span></div>
+                <div class="code-line"><span class="cmt"># Pressione Q para sair</span></div>
+            </div>
+            <div class="box box-yellow" style="margin-top:8px;">💡 Observe: <span class="chip-inline">%CPU</span>, <span class="chip-inline">%MEM</span> e a coluna <span class="chip-inline">PID</span> — você vai precisar do PID a seguir.</div>
+        </div>
+        <div class="step">
+            <div class="step-title">💥 Simule carga de CPU</div>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">yes &gt; /dev/null &amp;</span></div>
+                <div class="code-line"><span class="cmt"># O & envia o processo para background</span></div>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">top</span></div>
+                <div class="code-line"><span class="cmt"># Anote o PID do processo 'yes' e finalize:</span></div>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">kill &lt;PID&gt;</span></div>
+            </div>
+        </div>
+        <div class="box box-green"><strong>📌 Relação com Infraestrutura</strong>Em clusters reais, monitorar consumo é essencial para evitar gargalos e escalar horizontalmente. Ferramentas como YARN ResourceManager e Spark UI fazem isso automaticamente em produção.</div>
+    </div>
+</div>
+
+<!-- PARTE 5 -->
+<div class="parte" id="p5">
+    <div class="parte-head" onclick="toggleParte(this)">
+        <div class="parte-num">5</div>
+        <h3>Introdução a Containers (Simulando Nós de Cluster)</h3>
+        <span class="parte-tag">🐳 Docker</span>
+        <span class="parte-chevron">▼</span>
+    </div>
+    <div class="parte-body">
+        <div class="box box-cyan" style="margin-bottom:16px;">
+            <strong>🐳 O que é Docker e o que é um Container?</strong>
+            Imagine uma <strong>máquina virtual ultra-leve</strong>. Um <strong>container Docker</strong> é um processo isolado com seu próprio sistema de arquivos, bibliotecas e configurações — mas sem precisar de um SO completo, pois compartilha o kernel do host. O <strong>Docker</strong> é o motor que cria, executa e gerencia esses containers.<br><br>
+            <strong>Analogia para Ciência de Dados:</strong> se uma VM é uma casa inteira, um container é um apartamento — compartilha a estrutura do prédio (kernel), mas tem seu próprio espaço isolado, muito mais rápido para criar e destruir.
+        </div>
+        <div class="step">
+            <div class="step-title">🐳 Verifique o Docker e crie a rede do cluster</div>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">docker --version</span></div>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">docker network create cluster-net</span></div>
+            </div>
+            <div class="box box-yellow" style="margin-top:8px;">💡 <strong>docker network create</strong> cria uma rede virtual privada. Containers nela se comunicam pelo nome, como se fossem máquinas numa LAN corporativa.</div>
+        </div>
+        <div class="step">
+            <div class="step-title">🖧 Crie os containers master e worker</div>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">docker run -dit --name master --network cluster-net ubuntu</span></div>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">docker run -dit --name worker --network cluster-net ubuntu</span></div>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">docker ps</span></div>
+            </div>
+            <div class="box box-yellow" style="margin-top:8px;">💡 <strong>-d</strong> = background &nbsp;|&nbsp; <strong>-i</strong> = interativo &nbsp;|&nbsp; <strong>-t</strong> = pseudo-terminal</div>
+        </div>
+        <div class="box box-green"><strong>📌 Relação com Big Data</strong>Cada container representa um nó do cluster. Em Hadoop real, o <em>master</em> executa NameNode e ResourceManager; os <em>workers</em> executam DataNodes e NodeManagers.</div>
+    </div>
+</div>
+
+<!-- PARTE 6 -->
+<div class="parte" id="p6">
+    <div class="parte-head" onclick="toggleParte(this)">
+        <div class="parte-num">6</div>
+        <h3>Comunicação Entre Nós</h3>
+        <span class="parte-tag">📡 Rede de cluster</span>
+        <span class="parte-chevron">▼</span>
+    </div>
+    <div class="parte-body">
+        <div class="box box-cyan" style="margin-bottom:16px;">
+            <strong>📡 Como containers se comunicam?</strong>
+            Quando containers estão na mesma rede Docker, o Docker funciona como um <strong>DNS interno</strong>: resolve automaticamente o nome do container para o IP correspondente. Ao digitar <code style="font-family:var(--mono);color:var(--cyan)">ping worker</code> dentro do container <em>master</em>, o Docker traduz "worker" para o IP correto. Em clusters Hadoop reais, o <strong>NameNode</strong> precisa se comunicar constantemente com os <strong>DataNodes</strong> via TCP/IP para coordenar replicação de blocos de dados.
+        </div>
+        <div class="step">
+            <div class="step-title">📡 Entre no master e instale o ping</div>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">docker exec -it master bash</span></div>
+                <div class="code-line"><span class="cmt"># Dentro do container master:</span></div>
+                <div class="code-line"><span class="prompt">#</span><span class="cmd">apt update &amp;&amp; apt install -y iputils-ping</span></div>
+                <div class="code-line"><span class="prompt">#</span><span class="cmd">ping worker</span></div>
+                <div class="code-line"><span class="cmt"># Teste a comunicação com o nó worker</span></div>
+                <div class="code-line"><span class="prompt">#</span><span class="cmd">exit</span></div>
+            </div>
+        </div>
+        <div class="box box-yellow">💡 Se o ping travar, use <span class="chip-inline">Ctrl+C</span> para interrompê-lo. Use <span class="chip-inline">exit</span> para sair do container.</div>
+    </div>
+</div>
+
+<!-- PARTE 7 -->
+<div class="parte" id="p7">
+    <div class="parte-head" onclick="toggleParte(this)">
+        <div class="parte-num">7</div>
+        <h3>Automação com Shell Script</h3>
+        <span class="parte-tag">⚙️ DevOps / IaC</span>
+        <span class="parte-chevron">▼</span>
+    </div>
+    <div class="parte-body">
+        <div class="box box-cyan" style="margin-bottom:16px;">
+            <strong>⚙️ O que é Shell Script? E o editor Nano?</strong>
+            Um <strong>Shell Script</strong> é um arquivo de texto com uma sequência de comandos Linux que o <strong>Shell</strong> (interpretador, como o <code style="font-family:var(--mono);color:var(--cyan)">bash</code>) executa automaticamente. É a forma mais simples de automação no Linux.<br><br>
+            O <strong>Nano</strong> é um editor de texto que roda no terminal sem interface gráfica. É minimalista: você escreve e usa atalhos. A linha <code style="font-family:var(--mono);color:var(--cyan)">#!/bin/bash</code> no início — chamada <strong>shebang</strong> — informa ao sistema qual interpretador deve executar o arquivo.
+        </div>
+        <div class="step">
+            <div class="step-title">📝 Crie o script de inicialização</div>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">nano init_cluster.sh</span></div>
+            </div>
+            <div class="step-desc" style="margin-top:8px;">Se o nano não estiver instalado: <span class="chip-inline">apt-get update &amp;&amp; apt-get install nano -y</span><br>Insira o conteúdo abaixo:</div>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                <div class="code-line"><span class="cmt">#!/bin/bash</span></div>
+                <div class="code-line"><span class="cmd">echo "Inicializando estrutura Big Data"</span></div>
+                <div class="code-line"><span class="cmd">mkdir -p bigdata/raw</span></div>
+                <div class="code-line"><span class="cmd">mkdir -p bigdata/processed</span></div>
+                <div class="code-line"><span class="cmd">echo "Cluster pronto"</span></div>
+            </div>
+            <div class="box box-yellow">💡 Salvar no nano: <span class="chip-inline">Ctrl+O</span> → Enter &nbsp;|&nbsp; Sair: <span class="chip-inline">Ctrl+X</span></div>
+        </div>
+        <div class="step">
+            <div class="step-title">⚙️ Permita execução e execute o script</div>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">chmod +x init_cluster.sh</span></div>
+                <div class="code-line"><span class="cmt"># chmod +x dá permissão de execução ao arquivo</span></div>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">./init_cluster.sh</span></div>
+                <div class="code-line"><span class="cmt"># ./ significa "execute no diretório atual"</span></div>
+            </div>
+        </div>
+        <div class="box box-green"><strong>📌 Relação com infraestrutura moderna</strong>Automação é a base de DevOps e IaC. Ferramentas como Ansible, Terraform e scripts Bash provisionam clusters inteiros de forma repetível e escalável.</div>
+    </div>
+</div>
+
+<!-- GLOSSÁRIO -->
+<div class="glossario-section" id="glossario">
+    <h2>📖 Glossário Interativo</h2>
+    <p class="gl-sub">Clique em qualquer card para revelar a explicação completa e a conexão com Big Data.</p>
+    <div class="gl-filter-wrap">
+        <button class="gl-filter active" onclick="filterGl('all',this)">Todos</button>
+        <button class="gl-filter" onclick="filterGl('docker',this)">🐳 Docker</button>
+        <button class="gl-filter" onclick="filterGl('shell',this)">⚙️ Shell</button>
+        <button class="gl-filter" onclick="filterGl('linux',this)">🐧 Linux</button>
+        <button class="gl-filter" onclick="filterGl('bigdata',this)">🐘 Big Data</button>
+    </div>
+    <div class="gl-grid" id="glGrid">
+        <div class="gl-card" data-tag="docker" onclick="flipCard(this)">
+            <div class="gl-front"><div class="gl-card-tag">🐳 Docker</div><div class="gl-card-title">Container</div><div class="gl-card-short">Processo isolado com sistema de arquivos próprio</div><div class="gl-card-flip-hint">👆 Clique para saber mais</div></div>
+            <div class="gl-back"><div class="gl-card-tag">🐳 Docker</div><div class="gl-card-title">Container</div><div class="gl-back-text">Um container é um <strong>processo Linux isolado</strong> que possui seu próprio sistema de arquivos e rede — mas compartilha o kernel do host. Muito mais leve que uma VM tradicional: inicia em segundos, não em minutos.</div><div class="gl-back-example">docker run -dit --name master ubuntu</div><div class="gl-back-bigdata">🐘 Em Hadoop: cada nó (NameNode, DataNode) pode ser um container separado, permitindo simular clusters inteiros numa única máquina.</div><div class="gl-card-flip-back">👆 Clique para voltar</div></div>
+        </div>
+        <div class="gl-card" data-tag="docker" onclick="flipCard(this)">
+            <div class="gl-front"><div class="gl-card-tag">🐳 Docker</div><div class="gl-card-title">Imagem Docker</div><div class="gl-card-short">Molde somente-leitura para criar containers</div><div class="gl-card-flip-hint">👆 Clique para saber mais</div></div>
+            <div class="gl-back"><div class="gl-card-tag">🐳 Docker</div><div class="gl-card-title">Imagem Docker</div><div class="gl-back-text">Uma imagem é um <strong>snapshot somente-leitura</strong> com todas as dependências para rodar um serviço. <code>docker run ubuntu</code> baixa a imagem ubuntu do Docker Hub e cria um container a partir dela. A imagem é o "molde", o container é a "instância".</div><div class="gl-back-example">docker pull ubuntu<br>docker images  # lista imagens</div><div class="gl-back-bigdata">🐘 Existem imagens prontas do Hadoop, Spark, Kafka e Jupyter no Docker Hub — prontas para usar em laboratórios.</div><div class="gl-card-flip-back">👆 Clique para voltar</div></div>
+        </div>
+        <div class="gl-card" data-tag="docker" onclick="flipCard(this)">
+            <div class="gl-front"><div class="gl-card-tag">🐳 Docker</div><div class="gl-card-title">docker exec</div><div class="gl-card-short">Entrar dentro de um container em execução</div><div class="gl-card-flip-hint">👆 Clique para saber mais</div></div>
+            <div class="gl-back"><div class="gl-card-tag">🐳 Docker</div><div class="gl-card-title">docker exec</div><div class="gl-back-text"><code>docker exec -it</code> executa um comando dentro de um container já rodando. O <code>-it</code> combina modo interativo e terminal, permitindo "entrar" no container como se fosse SSH. Essencial para diagnóstico.</div><div class="gl-back-example">docker exec -it master bash</div><div class="gl-back-bigdata">🐘 Equivale a fazer SSH em um nó do cluster para diagnóstico ou configuração manual de serviços como HDFS ou YARN.</div><div class="gl-card-flip-back">👆 Clique para voltar</div></div>
+        </div>
+        <div class="gl-card" data-tag="docker" onclick="flipCard(this)">
+            <div class="gl-front"><div class="gl-card-tag">🐳 Docker</div><div class="gl-card-title">Docker Network</div><div class="gl-card-short">Rede virtual que permite containers se comunicarem</div><div class="gl-card-flip-hint">👆 Clique para saber mais</div></div>
+            <div class="gl-back"><div class="gl-card-tag">🐳 Docker</div><div class="gl-card-title">Docker Network</div><div class="gl-back-text">Uma rede Docker permite containers se comunicarem por <strong>nome</strong>, como DNS interno. Containers na mesma rede se enxergam; fora dela ficam isolados. Garante isolamento e segurança.</div><div class="gl-back-example">docker network create cluster-net<br>ping worker  # dentro do master</div><div class="gl-back-bigdata">🐘 Simula a rede TCP/IP que conecta todos os nós de um cluster Hadoop/Spark em produção.</div><div class="gl-card-flip-back">👆 Clique para voltar</div></div>
+        </div>
+        <div class="gl-card" data-tag="shell" onclick="flipCard(this)">
+            <div class="gl-front"><div class="gl-card-tag">⚙️ Shell</div><div class="gl-card-title">Shell / Bash</div><div class="gl-card-short">Interpretador de linha de comando do Linux</div><div class="gl-card-flip-hint">👆 Clique para saber mais</div></div>
+            <div class="gl-back"><div class="gl-card-tag">⚙️ Shell</div><div class="gl-card-title">Shell / Bash</div><div class="gl-back-text">O <strong>shell</strong> recebe seus comandos e os executa. O <strong>Bash</strong> (Bourne Again SHell) é o shell padrão da maioria dos Linux. Quando você abre um terminal, está interagindo com um shell — o intermediário entre você e o kernel.</div><div class="gl-back-example">#!/bin/bash<br>echo "Olá, Ciência de Dados!"</div><div class="gl-back-bigdata">🐘 Scripts Bash inicializam serviços Hadoop, configuram ambientes e automatizam pipelines de ingestão e processamento de dados.</div><div class="gl-card-flip-back">👆 Clique para voltar</div></div>
+        </div>
+        <div class="gl-card" data-tag="shell" onclick="flipCard(this)">
+            <div class="gl-front"><div class="gl-card-tag">⚙️ Shell</div><div class="gl-card-title">Pipe ( | )</div><div class="gl-card-short">Conecta saída de um comando à entrada do próximo</div><div class="gl-card-flip-hint">👆 Clique para saber mais</div></div>
+            <div class="gl-back"><div class="gl-card-tag">⚙️ Shell</div><div class="gl-card-title">Pipe ( | )</div><div class="gl-back-text">O pipe <code>|</code> encadeia comandos: a saída (stdout) da esquerda vira a entrada (stdin) da direita. Permite pipelines de processamento sem arquivos intermediários, tornando o código elegante e eficiente.</div><div class="gl-back-example">cat dados.csv | grep "A" | wc -l</div><div class="gl-back-bigdata">🐘 Conceito estrutural do MapReduce: Map (filtrar/transformar) | Shuffle | Reduce (agregar). O Spark usa o mesmo paradigma em memória RAM.</div><div class="gl-card-flip-back">👆 Clique para voltar</div></div>
+        </div>
+        <div class="gl-card" data-tag="shell" onclick="flipCard(this)">
+            <div class="gl-front"><div class="gl-card-tag">⚙️ Shell</div><div class="gl-card-title">Shell Script + Shebang</div><div class="gl-card-short">Arquivo .sh com comandos para automação</div><div class="gl-card-flip-hint">👆 Clique para saber mais</div></div>
+            <div class="gl-back"><div class="gl-card-tag">⚙️ Shell</div><div class="gl-card-title">Shell Script + Shebang</div><div class="gl-back-text">Um script .sh com comandos que o bash executa em sequência. O <strong>shebang</strong> (<code>#!/bin/bash</code>) na primeira linha define o interpretador. Sem <code>chmod +x</code> o Linux recusa executar o arquivo.</div><div class="gl-back-example">#!/bin/bash<br>chmod +x script.sh<br>./script.sh</div><div class="gl-back-bigdata">🐘 Hadoop e Airflow usam scripts para orquestrar tarefas de ingestão, transformação e carga (ETL) de dados em larga escala.</div><div class="gl-card-flip-back">👆 Clique para voltar</div></div>
+        </div>
+        <div class="gl-card" data-tag="shell" onclick="flipCard(this)">
+            <div class="gl-front"><div class="gl-card-tag">⚙️ Shell</div><div class="gl-card-title">Editor Nano</div><div class="gl-card-short">Editor de texto minimalista para o terminal</div><div class="gl-card-flip-hint">👆 Clique para saber mais</div></div>
+            <div class="gl-back"><div class="gl-card-tag">⚙️ Shell</div><div class="gl-card-title">Editor Nano</div><div class="gl-back-text">O <strong>nano</strong> é um editor de texto que roda no terminal sem interface gráfica. Ideal para iniciantes pois mostra os atalhos na tela. <code>Ctrl+O</code> salva, <code>Ctrl+X</code> sai, <code>Ctrl+W</code> busca, <code>Ctrl+K</code> corta linha.</div><div class="gl-back-example">nano meu_arquivo.sh<br># Ctrl+O → Enter → Ctrl+X</div><div class="gl-back-bigdata">🐘 Em servidores de produção sem interface gráfica, nano (ou vim) é usado para editar configurações do Hadoop, Spark, Kafka e arquivos YARN.</div><div class="gl-card-flip-back">👆 Clique para voltar</div></div>
+        </div>
+        <div class="gl-card" data-tag="linux" onclick="flipCard(this)">
+            <div class="gl-front"><div class="gl-card-tag">🐧 Linux</div><div class="gl-card-title">chmod</div><div class="gl-card-short">Altera permissões de arquivos e diretórios</div><div class="gl-card-flip-hint">👆 Clique para saber mais</div></div>
+            <div class="gl-back"><div class="gl-card-tag">🐧 Linux</div><div class="gl-card-title">chmod</div><div class="gl-back-text"><strong>chmod</strong> controla quem pode ler (<code>r</code>), escrever (<code>w</code>) ou executar (<code>x</code>) um arquivo. <code>chmod +x</code> adiciona execução para todos. <code>chmod 755</code> usa notação octal: dono tem tudo, outros leem e executam.</div><div class="gl-back-example">chmod +x script.sh<br>chmod 755 script.sh</div><div class="gl-back-bigdata">🐘 Em clusters, permissões controlam quais serviços acessam dados sensíveis no HDFS. Segurança é crítica em ambientes multi-tenant.</div><div class="gl-card-flip-back">👆 Clique para voltar</div></div>
+        </div>
+        <div class="gl-card" data-tag="linux" onclick="flipCard(this)">
+            <div class="gl-front"><div class="gl-card-tag">🐧 Linux</div><div class="gl-card-title">PID (Process ID)</div><div class="gl-card-short">Número único que identifica cada processo</div><div class="gl-card-flip-hint">👆 Clique para saber mais</div></div>
+            <div class="gl-back"><div class="gl-card-tag">🐧 Linux</div><div class="gl-card-title">PID (Process ID)</div><div class="gl-back-text">Todo processo no Linux recebe um <strong>PID</strong> — número inteiro único. O <code>top</code> mostra os PIDs de todos os processos ativos. Com <code>kill &lt;PID&gt;</code> você encerra um processo; <code>kill -9 &lt;PID&gt;</code> força a finalização imediata.</div><div class="gl-back-example">top          # veja PIDs<br>kill 1234    # encerra 1234<br>kill -9 1234 # força</div><div class="gl-back-bigdata">🐘 Admins usam PIDs para reiniciar processos do NameNode ou DataNode travados. Em Kubernetes, o equivalente são os "Pods".</div><div class="gl-card-flip-back">👆 Clique para voltar</div></div>
+        </div>
+        <div class="gl-card" data-tag="bigdata" onclick="flipCard(this)">
+            <div class="gl-front"><div class="gl-card-tag">🐘 Big Data</div><div class="gl-card-title">Data Lake</div><div class="gl-card-short">Repositório centralizado de dados brutos em escala</div><div class="gl-card-flip-hint">👆 Clique para saber mais</div></div>
+            <div class="gl-back"><div class="gl-card-tag">🐘 Big Data</div><div class="gl-card-title">Data Lake</div><div class="gl-back-text">Um <strong>Data Lake</strong> armazena dados em formato bruto sem estrutura prévia: estruturados (CSV, SQL), semiestruturados (JSON) e não-estruturados (imagens, logs). A estrutura <code>raw/</code> → <code>processed/</code> → <code>logs/</code> que criamos simula essa arquitetura.</div><div class="gl-back-example">bigdata/<br>  raw/       # dados originais<br>  processed/ # dados limpos<br>  logs/      # auditoria</div><div class="gl-back-bigdata">🐘 HDFS, Amazon S3, Azure Data Lake e Google Cloud Storage são implementações reais de Data Lakes usadas em produção.</div><div class="gl-card-flip-back">👆 Clique para voltar</div></div>
+        </div>
+        <div class="gl-card" data-tag="bigdata" onclick="flipCard(this)">
+            <div class="gl-front"><div class="gl-card-tag">🐘 Big Data</div><div class="gl-card-title">MapReduce</div><div class="gl-card-short">Modelo de processamento distribuído em duas fases</div><div class="gl-card-flip-hint">👆 Clique para saber mais</div></div>
+            <div class="gl-back"><div class="gl-card-tag">🐘 Big Data</div><div class="gl-card-title">MapReduce</div><div class="gl-back-text">Paradigma com duas fases: <strong>Map</strong> (transforma/filtra dados em paralelo em vários nós) e <strong>Reduce</strong> (agrega os resultados parciais). O pipe Linux simula essa lógica sequencial, porém de forma distribuída o Hadoop executa em centenas de nós simultaneamente.</div><div class="gl-back-example">cat dados.csv | grep "A"  # Map<br>              | wc -l    # Reduce</div><div class="gl-back-bigdata">🐘 Hadoop MapReduce opera em disco; Spark faz o equivalente em memória RAM, sendo até 100x mais rápido para iterações.</div><div class="gl-card-flip-back">👆 Clique para voltar</div></div>
+        </div>
+        <div class="gl-card" data-tag="bigdata" onclick="flipCard(this)">
+            <div class="gl-front"><div class="gl-card-tag">🐘 Big Data</div><div class="gl-card-title">Cluster Master/Worker</div><div class="gl-card-short">Conjunto de máquinas coordenadas trabalhando juntas</div><div class="gl-card-flip-hint">👆 Clique para saber mais</div></div>
+            <div class="gl-back"><div class="gl-card-tag">🐘 Big Data</div><div class="gl-card-title">Cluster Master/Worker</div><div class="gl-back-text">Um <strong>cluster</strong> é um grupo de nós interconectados. O <strong>master</strong> coordena (agenda tarefas, gerencia metadados) e os <strong>workers</strong> executam o processamento. Nesta aula simulamos com 2 containers; clusters de produção têm centenas de nós.</div><div class="gl-back-example">master → NameNode + ResourceManager<br>worker → DataNode + NodeManager</div><div class="gl-back-bigdata">🐘 Um cluster Hadoop de produção pode ter 1000+ nós processando petabytes. Empresas como Facebook e LinkedIn operaram clusters desse porte.</div><div class="gl-card-flip-back">👆 Clique para voltar</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- QUIZ -->
+<div class="game-section" id="quiz">
+    <div class="game-header">
+        <div class="game-header-top">
+            <div class="game-header-icon">🎮</div>
+            <div class="game-header-text">
+                <h2>Quiz — Teste seus conhecimentos!</h2>
+                <p>Responda questões sobre Linux, Docker, Shell Script e Big Data</p>
+            </div>
+        </div>
+        <div class="game-stats">
+            <div class="game-stat"><div class="game-stat-val" id="statScore">0</div><div class="game-stat-lbl">Pontos</div></div>
+            <div class="game-stat"><div class="game-stat-val" id="statCorrect">0</div><div class="game-stat-lbl">Acertos</div></div>
+            <div class="game-stat"><div class="game-stat-val" id="statStreak">0</div><div class="game-stat-lbl">Combo 🔥</div></div>
+            <div class="game-stat"><div class="game-stat-val" id="statQ">-</div><div class="game-stat-lbl">Questão</div></div>
+        </div>
+    </div>
+    <div class="game-body">
+        <div class="screen active" id="screenStart">
+            <div class="start-screen">
+                <h3>Escolha a dificuldade</h3>
+                <p>As questões cobrem tudo que você praticou: Linux, Docker, Shell Script, Nano, containers e Big Data.</p>
+                <div class="difficulty-grid">
+                    <div class="diff-btn selected" onclick="selectDiff('easy',this)"><div class="diff-icon">🟢</div><div class="diff-name">Fácil</div><div class="diff-desc">Sem timer · +10 pts</div></div>
+                    <div class="diff-btn" onclick="selectDiff('medium',this)"><div class="diff-icon">🟡</div><div class="diff-name">Médio</div><div class="diff-desc">20s timer · +20 pts</div></div>
+                    <div class="diff-btn" onclick="selectDiff('hard',this)"><div class="diff-icon">🔴</div><div class="diff-name">Difícil</div><div class="diff-desc">10s timer · +30 pts</div></div>
+                </div>
+                <div class="badges-row">
+                    <div class="badge" id="badge-docker">🐳 Docker Expert</div>
+                    <div class="badge" id="badge-streak">🔥 Combo x3</div>
+                    <div class="badge" id="badge-perfect">⭐ Perfeito!</div>
+                    <div class="badge" id="badge-speed">⚡ Velocidade</div>
+                </div>
+                <button class="btn-primary" onclick="startQuiz()">🚀 Iniciar Quiz</button>
+            </div>
+        </div>
+        <div class="screen" id="screenQuiz">
+            <div class="quiz-progress-wrap">
+                <div class="quiz-progress-top"><span id="qProgressText">Questão 1 de 15</span><span id="qCategory" class="quiz-category cat-linux">Linux</span></div>
+                <div class="quiz-bar-track"><div class="quiz-bar-fill" id="quizBarFill" style="width:0%"></div></div>
+            </div>
+            <div class="timer-bar"><div class="timer-fill" id="timerFill" style="width:100%"></div></div>
+            <div class="combo-streak" id="comboText"></div>
+            <div class="quiz-question" id="quizQuestion">Carregando...</div>
+            <div class="quiz-options" id="quizOptions"></div>
+            <div class="quiz-feedback" id="quizFeedback"></div>
+            <div class="quiz-nav"><button class="btn-primary" id="btnNext" onclick="nextQuestion()" style="display:none">Próxima →</button></div>
+        </div>
+        <div class="screen" id="screenResults">
+            <div class="results-screen">
+                <div class="results-medal" id="resultsMedal">🏆</div>
+                <div class="results-title" id="resultsTitle">Parabéns!</div>
+                <div class="results-score-big" id="resultsScore">0 pts</div>
+                <div class="results-msg" id="resultsMsg"></div>
+                <div class="results-breakdown" id="resultsBreakdown"></div>
+                <div class="badges-row" id="resultsBadges"></div>
+                <div class="results-btns">
+                    <button class="btn-primary" onclick="restartQuiz()">🔄 Jogar Novamente</button>
+                    <button class="btn-secondary" onclick="restartQuiz()">⚙️ Mudar Dificuldade</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <div class="box box-green">
+            <strong>📌 Resumo da Teoria</strong>
+            Como explicado no vídeo em [00:03:13], o Pipe do Linux é o ancestral direto do modelo de programação que tornou possível processar Petabytes de dados.
+        </div>
+<div class="parte" id="p3">
+    <div class="parte-head" onclick="toggleParte(this)">
+        <div class="parte-num">8</div>
+        <h3>Aula em Vídeo</h3>
+        <span class="parte-tag">📺 Youtube</span>
+        <span class="parte-chevron">▼</span>
+    </div>
+    <div class="parte-body">
+        <div class="box box-purple" style="margin-bottom:20px; text-align: center; padding: 30px;">
+            <div style="font-size: 3em; margin-bottom: 15px;">🎬</div>
+            <strong style="font-size: 1.2em; display: block; margin-bottom: 10px;">Assista à Explicação em Vídeo</strong>
+            <p style="color: var(--muted); margin-bottom: 20px; font-size: 0.95em;">
+                Para compreender a conexão entre o terminal Linux e o Big Data (MapReduce), assista à aula preparada pelo Prof. Isaque Katahira, em vídeo.
+            </p>
+            <a href="https://www.youtube.com/watch?v=KkhR8xDy96w" target="_blank" class="nav-btn nav-btn-pri" style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; text-decoration: none;">
+                <span>▶</span> Assistir Aula no YouTube
+            </a>
+        </div>
+
+        <div class="step">
+            <div class="step-title">⚙️ Prática: Simulação de MapReduce</div>
+            <div class="step-desc">Após assistir ao vídeo, utilize o <code>pipe (|)</code> para encadear comandos, simulando o fluxo de processamento:</div>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                <div class="code-line"><span class="prompt">$</span><span class="cmd">cat bigdata/raw/dados.csv | grep "produtoA" | wc -l</span></div>
+                <div class="code-line"><span class="cmt"># cat (Map) | grep (Shuffle) | wc (Reduce)</span></div>
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+</div>
+
+<div class="nav-bottom">
+    <a href="semana01.html" class="nav-btn nav-btn-sec">← Semana 01 (Teoria)</a>
+    <a href="semana02.html" class="nav-btn nav-btn-pri">Próxima Semana ➡</a>
+</div>
+</main>
+</div>
+
+<script>
+function toggleParte(h){const b=h.nextElementSibling,c=h.querySelector('.parte-chevron'),o=b.classList.contains('open');b.classList.toggle('open',!o);c.classList.toggle('open',!o);}
+function copyCode(btn){const block=btn.parentElement,lines=block.querySelectorAll('.code-line'),text=Array.from(lines).map(l=>{const c=l.querySelector('.cmd');return c?c.textContent.trim():'';}).filter(Boolean).join('\n');navigator.clipboard.writeText(text).then(()=>{btn.textContent='✓ Copiado!';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Copiar';btn.classList.remove('copied');},1800);});}
+function markDone(el){el.classList.toggle('done');const steps=document.querySelectorAll('.prog-step'),done=document.querySelectorAll('.prog-step.done').length;document.getElementById('progLabel').textContent=done+' / '+steps.length+' concluídas';document.getElementById('progressBarFill').style.width=(done/steps.length*100)+'%';}
+const partes=document.querySelectorAll('.parte,.glossario-section,.game-section');
+const tocLinks=document.querySelectorAll('.toc-list a');
+window.addEventListener('scroll',()=>{let current='';partes.forEach(p=>{if(window.scrollY>=p.offsetTop-130)current=p.id;});tocLinks.forEach(a=>{a.classList.toggle('active',a.getAttribute('href')==='#'+current);});});
+function flipCard(card){card.classList.toggle('flipped');}
+function filterGl(tag,btn){document.querySelectorAll('.gl-filter').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.gl-card').forEach(card=>{card.style.display=(tag==='all'||card.dataset.tag===tag)?'':'none';});}
+
+const ALL_QUESTIONS=[
+{cat:'docker',catLabel:'🐳 Docker',q:'O que é um container Docker?',opts:['Uma VM completa com seu próprio kernel','Um processo Linux isolado que compartilha o kernel do host','Um arquivo de configuração do SO','Um banco de dados em memória'],ans:1,exp:'✅ Container é um processo isolado que compartilha o kernel do host — muito mais leve que uma VM. Não precisa de SO completo: inicia em segundos.'},
+{cat:'docker',catLabel:'🐳 Docker',q:'Qual flag do "docker run" faz o container rodar em background (segundo plano)?',opts:['-i (interativo)','-t (terminal)','-d (detached)','-n (name)'],ans:2,exp:'✅ -d (detached) roda o container em background. -i = interativo, -t = pseudo-TTY. Sem -d o terminal fica preso ao container.'},
+{cat:'docker',catLabel:'🐳 Docker',q:'O que faz o comando "docker exec -it master bash"?',opts:['Cria um novo container chamado master','Para o container master','Entra no container master com terminal bash interativo','Lista os containers em execução'],ans:2,exp:'✅ docker exec executa um comando dentro de um container já rodando. -it ativa modo interativo + terminal. É equivalente a SSH em um nó do cluster.'},
+{cat:'docker',catLabel:'🐳 Docker',q:'Por que criamos uma docker network chamada cluster-net?',opts:['Para acelerar download de imagens','Para que containers se comuniquem por nome (DNS interno)','Para expor portas para a internet','Para criar volumes de armazenamento persistente'],ans:1,exp:'✅ A docker network cria uma rede virtual onde containers se enxergam pelo nome. Dentro do master, "ping worker" resolve automaticamente para o IP do container worker.'},
+{cat:'docker',catLabel:'🐳 Docker',q:'Em um cluster Hadoop real, o container "master" representaria o quê?',opts:['DataNode e NodeManager','NameNode e ResourceManager','Apenas o banco de dados','O servidor web do cluster'],ans:1,exp:'✅ O nó master executa o NameNode (gerencia metadados do HDFS) e o ResourceManager (gerencia recursos do YARN). Workers executam DataNodes e NodeManagers.'},
+{cat:'shell',catLabel:'⚙️ Shell Script',q:'O que é o shebang (#!/bin/bash) no início de um shell script?',opts:['Um comentário decorativo sem função','Uma senha de acesso ao script','Informa ao sistema qual interpretador deve executar o arquivo','A versão do script'],ans:2,exp:'✅ O shebang (#!) indica ao SO qual programa interpreta o script. #!/bin/bash = "use o Bash". Sem ele, o sistema não sabe como executar o arquivo.'},
+{cat:'shell',catLabel:'⚙️ Shell Script',q:'O que faz o comando "chmod +x script.sh"?',opts:['Cria uma cópia do script','Renomeia o script','Adiciona permissão de execução ao arquivo','Exclui o script'],ans:2,exp:'✅ chmod (change mode) altera permissões. +x adiciona execução. Sem isso o Linux recusa executar o script, mesmo com conteúdo correto.'},
+{cat:'shell',catLabel:'⚙️ Shell Script',q:'No editor nano, qual atalho salva o arquivo?',opts:['Ctrl+S','Ctrl+O (depois Enter)','Ctrl+W','Ctrl+Z'],ans:1,exp:'✅ Ctrl+O (Write Out) salva — o nano pede confirmação do nome e você pressiona Enter. Ctrl+X sai. Ctrl+W busca. Ctrl+S não funciona no nano padrão.'},
+{cat:'shell',catLabel:'⚙️ Shell Script',q:'O que faz o operador pipe ( | ) no Linux?',opts:['Redireciona saída para um arquivo','Conecta a saída de um comando à entrada do próximo','Executa dois comandos simultaneamente','Compara dois arquivos'],ans:1,exp:'✅ O pipe faz a saída (stdout) de um comando ser a entrada (stdin) do próximo. Ex: cat dados.csv | grep "A" | wc -l conta linhas com "A".'},
+{cat:'shell',catLabel:'⚙️ Shell Script',q:'Como você executa um script "init_cluster.sh" no diretório atual?',opts:['run init_cluster.sh','exec init_cluster.sh','./init_cluster.sh','open init_cluster.sh'],ans:2,exp:'✅ "./" indica diretório atual. O Linux não busca scripts no diretório corrente por padrão (diferente do Windows), então precisamos do "./" explicitamente.'},
+{cat:'linux',catLabel:'🐧 Linux',q:'O que "mkdir -p bigdata/raw" faz de diferente do simples "mkdir"?',opts:['Cria com permissões especiais','Cria o diretório e todos os diretórios pai necessários de uma só vez','Cria um link simbólico','Lista o conteúdo'],ans:1,exp:'✅ A flag -p (parents) cria toda a árvore necessária. Sem ela, se "bigdata" não existir, o comando falharia. Com -p tudo é criado de uma vez.'},
+{cat:'linux',catLabel:'🐧 Linux',q:'No comando "yes > /dev/null &", o que o & faz?',opts:['Encadeia outro comando','Executa o comando em background (segundo plano)','Aguarda o Enter do usuário','Mostra o output'],ans:1,exp:'✅ O & envia o processo para background, liberando o terminal. O processo continua rodando. Você vê seu PID com "jobs" ou "top".'},
+{cat:'linux',catLabel:'🐧 Linux',q:'O que é um PID no Linux?',opts:['Password ID — identificador de senha','Process ID — número único que identifica um processo','Partition ID — identificador de disco','Program Interface Definition'],ans:1,exp:'✅ PID (Process ID) é um número único atribuído a cada processo. Visível no "top". Use "kill <PID>" para encerrar o processo correspondente.'},
+{cat:'bigdata',catLabel:'🐘 Big Data',q:'Na estrutura de pastas que criamos, qual é a função da pasta "raw"?',opts:['Armazenar logs de erro','Armazenar dados brutos exatamente como vieram da fonte, sem processamento','Guardar scripts de automação','Armazenar arquivos de configuração'],ans:1,exp:'✅ A camada "raw" é a landing zone do Data Lake — dados originais sem alteração. Nunca se modifica essa camada, pois serve de referência para reprocessamentos futuros.'},
+{cat:'bigdata',catLabel:'🐘 Big Data',q:'Por que automação via Shell Script é fundamental em Big Data?',opts:['Porque Python não funciona em Linux','Porque scripts permitem provisionar e orquestrar clusters de forma repetível e escalável','Porque o Hadoop só aceita bash como entrada','Porque é obrigatório por regulamentação'],ans:1,exp:'✅ Com dezenas de nós, configuração manual é inviável. Scripts garantem automação repetível (IaC). Ansible, Terraform e os scripts de inicialização do Hadoop/Spark são baseados nesse princípio.'},
+{cat:'bigdata',catLabel:'🐘 Big Data',q:'Qual a principal diferença entre Apache Spark e Hadoop MapReduce?',opts:['Spark usa SQL, Hadoop usa Python','Spark processa em memória RAM (mais rápido), Hadoop processa em disco','Hadoop é tempo real, Spark é em lote','Spark só funciona com dados estruturados'],ans:1,exp:'✅ Spark processa dados em memória RAM — até 100x mais rápido que Hadoop MapReduce (que grava resultados intermediários em disco). Ambos rodam sobre Linux e podem usar HDFS.'}
+];
+
+let difficulty='easy',questions=[],currentQ=0,score=0,correct=0,streak=0,maxStreak=0,answered=false,timerInt=null,timeLeft=0,categoryStats={},unlockedBadges=[];
+const DIFF={easy:{timer:0,points:10},medium:{timer:20,points:20},hard:{timer:10,points:30}};
+
+function selectDiff(d,btn){difficulty=d;document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');}
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function startQuiz(){questions=shuffle(ALL_QUESTIONS);currentQ=0;score=0;correct=0;streak=0;maxStreak=0;categoryStats={};unlockedBadges=[];answered=false;updateStat();showScreen('screenQuiz');renderQ();}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function updateStat(){document.getElementById('statScore').textContent=score;document.getElementById('statCorrect').textContent=correct;document.getElementById('statStreak').textContent=streak;document.getElementById('statQ').textContent=(currentQ+1)+'/'+questions.length;}
+
+function renderQ(){
+    const q=questions[currentQ];answered=false;clearInterval(timerInt);
+    document.getElementById('quizBarFill').style.width=(currentQ/questions.length*100)+'%';
+    document.getElementById('qProgressText').textContent='Questão '+(currentQ+1)+' de '+questions.length;
+    const catEl=document.getElementById('qCategory');catEl.textContent=q.catLabel;catEl.className='quiz-category cat-'+q.cat;
+    document.getElementById('quizQuestion').textContent=q.q;
+    document.getElementById('quizFeedback').style.display='none';
+    document.getElementById('btnNext').style.display='none';
+    document.getElementById('comboText').textContent=streak>=2?'🔥 Sequência de '+streak+'! Continue!':'';
+    const optDiv=document.getElementById('quizOptions');optDiv.innerHTML='';
+    const letters=['A','B','C','D'];
+    q.opts.forEach((opt,i)=>{const btn=document.createElement('button');btn.className='quiz-option';btn.innerHTML='<span class="opt-letter">'+letters[i]+'</span>'+opt;btn.onclick=()=>selectAnswer(i);optDiv.appendChild(btn);});
+    const cfg=DIFF[difficulty],timerBar=document.getElementById('timerFill');
+    if(cfg.timer>0){timeLeft=cfg.timer;timerBar.style.width='100%';timerBar.style.background='var(--cyan)';timerInt=setInterval(()=>{timeLeft-=0.1;const p=Math.max(0,timeLeft/cfg.timer*100);timerBar.style.width=p+'%';if(p<30)timerBar.style.background='var(--yellow)';if(p<15)timerBar.style.background='var(--red)';if(timeLeft<=0){clearInterval(timerInt);timeoutAnswer();}},100);}else{timerBar.style.width='0%';}
+}
+
+function selectAnswer(idx){
+    if(answered)return;answered=true;clearInterval(timerInt);
+    const q=questions[currentQ],opts=document.querySelectorAll('.quiz-option'),fb=document.getElementById('quizFeedback'),cfg=DIFF[difficulty];
+    const speedBonus=cfg.timer>0&&timeLeft>cfg.timer*0.7;
+    if(!categoryStats[q.cat])categoryStats[q.cat]={correct:0,total:0};
+    categoryStats[q.cat].total++;
+    if(idx===q.ans){
+        opts[idx].classList.add('correct');
+        let pts=cfg.points,bonus='';
+        if(speedBonus){pts+=5;bonus+=' (+5 ⚡)';}
+        if(streak>=2){pts+=streak*2;bonus+=' (+'+streak*2+' 🔥)';}
+        score+=pts;correct++;streak++;if(streak>maxStreak)maxStreak=streak;
+        categoryStats[q.cat].correct++;
+        fb.className='quiz-feedback feedback-correct';fb.innerHTML='<strong>🎉 Correto! +'+pts+' pts'+bonus+'</strong><br>'+q.exp;
+        showXPToast('+'+pts+' pts');
+        if(q.cat==='docker'&&(categoryStats['docker']?.correct||0)>=3)unlockBadge('badge-docker','🐳 Docker Expert');
+        if(streak>=3)unlockBadge('badge-streak','🔥 Combo x3');
+        if(speedBonus)unlockBadge('badge-speed','⚡ Velocidade');
+    }else{
+        opts[idx].classList.add('wrong');opts[q.ans].classList.add('correct');streak=0;
+        fb.className='quiz-feedback feedback-wrong';fb.innerHTML='<strong>❌ Incorreto.</strong><br>'+q.exp;
+    }
+    opts.forEach(o=>o.disabled=true);fb.style.display='block';updateStat();document.getElementById('btnNext').style.display='flex';
+}
+
+function timeoutAnswer(){if(answered)return;answered=true;const q=questions[currentQ],opts=document.querySelectorAll('.quiz-option');opts[q.ans].classList.add('correct');opts.forEach(o=>o.disabled=true);streak=0;const fb=document.getElementById('quizFeedback');fb.className='quiz-feedback feedback-wrong';fb.innerHTML='<strong>⏰ Tempo esgotado!</strong><br>'+q.exp;fb.style.display='block';updateStat();document.getElementById('btnNext').style.display='flex';}
+
+function nextQuestion(){currentQ++;if(currentQ>=questions.length)showResults();else renderQ();}
+
+function showResults(){
+    clearInterval(timerInt);showScreen('screenResults');
+    const total=questions.length,pct=Math.round(correct/total*100);
+    let medal='🥉',title='Bom começo!';
+    if(pct>=90){medal='🏆';title='Mestre do Cluster!';}else if(pct>=70){medal='🥇';title='Engenheiro de Dados!';}else if(pct>=50){medal='🥈';title='Bom Trabalho!';}
+    document.getElementById('resultsMedal').textContent=medal;
+    document.getElementById('resultsTitle').textContent=title;
+    document.getElementById('resultsScore').textContent=score+' pts';
+    const msgs={10:'Não desanime! Revise o glossário e tente novamente. 💪',30:'Você está evoluindo! Releia as caixas de conceito.',50:'Na metade do caminho! Bom progresso.',70:'Ótimo! Você domina a maioria dos conceitos.',90:'Excelente! Pronto para configurar um cluster real. 🚀',100:'PERFEITO! Pode ir para produção! 🌟'};
+    const mk=[100,90,70,50,30,10].find(k=>pct>=k)||10;
+    document.getElementById('resultsMsg').textContent=correct+'/'+total+' corretas ('+pct+'%) · Combo máximo: '+maxStreak+' 🔥\n'+msgs[mk];
+    const catMeta={docker:{label:'🐳 Docker',color:'#0db7ed'},shell:{label:'⚙️ Shell',color:'var(--green)'},linux:{label:'🐧 Linux',color:'var(--yellow)'},bigdata:{label:'🐘 Big Data',color:'var(--purple)'}};
+    let html='<h4>Desempenho por categoria</h4>';
+    Object.entries(categoryStats).forEach(([cat,s])=>{const p=s.total?Math.round(s.correct/s.total*100):0,m=catMeta[cat]||{label:cat,color:'var(--cyan)'};html+='<div class="rb-row"><div class="rb-dot" style="background:'+m.color+'"></div><div class="rb-name">'+m.label+'</div><div class="rb-bar"><div class="rb-bar-fill" style="width:'+p+'%;background:'+m.color+'"></div></div><div class="rb-pct">'+p+'%</div></div>';});
+    document.getElementById('resultsBreakdown').innerHTML=html;
+    if(pct===100)unlockBadge('badge-perfect','⭐ Perfeito!');
+    const rb=document.getElementById('resultsBadges');
+    rb.innerHTML=unlockedBadges.length>0?'<div style="width:100%;text-align:center;font-size:0.82em;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Conquistas desbloqueadas</div>'+unlockedBadges.map(b=>'<div class="badge unlocked">'+b+'</div>').join(''):'';
+}
+
+function unlockBadge(id,label){const el=document.getElementById(id);if(el&&!el.classList.contains('unlocked')){el.classList.add('unlocked');if(!unlockedBadges.includes(label))unlockedBadges.push(label);}}
+function showXPToast(txt){const t=document.createElement('div');t.className='xp-toast';t.textContent=txt;document.body.appendChild(t);setTimeout(()=>t.remove(),2300);}
+function restartQuiz(){showScreen('screenStart');['badge-docker','badge-streak','badge-perfect','badge-speed'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('unlocked');});}
+</script>
+</body>
+</html>

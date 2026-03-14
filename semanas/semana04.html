@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S04 · Apache Spark | Big Data</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;
+  --green:#3fb950;--green-dim:#1a4a1f;--green-glow:rgba(63,185,80,.15);
+  --cyan:#79c0ff;--cyan-dim:#0c2a4a;--yellow:#e3b341;--yellow-dim:#3d2d00;
+  --red:#f85149;--purple:#bc8cff;--orange:#ffa657;
+  --text:#e6edf3;--text-muted:#7d8590;--text-dim:#484f58;
+  --r:8px;--r-sm:6px;
+  --font-mono:'IBM Plex Mono',monospace;--font-sans:'IBM Plex Sans',sans-serif;
+}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.topbar-inner{max-width:1200px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.tb-badge{background:#3d2d00;border:1px solid var(--orange);color:var(--orange);border-radius:50px;padding:4px 12px;font-size:.75em;font-weight:700;font-family:var(--font-mono);}
+.tb-title{flex:1;}
+.tb-title h1{font-size:1em;font-weight:700;}
+.tb-title p{font-size:.78em;color:var(--text-muted);}
+.xp-widget{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:50px;padding:6px 14px;}
+.xp-label{font-size:.75em;font-weight:700;color:var(--yellow);font-family:var(--font-mono);}
+.xp-bar{width:90px;height:5px;background:var(--border);border-radius:50px;overflow:hidden;}
+.xp-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--orange),var(--yellow));border-radius:50px;transition:width 1s cubic-bezier(.22,1,.36,1);}
+.xp-val{font-size:.75em;font-family:var(--font-mono);color:var(--yellow);}
+.wrap{max-width:1200px;margin:0 auto;padding:28px 24px;display:grid;grid-template-columns:220px 1fr;gap:24px;}
+@media(max-width:900px){.wrap{grid-template-columns:1fr;}.sidebar{display:none;}}
+.sidebar{position:sticky;top:100px;height:fit-content;}
+.sidebar-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px;}
+.sidebar-card h3{font-size:.75em;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;}
+.prog-item{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);}
+.prog-item:last-child{border-bottom:none;}
+.prog-dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0;transition:all .3s;}
+.prog-dot.done{background:var(--green);}
+.prog-dot.active{background:var(--orange);box-shadow:0 0 6px var(--orange);}
+.prog-text{font-size:.8em;color:var(--text-muted);}
+.total-box{text-align:center;padding:12px 0;}
+.total-num{font-size:1.8em;font-weight:700;color:var(--orange);font-family:var(--font-mono);}
+.total-lbl{font-size:.75em;color:var(--text-muted);}
+.prog-bar-track{height:6px;background:var(--surface2);border-radius:50px;overflow:hidden;margin-top:8px;}
+.prog-bar-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--orange),var(--yellow));transition:width .8s ease;}
+.sec{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:20px;overflow:hidden;}
+.sec-head{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--border);background:var(--surface2);}
+.sec-icon{font-size:1.1em;}
+.sec-title{font-size:.98em;font-weight:700;}
+.sec-body{padding:20px;}
+/* hero */
+.hero-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px;margin-bottom:20px;position:relative;overflow:hidden;}
+.hero-card::before{content:'';position:absolute;top:-30px;right:-30px;width:180px;height:180px;background:radial-gradient(circle,rgba(255,166,87,.12) 0%,transparent 70%);border-radius:50%;}
+.hero-label{font-size:.75em;font-weight:700;color:var(--orange);font-family:var(--font-mono);letter-spacing:.08em;margin-bottom:8px;}
+.hero-card h2{font-size:1.6em;font-weight:700;margin-bottom:8px;line-height:1.2;}
+.hero-card h2 span{color:var(--orange);}
+.hero-card p{color:var(--text-muted);font-size:.95em;max-width:600px;margin-bottom:16px;}
+.hero-chips{display:flex;gap:10px;flex-wrap:wrap;}
+.chip{padding:5px 12px;border-radius:50px;font-size:.78em;font-weight:600;border:1px solid;}
+.chip-orange{background:#3d2d00;color:var(--orange);border-color:var(--orange);}
+.chip-cyan{background:var(--cyan-dim);color:var(--cyan);border-color:var(--cyan);}
+.chip-yellow{background:var(--yellow-dim);color:var(--yellow);border-color:var(--yellow);}
+.chip-green{background:var(--green-dim);color:var(--green);border-color:var(--green);}
+/* arch diagram */
+.arch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:16px 0;}
+.arch-node{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px;text-align:center;transition:all .2s;}
+.arch-node:hover{border-color:var(--orange);transform:translateY(-2px);}
+.arch-node.driver{border-color:var(--orange);background:rgba(255,166,87,.08);}
+.arch-node.executor{border-color:var(--cyan);background:rgba(121,192,255,.08);}
+.arch-node.cluster{border-color:var(--purple);background:rgba(188,140,255,.08);}
+.arch-icon{font-size:1.8em;margin-bottom:6px;}
+.arch-name{font-size:.85em;font-weight:700;}
+.arch-name.driver{color:var(--orange);}
+.arch-name.executor{color:var(--cyan);}
+.arch-name.cluster{color:var(--purple);}
+.arch-desc{font-size:.75em;color:var(--text-muted);margin-top:4px;}
+/* quiz */
+.quiz-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin:14px 0;}
+.quiz-q{font-size:.95em;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.5;}
+.quiz-opts{display:flex;flex-direction:column;gap:8px;}
+.quiz-opt{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:10px 16px;cursor:pointer;transition:all .15s;text-align:left;color:var(--text);font-size:.88em;font-family:var(--font-sans);}
+.quiz-opt:hover{border-color:var(--orange);}
+.quiz-opt.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);}
+.quiz-opt.wrong{border-color:var(--red);background:rgba(248,81,73,.1);color:var(--red);}
+.quiz-opt.disabled{cursor:default;pointer-events:none;}
+.quiz-feedback{margin-top:12px;padding:10px 14px;border-radius:var(--r-sm);font-size:.85em;display:none;}
+.quiz-feedback.ok{background:var(--green-dim);border:1px solid var(--green);color:var(--green);display:block;}
+.quiz-feedback.fail{background:rgba(248,81,73,.1);border:1px solid var(--red);color:var(--red);display:block;}
+/* rdd ops */
+.rdd-table{width:100%;border-collapse:collapse;font-size:.82em;margin:12px 0;}
+.rdd-table th{background:var(--surface2);color:var(--text-muted);padding:9px 12px;text-align:left;border:1px solid var(--border);font-weight:600;font-size:.78em;text-transform:uppercase;letter-spacing:.04em;}
+.rdd-table td{padding:9px 12px;border:1px solid var(--border);color:var(--text-muted);}
+.rdd-table td:first-child{color:var(--cyan);font-family:var(--font-mono);font-size:.9em;}
+.rdd-table td:nth-child(2){color:var(--orange);}
+.rdd-table tr:hover td{background:var(--surface2);}
+/* code */
+.code-block{background:#010409;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin:14px 0;}
+.code-header{background:var(--surface2);padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.code-dots{display:flex;gap:5px;}
+.code-dot{width:10px;height:10px;border-radius:50%;}
+.code-label{font-size:.75em;color:var(--text-muted);font-family:var(--font-mono);margin-left:auto;}
+.code-body{padding:16px;font-family:var(--font-mono);font-size:.82em;line-height:1.7;overflow-x:auto;white-space:pre;}
+.kw{color:#ff7b72;}.fn{color:#d2a8ff;}.str{color:#a5d6ff;}.cmt{color:#8b949e;}.num{color:#79c0ff;}.cls{color:#ffa657;}
+/* terminal */
+.terminal{background:#010409;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin:14px 0;}
+.term-bar{background:#161b22;padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.term-dot{width:10px;height:10px;border-radius:50%;}
+.term-title{font-size:.75em;color:var(--text-muted);font-family:var(--font-mono);margin-left:auto;}
+.term-body{padding:16px;font-family:var(--font-mono);font-size:.8em;line-height:1.8;}
+.t-prompt{color:var(--orange);}.t-cmd{color:var(--text);}.t-out{color:var(--text-muted);}.t-ok{color:var(--green);}.t-err{color:var(--red);}
+/* comparison spark vs mr */
+.vs-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0;}
+@media(max-width:600px){.vs-grid{grid-template-columns:1fr;}}
+.vs-card{border-radius:var(--r);padding:16px;}
+.vs-mr{background:rgba(248,81,73,.05);border:1px solid rgba(248,81,73,.3);}
+.vs-spark{background:rgba(255,166,87,.05);border:1px solid var(--orange);}
+.vs-title{font-size:.85em;font-weight:700;margin-bottom:12px;}
+.vs-item{display:flex;gap:8px;align-items:flex-start;font-size:.82em;color:var(--text-muted);padding:5px 0;border-bottom:1px dashed var(--border);}
+.vs-item:last-child{border-bottom:none;}
+.vs-ic{flex-shrink:0;}
+/* mission */
+.mission{background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-bottom:14px;cursor:pointer;transition:all .18s;display:flex;gap:14px;align-items:flex-start;position:relative;overflow:hidden;}
+.mission::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--border);transition:background .18s;}
+.mission:hover{border-color:var(--orange);}
+.mission:hover::before{background:var(--orange);}
+.mission.done{border-color:var(--green);background:rgba(63,185,80,.05);}
+.mission.done::before{background:var(--green);}
+.m-num{width:34px;height:34px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:.8em;font-weight:700;font-family:var(--font-mono);flex-shrink:0;color:var(--text-muted);}
+.mission.done .m-num{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+.m-body{flex:1;}
+.m-title{font-size:.95em;font-weight:700;margin-bottom:4px;}
+.m-desc{font-size:.83em;color:var(--text-muted);line-height:1.5;margin-bottom:10px;}
+.m-tags{display:flex;gap:8px;flex-wrap:wrap;}
+.mtag{padding:3px 9px;border-radius:50px;font-size:.72em;font-weight:600;border:1px solid;}
+.t-time{background:#0c2a4a;color:var(--cyan);border-color:var(--cyan);}
+.t-xp{background:var(--yellow-dim);color:var(--yellow);border-color:var(--yellow);}
+.t-diff-e{background:var(--green-dim);color:var(--green);border-color:var(--green);}
+.t-diff-m{background:#3d2d00;color:var(--orange);border-color:var(--orange);}
+.t-diff-h{background:rgba(248,81,73,.1);color:var(--red);border-color:var(--red);}
+.m-check{width:26px;height:26px;border:1.5px solid var(--border);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .18s;margin-top:2px;}
+.mission:hover .m-check{border-color:var(--orange);}
+.mission.done .m-check{background:var(--green);border-color:var(--green);color:#000;font-weight:700;}
+/* badges */
+.badges-strip{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.badge{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--surface);min-width:80px;transition:all .2s;}
+.badge.unlocked{border-color:var(--orange);background:#3d2d00;box-shadow:0 0 12px rgba(255,166,87,.2);}
+.badge.locked{opacity:.3;filter:grayscale(1);}
+.badge-ico{font-size:1.6em;}
+.badge-nm{font-size:.7em;font-weight:700;text-align:center;}
+.badge-xp{font-size:.65em;font-family:var(--font-mono);color:var(--yellow);}
+/* toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--orange);border-radius:var(--r);padding:14px 18px;z-index:999;transform:translateY(70px);opacity:0;transition:all .3s;pointer-events:none;max-width:260px;box-shadow:0 8px 24px rgba(0,0,0,.4);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast-title{color:var(--orange);font-weight:700;font-size:.85em;margin-bottom:3px;}
+.toast-msg{color:var(--text-muted);font-size:.8em;}
+/* lazy eval visual */
+.lazy-flow{display:flex;align-items:center;gap:0;flex-wrap:wrap;margin:14px 0;}
+.lf-step{flex:1;min-width:110px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;text-align:center;}
+.lf-step.transform{border-color:var(--yellow);}
+.lf-step.action{border-color:var(--green);}
+.lf-arrow{color:var(--text-dim);font-size:1.2em;padding:0 6px;flex-shrink:0;}
+.lf-label{font-size:.72em;font-weight:700;margin-bottom:4px;}
+.lf-label.transform{color:var(--yellow);}
+.lf-label.action{color:var(--green);}
+.lf-op{font-family:var(--font-mono);font-size:.78em;color:var(--text-muted);}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <span class="tb-badge">S04 · Spark</span>
+    <div class="tb-title">
+      <h1>Apache Spark — Processamento In-Memory</h1>
+      <p>Infraestrutura para Big Data · Ciência de Dados · FATec Ourinhos</p>
+    </div>
+    <div class="xp-widget">
+      <span class="xp-label">XP</span>
+      <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+      <span class="xp-val" id="xpVal">0/320</span>
+    </div>
+  </div>
+</header>
+
+<div style="background:var(--surface2);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+  <a href="semana03.html" style="text-decoration:none;padding:7px 16px;border-radius:6px;border:1px solid var(--border);color:var(--text-muted);font-size:.82em;font-weight:600;">⬅ S03 · MapReduce</a>
+  <a href="../index.html" style="text-decoration:none;padding:7px 16px;border-radius:6px;border:1px solid var(--border);color:var(--text-muted);font-size:.82em;font-weight:600;">🏠 Índice</a>
+  <a href="../guias/semana04_guia.html" style="text-decoration:none;padding:7px 16px;border-radius:6px;background:#3d2d00;color:var(--orange);border:1px solid var(--orange);font-size:.82em;font-weight:600;">📚 Guia</a>
+  <a href="semana05.html" style="margin-left:auto;text-decoration:none;padding:7px 16px;border-radius:6px;background:#3d2d00;color:var(--orange);border:1px solid var(--orange);font-size:.82em;font-weight:700;">S05 · DataFrames ➡</a>
+</div>
+
+<div class="wrap">
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <h3>Progresso</h3>
+      <div class="prog-item"><div class="prog-dot active" id="pd0"></div><span class="prog-text">Quiz 1: Spark vs MR</span></div>
+      <div class="prog-item"><div class="prog-dot" id="pd1"></div><span class="prog-text">Quiz 2: RDD Ops</span></div>
+      <div class="prog-item"><div class="prog-dot" id="pd2"></div><span class="prog-text">Quiz 3: Lazy Eval</span></div>
+      <div class="prog-item"><div class="prog-dot" id="pd3"></div><span class="prog-text">Missão 1: Instalar Spark</span></div>
+      <div class="prog-item"><div class="prog-dot" id="pd4"></div><span class="prog-text">Missão 2: Análise Logs RDD</span></div>
+    </div>
+    <div class="sidebar-card">
+      <h3>XP desta semana</h3>
+      <div class="total-box">
+        <div class="total-num" id="sideXP">0</div>
+        <div class="total-lbl">de 320 XP</div>
+      </div>
+      <div class="prog-bar-track"><div class="prog-bar-fill" id="sideBar" style="width:0%"></div></div>
+    </div>
+    <div class="sidebar-card">
+      <h3>Navegação</h3>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <a href="#arch" style="color:var(--text-muted);text-decoration:none;font-size:.82em;padding:5px 0;border-bottom:1px solid var(--border);">→ Arquitetura Spark</a>
+        <a href="#rdd" style="color:var(--text-muted);text-decoration:none;font-size:.82em;padding:5px 0;border-bottom:1px solid var(--border);">→ RDDs e Operações</a>
+        <a href="#lazy" style="color:var(--text-muted);text-decoration:none;font-size:.82em;padding:5px 0;border-bottom:1px solid var(--border);">→ Lazy Evaluation</a>
+        <a href="#missoes" style="color:var(--text-muted);text-decoration:none;font-size:.82em;padding:5px 0;">→ Missões Práticas</a>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="hero-card">
+      <div class="hero-label">// SEMANA 04 · IN-MEMORY PROCESSING</div>
+      <h2>Apache Spark: <span>100x mais rápido</span></h2>
+      <p>Enquanto MapReduce salva tudo no disco a cada passo, o Spark mantém os dados na memória RAM. Resultado: processamento muito mais veloz — especialmente para algoritmos iterativos como Machine Learning.</p>
+      <div class="hero-chips">
+        <span class="chip chip-orange">⚡ 320 XP</span>
+        <span class="chip chip-cyan">🐍 PySpark</span>
+        <span class="chip chip-yellow">⏱ ~90 min</span>
+        <span class="chip chip-green">🧩 2 missões + 3 quizzes</span>
+      </div>
+    </div>
+
+    <div class="badges-strip">
+      <div class="badge locked" id="b0"><div class="badge-ico">⚡</div><div class="badge-nm">Speed Demon</div><div class="badge-xp">+60 XP</div></div>
+      <div class="badge locked" id="b1"><div class="badge-ico">🔵</div><div class="badge-nm">RDD Master</div><div class="badge-xp">+70 XP</div></div>
+      <div class="badge locked" id="b2"><div class="badge-ico">😴</div><div class="badge-nm">Lazy Genius</div><div class="badge-xp">+60 XP</div></div>
+      <div class="badge locked" id="b3"><div class="badge-ico">🔧</div><div class="badge-nm">Spark Installer</div><div class="badge-xp">+60 XP</div></div>
+      <div class="badge locked" id="b4"><div class="badge-ico">📊</div><div class="badge-nm">Log Analyst</div><div class="badge-xp">+70 XP</div></div>
+      <div class="badge locked" id="b5"><div class="badge-ico">🏆</div><div class="badge-nm">Spark Master</div><div class="badge-xp">BÔNUS</div></div>
+    </div>
+
+    <!-- SPARK vs MapReduce -->
+    <div class="sec">
+      <div class="sec-head"><span class="sec-icon">⚡</span><span class="sec-title">Por que Spark? Spark vs MapReduce</span></div>
+      <div class="sec-body">
+        <p style="color:var(--text-muted);font-size:.88em;margin-bottom:16px;">MapReduce funciona, mas tem um problema: a cada passo ele grava os dados no disco HDFS. Isso é lento. Spark mantém os dados na memória entre os passos — muito mais eficiente para tarefas iterativas.</p>
+        <div class="vs-grid">
+          <div class="vs-card vs-mr">
+            <div class="vs-title" style="color:var(--red);">🐢 MapReduce</div>
+            <div class="vs-item"><span class="vs-ic">💾</span> Salva no disco a cada operação</div>
+            <div class="vs-item"><span class="vs-ic">🐌</span> Lento para algoritmos iterativos</div>
+            <div class="vs-item"><span class="vs-ic">☕</span> API verbosa em Java</div>
+            <div class="vs-item"><span class="vs-ic">✅</span> Ótimo para batch único grande</div>
+          </div>
+          <div class="vs-card vs-spark">
+            <div class="vs-title" style="color:var(--orange);">🚀 Apache Spark</div>
+            <div class="vs-item"><span class="vs-ic">🧠</span> Processa na memória RAM</div>
+            <div class="vs-item"><span class="vs-ic">⚡</span> Até 100x mais rápido em ML</div>
+            <div class="vs-item"><span class="vs-ic">🐍</span> APIs em Python, Scala, Java, R</div>
+            <div class="vs-item"><span class="vs-ic">✅</span> Batch + Streaming + ML + SQL</div>
+          </div>
+        </div>
+
+        <div class="quiz-box">
+          <div class="quiz-q">🧠 Quiz 1 — Por que o Spark é mais rápido que o MapReduce para algoritmos de Machine Learning iterativos?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz('q1','a','wrong')">A) O Spark usa hardware mais poderoso</button>
+            <button class="quiz-opt" onclick="quiz('q1','b','correct')">B) O Spark mantém os dados na memória entre iterações, evitando leitura/escrita em disco</button>
+            <button class="quiz-opt" onclick="quiz('q1','c','wrong')">C) O Spark usa mais nós no cluster automaticamente</button>
+            <button class="quiz-opt" onclick="quiz('q1','d','wrong')">D) O Spark usa uma linguagem de programação mais rápida</button>
+          </div>
+          <div class="quiz-feedback ok" id="q1ok">✅ Correto! +60 XP. Em ML, o mesmo dataset é lido dezenas de vezes. MapReduce leria do disco a cada iteração; Spark mantém na RAM.</div>
+          <div class="quiz-feedback fail" id="q1fail">❌ A chave está no armazenamento em memória (RAM) vs disco. Dados na RAM são ~1000x mais rápidos de acessar.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARQUITETURA -->
+    <div class="sec" id="arch">
+      <div class="sec-head"><span class="sec-icon">🏗️</span><span class="sec-title">Arquitetura Spark — Driver + Executors</span></div>
+      <div class="sec-body">
+        <p style="color:var(--text-muted);font-size:.88em;margin-bottom:14px;">O Spark tem uma arquitetura mestre-escravo. O Driver coordena tudo, os Executors fazem o trabalho pesado nos nós do cluster.</p>
+        <div class="arch-grid">
+          <div class="arch-node driver">
+            <div class="arch-icon">🧠</div>
+            <div class="arch-name driver">DRIVER</div>
+            <div class="arch-desc">SparkContext. Coordena o job, cria o DAG, distribui tarefas</div>
+          </div>
+          <div class="arch-node cluster">
+            <div class="arch-icon">🎯</div>
+            <div class="arch-name cluster">CLUSTER MANAGER</div>
+            <div class="arch-desc">YARN / Standalone / Kubernetes. Gerencia recursos</div>
+          </div>
+          <div class="arch-node executor">
+            <div class="arch-icon">⚙️</div>
+            <div class="arch-name executor">EXECUTOR</div>
+            <div class="arch-desc">Roda em cada nó worker. Executa tasks, armazena em cache</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RDDs -->
+    <div class="sec" id="rdd">
+      <div class="sec-head"><span class="sec-icon">🔵</span><span class="sec-title">RDDs — Resilient Distributed Datasets</span></div>
+      <div class="sec-body">
+        <p style="color:var(--text-muted);font-size:.88em;margin-bottom:14px;"><strong style="color:var(--text);">RDD</strong> é a abstração central do Spark: uma coleção de dados distribuída, imutável e tolerante a falhas. Pense nele como uma "lista distribuída" entre os nós.</p>
+        <p style="color:var(--text-muted);font-size:.85em;margin-bottom:16px;"><strong style="color:var(--orange);">Transformações</strong> (lazy) criam um novo RDD mas não executam nada ainda. <strong style="color:var(--green);">Ações</strong> disparam a execução real.</p>
+        <table class="rdd-table">
+          <tr><th>Operação</th><th>Tipo</th><th>O que faz</th><th>Exemplo</th></tr>
+          <tr><td>map()</td><td style="color:var(--orange);">Transformação</td><td>Aplica função a cada elemento</td><td style="font-family:var(--font-mono);font-size:.8em;">.map(x => x*2)</td></tr>
+          <tr><td>filter()</td><td style="color:var(--orange);">Transformação</td><td>Filtra elementos por condição</td><td style="font-family:var(--font-mono);font-size:.8em;">.filter(x => x > 0)</td></tr>
+          <tr><td>flatMap()</td><td style="color:var(--orange);">Transformação</td><td>map + achata resultados</td><td style="font-family:var(--font-mono);font-size:.8em;">.flatMap(linha => linha.split(" "))</td></tr>
+          <tr><td>collect()</td><td style="color:var(--green);">Ação</td><td>Traz todos os dados ao Driver</td><td style="font-family:var(--font-mono);font-size:.8em;">.collect()</td></tr>
+          <tr><td>count()</td><td style="color:var(--green);">Ação</td><td>Conta o número de elementos</td><td style="font-family:var(--font-mono);font-size:.8em;">.count()</td></tr>
+          <tr><td>reduce()</td><td style="color:var(--green);">Ação</td><td>Agrega com uma função</td><td style="font-family:var(--font-mono);font-size:.8em;">.reduce(lambda a,b: a+b)</td></tr>
+        </table>
+
+        <div class="quiz-box">
+          <div class="quiz-q">🧠 Quiz 2 — Você quer filtrar linhas de um RDD com erros e contar quantas são. Qual sequência de operações está correta?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz('q2','a','wrong')">A) count() → filter("ERROR")</button>
+            <button class="quiz-opt" onclick="quiz('q2','b','correct')">B) filter("ERROR") → count()</button>
+            <button class="quiz-opt" onclick="quiz('q2','c','wrong')">C) collect() → filter("ERROR")</button>
+            <button class="quiz-opt" onclick="quiz('q2','d','wrong')">D) map() → count()</button>
+          </div>
+          <div class="quiz-feedback ok" id="q2ok">✅ Correto! +70 XP. filter() é transformação (lazy), count() é ação (dispara execução). Sempre: transformações primeiro, ação no final.</div>
+          <div class="quiz-feedback fail" id="q2fail">❌ Lembre: você aplica transformações (filter, map) para definir o pipeline, depois dispara com uma ação (count, collect).</div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#28c840"></div></div>
+            <span class="code-label">rdd_exemplo.py — PySpark</span>
+          </div>
+          <div class="code-body"><span class="kw">from</span> pyspark <span class="kw">import</span> SparkContext
+
+sc = SparkContext(<span class="str">"local"</span>, <span class="str">"MeuApp"</span>)
+
+<span class="cmt"># Criar RDD a partir de arquivo no HDFS</span>
+logs = sc.<span class="fn">textFile</span>(<span class="str">"hdfs:///logs/app.log"</span>)
+
+<span class="cmt"># Pipeline: transformações (lazy) + ação</span>
+erros = (logs
+    .<span class="fn">filter</span>(<span class="kw">lambda</span> linha: <span class="str">"ERROR"</span> <span class="kw">in</span> linha)   <span class="cmt"># transf.</span>
+    .<span class="fn">map</span>(<span class="kw">lambda</span> linha: linha.<span class="fn">split</span>(<span class="str">" "</span>)[<span class="num">2</span>])     <span class="cmt"># transf.</span>
+    .<span class="fn">distinct</span>()                                    <span class="cmt"># transf.</span>
+)
+
+<span class="cmt"># Apenas aqui o Spark EXECUTA tudo ↓</span>
+print(<span class="str">f"Tipos únicos de erro: </span>{erros.<span class="fn">count</span>()}<span class="str">"</span>)  <span class="cmt"># ação!</span>
+print(erros.<span class="fn">collect</span>())                              <span class="cmt"># ação!</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAZY EVALUATION -->
+    <div class="sec" id="lazy">
+      <div class="sec-head"><span class="sec-icon">😴</span><span class="sec-title">Lazy Evaluation — O segredo da eficiência do Spark</span></div>
+      <div class="sec-body">
+        <p style="color:var(--text-muted);font-size:.88em;margin-bottom:14px;">Spark NÃO executa nada quando você chama <code style="color:var(--cyan);font-family:var(--font-mono);">map()</code> ou <code style="color:var(--cyan);font-family:var(--font-mono);">filter()</code>. Ele apenas registra o que precisa ser feito (o DAG). Só quando você chama uma <strong style="color:var(--green);">ação</strong> é que o Spark otimiza e executa tudo de uma vez.</p>
+        <div class="lazy-flow">
+          <div class="lf-step transform"><div class="lf-label transform">LAZY</div><div class="lf-op">textFile()</div></div>
+          <div class="lf-arrow">→</div>
+          <div class="lf-step transform"><div class="lf-label transform">LAZY</div><div class="lf-op">filter()</div></div>
+          <div class="lf-arrow">→</div>
+          <div class="lf-step transform"><div class="lf-label transform">LAZY</div><div class="lf-op">map()</div></div>
+          <div class="lf-arrow">→</div>
+          <div class="lf-step action"><div class="lf-label action">EXECUTA AGORA!</div><div class="lf-op">count() / collect()</div></div>
+        </div>
+
+        <div class="quiz-box">
+          <div class="quiz-q">🧠 Quiz 3 — Você escreveu: <code style="color:var(--cyan);font-family:var(--font-mono);">rdd2 = rdd.filter(x > 0).map(x * 2)</code>. Quando o Spark realmente processa os dados?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz('q3','a','wrong')">A) Na linha do filter()</button>
+            <button class="quiz-opt" onclick="quiz('q3','b','wrong')">B) Na linha do map()</button>
+            <button class="quiz-opt" onclick="quiz('q3','c','correct')">C) Somente quando uma ação (count, collect, save...) for chamada</button>
+            <button class="quiz-opt" onclick="quiz('q3','d','wrong')">D) Imediatamente ao criar o pipeline</button>
+          </div>
+          <div class="quiz-feedback ok" id="q3ok">✅ Lazy Evaluation! +60 XP. O Spark apenas anota as transformações no DAG. Nenhum dado é movido até uma ação ser chamada — isso permite otimizações internas.</div>
+          <div class="quiz-feedback fail" id="q3fail">❌ Lazy Evaluation: filter() e map() apenas constroem o plano. A execução real só acontece com uma ação (count, collect, saveAsTextFile...).</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MISSÕES -->
+    <div class="sec" id="missoes">
+      <div class="sec-head"><span class="sec-icon">⚔️</span><span class="sec-title">Missões Práticas</span></div>
+      <div class="sec-body">
+        <div class="mission" id="m1" onclick="completeMission('m1','b3',60,'⚡ Missão 1 completa!','Spark instalado e funcionando!')">
+          <div class="m-num" id="mn1">01</div>
+          <div class="m-body">
+            <div class="m-title">🔧 Missão 1 — Instalar Spark e Executar spark-shell</div>
+            <div class="m-desc">Use o script <code style="color:var(--cyan);font-family:var(--font-mono);font-size:.9em;">spark-install.sh</code> para instalar o Spark 3.x. Depois inicie o <code style="color:var(--cyan);font-family:var(--font-mono);font-size:.9em;">pyspark</code>, crie um RDD com <code style="color:var(--cyan);font-family:var(--font-mono);font-size:.9em;">sc.parallelize([1,2,3,4,5])</code> e chame <code style="color:var(--cyan);font-family:var(--font-mono);font-size:.9em;">.reduce(lambda a,b: a+b)</code>. Resultado esperado: 15.</div>
+            <div class="m-tags">
+              <span class="mtag t-time">⏱ 25 min</span>
+              <span class="mtag t-xp">+60 XP</span>
+              <span class="mtag t-diff-e">🟢 Iniciante</span>
+            </div>
+          </div>
+          <div class="m-check" id="mc1">○</div>
+        </div>
+
+        <div class="mission" id="m2" onclick="completeMission('m2','b4',70,'📊 Missão 2 completa!','Análise de logs com RDD dominada!')">
+          <div class="m-num" id="mn2">02</div>
+          <div class="m-body">
+            <div class="m-title">📊 Missão 2 — Análise de Logs com RDD Operations</div>
+            <div class="m-desc">Carregue o arquivo <code style="color:var(--cyan);font-family:var(--font-mono);font-size:.9em;">log_data.txt</code> no Spark. Use <code style="color:var(--cyan);font-family:var(--font-mono);font-size:.9em;">filter()</code> para separar linhas ERROR, <code style="color:var(--cyan);font-family:var(--font-mono);font-size:.9em;">map()</code> para extrair a mensagem de erro, e <code style="color:var(--cyan);font-family:var(--font-mono);font-size:.9em;">countByValue()</code> para contar erros por tipo. Mostre os 5 erros mais frequentes.</div>
+            <div class="m-tags">
+              <span class="mtag t-time">⏱ 40 min</span>
+              <span class="mtag t-xp">+70 XP</span>
+              <span class="mtag t-diff-m">🟡 Intermediário</span>
+            </div>
+          </div>
+          <div class="m-check" id="mc2">○</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+      <a href="semana03.html" style="text-decoration:none;padding:10px 20px;border-radius:6px;border:1px solid var(--border);color:var(--text-muted);font-size:.85em;font-weight:600;">⬅ S03 · MapReduce</a>
+      <a href="../index.html" style="text-decoration:none;padding:10px 20px;border-radius:6px;border:1px solid var(--border);color:var(--text-muted);font-size:.85em;font-weight:600;">🏠 Índice</a>
+      <a href="semana05.html" style="margin-left:auto;text-decoration:none;padding:10px 20px;border-radius:6px;background:#3d2d00;color:var(--orange);border:1px solid var(--orange);font-size:.85em;font-weight:700;">S05 · DataFrames ➡</a>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast">
+  <div class="toast-title" id="toastTitle"></div>
+  <div class="toast-msg" id="toastMsg"></div>
+</div>
+
+<script>
+let xp=0,maxXP=320;const done={};
+function unlockBadge(id){const b=document.getElementById(id);if(b&&!b.classList.contains('unlocked')){b.classList.remove('locked');b.classList.add('unlocked');}}
+function updateXP(){const p=(xp/maxXP)*100;document.getElementById('xpFill').style.width=p+'%';document.getElementById('xpVal').textContent=xp+'/'+maxXP;document.getElementById('sideXP').textContent=xp;document.getElementById('sideBar').style.width=p+'%';}
+function toast(t,m){document.getElementById('toastTitle').textContent=t;document.getElementById('toastMsg').textContent=m;const el=document.getElementById('toast');el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3500);}
+function markProg(i,state){const d=document.getElementById('pd'+i);if(d){d.classList.remove('active');d.classList.add(state||'done');}}
+function quiz(id,choice,result){
+  if(done[id])return;done[id]=true;
+  document.querySelectorAll('.quiz-opt').forEach(o=>{o.classList.add('disabled');o.style.pointerEvents='none';});
+  event.target.classList.add(result==='correct'?'correct':'wrong');
+  if(result==='correct'){
+    document.getElementById(id+'ok').style.display='block';
+    if(id==='q1'){xp+=60;unlockBadge('b0');markProg(0);toast('⚡ +60 XP!','Speed Demon desbloqueado!');}
+    if(id==='q2'){xp+=70;unlockBadge('b1');markProg(1);toast('🔵 +70 XP!','RDD Master desbloqueado!');}
+    if(id==='q3'){xp+=60;unlockBadge('b2');markProg(2);toast('😴 +60 XP!','Lazy Genius desbloqueado!');}
+  } else {document.getElementById(id+'fail').style.display='block';}
+  updateXP();checkAll();
+}
+function completeMission(mid,bid,pts,t,m){
+  if(done[mid])return;done[mid]=true;
+  const el=document.getElementById(mid);el.classList.add('done');
+  document.getElementById('mc'+mid.slice(1)).textContent='✓';
+  document.getElementById('mn'+mid.slice(1)).textContent='✓';
+  xp+=pts;unlockBadge(bid);
+  if(mid==='m1')markProg(3);if(mid==='m2')markProg(4);
+  updateXP();toast(t,m);checkAll();
+}
+function checkAll(){if(Object.keys(done).length>=5)setTimeout(()=>{unlockBadge('b5');toast('🏆 Spark Master!','Todas as missões concluídas!');},800);}
+</script>
+</body>
+</html>

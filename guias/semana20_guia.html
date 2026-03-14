@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia de Estudo - Semana 20</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            color: #6a11cb;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .header .week-info {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .section h2 {
+            color: #6a11cb;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #2575fc;
+        }
+
+        .exercise-block {
+            background: #f8f9fa;
+            border-left: 5px solid #6a11cb;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        .exercise-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .exercise-number {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+
+        .exercise-title {
+            flex: 1;
+            color: #6a11cb;
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+
+        .rubric-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .rubric-table th {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .rubric-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .rubric-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .rubric-table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .criterion {
+            font-weight: bold;
+            color: #6a11cb;
+        }
+
+        .solution-box {
+            background: linear-gradient(to right, #e8f5e9, #f1f8e9);
+            border-left: 5px solid #4caf50;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .solution-box h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .command-box {
+            background: #263238;
+            color: #4caf50;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .step-by-step {
+            counter-reset: step;
+        }
+
+        .step {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            position: relative;
+            padding-left: 60px;
+        }
+
+        .step::before {
+            counter-increment: step;
+            content: counter(step);
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Guia de Estudo - Semana 20</h1>
+            <p class="week-info">Apresentação dos Projetos e Revisão Final</p>
+            <div class="nav-buttons">
+                <a href="index.html" class="nav-btn">⬅️ Voltar ao Índice</a>
+                <a href="semana20.html" class="nav-btn">📄 Ver Conteúdo da Semana</a>
+            </div>
+        </div>
+
+        
+        <div class="section">
+            <h2>✏️ Exercício 1: Preparação da Apresentação</h2>
+            
+            <div class="exercise-block">
+                <div class="exercise-header">
+                    <div class="exercise-number">1</div>
+                    <div class="exercise-title">Preparação da Apresentação</div>
+                </div>
+
+                <p><strong>📋 Objetivo:</strong> Criar apresentação profissional</p>
+                <p><strong>⏱️ Duração:</strong> 120 minutos</p>
+
+                <h3 style="color: #6a11cb; margin-top: 25px; margin-bottom: 15px;">📊 Rubrica de Avaliação</h3>
+                
+                <table class="rubric-table">
+                    <tr>
+                        <th>Critério</th>
+                        <th>Excelente</th>
+                        <th>Bom</th>
+                        <th>Regular</th>
+                        <th>Insuficiente</th>
+                    </tr>
+                    <tr>
+                        <td class="criterion">Clareza da apresentação</td>
+                        <td>4.0</td>
+                        <td>3.0</td>
+                        <td>2.0</td>
+                        <td>1.0</td>
+                    </tr>
+                    <tr>
+                        <td class="criterion">Demonstração técnica</td>
+                        <td>6.0</td>
+                        <td>4.0</td>
+                        <td>2.0</td>
+                        <td>1.0</td>
+                    </tr>
+                    <tr>
+                        <td class="criterion">Respostas a perguntas</td>
+                        <td>3.0</td>
+                        <td>2.0</td>
+                        <td>1.0</td>
+                        <td>0.5</td>
+                    </tr>
+                    <tr>
+                        <td class="criterion">Documentação entregue</td>
+                        <td>2.0</td>
+                        <td>1.5</td>
+                        <td>1.0</td>
+                        <td>0.5</td>
+                    </tr>
+                </table>
+
+                <div class="solution-box">
+                    <h3>💡 Solução / Exemplo de Resposta</h3>
+                    
+                <p><strong>Estrutura recomendada da apresentação:</strong></p>
+                <ol>
+                    <li>Introdução e problema (2 min)</li>
+                    <li>Arquitetura da solução (3 min)</li>
+                    <li>Tecnologias utilizadas (2 min)</li>
+                    <li>Demonstração ao vivo (8 min)</li>
+                    <li>Desafios e aprendizados (3 min)</li>
+                    <li>Conclusões e próximos passos (2 min)</li>
+                    <li>Q&A (5 min)</li>
+                </ol>
+                
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📌 Recursos Adicionais</h2>
+            <ul>
+                <li>Consulte a documentação oficial das ferramentas utilizadas</li>
+                <li>Participe dos fóruns de discussão e tire dúvidas com colegas</li>
+                <li>Pratique os exercícios múltiplas vezes para fixar o conteúdo</li>
+                <li>Explore datasets adicionais para ampliar seu conhecimento</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

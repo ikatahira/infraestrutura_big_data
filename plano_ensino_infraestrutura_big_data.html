@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plano de Ensino - Infraestrutura para Big Data</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .info-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #2a5298;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .info-item {
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .info-item strong {
+            color: #1e3c72;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            color: #1e3c72;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #2a5298;
+        }
+
+        .competencias-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .competencias-list li {
+            padding: 12px;
+            margin: 8px 0;
+            background-color: #f8f9fa;
+            border-left: 4px solid #28a745;
+            border-radius: 4px;
+        }
+
+        .competencias-list li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .week-number {
+            background-color: #2a5298;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .avaliacao-box {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .avaliacao-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .observacao {
+            background-color: #e7f3ff;
+            border-left: 4px solid #0066cc;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 0 0 10px 10px;
+            margin-top: 30px;
+            color: #666;
+        }
+
+        .pratica-highlight {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+
+        .bigdata-box {
+            background-color: #e3f2fd;
+            border: 2px solid #2196f3;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .bigdata-box h3 {
+            color: #1565c0;
+            margin-bottom: 10px;
+        }
+
+        @media print {
+            .container {
+                max-width: 100%;
+            }
+            .header {
+                border-radius: 0;
+            }
+            .section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Plano de Ensino</h1>
+            <h2>Infraestrutura para Big Data</h2>
+            <p>Curso Superior de Tecnologia em Ciência de Dados</p>
+        </div>
+
+        <div class="info-box">
+            <h3 style="color: #1e3c72; margin-bottom: 15px;">Identificação da Disciplina</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Instituição:</strong>
+                    Faculdade de Tecnologia de Ourinhos
+                </div>
+                <div class="info-item">
+                    <strong>Curso:</strong>
+                    CST em Ciência de Dados
+                </div>
+                <div class="info-item">
+                    <strong>Carga Horária:</strong>
+                    80 aulas (72h)
+                </div>
+                <div class="info-item">
+                    <strong>Semestre:</strong>
+                    6º Semestre
+                </div>
+                <div class="info-item">
+                    <strong>Período Letivo:</strong>
+                    1º Semestre de 2026
+                </div>
+                <div class="info-item">
+                    <strong>Modalidade:</strong>
+                    Presencial (Teórico-Prático)
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">1. Ementa</h2>
+            <p style="text-align: justify; line-height: 1.8;">
+                Conceitos fundamentais de Big Data. Características das tecnologias de Big Data: volume, velocidade, variedade, veracidade e valor (5Vs). 
+                Arquiteturas de sistemas distribuídos. Ecossistema Hadoop: HDFS, MapReduce, YARN. Processamento distribuído com Apache Spark. 
+                Bancos de dados NoSQL: orientados a documentos, colunas, grafos e chave-valor. Armazenamento e processamento de dados em nuvem. 
+                Data Lakes e Data Warehouses modernos. Ferramentas de ingestão e ETL para Big Data. Streaming de dados em tempo real. 
+                Conceitos de Data Mesh e Data Fabric. Governança de dados em ambientes Big Data. Aspectos de segurança e privacidade em infraestruturas de dados. 
+                Monitoramento e otimização de performance. Casos práticos de implementação de infraestrutura para Big Data.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">2. Objetivos</h2>
+            
+            <h3 style="color: #2a5298; margin-bottom: 15px; margin-top: 20px;">2.1 Objetivo Geral</h3>
+            <p style="text-align: justify; margin-bottom: 20px;">
+                Capacitar os alunos a projetar, implementar e gerenciar infraestruturas escaláveis para armazenamento, processamento e análise de grandes volumes de dados,
+                utilizando tecnologias modernas de Big Data e computação distribuída, preparando-os para atuar como cientistas de dados e engenheiros de dados em ambientes corporativos.
+            </p>
+
+            <h3 style="color: #2a5298; margin-bottom: 15px;">2.2 Objetivos Específicos</h3>
+            <ul class="competencias-list">
+                <li>Compreender os fundamentos de sistemas distribuídos e processamento paralelo de dados</li>
+                <li>Implementar e configurar clusters Hadoop para processamento distribuído</li>
+                <li>Desenvolver aplicações de processamento de dados usando Apache Spark</li>
+                <li>Projetar e implementar soluções com bancos de dados NoSQL para diferentes tipos de dados</li>
+                <li>Utilizar serviços de nuvem para armazenamento e processamento de Big Data</li>
+                <li>Criar pipelines de ingestão e transformação de dados (ETL) em larga escala</li>
+                <li>Implementar arquiteturas de Data Lake e compreender suas diferenças em relação a Data Warehouses</li>
+                <li>Desenvolver soluções de streaming para processamento de dados em tempo real</li>
+                <li>Aplicar conceitos de governança, segurança e privacidade em ambientes Big Data</li>
+                <li>Monitorar e otimizar a performance de infraestruturas de dados distribuídos</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">3. Competências e Habilidades a Desenvolver</h2>
+            <ul class="competencias-list">
+                <li>Projetar arquiteturas escaláveis para armazenamento e processamento de grandes volumes de dados</li>
+                <li>Configurar e administrar clusters de Big Data utilizando Hadoop e Spark</li>
+                <li>Selecionar e implementar bancos de dados NoSQL adequados para diferentes cenários de negócio</li>
+                <li>Desenvolver pipelines de dados robustos e eficientes usando ferramentas modernas de ETL</li>
+                <li>Implementar soluções de processamento em tempo real utilizando tecnologias de streaming</li>
+                <li>Utilizar serviços de computação em nuvem para Big Data (AWS, Azure, Google Cloud)</li>
+                <li>Aplicar boas práticas de governança e segurança em ambientes de dados distribuídos</li>
+                <li>Otimizar consultas e processos para melhorar a performance de sistemas Big Data</li>
+                <li>Trabalhar de forma colaborativa em projetos de infraestrutura de dados complexos</li>
+                <li>Comunicar decisões técnicas de forma clara para equipes multidisciplinares</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">4. Conteúdo Programático</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 15%;">Semana</th>
+                        <th style="width: 45%;">Conteúdo Teórico</th>
+                        <th style="width: 40%;">Atividades Práticas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="week-number">Semana 1-2</span></td>
+                        <td>
+                            <strong>Fundamentos de Big Data</strong><br>
+                            • Conceito e características dos 5Vs<br>
+                            • Evolução dos sistemas de dados<br>
+                            • Desafios e oportunidades<br>
+                            • Casos de uso em diferentes indústrias
+                        </td>
+                        <td>
+                            <div class="pratica-highlight">
+                                • Análise de casos reais de Big Data<br>
+                                • Identificação de problemas que requerem Big Data<br>
+                                • Setup do ambiente de desenvolvimento
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="week-number">Semana 3-4</span></td>
+                        <td>
+                            <strong>Sistemas Distribuídos e Hadoop</strong><br>
+                            • Arquitetura de sistemas distribuídos<br>
+                            • Ecossistema Hadoop (HDFS, MapReduce, YARN)<br>
+                            • Tolerância a falhas e replicação<br>
+                            • Componentes do Hadoop: Hive, Pig, HBase
+                        </td>
+                        <td>
+                            <div class="pratica-highlight">
+                                • Instalação e configuração de cluster Hadoop<br>
+                                • Operações básicas com HDFS<br>
+                                • Desenvolvimento de jobs MapReduce<br>
+                                • Consultas com Hive
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="week-number">Semana 5-6</span></td>
+                        <td>
+                            <strong>Apache Spark</strong><br>
+                            • Arquitetura e componentes do Spark<br>
+                            • RDDs, DataFrames e Datasets<br>
+                            • Spark SQL e processamento de dados<br>
+                            • Spark MLlib para Machine Learning<br>
+                            • Otimização de performance
+                        </td>
+                        <td>
+                            <div class="pratica-highlight">
+                                • Setup de ambiente Spark (local e cluster)<br>
+                                • Processamento de dados com PySpark<br>
+                                • Análise de grandes datasets<br>
+                                • Otimização de queries Spark
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="week-number">Semana 7-8</span></td>
+                        <td>
+                            <strong>Bancos de Dados NoSQL</strong><br>
+                            • Tipos: Documentos, Colunas, Grafos, Chave-Valor<br>
+                            • MongoDB (documentos)<br>
+                            • Cassandra (colunas)<br>
+                            • Neo4j (grafos)<br>
+                            • Redis (chave-valor)<br>
+                            • Teorema CAP e escolha de tecnologias
+                        </td>
+                        <td>
+                            <div class="pratica-highlight">
+                                • Instalação e configuração de bancos NoSQL<br>
+                                • Modelagem de dados em MongoDB<br>
+                                • Operações CRUD em diferentes NoSQL<br>
+                                • Comparação de performance
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="week-number">Semana 9</span></td>
+                        <td>
+                            <strong>Avaliação Teórica 1</strong><br>
+                            • Fundamentos de Big Data<br>
+                            • Hadoop e sistemas distribuídos<br>
+                            • Apache Spark<br>
+                            • Bancos NoSQL
+                        </td>
+                        <td>
+                            <div class="avaliacao-box">
+                                <strong>⚠️ Prova Teórica</strong><br>
+                                Avaliação individual escrita sobre os conteúdos das semanas 1-8
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="week-number">Semana 10-11</span></td>
+                        <td>
+                            <strong>Computação em Nuvem para Big Data</strong><br>
+                            • AWS: S3, EMR, Redshift, Athena<br>
+                            • Azure: Data Lake, Databricks, Synapse<br>
+                            • Google Cloud: BigQuery, Dataflow, Dataproc<br>
+                            • Comparação de serviços e custos
+                        </td>
+                        <td>
+                            <div class="pratica-highlight">
+                                • Criação de Data Lake na AWS S3<br>
+                                • Processamento com EMR/Spark<br>
+                                • Consultas com AWS Athena<br>
+                                • Análise de custos de infraestrutura
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="week-number">Semana 12-13</span></td>
+                        <td>
+                            <strong>Data Lakes e Data Warehouses</strong><br>
+                            • Conceitos e diferenças<br>
+                            • Arquitetura Lambda e Kappa<br>
+                            • Data Lake: zonas (raw, curated, trusted)<br>
+                            • Modern Data Warehouse<br>
+                            • Lakehouse architecture<br>
+                            • IoT Data Lakes
+                        </td>
+                        <td>
+                            <div class="pratica-highlight">
+                                • Projeto de Data Lake em camadas<br>
+                                • Implementação de zonas de dados<br>
+                                • Catalogação de dados (AWS Glue)<br>
+                                <strong>🔧 PRÁTICA IoT:</strong><br>
+                                • Coleta de dados de sensores Arduino/ESP32<br>
+                                • Ingestão em Data Lake (zona raw)<br>
+                                • Tratamento e curadoria dos dados<br>
+                                • Análise temporal de dados de sensores
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="week-number">Semana 14-15</span></td>
+                        <td>
+                            <strong>Ingestão de Dados e ETL</strong><br>
+                            • Ferramentas de ETL: Apache Airflow, NiFi<br>
+                            • Batch vs Streaming ingestion<br>
+                            • Change Data Capture (CDC)<br>
+                            • Data Quality e validações<br>
+                            • Orquestração de pipelines
+                        </td>
+                        <td>
+                            <div class="pratica-highlight">
+                                • Criação de DAGs no Apache Airflow<br>
+                                • Pipeline ETL completo<br>
+                                • Implementação de data quality checks<br>
+                                • Monitoramento de pipelines
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="week-number">Semana 16-17</span></td>
+                        <td>
+                            <strong>Streaming e Processamento em Tempo Real</strong><br>
+                            • Apache Kafka: arquitetura e conceitos<br>
+                            • Producers, Consumers e Topics<br>
+                            • Kafka Streams<br>
+                            • Apache Flink<br>
+                            • Spark Streaming<br>
+                            • Casos de uso de streaming<br>
+                            • IoT e Big Data: Indústria 4.0
+                        </td>
+                        <td>
+                            <div class="pratica-highlight">
+                                <strong>📡 PRÁTICA COM IoT E BIG DATA:</strong><br>
+                                • Setup de rede física (switch, patch panel, cabos)<br>
+                                • Configuração ESP32 como sensores IoT<br>
+                                • Coleta de dados de sensores (temperatura, umidade, movimento)<br>
+                                • Envio de dados via MQTT/HTTP para Kafka<br>
+                                • Processamento streaming com Spark<br>
+                                • Dashboard em tempo real (Grafana)<br>
+                                • Simulação de ambiente industrial IoT
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="week-number">Semana 18</span></td>
+                        <td>
+                            <strong>Governança, Segurança e Privacidade</strong><br>
+                            • Data Governance frameworks<br>
+                            • Metadados e catálogos de dados<br>
+                            • LGPD e GDPR em Big Data<br>
+                            • Criptografia e controle de acesso<br>
+                            • Auditoria e compliance
+                        </td>
+                        <td>
+                            <div class="pratica-highlight">
+                                • Implementação de catálogo de dados<br>
+                                • Configuração de políticas de acesso<br>
+                                • Anonimização de dados sensíveis<br>
+                                • Auditoria de acessos
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="week-number">Semana 19</span></td>
+                        <td>
+                            <strong>Monitoramento e Otimização</strong><br>
+                            • Métricas de performance<br>
+                            • Ferramentas de monitoramento<br>
+                            • Otimização de queries<br>
+                            • Tuning de clusters<br>
+                            • Troubleshooting comum
+                        </td>
+                        <td>
+                            <div class="pratica-highlight">
+                                • Setup de monitoramento (Prometheus/Grafana)<br>
+                                • Análise de performance de queries<br>
+                                • Otimização de jobs Spark<br>
+                                • Identificação de gargalos
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="week-number">Semana 20</span></td>
+                        <td colspan="2">
+                            <div class="avaliacao-box">
+                                <h4>🎯 Projeto Final Integrador</h4>
+                                <strong>Apresentação de Projeto Completo de Infraestrutura Big Data</strong><br><br>
+                                O projeto deve incluir:<br>
+                                • Arquitetura completa de solução Big Data<br>
+                                • Implementação de Data Lake ou Data Warehouse<br>
+                                • Pipeline de ingestão batch e/ou streaming<br>
+                                • Processamento distribuído com Spark<br>
+                                • Visualização e análise dos dados<br>
+                                • Documentação técnica completa<br>
+                                • Apresentação oral da solução (20 min + 10 min perguntas)<br><br>
+                                <strong>🏭 Opção: Projeto com IoT (Indústria 4.0)</strong><br>
+                                Equipes podem optar por desenvolver projeto usando os equipamentos IoT disponíveis:<br>
+                                • Rede de sensores Arduino/ESP32 coletando dados reais<br>
+                                • Ingestão em tempo real via MQTT → Kafka → Spark Streaming<br>
+                                • Armazenamento em Data Lake (AWS S3 ou HDFS)<br>
+                                • Análises preditivas e detecção de anomalias<br>
+                                • Dashboard operacional em tempo real (Grafana)<br>
+                                • Simulação de cenário industrial completo (Smart Factory, Smart Building, etc.)
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">5. Metodologia de Ensino</h2>
+            <p style="text-align: justify; margin-bottom: 15px;">
+                A disciplina adota uma abordagem teórico-prática que combina diferentes metodologias de ensino para garantir o desenvolvimento 
+                efetivo das competências necessárias para atuar com infraestrutura de Big Data:
+            </p>
+
+            <h3 style="color: #2a5298; margin-top: 20px; margin-bottom: 10px;">5.1 Aulas Expositivas Dialogadas</h3>
+            <p style="margin-left: 20px; text-align: justify;">
+                Apresentação dos conceitos teóricos com uso de recursos audiovisuais, exemplos práticos do mercado e discussões 
+                sobre casos reais de implementação de infraestruturas Big Data em empresas.
+            </p>
+
+            <h3 style="color: #2a5298; margin-top: 20px; margin-bottom: 10px;">5.2 Laboratório Prático</h3>
+            <p style="margin-left: 20px; text-align: justify;">
+                Atividades hands-on em ambiente de laboratório onde os alunos implementam e testam as tecnologias estudadas. 
+                Cada aula prática é acompanhada de roteiros detalhados e desafios progressivos.
+            </p>
+
+            <h3 style="color: #2a5298; margin-top: 20px; margin-bottom: 10px;">5.3 Aprendizagem Baseada em Projetos</h3>
+            <p style="margin-left: 20px; text-align: justify;">
+                Desenvolvimento de projeto integrador ao longo do semestre, onde os alunos aplicam todos os conhecimentos adquiridos 
+                para resolver um problema real de Big Data, desde a arquitetura até a implementação e monitoramento.
+            </p>
+
+            <h3 style="color: #2a5298; margin-top: 20px; margin-bottom: 10px;">5.4 Estudos de Caso</h3>
+            <p style="margin-left: 20px; text-align: justify;">
+                Análise de arquiteturas reais de empresas como Netflix, Uber, Spotify, Amazon para compreender como infraestruturas 
+                de Big Data são implementadas em escala real.
+            </p>
+
+            <h3 style="color: #2a5298; margin-top: 20px; margin-bottom: 10px;">5.5 Ambiente de Aprendizagem</h3>
+            <ul style="margin-left: 40px; line-height: 1.8;">
+                <li>Laboratório de informática com máquinas virtuais configuradas</li>
+                <li>Acesso a ambientes de nuvem (AWS Academy, Azure for Students, GCP)</li>
+                <li>Cluster Hadoop/Spark para práticas</li>
+                <li>Plataforma GitHub para versionamento de código</li>
+                <li>Ambiente EAD para materiais complementares</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">6. Recursos Didáticos</h2>
+            
+            <h3 style="color: #2a5298; margin-bottom: 10px;">6.1 Recursos Tecnológicos</h3>
+            <ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+                <li><strong>Software e Plataformas:</strong>
+                    <ul style="margin-left: 20px; margin-top: 5px;">
+                        <li>Apache Hadoop (HDFS, MapReduce, YARN, Hive, HBase)</li>
+                        <li>Apache Spark (PySpark, Spark SQL, Spark Streaming)</li>
+                        <li>Bancos NoSQL: MongoDB, Cassandra, Redis, Neo4j</li>
+                        <li>Apache Kafka para streaming</li>
+                        <li>Apache Airflow para orquestração</li>
+                        <li>Docker e Kubernetes para containerização</li>
+                        <li>AWS (S3, EMR, Athena, Glue, Redshift)</li>
+                        <li>Ferramentas de monitoramento: Prometheus, Grafana</li>
+                        <li>Git/GitHub para versionamento</li>
+                    </ul>
+                </li>
+                <li><strong>Ambientes de Desenvolvimento:</strong> Jupyter Notebook, VS Code, DataGrip</li>
+                <li><strong>Máquinas Virtuais:</strong> VirtualBox ou VMware com distribuições Linux (Ubuntu/CentOS)</li>
+            </ul>
+
+            <h3 style="color: #2a5298; margin-bottom: 10px;">6.2 Material Didático</h3>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+                <li>Slides das aulas disponibilizados no ambiente EAD</li>
+                <li>Roteiros de práticas laboratoriais</li>
+                <li>Datasets públicos para experimentação (Kaggle, UCI, etc.)</li>
+                <li>Vídeos tutoriais e documentação oficial das ferramentas</li>
+                <li>Artigos científicos e white papers de arquiteturas Big Data</li>
+                <li>Exemplos de código no GitHub do professor</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">6B. Laboratório IoT para Big Data - Práticas Hands-On</h2>
+            
+            <div class="bigdata-box">
+                <h3 style="color: #1565c0; margin-bottom: 15px;">🔌 Infraestrutura de Rede e IoT Disponível</h3>
+                <p style="margin-bottom: 10px;"><strong>O laboratório conta com os seguintes equipamentos:</strong></p>
+                <ul style="margin-left: 20px; line-height: 1.8;">
+                    <li><strong>Dispositivos IoT:</strong>
+                        <ul style="margin-left: 20px; margin-top: 5px;">
+                            <li>Kits Arduino Uno com diversos sensores</li>
+                            <li>ESP32 DevKit (WiFi/Bluetooth integrado)</li>
+                            <li>Sensores: temperatura (DHT11/DHT22), umidade, movimento (PIR), luminosidade (LDR), ultrassônico (HC-SR04)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Infraestrutura de Rede:</strong>
+                        <ul style="margin-left: 20px; margin-top: 5px;">
+                            <li>Switch gerenciável para conectividade local</li>
+                            <li>Cabos de rede CAT5e/CAT6</li>
+                            <li>Patch panel para organização profissional do cabeamento</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <h3 style="color: #2a5298; margin-top: 25px; margin-bottom: 15px;">🎯 Práticas Integradas IoT + Big Data</h3>
+
+            <div class="pratica-highlight" style="margin-bottom: 15px;">
+                <h4 style="color: #2e7d32; margin-bottom: 10px;">Prática 1: Rede de Sensores IoT em Tempo Real (Semanas 16-17)</h4>
+                <p style="margin-bottom: 10px;"><strong>Objetivo:</strong> Criar uma infraestrutura completa de coleta, transmissão e processamento de dados de sensores em tempo real, simulando um ambiente de Indústria 4.0.</p>
+                
+                <p style="margin-bottom: 8px;"><strong>Componentes:</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 10px;">
+                    <li><strong>Camada de Sensores:</strong> ESP32 + sensores (temperatura, umidade, movimento)</li>
+                    <li><strong>Protocolo de Comunicação:</strong> MQTT ou HTTP REST</li>
+                    <li><strong>Message Broker:</strong> Apache Kafka (recebe dados dos sensores)</li>
+                    <li><strong>Processamento:</strong> Spark Streaming (análise em tempo real)</li>
+                    <li><strong>Armazenamento:</strong> HDFS + MongoDB (histórico + dados atuais)</li>
+                    <li><strong>Visualização:</strong> Grafana (dashboard em tempo real)</li>
+                </ul>
+
+                <p style="margin-bottom: 8px;"><strong>Roteiro da Prática:</strong></p>
+                <ol style="margin-left: 20px; line-height: 1.7;">
+                    <li><strong>Setup da Rede Física:</strong>
+                        <ul style="margin-left: 20px;">
+                            <li>Conectar ESP32s à rede WiFi local</li>
+                            <li>Organizar cabeamento no patch panel</li>
+                            <li>Configurar switch para segmentação de rede (IoT VLAN)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Programação dos Sensores:</strong>
+                        <ul style="margin-left: 20px;">
+                            <li>Código Arduino/ESP32 para leitura de sensores (C++)</li>
+                            <li>Envio de dados via MQTT para broker (Mosquitto ou HiveMQ)</li>
+                            <li>Formato JSON: {sensor_id, timestamp, temperatura, umidade, movimento}</li>
+                        </ul>
+                    </li>
+                    <li><strong>Configuração do Pipeline:</strong>
+                        <ul style="margin-left: 20px;">
+                            <li>Kafka Topic: iot-sensors-data</li>
+                            <li>Kafka Connect MQTT Source Connector</li>
+                            <li>Spark Streaming: consumir do Kafka, processar e detectar anomalias</li>
+                            <li>Persistência dual: HDFS (histórico) + MongoDB (real-time)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Análises em Tempo Real:</strong>
+                        <ul style="margin-left: 20px;">
+                            <li>Detecção de valores fora do padrão (temperatura > 30°C)</li>
+                            <li>Agregações por janelas de tempo (média/min/max por minuto)</li>
+                            <li>Correlação entre sensores (movimento + mudança de temperatura)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Dashboard e Alertas:</strong>
+                        <ul style="margin-left: 20px;">
+                            <li>Grafana conectado ao MongoDB</li>
+                            <li>Gráficos de linha temporal por sensor</li>
+                            <li>Alertas configurados (Slack/Email quando anomalia detectada)</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <p style="margin-top: 10px; padding: 8px; background-color: #e8f5e9; border-radius: 4px;">
+                    <strong>💡 Aprendizados:</strong> Arquitetura end-to-end IoT + Big Data, protocolos de comunicação, processamento streaming, análise em tempo real
+                </p>
+            </div>
+
+            <div class="pratica-highlight" style="margin-bottom: 15px;">
+                <h4 style="color: #2e7d32; margin-bottom: 10px;">Prática 2: Data Lake de Dados IoT (Semanas 12-13)</h4>
+                <p style="margin-bottom: 10px;"><strong>Objetivo:</strong> Construir um Data Lake multi-camadas para armazenar e processar histórico de dados de sensores IoT.</p>
+                
+                <p style="margin-bottom: 8px;"><strong>Arquitetura do Data Lake:</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 10px;">
+                    <li><strong>Raw Zone (Bronze):</strong> Dados brutos dos sensores (JSON, Parquet)</li>
+                    <li><strong>Curated Zone (Silver):</strong> Dados limpos e padronizados</li>
+                    <li><strong>Trusted Zone (Gold):</strong> Agregações e métricas de negócio</li>
+                </ul>
+
+                <p style="margin-bottom: 8px;"><strong>Atividades:</strong></p>
+                <ol style="margin-left: 20px; line-height: 1.7;">
+                    <li>Coletar dados de 5+ sensores por 1 semana (24/7)</li>
+                    <li>Armazenar em AWS S3 ou HDFS (zona raw)</li>
+                    <li>ETL com PySpark: limpeza, remoção de outliers, preenchimento de gaps</li>
+                    <li>Análises:
+                        <ul style="margin-left: 20px;">
+                            <li>Padrões de temperatura por hora do dia</li>
+                            <li>Correlação entre sensores de diferentes salas</li>
+                            <li>Previsão de próxima leitura (série temporal)</li>
+                        </ul>
+                    </li>
+                    <li>Catálogo de metadados (AWS Glue ou Apache Atlas)</li>
+                </ol>
+            </div>
+
+            <div class="pratica-highlight">
+                <h4 style="color: #2e7d32; margin-bottom: 10px;">Prática 3: Monitoramento de Infraestrutura (Semana 19)</h4>
+                <p style="margin-bottom: 10px;"><strong>Objetivo:</strong> Implementar monitoramento completo da infraestrutura IoT + Big Data.</p>
+                
+                <p style="margin-bottom: 8px;"><strong>Stack de Monitoramento:</strong></p>
+                <ul style="margin-left: 20px; line-height: 1.7;">
+                    <li><strong>Prometheus:</strong> Coleta de métricas (CPU, memória, rede dos ESP32 e servidores)</li>
+                    <li><strong>Node Exporter:</strong> Métricas de sistema dos servidores</li>
+                    <li><strong>Kafka Exporter:</strong> Métricas do Kafka (lag, throughput)</li>
+                    <li><strong>Grafana:</strong> Dashboards de infraestrutura + aplicação</li>
+                    <li><strong>Alertmanager:</strong> Alertas quando sensores param de reportar ou cluster degrada</li>
+                </ul>
+
+                <p style="margin-top: 10px; padding: 8px; background-color: #fff3cd; border-radius: 4px;">
+                    <strong>🎯 Desafio Prático:</strong> Simular falha de sensor (desconectar ESP32) e observar como o sistema detecta e alerta. Medir latência fim-a-fim (sensor → visualização).
+                </p>
+            </div>
+
+            <h3 style="color: #2a5298; margin-top: 25px; margin-bottom: 15px;">📋 Casos de Uso Simulados</h3>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+                <li><strong>Smart Building:</strong> Monitoramento de salas de aula (temperatura, ocupação, luminosidade)</li>
+                <li><strong>Indústria 4.0:</strong> Sensores em linha de produção fictícia (temperatura de máquinas, vibração)</li>
+                <li><strong>Agricultura Inteligente:</strong> Monitoramento de estufa (temperatura, umidade do solo, luz)</li>
+                <li><strong>Logística:</strong> Rastreamento de condições ambientais durante transporte simulado</li>
+            </ul>
+
+            <div class="observacao" style="margin-top: 20px;">
+                <strong>💻 Tecnologias Utilizadas nas Práticas IoT:</strong><br>
+                • <strong>Hardware:</strong> Arduino Uno, ESP32, DHT22, PIR, LDR, HC-SR04<br>
+                • <strong>Programação:</strong> Arduino IDE (C++), Python (MicroPython para ESP32)<br>
+                • <strong>Protocolos:</strong> MQTT (Mosquitto), HTTP/REST<br>
+                • <strong>Big Data Stack:</strong> Kafka, Spark Streaming, HDFS, MongoDB<br>
+                • <strong>Visualização:</strong> Grafana, Kibana<br>
+                • <strong>Cloud (opcional):</strong> AWS IoT Core, Azure IoT Hub<br>
+                • <strong>Monitoramento:</strong> Prometheus, Node Exporter, Grafana
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">7. Avaliação</h2>
+            
+            <h3 style="color: #2a5298; margin-bottom: 15px;">7.1 Instrumentos de Avaliação</h3>
+            
+            <div class="avaliacao-box">
+                <h4>📝 Avaliação Teórica 1 (AT1) - Semana 9</h4>
+                <strong>Conteúdo:</strong> Fundamentos de Big Data, Hadoop, Spark e NoSQL<br>
+                <strong>Formato:</strong> Prova individual escrita<br>
+                <strong>Duração:</strong> 2 horas<br>
+                <strong>Peso:</strong> 20%
+            </div>
+
+            <div class="avaliacao-box">
+                <h4>💻 Atividades Práticas Laboratoriais (APL)</h4>
+                <strong>Conteúdo:</strong> Exercícios práticos semanais em laboratório<br>
+                <strong>Formato:</strong> Implementações individuais ou em dupla<br>
+                <strong>Quantidade:</strong> 8-10 práticas ao longo do semestre<br>
+                <strong>Peso:</strong> 30%
+            </div>
+
+            <div class="avaliacao-box">
+                <h4>📊 Projeto Integrador (PI) - Desenvolvimento ao longo do semestre</h4>
+                <strong>Conteúdo:</strong> Projeto completo de infraestrutura Big Data<br>
+                <strong>Formato:</strong> Trabalho em equipe (3-4 alunos)<br>
+                <strong>Entregas:</strong> 
+                <ul style="margin-left: 20px; margin-top: 5px;">
+                    <li>Proposta e arquitetura (Semana 5) - 10 pontos</li>
+                    <li>Checkpoints de desenvolvimento (Semanas 10, 15) - 20 pontos</li>
+                    <li>Entrega final e apresentação (Semana 20) - 70 pontos</li>
+                </ul>
+                <strong>Peso:</strong> 30%
+            </div>
+
+            <div class="avaliacao-box">
+                <h4>📋 Avaliação Teórico-Prática Final (ATPF) - Semana 19</h4>
+                <strong>Conteúdo:</strong> Todo o conteúdo da disciplina<br>
+                <strong>Formato:</strong> Prova com questões teóricas e resolução de problemas práticos<br>
+                <strong>Duração:</strong> 3 horas<br>
+                <strong>Peso:</strong> 20%
+            </div>
+
+            <h3 style="color: #2a5298; margin-bottom: 15px; margin-top: 30px;">7.2 Critérios de Avaliação</h3>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+                <li>Compreensão dos conceitos teóricos de Big Data e sistemas distribuídos</li>
+                <li>Capacidade de implementar soluções práticas com as tecnologias estudadas</li>
+                <li>Qualidade do código: organização, documentação e boas práticas</li>
+                <li>Adequação da arquitetura proposta aos requisitos do problema</li>
+                <li>Capacidade de otimização e troubleshooting</li>
+                <li>Trabalho em equipe e divisão de responsabilidades</li>
+                <li>Clareza na documentação técnica e apresentação de resultados</li>
+                <li>Criatividade e inovação nas soluções propostas</li>
+            </ul>
+
+            <h3 style="color: #2a5298; margin-bottom: 15px; margin-top: 30px;">7.3 Composição da Nota Final</h3>
+            <table style="width: 70%; margin: 20px auto;">
+                <tr>
+                    <th>Instrumento de Avaliação</th>
+                    <th style="text-align: center;">Peso</th>
+                </tr>
+                <tr>
+                    <td>Avaliação Teórica 1 (AT1)</td>
+                    <td style="text-align: center;">20%</td>
+                </tr>
+                <tr>
+                    <td>Atividades Práticas Laboratoriais (APL)</td>
+                    <td style="text-align: center;">30%</td>
+                </tr>
+                <tr>
+                    <td>Projeto Integrador (PI)</td>
+                    <td style="text-align: center;">30%</td>
+                </tr>
+                <tr>
+                    <td>Avaliação Teórico-Prática Final (ATPF)</td>
+                    <td style="text-align: center;">20%</td>
+                </tr>
+                <tr style="background-color: #f0f0f0; font-weight: bold;">
+                    <td>TOTAL</td>
+                    <td style="text-align: center;">100%</td>
+                </tr>
+            </table>
+
+            <div class="observacao">
+                <strong>Critérios de Aprovação:</strong><br>
+                • Frequência mínima: 75% das aulas (teóricas e práticas)<br>
+                • Média Final ≥ 6,0 (escala de 0 a 10)<br>
+                • Participação obrigatória em todas as avaliações<br>
+                • Entrega do Projeto Integrador é obrigatória para aprovação<br>
+                <br>
+                <strong>Recuperação:</strong><br>
+                • Prova substitutiva ao final do semestre para alunos com média entre 4,0 e 5,9<br>
+                • A nota da prova substitutiva substituirá a menor nota entre AT1 e ATPF<br>
+                • Não há substituição para APL e PI - estas avaliações são cumulativas ao longo do semestre
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">8. Bibliografia</h2>
+            
+            <h3 style="color: #2a5298; margin-bottom: 10px;">8.1 Bibliografia Básica</h3>
+            <ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+                <li><strong>WHITE, Tom.</strong> Hadoop: The Definitive Guide. 4th ed. O'Reilly Media, 2015. ISBN: 978-1491901632.</li>
+                <li><strong>KARAU, Holden; KONWINSKI, Andy; WENDELL, Patrick; ZAHARIA, Matei.</strong> Learning Spark: Lightning-Fast Data Analytics. 2nd ed. O'Reilly Media, 2020. ISBN: 978-1492050049.</li>
+                <li><strong>KLEPPMANN, Martin.</strong> Designing Data-Intensive Applications: The Big Ideas Behind Reliable, Scalable, and Maintainable Systems. O'Reilly Media, 2017. ISBN: 978-1449373320.</li>
+            </ul>
+
+            <h3 style="color: #2a5298; margin-bottom: 10px;">8.2 Bibliografia Complementar</h3>
+            <ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+                <li><strong>SADALAGE, Pramod J.; FOWLER, Martin.</strong> NoSQL Distilled: A Brief Guide to the Emerging World of Polyglot Persistence. Addison-Wesley, 2012. ISBN: 978-0321826626.</li>
+                <li><strong>NARKHEDE, Neha; SHAPIRA, Gwen; PALINO, Todd.</strong> Kafka: The Definitive Guide. O'Reilly Media, 2017. ISBN: 978-1491936160.</li>
+                <li><strong>REIS, João; HOUSLEY, Matt.</strong> Fundamentals of Data Engineering: Plan and Build Robust Data Systems. O'Reilly Media, 2022. ISBN: 978-1098108304.</li>
+                <li><strong>LAKSHMANAN, Valliappa; GÖRNER, Martin; GILLARD, Ryan.</strong> Data Science on the Google Cloud Platform. O'Reilly Media, 2022. ISBN: 978-1098118952.</li>
+                <li><strong>MARZ, Nathan; WARREN, James.</strong> Big Data: Principles and best practices of scalable real-time data systems. Manning Publications, 2015. ISBN: 978-1617290343.</li>
+            </ul>
+
+            <h3 style="color: #2a5298; margin-bottom: 10px;">8.3 Documentação Online e Recursos</h3>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+                <li><strong>Apache Hadoop.</strong> Documentação Oficial. Disponível em: https://hadoop.apache.org/docs/</li>
+                <li><strong>Apache Spark.</strong> Documentação Oficial. Disponível em: https://spark.apache.org/docs/latest/</li>
+                <li><strong>MongoDB.</strong> Documentação e University. Disponível em: https://www.mongodb.com/docs/</li>
+                <li><strong>Apache Kafka.</strong> Documentação Oficial. Disponível em: https://kafka.apache.org/documentation/</li>
+                <li><strong>AWS.</strong> Big Data on AWS. Disponível em: https://aws.amazon.com/big-data/</li>
+                <li><strong>Databricks.</strong> Learning Resources. Disponível em: https://www.databricks.com/learn</li>
+                <li><strong>Coursera.</strong> Big Data Specialization - University of California San Diego</li>
+                <li><strong>edX.</strong> Big Data Courses from Berkeley, MIT</li>
+            </ul>
+
+            <h3 style="color: #2a5298; margin-bottom: 10px; margin-top: 20px;">8.4 Bibliografia IoT e Indústria 4.0</h3>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+                <li><strong>MONK, Simon.</strong> Programação com Arduino: Começando com Sketches. 2ª ed. Bookman, 2017.</li>
+                <li><strong>KURNIAWAN, Agus.</strong> IoT Projects with ESP32. Packt Publishing, 2019.</li>
+                <li><strong>MCROBERTS, Michael.</strong> Arduino Básico. 2ª ed. Novatec, 2018.</li>
+                <li><strong>SCHWAB, Klaus.</strong> A Quarta Revolução Industrial. Edipro, 2016.</li>
+                <li><strong>ARDUINO.</strong> Documentação Oficial. Disponível em: https://www.arduino.cc/reference/</li>
+                <li><strong>ESPRESSIF.</strong> ESP32 Documentation. Disponível em: https://docs.espressif.com/</li>
+                <li><strong>MQTT.org.</strong> MQTT Protocol Documentation. Disponível em: https://mqtt.org/</li>
+                <li><strong>AWS IoT Core.</strong> Developer Guide. Disponível em: https://docs.aws.amazon.com/iot/</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">9. Atribuições e Responsabilidades</h2>
+            
+            <h3 style="color: #2a5298; margin-bottom: 10px;">9.1 Do Professor</h3>
+            <ul style="margin-left: 20px; margin-bottom: 20px;">
+                <li>Ministrar as aulas teóricas e práticas conforme o cronograma estabelecido</li>
+                <li>Disponibilizar materiais didáticos, códigos exemplo e datasets para prática</li>
+                <li>Orientar os alunos no desenvolvimento do projeto integrador</li>
+                <li>Manter os ambientes de laboratório (VMs, clusters) funcionais e atualizados</li>
+                <li>Realizar atendimento extraclasse mediante agendamento (presencial ou online)</li>
+                <li>Avaliar o desempenho dos alunos de forma contínua, formativa e somativa</li>
+                <li>Proporcionar feedback construtivo sobre projetos e atividades práticas</li>
+                <li>Facilitar o acesso a recursos de nuvem (AWS Academy, Azure, GCP)</li>
+                <li>Promover discussões sobre casos reais e tendências da indústria</li>
+                <li>Garantir alinhamento da disciplina com as demais do curso</li>
+            </ul>
+
+            <h3 style="color: #2a5298; margin-bottom: 10px;">9.2 Do Aluno</h3>
+            <ul style="margin-left: 20px;">
+                <li>Comparecer pontualmente às aulas teóricas e práticas</li>
+                <li>Participar ativamente das atividades em laboratório</li>
+                <li>Realizar as leituras prévias e exercícios indicados</li>
+                <li>Desenvolver o projeto integrador com dedicação e em equipe</li>
+                <li>Zelar pelos equipamentos e recursos computacionais disponibilizados</li>
+                <li>Entregar trabalhos e atividades nos prazos estabelecidos</li>
+                <li>Documentar adequadamente códigos e projetos desenvolvidos</li>
+                <li>Buscar auxílio do professor quando necessário</li>
+                <li>Manter postura ética no uso de recursos de nuvem e dados</li>
+                <li>Colaborar com colegas de forma respeitosa e profissional</li>
+                <li>Experimentar e explorar as tecnologias além do conteúdo básico</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">10. Valores e Atitudes</h2>
+            <ul class="competencias-list">
+                <li>Estimular o pensamento crítico na escolha de tecnologias adequadas para cada cenário</li>
+                <li>Promover a colaboração e o trabalho em equipe em projetos de infraestrutura complexos</li>
+                <li>Desenvolver consciência sobre escalabilidade, performance e custos em soluções Big Data</li>
+                <li>Incentivar a experimentação e o aprendizado contínuo em novas tecnologias</li>
+                <li>Valorizar boas práticas de engenharia de dados e documentação técnica</li>
+                <li>Fomentar a responsabilidade no uso ético de dados e privacidade</li>
+                <li>Desenvolver visão estratégica sobre o papel da infraestrutura de dados nas organizações</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">11. Competências Socioemocionais</h2>
+            <ul class="competencias-list">
+                <li>Evidenciar autonomia na resolução de problemas complexos de infraestrutura</li>
+                <li>Demonstrar resiliência no troubleshooting de sistemas distribuídos</li>
+                <li>Revelar habilidade para trabalhar colaborativamente em projetos de grande escala</li>
+                <li>Demonstrar capacidade de adaptação a novas tecnologias e ferramentas</li>
+                <li>Evidenciar iniciativa na busca por otimizações e melhorias</li>
+                <li>Desenvolver autoconfiança através da implementação de soluções funcionais</li>
+                <li>Demonstrar organização no gerenciamento de recursos e prazos</li>
+                <li>Cultivar paciência e persistência ao lidar com ambientes distribuídos complexos</li>
+            </ul>
+        </div>
+
+        <div class="bigdata-box" style="margin-top: 30px;">
+            <h3 style="color: #1565c0; margin-bottom: 15px;">☁️ Recursos e Infraestrutura Necessária</h3>
+            
+            <p style="margin-bottom: 10px;"><strong>Laboratório de Informática:</strong></p>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+                <li>Computadores com no mínimo 8GB RAM, processador i5 ou superior</li>
+                <li>Conexão de internet de alta velocidade (100Mbps ou superior)</li>
+                <li>Software de virtualização instalado (VirtualBox ou VMware)</li>
+                <li>Acesso a plataformas de nuvem educacionais</li>
+            </ul>
+
+            <p style="margin-top: 15px; margin-bottom: 10px;"><strong>Equipamentos IoT e Rede (Disponíveis):</strong></p>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+                <li><strong>Dispositivos:</strong> Kits Arduino Uno, ESP32 DevKit</li>
+                <li><strong>Sensores:</strong> DHT11/DHT22 (temp/umidade), PIR (movimento), LDR (luz), HC-SR04 (ultrassom)</li>
+                <li><strong>Rede:</strong> Switch gerenciável, cabos de rede, patch panel</li>
+                <li><strong>Ferramentas:</strong> Arduino IDE, PlatformIO, MQTT broker (Mosquitto)</li>
+            </ul>
+
+            <p style="margin-top: 15px; margin-bottom: 10px;"><strong>Infraestrutura de Nuvem:</strong></p>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+                <li>AWS Academy - Acesso educacional gratuito aos serviços AWS (incluindo IoT Core)</li>
+                <li>Microsoft Azure for Students - Créditos para experimentação (Azure IoT Hub)</li>
+                <li>Google Cloud Platform - Programa educacional</li>
+                <li>Databricks Community Edition (opcional)</li>
+            </ul>
+
+            <p style="margin-top: 15px; margin-bottom: 10px;"><strong>Cluster Local (Opcional):</strong></p>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+                <li>Servidor com cluster Hadoop/Spark pré-configurado para demonstrações</li>
+                <li>Ambiente Docker com containers das principais ferramentas</li>
+                <li>MQTT Broker local (Mosquitto) para práticas IoT</li>
+            </ul>
+
+            <p style="margin-top: 15px; padding: 10px; background-color: #fff3cd; border-radius: 4px;">
+                <strong>⚠️ Importante:</strong> Os alunos receberão credenciais de acesso aos ambientes de nuvem no início do semestre. 
+                É fundamental usar os recursos de forma consciente, respeitando os limites de créditos gratuitos e boas práticas de desligamento 
+                de recursos para evitar custos desnecessários. Os kits IoT serão compartilhados entre equipes durante as práticas laboratoriais.
+            </p>
+        </div>
+
+        <div class="observacao" style="margin-top: 30px;">
+            <strong>Observações Importantes:</strong><br>
+            • Este plano de ensino poderá sofrer ajustes ao longo do semestre conforme necessidades pedagógicas e evolução tecnológica<br>
+            • As datas das avaliações serão confirmadas com 2 semanas de antecedência<br>
+            • Práticas laboratoriais requerem reserva prévia do laboratório de informática<br>
+            • Recomenda-se fortemente que os alunos pratiquem em suas próprias máquinas fora do horário de aula<br>
+            • Material complementar, datasets e códigos exemplo serão disponibilizados via GitHub e plataforma EAD<br>
+            • O Projeto Integrador pode ser desenvolvido em parceria com empresas (mediante aprovação prévia)<br>
+            • Certificações em Big Data (AWS, Azure, Databricks) são incentivadas e podem gerar pontos extras<br>
+            • Workshops e palestras com profissionais da indústria serão organizados ao longo do semestre
+        </div>
+
+        <div class="footer">
+            <p><strong>Plano de Ensino - Infraestrutura para Big Data</strong></p>
+            <p>Curso Superior de Tecnologia em Ciência de Dados</p>
+            <p>Centro Estadual de Educação Tecnológica Paula Souza</p>
+            <p>Faculdade de Tecnologia de Ourinhos</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">1º Semestre de 2026</p>
+            <p style="margin-top: 15px; font-size: 0.85em; color: #888;">
+                Elaborado com base no Projeto Pedagógico do CST em Ciência de Dados
+            </p>
+        </div>
+    </div>
+</body>
+</html>

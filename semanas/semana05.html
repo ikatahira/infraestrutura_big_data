@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S05 · Spark DataFrames & SQL | Big Data</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;
+  --green:#3fb950;--green-dim:#1a4a1f;--green-glow:rgba(63,185,80,.15);
+  --cyan:#79c0ff;--cyan-dim:#0c2a4a;--yellow:#e3b341;--yellow-dim:#3d2d00;
+  --red:#f85149;--purple:#bc8cff;--orange:#ffa657;
+  --text:#e6edf3;--text-muted:#7d8590;--text-dim:#484f58;
+  --r:8px;--r-sm:6px;
+  --font-mono:'IBM Plex Mono',monospace;--font-sans:'IBM Plex Sans',sans-serif;
+}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.topbar-inner{max-width:1200px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.tb-badge{background:var(--cyan-dim);border:1px solid var(--cyan);color:var(--cyan);border-radius:50px;padding:4px 12px;font-size:.75em;font-weight:700;font-family:var(--font-mono);}
+.tb-title{flex:1;}.tb-title h1{font-size:1em;font-weight:700;}.tb-title p{font-size:.78em;color:var(--text-muted);}
+.xp-widget{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:50px;padding:6px 14px;}
+.xp-label{font-size:.75em;font-weight:700;color:var(--yellow);font-family:var(--font-mono);}
+.xp-bar{width:90px;height:5px;background:var(--border);border-radius:50px;overflow:hidden;}
+.xp-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:50px;transition:width 1s cubic-bezier(.22,1,.36,1);}
+.xp-val{font-size:.75em;font-family:var(--font-mono);color:var(--yellow);}
+.wrap{max-width:1200px;margin:0 auto;padding:28px 24px;display:grid;grid-template-columns:220px 1fr;gap:24px;}
+@media(max-width:900px){.wrap{grid-template-columns:1fr;}.sidebar{display:none;}}
+.sidebar{position:sticky;top:100px;height:fit-content;}
+.sidebar-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px;}
+.sidebar-card h3{font-size:.75em;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;}
+.prog-item{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);}
+.prog-item:last-child{border-bottom:none;}
+.prog-dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0;transition:all .3s;}
+.prog-dot.done{background:var(--green);}
+.prog-dot.active{background:var(--cyan);box-shadow:0 0 6px var(--cyan);}
+.prog-text{font-size:.8em;color:var(--text-muted);}
+.total-box{text-align:center;padding:12px 0;}
+.total-num{font-size:1.8em;font-weight:700;color:var(--cyan);font-family:var(--font-mono);}
+.total-lbl{font-size:.75em;color:var(--text-muted);}
+.prog-bar-track{height:6px;background:var(--surface2);border-radius:50px;overflow:hidden;margin-top:8px;}
+.prog-bar-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--cyan),var(--purple));transition:width .8s ease;}
+.sec{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:20px;overflow:hidden;}
+.sec-head{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--border);background:var(--surface2);}
+.sec-icon{font-size:1.1em;}.sec-title{font-size:.98em;font-weight:700;}
+.sec-body{padding:20px;}
+.hero-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px;margin-bottom:20px;position:relative;overflow:hidden;}
+.hero-card::before{content:'';position:absolute;top:-30px;right:-30px;width:180px;height:180px;background:radial-gradient(circle,rgba(121,192,255,.1) 0%,transparent 70%);border-radius:50%;}
+.hero-label{font-size:.75em;font-weight:700;color:var(--cyan);font-family:var(--font-mono);letter-spacing:.08em;margin-bottom:8px;}
+.hero-card h2{font-size:1.6em;font-weight:700;margin-bottom:8px;line-height:1.2;}
+.hero-card h2 span{color:var(--cyan);}
+.hero-card p{color:var(--text-muted);font-size:.95em;max-width:600px;margin-bottom:16px;}
+.hero-chips{display:flex;gap:10px;flex-wrap:wrap;}
+.chip{padding:5px 12px;border-radius:50px;font-size:.78em;font-weight:600;border:1px solid;}
+.chip-cyan{background:var(--cyan-dim);color:var(--cyan);border-color:var(--cyan);}
+.chip-orange{background:#3d2d00;color:var(--orange);border-color:var(--orange);}
+.chip-yellow{background:var(--yellow-dim);color:var(--yellow);border-color:var(--yellow);}
+.chip-green{background:var(--green-dim);color:var(--green);border-color:var(--green);}
+/* rdd vs df */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0;}
+@media(max-width:600px){.compare-grid{grid-template-columns:1fr;}}
+.cmp-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px;}
+.cmp-title{font-size:.82em;font-weight:700;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.cmp-item{font-size:.8em;color:var(--text-muted);padding:4px 0;display:flex;gap:8px;}
+/* code */
+.code-block{background:#010409;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin:14px 0;}
+.code-header{background:var(--surface2);padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.code-dots{display:flex;gap:5px;}.code-dot{width:10px;height:10px;border-radius:50%;}
+.code-label{font-size:.75em;color:var(--text-muted);font-family:var(--font-mono);margin-left:auto;}
+.code-body{padding:16px;font-family:var(--font-mono);font-size:.82em;line-height:1.7;overflow-x:auto;white-space:pre;}
+.kw{color:#ff7b72;}.fn{color:#d2a8ff;}.str{color:#a5d6ff;}.cmt{color:#8b949e;}.num{color:#79c0ff;}.cls{color:#ffa657;}
+/* quiz */
+.quiz-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin:14px 0;}
+.quiz-q{font-size:.95em;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.5;}
+.quiz-opts{display:flex;flex-direction:column;gap:8px;}
+.quiz-opt{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:10px 16px;cursor:pointer;transition:all .15s;text-align:left;color:var(--text);font-size:.88em;font-family:var(--font-sans);}
+.quiz-opt:hover{border-color:var(--cyan);}
+.quiz-opt.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);}
+.quiz-opt.wrong{border-color:var(--red);background:rgba(248,81,73,.1);color:var(--red);}
+.quiz-opt.disabled{cursor:default;pointer-events:none;}
+.quiz-feedback{margin-top:12px;padding:10px 14px;border-radius:var(--r-sm);font-size:.85em;display:none;}
+.quiz-feedback.ok{background:var(--green-dim);border:1px solid var(--green);color:var(--green);display:block;}
+.quiz-feedback.fail{background:rgba(248,81,73,.1);border:1px solid var(--red);color:var(--red);display:block;}
+/* df visual */
+.df-visual{background:#010409;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin:14px 0;}
+.df-table-head{background:var(--surface2);padding:8px 14px;font-size:.75em;color:var(--cyan);font-family:var(--font-mono);border-bottom:1px solid var(--border);}
+.df-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.8em;}
+.df-table th{background:rgba(121,192,255,.08);color:var(--cyan);padding:8px 12px;text-align:left;border:1px solid var(--border);}
+.df-table td{padding:7px 12px;border:1px solid var(--border);color:var(--text-muted);}
+.df-table tr:hover td{background:var(--surface2);}
+/* sql box */
+.sql-box{background:#010409;border:1px solid var(--purple);border-radius:var(--r);overflow:hidden;margin:14px 0;}
+.sql-header{background:rgba(188,140,255,.08);padding:8px 14px;font-size:.75em;color:var(--purple);font-family:var(--font-mono);border-bottom:1px solid rgba(188,140,255,.2);}
+.sql-body{padding:14px;font-family:var(--font-mono);font-size:.82em;line-height:1.7;white-space:pre;}
+.sql-kw{color:#ff7b72;}.sql-fn{color:var(--purple);}.sql-tbl{color:var(--cyan);}.sql-str{color:#a5d6ff;}
+/* mission */
+.mission{background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-bottom:14px;cursor:pointer;transition:all .18s;display:flex;gap:14px;align-items:flex-start;position:relative;overflow:hidden;}
+.mission::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--border);transition:background .18s;}
+.mission:hover{border-color:var(--cyan);}
+.mission:hover::before{background:var(--cyan);}
+.mission.done{border-color:var(--green);background:rgba(63,185,80,.05);}
+.mission.done::before{background:var(--green);}
+.m-num{width:34px;height:34px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:.8em;font-weight:700;font-family:var(--font-mono);flex-shrink:0;color:var(--text-muted);}
+.mission.done .m-num{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+.m-body{flex:1;}.m-title{font-size:.95em;font-weight:700;margin-bottom:4px;}
+.m-desc{font-size:.83em;color:var(--text-muted);line-height:1.5;margin-bottom:10px;}
+.m-tags{display:flex;gap:8px;flex-wrap:wrap;}
+.mtag{padding:3px 9px;border-radius:50px;font-size:.72em;font-weight:600;border:1px solid;}
+.t-time{background:#0c2a4a;color:var(--cyan);border-color:var(--cyan);}
+.t-xp{background:var(--yellow-dim);color:var(--yellow);border-color:var(--yellow);}
+.t-diff-e{background:var(--green-dim);color:var(--green);border-color:var(--green);}
+.t-diff-m{background:#3d2d00;color:var(--orange);border-color:var(--orange);}
+.t-diff-h{background:rgba(248,81,73,.1);color:var(--red);border-color:var(--red);}
+.m-check{width:26px;height:26px;border:1.5px solid var(--border);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .18s;margin-top:2px;}
+.mission:hover .m-check{border-color:var(--cyan);}
+.mission.done .m-check{background:var(--green);border-color:var(--green);color:#000;font-weight:700;}
+.badges-strip{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.badge{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--surface);min-width:80px;transition:all .2s;}
+.badge.unlocked{border-color:var(--cyan);background:var(--cyan-dim);box-shadow:0 0 12px rgba(121,192,255,.2);}
+.badge.locked{opacity:.3;filter:grayscale(1);}
+.badge-ico{font-size:1.6em;}.badge-nm{font-size:.7em;font-weight:700;text-align:center;}.badge-xp{font-size:.65em;font-family:var(--font-mono);color:var(--yellow);}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--cyan);border-radius:var(--r);padding:14px 18px;z-index:999;transform:translateY(70px);opacity:0;transition:all .3s;pointer-events:none;max-width:260px;box-shadow:0 8px 24px rgba(0,0,0,.4);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast-title{color:var(--cyan);font-weight:700;font-size:.85em;margin-bottom:3px;}
+.toast-msg{color:var(--text-muted);font-size:.8em;}
+/* formats grid */
+.fmt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0;}
+.fmt-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;text-align:center;transition:all .2s;}
+.fmt-card:hover{border-color:var(--cyan);transform:translateY(-2px);}
+.fmt-icon{font-size:1.5em;margin-bottom:6px;}
+.fmt-name{font-size:.82em;font-weight:700;color:var(--cyan);}
+.fmt-desc{font-size:.72em;color:var(--text-muted);margin-top:4px;}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <span class="tb-badge">S05 · DataFrames</span>
+    <div class="tb-title">
+      <h1>Spark DataFrames e SQL — Processamento Estruturado</h1>
+      <p>Infraestrutura para Big Data · Ciência de Dados · FATec Ourinhos</p>
+    </div>
+    <div class="xp-widget">
+      <span class="xp-label">XP</span>
+      <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+      <span class="xp-val" id="xpVal">0/320</span>
+    </div>
+  </div>
+</header>
+
+<div style="background:var(--surface2);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+  <a href="semana04.html" style="text-decoration:none;padding:7px 16px;border-radius:6px;border:1px solid var(--border);color:var(--text-muted);font-size:.82em;font-weight:600;">⬅ S04 · Spark</a>
+  <a href="../index.html" style="text-decoration:none;padding:7px 16px;border-radius:6px;border:1px solid var(--border);color:var(--text-muted);font-size:.82em;font-weight:600;">🏠 Índice</a>
+  <a href="../guias/semana05_guia.html" style="text-decoration:none;padding:7px 16px;border-radius:6px;background:var(--cyan-dim);color:var(--cyan);border:1px solid var(--cyan);font-size:.82em;font-weight:600;">📚 Guia</a>
+  <a href="semana06.html" style="margin-left:auto;text-decoration:none;padding:7px 16px;border-radius:6px;background:var(--cyan-dim);color:var(--cyan);border:1px solid var(--cyan);font-size:.82em;font-weight:700;">S06 · NoSQL ➡</a>
+</div>
+
+<div class="wrap">
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <h3>Progresso</h3>
+      <div class="prog-item"><div class="prog-dot active" id="pd0"></div><span class="prog-text">Quiz 1: RDD vs DataFrame</span></div>
+      <div class="prog-item"><div class="prog-dot" id="pd1"></div><span class="prog-text">Quiz 2: Operações DF</span></div>
+      <div class="prog-item"><div class="prog-dot" id="pd2"></div><span class="prog-text">Quiz 3: Spark SQL</span></div>
+      <div class="prog-item"><div class="prog-dot" id="pd3"></div><span class="prog-text">Missão 1: CSV Analysis</span></div>
+      <div class="prog-item"><div class="prog-dot" id="pd4"></div><span class="prog-text">Missão 2: SQL Queries</span></div>
+    </div>
+    <div class="sidebar-card">
+      <h3>XP desta semana</h3>
+      <div class="total-box"><div class="total-num" id="sideXP">0</div><div class="total-lbl">de 320 XP</div></div>
+      <div class="prog-bar-track"><div class="prog-bar-fill" id="sideBar" style="width:0%"></div></div>
+    </div>
+    <div class="sidebar-card">
+      <h3>Navegação</h3>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <a href="#rddvsdf" style="color:var(--text-muted);text-decoration:none;font-size:.82em;padding:5px 0;border-bottom:1px solid var(--border);">→ RDD vs DataFrame</a>
+        <a href="#ops" style="color:var(--text-muted);text-decoration:none;font-size:.82em;padding:5px 0;border-bottom:1px solid var(--border);">→ Operações DataFrame</a>
+        <a href="#sql" style="color:var(--text-muted);text-decoration:none;font-size:.82em;padding:5px 0;border-bottom:1px solid var(--border);">→ Spark SQL</a>
+        <a href="#formatos" style="color:var(--text-muted);text-decoration:none;font-size:.82em;padding:5px 0;border-bottom:1px solid var(--border);">→ Formatos de Dados</a>
+        <a href="#missoes" style="color:var(--text-muted);text-decoration:none;font-size:.82em;padding:5px 0;">→ Missões Práticas</a>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="hero-card">
+      <div class="hero-label">// SEMANA 05 · STRUCTURED PROCESSING</div>
+      <h2>DataFrames: RDDs <span>com superpoderes</span></h2>
+      <p>DataFrames adicionam esquema (schema) aos dados, habilitando otimizações automáticas via Catalyst Optimizer — e permitem escrever SQL diretamente no Spark. Pense neles como "tabelas distribuídas".</p>
+      <div class="hero-chips">
+        <span class="chip chip-cyan">⚡ 320 XP</span>
+        <span class="chip chip-orange">🐍 PySpark + SQL</span>
+        <span class="chip chip-yellow">⏱ ~90 min</span>
+        <span class="chip chip-green">🧩 2 missões + 3 quizzes</span>
+      </div>
+    </div>
+
+    <div class="badges-strip">
+      <div class="badge locked" id="b0"><div class="badge-ico">📐</div><div class="badge-nm">Schema Master</div><div class="badge-xp">+60 XP</div></div>
+      <div class="badge locked" id="b1"><div class="badge-ico">🔍</div><div class="badge-nm">Query Pro</div><div class="badge-xp">+70 XP</div></div>
+      <div class="badge locked" id="b2"><div class="badge-ico">💾</div><div class="badge-nm">SQL Wizard</div><div class="badge-xp">+60 XP</div></div>
+      <div class="badge locked" id="b3"><div class="badge-ico">📊</div><div class="badge-nm">Data Analyst</div><div class="badge-xp">+70 XP</div></div>
+      <div class="badge locked" id="b4"><div class="badge-ico">🔮</div><div class="badge-nm">SQL Master</div><div class="badge-xp">+60 XP</div></div>
+      <div class="badge locked" id="b5"><div class="badge-ico">🏆</div><div class="badge-nm">DataFrame Master</div><div class="badge-xp">BÔNUS</div></div>
+    </div>
+
+    <!-- RDD vs DF -->
+    <div class="sec" id="rddvsdf">
+      <div class="sec-head"><span class="sec-icon">⚖️</span><span class="sec-title">RDD vs DataFrame — Quando usar cada um?</span></div>
+      <div class="sec-body">
+        <div class="compare-grid">
+          <div class="cmp-card" style="border-color:rgba(255,166,87,.3);">
+            <div class="cmp-title" style="color:var(--orange);">🔵 RDD</div>
+            <div class="cmp-item"><span>🔧</span> Dados sem estrutura definida</div>
+            <div class="cmp-item"><span>🐍</span> Lógica complexa em Python/Scala</div>
+            <div class="cmp-item"><span>⚙️</span> Controle total do pipeline</div>
+            <div class="cmp-item"><span>❌</span> Sem otimização automática</div>
+          </div>
+          <div class="cmp-card" style="border-color:var(--cyan);">
+            <div class="cmp-title" style="color:var(--cyan);">📋 DataFrame</div>
+            <div class="cmp-item"><span>📐</span> Dados tabulares com schema</div>
+            <div class="cmp-item"><span>🚀</span> Otimizado pelo Catalyst</div>
+            <div class="cmp-item"><span>🔤</span> Suporta SQL nativo</div>
+            <div class="cmp-item"><span>✅</span> Recomendado para a maioria dos casos</div>
+          </div>
+        </div>
+        <div class="quiz-box">
+          <div class="quiz-q">🧠 Quiz 1 — Você tem dados de vendas em CSV com colunas definidas (produto, valor, data). O que é mais adequado?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz('q1','a','wrong')">A) RDD — porque é mais baixo nível e mais rápido</button>
+            <button class="quiz-opt" onclick="quiz('q1','b','correct')">B) DataFrame — dados estruturados se beneficiam do schema e do Catalyst Optimizer</button>
+            <button class="quiz-opt" onclick="quiz('q1','c','wrong')">C) São equivalentes, tanto faz</button>
+            <button class="quiz-opt" onclick="quiz('q1','d','wrong')">D) RDD — porque DataFrames não suportam CSV</button>
+          </div>
+          <div class="quiz-feedback ok" id="q1ok">✅ +60 XP! DataFrames são a escolha certa para dados estruturados. O Catalyst Optimizer gera um plano de execução muito mais eficiente do que RDDs puros.</div>
+          <div class="quiz-feedback fail" id="q1fail">❌ Dados com schema definido → DataFrame. O Spark consegue otimizar muito melhor quando sabe a estrutura dos dados.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMO É UM DATAFRAME -->
+    <div class="sec" id="ops">
+      <div class="sec-head"><span class="sec-icon">📋</span><span class="sec-title">Como criar e operar DataFrames em PySpark</span></div>
+      <div class="sec-body">
+        <p style="color:var(--text-muted);font-size:.88em;margin-bottom:14px;">Um DataFrame é como uma tabela de banco de dados distribuída. Tem colunas com tipos definidos e suporta operações estilo SQL.</p>
+
+        <div class="df-visual">
+          <div class="df-table-head">DataFrame: employees.csv → Spark</div>
+          <table class="df-table">
+            <tr><th>id</th><th>nome</th><th>departamento</th><th>salario</th><th>ativo</th></tr>
+            <tr><td>1</td><td>Ana Silva</td><td>Engenharia</td><td>8500.0</td><td>true</td></tr>
+            <tr><td>2</td><td>Bruno Costa</td><td>Dados</td><td>9200.0</td><td>true</td></tr>
+            <tr><td>3</td><td>Carol Souza</td><td>Engenharia</td><td>7800.0</td><td>false</td></tr>
+            <tr><td>4</td><td>Diego Lima</td><td>Dados</td><td>11000.0</td><td>true</td></tr>
+          </table>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#28c840"></div></div>
+            <span class="code-label">dataframe_ops.py</span>
+          </div>
+          <div class="code-body"><span class="kw">from</span> pyspark.sql <span class="kw">import</span> SparkSession
+<span class="kw">from</span> pyspark.sql.functions <span class="kw">import</span> col, avg, count, desc
+
+spark = SparkSession.<span class="fn">builder</span>.<span class="fn">appName</span>(<span class="str">"Analise"</span>).<span class="fn">getOrCreate</span>()
+
+<span class="cmt"># Ler CSV com detecção automática de schema</span>
+df = spark.<span class="fn">read</span>.<span class="fn">csv</span>(<span class="str">"employees.csv"</span>, header=<span class="kw">True</span>, inferSchema=<span class="kw">True</span>)
+
+df.<span class="fn">printSchema</span>()  <span class="cmt"># mostra tipos de cada coluna</span>
+df.<span class="fn">show</span>(<span class="num">5</span>)         <span class="cmt"># mostra 5 primeiras linhas</span>
+
+<span class="cmt"># SELECT: escolher colunas</span>
+df.<span class="fn">select</span>(<span class="str">"nome"</span>, <span class="str">"salario"</span>).<span class="fn">show</span>()
+
+<span class="cmt"># FILTER: filtrar linhas</span>
+df.<span class="fn">filter</span>(col(<span class="str">"salario"</span>) > <span class="num">9000</span>).<span class="fn">show</span>()
+
+<span class="cmt"># GROUPBY + AGG: média salarial por depto</span>
+df.<span class="fn">groupBy</span>(<span class="str">"departamento"</span>) \
+  .<span class="fn">agg</span>(<span class="fn">avg</span>(<span class="str">"salario"</span>).<span class="fn">alias</span>(<span class="str">"media_salario"</span>),
+       <span class="fn">count</span>(<span class="str">"*"</span>).<span class="fn">alias</span>(<span class="str">"total_func"</span>)) \
+  .<span class="fn">orderBy</span>(<span class="fn">desc</span>(<span class="str">"media_salario"</span>)) \
+  .<span class="fn">show</span>()</div>
+        </div>
+
+        <div class="quiz-box">
+          <div class="quiz-q">🧠 Quiz 2 — Você quer selecionar apenas funcionários ativos E com salário acima de 9000. Como fazer?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz('q2','a','correct')">A) df.filter((col("ativo") == True) & (col("salario") > 9000))</button>
+            <button class="quiz-opt" onclick="quiz('q2','b','wrong')">B) df.select("ativo", "salario").filter(True, 9000)</button>
+            <button class="quiz-opt" onclick="quiz('q2','c','wrong')">C) df.where("ativo AND salario").show()</button>
+            <button class="quiz-opt" onclick="quiz('q2','d','wrong')">D) df.groupBy("ativo").filter("salario > 9000")</button>
+          </div>
+          <div class="quiz-feedback ok" id="q2ok">✅ +70 XP! Use col() para referenciar colunas e & para combinar condições. Parênteses são obrigatórios em cada condição para precedência correta.</div>
+          <div class="quiz-feedback fail" id="q2fail">❌ A forma correta usa col() para cada coluna e & para combinar: df.filter((col("ativo") == True) & (col("salario") > 9000))</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPARK SQL -->
+    <div class="sec" id="sql">
+      <div class="sec-head"><span class="sec-icon">🔤</span><span class="sec-title">Spark SQL — SQL Padrão em Dados Distribuídos</span></div>
+      <div class="sec-body">
+        <p style="color:var(--text-muted);font-size:.88em;margin-bottom:14px;">O Spark permite registrar um DataFrame como "tabela temporária" e depois escrever SQL padrão sobre ele. Isso é especialmente útil para equipes que já conhecem SQL.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#28c840"></div></div>
+            <span class="code-label">spark_sql.py</span>
+          </div>
+          <div class="code-body"><span class="cmt"># Registrar DataFrame como tabela temporária</span>
+df.<span class="fn">createOrReplaceTempView</span>(<span class="str">"funcionarios"</span>)
+
+<span class="cmt"># Agora pode escrever SQL padrão!</span>
+resultado = spark.<span class="fn">sql</span>(<span class="str">"""
+    SELECT
+        departamento,
+        COUNT(*) AS total,
+        AVG(salario) AS media_sal,
+        MAX(salario) AS maior_sal
+    FROM funcionarios
+    WHERE ativo = true
+    GROUP BY departamento
+    ORDER BY media_sal DESC
+"""</span>)
+
+resultado.<span class="fn">show</span>()</div>
+        </div>
+
+        <div class="sql-box">
+          <div class="sql-header">📊 Resultado da Query SQL</div>
+          <div class="sql-body"><span style="color:var(--cyan);">departamento  total  media_sal   maior_sal</span>
+<span style="color:var(--border);">───────────── ─────  ──────────  ──────────</span>
+Dados         2      10100.0     11000.0
+Engenharia    1      8500.0      8500.0</div>
+        </div>
+
+        <div class="quiz-box">
+          <div class="quiz-q">🧠 Quiz 3 — Para executar SQL no Spark, qual passo é necessário ANTES de chamar spark.sql()?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz('q3','a','wrong')">A) Importar uma biblioteca separada de SQL</button>
+            <button class="quiz-opt" onclick="quiz('q3','b','correct')">B) Registrar o DataFrame como tabela temporária com createOrReplaceTempView()</button>
+            <button class="quiz-opt" onclick="quiz('q3','c','wrong')">C) Converter o DataFrame para RDD primeiro</button>
+            <button class="quiz-opt" onclick="quiz('q3','d','wrong')">D) Conectar a um banco de dados externo</button>
+          </div>
+          <div class="quiz-feedback ok" id="q3ok">✅ +60 XP! SQL Wizard desbloqueado! O createOrReplaceTempView("nome") cria uma visão temporária que o Spark SQL pode consultar como se fosse uma tabela SQL.</div>
+          <div class="quiz-feedback fail" id="q3fail">❌ Antes do spark.sql(), você precisa registrar o DataFrame: df.createOrReplaceTempView("nome_tabela"). Sem isso, o SQL não sabe de onde ler os dados.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORMATOS -->
+    <div class="sec" id="formatos">
+      <div class="sec-head"><span class="sec-icon">💾</span><span class="sec-title">Formatos de Dados — CSV, JSON, Parquet</span></div>
+      <div class="sec-body">
+        <div class="fmt-grid">
+          <div class="fmt-card"><div class="fmt-icon">📄</div><div class="fmt-name">CSV</div><div class="fmt-desc">Simples, legível por humanos. Sem schema. Lento para leitura em Big Data.</div></div>
+          <div class="fmt-card"><div class="fmt-icon">{ }</div><div class="fmt-name">JSON</div><div class="fmt-desc">Flexível, semiestruturado. Ótimo para dados aninhados. Maior tamanho.</div></div>
+          <div class="fmt-card" style="border-color:var(--cyan);"><div class="fmt-icon">🗜️</div><div class="fmt-name">Parquet</div><div class="fmt-desc">Colunar, comprimido. Muito eficiente para Spark e Big Data. Recomendado!</div></div>
+          <div class="fmt-card"><div class="fmt-icon">🔷</div><div class="fmt-name">ORC</div><div class="fmt-desc">Similar ao Parquet. Popular no ecossistema Hive/Hadoop.</div></div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#28c840"></div></div>
+            <span class="code-label">leitura_escrita.py</span>
+          </div>
+          <div class="code-body"><span class="cmt"># Ler diferentes formatos</span>
+df_csv  = spark.<span class="fn">read</span>.<span class="fn">csv</span>(<span class="str">"data.csv"</span>, header=<span class="kw">True</span>)
+df_json = spark.<span class="fn">read</span>.<span class="fn">json</span>(<span class="str">"data.json"</span>)
+df_parq = spark.<span class="fn">read</span>.<span class="fn">parquet</span>(<span class="str">"data.parquet"</span>)
+
+<span class="cmt"># Salvar em Parquet (recomendado para Big Data!)</span>
+df.<span class="fn">write</span>.<span class="fn">parquet</span>(<span class="str">"output/"</span>, mode=<span class="str">"overwrite"</span>)
+
+<span class="cmt"># Particionar por coluna (melhora queries futuras)</span>
+df.<span class="fn">write</span>.<span class="fn">partitionBy</span>(<span class="str">"departamento"</span>).<span class="fn">parquet</span>(<span class="str">"output_part/"</span>)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MISSÕES -->
+    <div class="sec" id="missoes">
+      <div class="sec-head"><span class="sec-icon">⚔️</span><span class="sec-title">Missões Práticas</span></div>
+      <div class="sec-body">
+        <div class="mission" id="m1" onclick="completeMission('m1','b3',70,'📊 Missão 1 completa!','Análise CSV com DataFrames dominada!')">
+          <div class="m-num" id="mn1">01</div>
+          <div class="m-body">
+            <div class="m-title">📊 Missão 1 — Análise Exploratória com DataFrames</div>
+            <div class="m-desc">Carregue o <code style="color:var(--cyan);font-family:var(--font-mono);font-size:.9em;">employees.csv</code> em um DataFrame. Faça: (1) <code style="color:var(--cyan);font-family:var(--font-mono);font-size:.9em;">printSchema()</code>, (2) filtre apenas ativos, (3) calcule média salarial por departamento com groupBy, (4) ordene do maior para menor. Salve o resultado em Parquet.</div>
+            <div class="m-tags">
+              <span class="mtag t-time">⏱ 30 min</span>
+              <span class="mtag t-xp">+70 XP</span>
+              <span class="mtag t-diff-m">🟡 Intermediário</span>
+            </div>
+          </div>
+          <div class="m-check" id="mc1">○</div>
+        </div>
+
+        <div class="mission" id="m2" onclick="completeMission('m2','b4',60,'🔮 Missão 2 completa!','Spark SQL queries dominadas!')">
+          <div class="m-num" id="mn2">02</div>
+          <div class="m-body">
+            <div class="m-title">🔤 Missão 2 — Consultas SQL no Spark</div>
+            <div class="m-desc">Carregue o <code style="color:var(--cyan);font-family:var(--font-mono);font-size:.9em;">sales.json</code> e registre como tabela temporária "vendas". Execute 3 queries SQL: (1) TOP 5 produtos por receita total, (2) vendas por mês, (3) comparação entre regiões. Use <code style="color:var(--cyan);font-family:var(--font-mono);font-size:.9em;">spark.sql()</code> para todas.</div>
+            <div class="m-tags">
+              <span class="mtag t-time">⏱ 40 min</span>
+              <span class="mtag t-xp">+60 XP</span>
+              <span class="mtag t-diff-h">🔴 Desafiador</span>
+            </div>
+          </div>
+          <div class="m-check" id="mc2">○</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+      <a href="semana04.html" style="text-decoration:none;padding:10px 20px;border-radius:6px;border:1px solid var(--border);color:var(--text-muted);font-size:.85em;font-weight:600;">⬅ S04 · Spark</a>
+      <a href="../index.html" style="text-decoration:none;padding:10px 20px;border-radius:6px;border:1px solid var(--border);color:var(--text-muted);font-size:.85em;font-weight:600;">🏠 Índice</a>
+      <a href="semana06.html" style="margin-left:auto;text-decoration:none;padding:10px 20px;border-radius:6px;background:var(--cyan-dim);color:var(--cyan);border:1px solid var(--cyan);font-size:.85em;font-weight:700;">S06 · NoSQL ➡</a>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast">
+  <div class="toast-title" id="toastTitle"></div>
+  <div class="toast-msg" id="toastMsg"></div>
+</div>
+
+<script>
+let xp=0,maxXP=320;const done={};
+function unlockBadge(id){const b=document.getElementById(id);if(b&&!b.classList.contains('unlocked')){b.classList.remove('locked');b.classList.add('unlocked');}}
+function updateXP(){const p=(xp/maxXP)*100;document.getElementById('xpFill').style.width=p+'%';document.getElementById('xpVal').textContent=xp+'/'+maxXP;document.getElementById('sideXP').textContent=xp;document.getElementById('sideBar').style.width=p+'%';}
+function toast(t,m){document.getElementById('toastTitle').textContent=t;document.getElementById('toastMsg').textContent=m;const el=document.getElementById('toast');el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3500);}
+function markProg(i){const d=document.getElementById('pd'+i);if(d){d.classList.remove('active');d.classList.add('done');}}
+function quiz(id,choice,result){
+  if(done[id])return;done[id]=true;
+  document.querySelectorAll('.quiz-opt').forEach(o=>{o.classList.add('disabled');o.style.pointerEvents='none';});
+  event.target.classList.add(result==='correct'?'correct':'wrong');
+  if(result==='correct'){
+    document.getElementById(id+'ok').style.display='block';
+    if(id==='q1'){xp+=60;unlockBadge('b0');markProg(0);toast('📐 +60 XP!','Schema Master!');}
+    if(id==='q2'){xp+=70;unlockBadge('b1');markProg(1);toast('🔍 +70 XP!','Query Pro!');}
+    if(id==='q3'){xp+=60;unlockBadge('b2');markProg(2);toast('💾 +60 XP!','SQL Wizard!');}
+  } else {document.getElementById(id+'fail').style.display='block';}
+  updateXP();checkAll();
+}
+function completeMission(mid,bid,pts,t,m){
+  if(done[mid])return;done[mid]=true;
+  const el=document.getElementById(mid);el.classList.add('done');
+  document.getElementById('mc'+mid.slice(1)).textContent='✓';
+  document.getElementById('mn'+mid.slice(1)).textContent='✓';
+  xp+=pts;unlockBadge(bid);
+  if(mid==='m1')markProg(3);if(mid==='m2')markProg(4);
+  updateXP();toast(t,m);checkAll();
+}
+function checkAll(){if(Object.keys(done).length>=5){setTimeout(()=>{unlockBadge('b5');toast('🏆 DataFrame Master!','Semana 05 concluída!');},800);}}
+</script>
+</body>
+</html>

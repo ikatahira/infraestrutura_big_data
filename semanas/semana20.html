@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semana 20 - Infraestrutura para Big Data</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: #f0f2f5;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-content img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid white;
+            object-fit: cover;
+        }
+
+        .header-text h1 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .header-text p {
+            font-size: 0.9em;
+            opacity: 0.95;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 120px;
+        }
+
+        .sidebar h2 {
+            color: #1e3c72;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2a5298;
+        }
+
+        .week-menu {
+            list-style: none;
+        }
+
+        .week-menu li {
+            margin-bottom: 8px;
+        }
+
+        .week-menu a {
+            display: block;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            color: #1e3c72;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .week-menu a:hover {
+            background: #e3f2fd;
+            border-left-color: #2a5298;
+            transform: translateX(5px);
+        }
+
+        .week-menu a.active {
+            background: #1e3c72;
+            color: white;
+            border-left-color: #2a5298;
+        }
+
+        .week-badge {
+            background: #2a5298;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            margin-right: 8px;
+        }
+
+        .content {
+            flex: 1;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-height: 600px;
+        }
+
+        .week-title {
+            color: #1e3c72;
+            font-size: 2em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .week-number {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .week-subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            color: #2a5298;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h3 {
+            color: #1e3c72;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .icon {
+            font-size: 1.2em;
+        }
+
+        .objectives-list, .topics-list {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #2a5298;
+        }
+
+        .objectives-list li, .topics-list li {
+            margin-bottom: 10px;
+            padding-left: 10px;
+        }
+
+        .video-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .video-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3em;
+            cursor: pointer;
+        }
+
+        .video-info {
+            padding: 15px;
+        }
+
+        .video-info h4 {
+            color: #1e3c72;
+            margin-bottom: 8px;
+        }
+
+        .video-info p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .video-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 15px;
+            background: #2a5298;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.9em;
+            transition: background 0.3s;
+        }
+
+        .video-link:hover {
+            background: #1e3c72;
+        }
+
+        .materials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .material-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .material-card:hover {
+            border-color: #2a5298;
+            box-shadow: 0 5px 15px rgba(42,82,152,0.2);
+        }
+
+        .material-icon {
+            font-size: 2.5em;
+            color: #2a5298;
+            margin-bottom: 10px;
+        }
+
+        .material-card h4 {
+            color: #1e3c72;
+            margin-bottom: 8px;
+        }
+
+        .material-card p {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .material-link {
+            color: #2a5298;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .material-link:hover {
+            text-decoration: underline;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2a5298;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .activity-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid #2a5298;
+        }
+
+        .activity-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .activity-number {
+            background: #2a5298;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .activity-title {
+            color: #1e3c72;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .nav-button {
+            padding: 12px 25px;
+            background: #2a5298;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-button:hover {
+            background: #1e3c72;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .nav-button.disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .tool-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .tool-card:hover {
+            border-color: #2a5298;
+            transform: scale(1.05);
+        }
+
+        .tool-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .tool-name {
+            color: #1e3c72;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 968px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+            
+            .header-text h1 {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <img src="foto_professor.png" alt="Professor">
+            <div class="header-text">
+                <h1>Infraestrutura para Big Data</h1>
+                <p>Curso Superior de Tecnologia em Ciência de Dados</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <h2>📅 Cronograma</h2>
+            <ul class="week-menu">
+                <li><a href="semana01.html"><span class="week-badge">S1</span>Semana 1</a></li>
+<li><a href="semana02.html"><span class="week-badge">S2</span>Semana 2</a></li>
+<li><a href="semana03.html"><span class="week-badge">S3</span>Semana 3</a></li>
+<li><a href="semana04.html"><span class="week-badge">S4</span>Semana 4</a></li>
+<li><a href="semana05.html"><span class="week-badge">S5</span>Semana 5</a></li>
+<li><a href="semana06.html"><span class="week-badge">S6</span>Semana 6</a></li>
+<li><a href="semana07.html"><span class="week-badge">S7</span>Semana 7</a></li>
+<li><a href="semana08.html"><span class="week-badge">S8</span>Semana 8</a></li>
+<li><a href="semana09.html"><span class="week-badge">S9</span>Semana 9</a></li>
+<li><a href="semana10.html"><span class="week-badge">S10</span>Semana 10</a></li>
+<li><a href="semana11.html"><span class="week-badge">S11</span>Semana 11</a></li>
+<li><a href="semana12.html"><span class="week-badge">S12</span>Semana 12</a></li>
+<li><a href="semana13.html"><span class="week-badge">S13</span>Semana 13</a></li>
+<li><a href="semana14.html"><span class="week-badge">S14</span>Semana 14</a></li>
+<li><a href="semana15.html"><span class="week-badge">S15</span>Semana 15</a></li>
+<li><a href="semana16.html"><span class="week-badge">S16</span>Semana 16</a></li>
+<li><a href="semana17.html"><span class="week-badge">S17</span>Semana 17</a></li>
+<li><a href="semana18.html"><span class="week-badge">S18</span>Semana 18</a></li>
+<li><a href="semana19.html"><span class="week-badge">S19</span>Semana 19</a></li>
+<li><a href="semana20.html" class="active"><span class="week-badge">S20</span>Semana 20</a></li>
+
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="week-title">
+                <div class="week-number">20</div>
+                <div>
+                    <h1>Apresentação dos Projetos e Revisão Final</h1>
+                </div>
+            </div>
+            <p class="week-subtitle">Demonstrações, Avaliação e Encerramento</p>
+
+            <section class="section">
+                <h2><span class="icon">🎯</span> Objetivos de Aprendizagem</h2>
+                <ul class="objectives-list">
+                    <li>Apresentar projeto integrador para a turma</li>
+<li>Demonstrar funcionamento do pipeline Big Data</li>
+<li>Compartilhar aprendizados e desafios</li>
+<li>Revisar conceitos principais do semestre</li>
+                </ul>
+            </section>
+
+            <section class="section">
+                <h2><span class="icon">📚</span> Conteúdo Programático</h2>
+                <ul class="topics-list">
+                    <li>Apresentações dos projetos integradores</li>
+<li>Demonstrações ao vivo</li>
+<li>Discussão de desafios e soluções</li>
+<li>Feedback de colegas e professor</li>
+<li>Revisão dos conceitos principais</li>
+<li>Perspectivas futuras: Big Data Streaming, Real-time Analytics, MLOps</li>
+                </ul>
+            </section>
+
+            <section class="section">
+                <h2><span class="icon">🎬</span> Vídeos Recomendados</h2>
+                <div class="video-container">
+                </div>
+            </section>
+
+            <section class="section">
+                <h2><span class="icon">📁</span> Materiais de Apoio</h2>
+                <div class="materials-grid">
+                <div class="material-card">
+                    <div class="material-icon">📝</div>
+                    <h4>Presentation Template</h4>
+                    <p>Modelo de apresentação</p>
+                    <a href="#" class="material-link">Download</a>
+                </div>
+                <div class="material-card">
+                    <div class="material-icon">✅</div>
+                    <h4>Project Evaluation Rubric</h4>
+                    <p>Critérios de avaliação</p>
+                    <a href="#" class="material-link">Download</a>
+                </div>
+                <div class="material-card">
+                    <div class="material-icon">📄</div>
+                    <h4>Course Summary</h4>
+                    <p>Resumo do semestre</p>
+                    <a href="#" class="material-link">Download</a>
+                </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2><span class="icon">🔧</span> Ferramentas Utilizadas</h2>
+                <div class="tools-grid">
+                <div class="tool-card">
+                    <div class="tool-icon">🔧</div>
+                    <div class="tool-name">PowerPoint / Google Slides</div>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">🔧</div>
+                    <div class="tool-name">Sistema do projeto</div>
+                </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2><span class="icon">✏️</span> Atividades Práticas</h2>
+                
+            <div class="activity-card">
+                <div class="activity-header">
+                    <div class="activity-number">1</div>
+                    <div class="activity-title">Apresentação do Projeto</div>
+                </div>
+                <p><strong>Descrição:</strong> Apresentação final de 15-20 minutos + demo</p>
+                <p><strong>Pontuação:</strong> 15.0 pontos</p>
+            </div>
+            </section>
+
+            <div class="info-box">
+                <strong>💡 Dica:</strong> Consulte o Guia de Estudo da Semana 20 para exercícios detalhados, soluções comentadas e rubricas de avaliação.
+            </div>
+
+            <div class="navigation">
+                <a href="semana19.html" class="nav-button">⬅ Semana Anterior</a>
+                <span class="nav-button disabled">Próxima Semana ➡</span>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

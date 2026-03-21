@@ -345,6 +345,7 @@ c{color:var(--cyn);font-family:var(--mono);font-size:.9em;}hl{color:var(--grn);}
       <button class="etab active" id="tab-gcs" onclick="switchEnv('gcs')">&#9729; Cloud Shell</button>
       <button class="etab" id="tab-colab" onclick="switchEnv('colab')">&#128300; Colab</button>
       <button class="etab" id="tab-ubu" onclick="switchEnv('ubu')">&#128039; Ubuntu</button>
+      <button class="etab" id="tab-wsl" onclick="switchEnv('wsl')">&#128250; WSL</button>
     </div>
 
     <div class="epanel active" id="env-gcs">
@@ -512,9 +513,68 @@ EOF
         </div></div>
       </div>
     </div>
+
+    <div class="epanel" id="env-wsl">
+      <div class="box-info">&#128250; <strong>WSL (Windows Subsystem for Linux)</strong> &mdash; Rode um terminal Linux diretamente no Windows 10/11, sem maquina virtual. Recomendamos o <strong>Ubuntu</strong> pelo WSL.</div>
+      <div class="steps">
+        <div class="step"><div class="snum">1</div><div class="scont">
+          <div class="stit">Instale o WSL com Ubuntu (primeira vez)</div>
+          <div class="sdesc">Abra o <strong>PowerShell como Administrador</strong> (clique direito no menu Iniciar &rarr; "Windows PowerShell (Admin)") e execute:</div>
+          <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">PowerShell (Admin)</span><button class="cpybtn" onclick="copyEl('wsl0',this)">&#128203; copiar</button></div>
+          <pre class="code" id="wsl0"><span class="tp">PS&gt;</span> <span class="tc">wsl --install</span>   <span class="cm"># instala WSL + Ubuntu automaticamente</span></pre></div>
+          <div class="box-warn">&#9888; <strong>Reinicie o computador</strong> quando solicitado. Apos reiniciar, o Ubuntu vai abrir e pedir para criar um usuario e senha Linux (pode ser qualquer um).</div>
+          <div class="box-info">&#128161; Se o WSL ja estiver instalado, pule para o passo 2. Verifique com: <c>wsl --list --verbose</c> no PowerShell.</div>
+        </div></div>
+        <div class="step"><div class="snum">2</div><div class="scont">
+          <div class="stit">Abra o terminal Ubuntu no WSL</div>
+          <div class="sdesc">Procure <strong>"Ubuntu"</strong> no menu Iniciar e clique para abrir. Um terminal Linux vai aparecer. Voce tambem pode abrir pelo <strong>Windows Terminal</strong> se tiver instalado.</div>
+          <div class="box-info">&#128161; O prompt deve ser parecido com: <c>seu_usuario@DESKTOP-XXXXX:~$</c></div>
+        </div></div>
+        <div class="step"><div class="snum">3</div><div class="scont">
+          <div class="stit">Atualize e instale o pip e o mrjob</div>
+          <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">Ubuntu (WSL)</span><button class="cpybtn" onclick="copyEl('wsl1',this)">&#128203; copiar</button></div>
+          <pre class="code" id="wsl1"><span class="tp">$</span> <span class="tc">sudo apt update &amp;&amp; sudo apt upgrade -y</span>   <span class="cm"># atualiza pacotes (~2 min)</span>
+<span class="tp">$</span> <span class="tc">sudo apt install python3-pip -y</span>           <span class="cm"># instala o pip</span>
+<span class="tp">$</span> <span class="tc">pip3 install mrjob</span>                        <span class="cm"># instala mrjob</span>
+<span class="tp">$</span> <span class="tc">python3 -c "import mrjob; print('mrjob OK')"</span></pre></div>
+          <div class="box-ok">&#9989; Deve imprimir "mrjob OK". Se der erro de permissao tente: <c>pip3 install mrjob --user</c></div>
+        </div></div>
+        <div class="step"><div class="snum">4</div><div class="scont">
+          <div class="stit">Crie a pasta de trabalho e o arquivo de texto</div>
+          <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">Ubuntu (WSL)</span><button class="cpybtn" onclick="copyEl('wsl2',this)">&#128203; copiar</button></div>
+          <pre class="code" id="wsl2"><span class="tp">$</span> <span class="tc">mkdir -p ~/bigdata/semana03 &amp;&amp; cd ~/bigdata/semana03</span>
+<span class="tp">$</span> <span class="tc">cat &gt; texto.txt &lt;&lt; 'EOF'</span>
+big data e o futuro da tecnologia
+hadoop processa big data em clusters
+spark e mais rapido que hadoop na memoria
+big data com spark hadoop e python
+machine learning usa big data para aprender
+EOF
+<span class="tp">$</span> <span class="tc">cat texto.txt</span>    <span class="cm"># confirme as 5 linhas</span></pre></div>
+          <div class="box-ok">&#9989; O <c>cat texto.txt</c> deve mostrar as 5 linhas.</div>
+        </div></div>
+        <div class="step"><div class="snum">5</div><div class="scont">
+          <div class="stit">Crie o wordcount.py com o nano</div>
+          <div class="sdesc">O <strong>nano</strong> e um editor de texto no proprio terminal:</div>
+          <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">Ubuntu (WSL)</span><button class="cpybtn" onclick="copyEl('wsl3',this)">&#128203; copiar</button></div>
+          <pre class="code" id="wsl3"><span class="tp">$</span> <span class="tc">nano wordcount.py</span></pre></div>
+          <div class="box-info">&#128161; Cole o codigo do WordCount (botao "copiar" no bloco Python acima). Salve com <strong>Ctrl+O</strong> &rarr; <strong>Enter</strong> &rarr; <strong>Ctrl+X</strong>.</div>
+          <div class="box-info">&#128204; Dica WSL: voce tambem pode editar o arquivo com o <strong>VS Code no Windows</strong>! No terminal WSL, execute: <c>code wordcount.py</c> &mdash; o VS Code abre direto na pasta do WSL.</div>
+        </div></div>
+        <div class="step"><div class="snum">6</div><div class="scont">
+          <div class="stit">Execute o WordCount e salve o resultado</div>
+          <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">Ubuntu (WSL)</span><button class="cpybtn" onclick="copyEl('wsl4',this)">&#128203; copiar</button></div>
+          <pre class="code" id="wsl4"><span class="tp">$</span> <span class="tc">python3 wordcount.py texto.txt 2&gt;/dev/null</span>
+<span class="cm"># Salvar resultado para entrega:</span>
+<span class="tp">$</span> <span class="tc">python3 wordcount.py texto.txt 2&gt;/dev/null &gt; resultado.txt</span>
+<span class="tp">$</span> <span class="tc">cat resultado.txt</span></pre></div>
+          <div class="box-ok">&#9989; "big" deve aparecer com 4, "hadoop" com 3. O resultado.txt esta salvo na pasta do WSL.</div>
+          <div class="box-info">&#128204; Para acessar o arquivo pelo Windows Explorer, abra o Explorer e digite na barra de endereco: <c>\\wsl$\Ubuntu\home\seu_usuario\bigdata\semana03</c></div>
+        </div></div>
+      </div>
+    </div>
   </div>
 </div>
-<!-- QUIZ 3 -->
 <div class="sec">
   <div class="sh"><span class="shi">&#129513;</span><span class="sht">Quiz 3 &mdash; Checagem antes das missoes</span></div>
   <div class="sb">

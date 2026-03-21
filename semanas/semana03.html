@@ -616,6 +616,10 @@ EOF
         <div class="step"><div class="snum">1</div><div class="scont">
           <div class="stit">Instale o WSL com Ubuntu (primeira vez)</div>
           <div class="sdesc">Abra o <strong>PowerShell como Administrador</strong> (clique direito no menu Iniciar &rarr; "Windows PowerShell (Admin)") e execute:</div>
+          <a href="https://youtu.be/8oYxwg9qCZ4" target="_blank" style="display:inline-flex;align-items:center;gap:9px;padding:9px 16px;border-radius:var(--rs);background:#1a0a0a;border:1.5px solid #ff4444;color:#ff4444;text-decoration:none;font-size:.82em;font-weight:700;margin-bottom:12px;transition:all .15s;" onmouseover="this.style.background='#ff4444';this.style.color='#fff';" onmouseout="this.style.background='#1a0a0a';this.style.color='#ff4444';">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            ▶ Assistir: Tutorial de instalação do WSL no YouTube
+          </a>
           <div class="cw"><div class="cb2"><div class="dots"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#28c840"></div></div><span class="clbl">PowerShell (Admin)</span><button class="cpybtn" onclick="copyEl('wsl0',this)">&#128203; copiar</button></div>
           <pre class="code" id="wsl0"><span class="tp">PS&gt;</span> <span class="tc">wsl --install</span>   <span class="cm"># instala WSL + Ubuntu automaticamente</span></pre></div>
           <div class="box-warn">&#9888; <strong>Reinicie o computador</strong> quando solicitado. Apos reiniciar, o Ubuntu vai abrir e pedir para criar um usuario e senha Linux (pode ser qualquer um).</div>
@@ -978,6 +982,17 @@ EOF</pre></div>
       </div>
     </div>
 
+    <div style="background:var(--surf2);border:1px dashed var(--bdr);border-radius:var(--rs);padding:14px 18px;margin-bottom:14px;">
+      <div style="font-size:.71em;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;">📋 Banco de palavras — use cada uma onde fizer sentido</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        <span style="padding:4px 13px;border-radius:50px;background:var(--pur-d);color:var(--pur);border:1px solid var(--pur);font-family:var(--mono);font-size:.82em;font-weight:700;">!</span>
+        <span style="padding:4px 13px;border-radius:50px;background:var(--org-d);color:var(--org);border:1px solid var(--org);font-family:var(--mono);font-size:.82em;font-weight:700;">shuffle</span>
+        <span style="padding:4px 13px;border-radius:50px;background:var(--cyn-d);color:var(--cyn);border:1px solid var(--cyn);font-family:var(--mono);font-size:.82em;font-weight:700;">reducer</span>
+        <span style="padding:4px 13px;border-radius:50px;background:var(--grn-d);color:var(--grn);border:1px solid var(--grn);font-family:var(--mono);font-size:.82em;font-weight:700;">pip3</span>
+        <span style="padding:4px 13px;border-radius:50px;background:var(--ylw-d);color:var(--ylw);border:1px solid var(--ylw);font-family:var(--mono);font-size:.82em;font-weight:700;">yield</span>
+        <span style="padding:4px 13px;border-radius:50px;background:var(--pur-d);color:var(--pur);border:1px solid var(--pur);font-family:var(--mono);font-size:.82em;font-weight:700;">mapper</span>
+      </div>
+    </div>
     <button class="fill-btn" onclick="checkFill()">✅ Verificar respostas</button>
     <div id="fill-result" style="margin-top:12px;display:none;"></div>
   </div>

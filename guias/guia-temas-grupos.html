@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia: Temas por Grupo — Big Data & Hadoop | FATEC Ourinhos 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ng:#39ff14;--nc:#00e5ff;--nb:#1a6fff;--gold:#ffd700;
+  --or:#ff8c00;--pk:#ff006e;--bg:#050d12;--cb:#0a1520;
+  --bdr:#0e2030;--tx:#d0e8f5;--tm:#406080;--xp:#0a1828;
+  --gr:#0d1f10;--gn:#1aff6e;
+  /* group accent colors */
+  --g1:#00e5ff; --g1b:rgba(0,229,255,.08);  --g1bb:rgba(0,229,255,.25);
+  --g2:#39ff14; --g2b:rgba(57,255,20,.08);  --g2bb:rgba(57,255,20,.25);
+  --g3:#ffd700; --g3b:rgba(255,215,0,.08);  --g3bb:rgba(255,215,0,.25);
+  --g4:#ff8c00; --g4b:rgba(255,140,0,.08);  --g4bb:rgba(255,140,0,.25);
+  --g5:#ff006e; --g5b:rgba(255,0,110,.08);  --g5bb:rgba(255,0,110,.25);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(0,102,255,.018) 40px,rgba(0,102,255,.018) 41px),
+             repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(0,102,255,.018) 40px,rgba(0,102,255,.018) 41px);
+  pointer-events:none;z-index:0}
+
+/* HERO */
+.hero{position:relative;text-align:center;padding:64px 20px 80px;
+  background:radial-gradient(ellipse at 50% -10%,#001840 0%,var(--bg) 70%);
+  border-bottom:1px solid var(--nb);overflow:hidden;z-index:1}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--nb),var(--nc),var(--nb),transparent);
+  animation:scanH 3s linear infinite}
+@keyframes scanH{0%{opacity:.4}50%{opacity:1}100%{opacity:.4}}
+.hbadge{display:inline-block;background:rgba(0,102,255,.14);border:1px solid var(--nb);
+  color:var(--nc);font-family:'Orbitron',monospace;font-size:.65em;letter-spacing:3px;
+  padding:6px 18px;border-radius:2px;margin-bottom:20px;text-transform:uppercase}
+.hero h1{font-family:'Orbitron',monospace;font-size:clamp(1.2em,4vw,2.4em);font-weight:900;
+  color:var(--nc);text-shadow:0 0 20px var(--nc),0 0 60px rgba(0,229,255,.2);
+  line-height:1.2;margin-bottom:10px}
+.hero h1 span{color:var(--gold);text-shadow:0 0 20px var(--gold)}
+.hero-sub{font-size:.97em;color:var(--tm);max-width:680px;margin:0 auto 32px;line-height:1.8}
+.xpg{max-width:700px;margin:0 auto;background:var(--xp);border:1px solid var(--bdr);border-radius:4px;padding:12px 20px}
+.xpl{display:flex;justify-content:space-between;font-family:'Orbitron',monospace;font-size:.68em;color:var(--gold);margin-bottom:8px}
+.xpt{height:10px;background:#040c14;border-radius:5px;overflow:hidden;border:1px solid #0a1e30}
+.xpf{height:100%;background:linear-gradient(90deg,var(--nb),var(--nc));border-radius:5px;width:0%;animation:xpp 2s ease-in-out infinite}
+@keyframes xpp{0%,100%{box-shadow:0 0 6px var(--nc)}50%{box-shadow:0 0 18px var(--nc)}}
+
+/* WRAP */
+.wrap{max-width:980px;margin:0 auto;padding:48px 20px 100px;position:relative;z-index:1}
+
+/* NAV PILLS */
+.nav-pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:40px}
+.nav-pill{font-family:'Orbitron',monospace;font-size:.6em;letter-spacing:1px;padding:6px 14px;border:1px solid var(--bdr);border-radius:20px;color:var(--tm);cursor:pointer;transition:all .2s;text-decoration:none}
+.nav-pill:hover,.nav-pill.g1h:hover{border-color:var(--g1);color:var(--g1);background:var(--g1b)}
+.nav-pill.g2h:hover{border-color:var(--g2);color:var(--g2);background:var(--g2b)}
+.nav-pill.g3h:hover{border-color:var(--g3);color:var(--g3);background:var(--g3b)}
+.nav-pill.g4h:hover{border-color:var(--g4);color:var(--g4);background:var(--g4b)}
+.nav-pill.g5h:hover{border-color:var(--g5);color:var(--g5);background:var(--g5b)}
+
+/* INTRO */
+.intro{background:linear-gradient(135deg,rgba(0,102,255,.07),rgba(0,229,255,.04));
+  border:1px solid var(--bdr);border-radius:14px;padding:32px;margin-bottom:42px;position:relative;overflow:hidden}
+.intro::before{content:'🔥';position:absolute;right:24px;top:20px;font-size:4em;opacity:.07}
+.intro h2{font-family:'Orbitron',monospace;color:var(--nc);font-size:.85em;letter-spacing:2px;margin-bottom:14px}
+.intro p{color:#7aa8c8;line-height:1.85;margin-bottom:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chip{font-family:'Share Tech Mono',monospace;font-size:.75em;padding:4px 12px;border-radius:20px;border:1px solid;letter-spacing:1px}
+.cb-c{color:var(--nc);border-color:var(--nc);background:rgba(0,229,255,.06)}
+.cg-c{color:var(--ng);border-color:var(--ng);background:rgba(57,255,20,.06)}
+.cgo-c{color:var(--gold);border-color:var(--gold);background:rgba(255,215,0,.06)}
+.co-c{color:var(--or);border-color:var(--or);background:rgba(255,140,0,.06)}
+.cpk-c{color:var(--pk);border-color:var(--pk);background:rgba(255,0,110,.06)}
+
+/* SECTION LABEL */
+.sl-lbl{font-family:'Orbitron',monospace;font-size:.6em;letter-spacing:4px;color:var(--tm);
+  text-transform:uppercase;margin:52px 0 20px;display:flex;align-items:center;gap:12px}
+.sl-lbl::after{content:'';flex:1;height:1px;background:var(--bdr)}
+
+/* GROUP SELECTOR GRID */
+.gselector{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:40px}
+.gsel-card{border-radius:12px;padding:18px 14px;text-align:center;cursor:pointer;border:2px solid;transition:all .25s;text-decoration:none;display:block}
+.gsel-card.g1{border-color:var(--g1);background:var(--g1b)}
+.gsel-card.g1:hover{background:var(--g1bb);transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,229,255,.25)}
+.gsel-card.g2{border-color:var(--g2);background:var(--g2b)}
+.gsel-card.g2:hover{background:var(--g2bb);transform:translateY(-3px);box-shadow:0 6px 20px rgba(57,255,20,.2)}
+.gsel-card.g3{border-color:var(--g3);background:var(--g3b)}
+.gsel-card.g3:hover{background:var(--g3bb);transform:translateY(-3px);box-shadow:0 6px 20px rgba(255,215,0,.2)}
+.gsel-card.g4{border-color:var(--g4);background:var(--g4b)}
+.gsel-card.g4:hover{background:var(--g4bb);transform:translateY(-3px);box-shadow:0 6px 20px rgba(255,140,0,.2)}
+.gsel-card.g5{border-color:var(--g5);background:var(--g5b)}
+.gsel-card.g5:hover{background:var(--g5bb);transform:translateY(-3px);box-shadow:0 6px 20px rgba(255,0,110,.2)}
+.gsel-num{font-family:'Orbitron',monospace;font-size:1.6em;font-weight:900;margin-bottom:6px}
+.g1 .gsel-num{color:var(--g1)}.g2 .gsel-num{color:var(--g2)}.g3 .gsel-num{color:var(--g3)}.g4 .gsel-num{color:var(--g4)}.g5 .gsel-num{color:var(--g5)}
+.gsel-emoji{font-size:1.8em;margin-bottom:6px}
+.gsel-title{font-size:.8em;font-weight:800;color:var(--tx);margin-bottom:4px;line-height:1.3}
+.gsel-sub{font-size:.72em;color:var(--tm);line-height:1.4}
+
+/* GROUP SECTION CARDS */
+.gc{border-radius:14px;margin-bottom:50px;overflow:hidden}
+.gc.gc1{border:1px solid rgba(0,229,255,.3);background:linear-gradient(160deg,rgba(0,229,255,.04),rgba(0,0,0,0))}
+.gc.gc2{border:1px solid rgba(57,255,20,.3);background:linear-gradient(160deg,rgba(57,255,20,.04),rgba(0,0,0,0))}
+.gc.gc3{border:1px solid rgba(255,215,0,.3);background:linear-gradient(160deg,rgba(255,215,0,.04),rgba(0,0,0,0))}
+.gc.gc4{border:1px solid rgba(255,140,0,.3);background:linear-gradient(160deg,rgba(255,140,0,.04),rgba(0,0,0,0))}
+.gc.gc5{border:1px solid rgba(255,0,110,.3);background:linear-gradient(160deg,rgba(255,0,110,.04),rgba(0,0,0,0))}
+
+.gh{padding:28px 32px 24px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.g-badge{width:64px;height:64px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:1.4em;font-weight:900;flex-shrink:0;border:2px solid}
+.gc1 .g-badge{color:var(--g1);border-color:var(--g1);background:rgba(0,229,255,.1)}
+.gc2 .g-badge{color:var(--g2);border-color:var(--g2);background:rgba(57,255,20,.1)}
+.gc3 .g-badge{color:var(--g3);border-color:var(--g3);background:rgba(255,215,0,.1)}
+.gc4 .g-badge{color:var(--g4);border-color:var(--g4);background:rgba(255,140,0,.1)}
+.gc5 .g-badge{color:var(--g5);border-color:var(--g5);background:rgba(255,0,110,.1)}
+.gh-meta{flex:1}
+.gh-tag{font-family:'Orbitron',monospace;font-size:.58em;letter-spacing:3px;text-transform:uppercase;margin-bottom:5px}
+.gc1 .gh-tag{color:var(--g1)}.gc2 .gh-tag{color:var(--g2)}.gc3 .gh-tag{color:var(--g3)}.gc4 .gh-tag{color:var(--g4)}.gc5 .gh-tag{color:var(--g5)}
+.gh-title{font-weight:900;font-size:1.2em;color:var(--tx);margin-bottom:4px;line-height:1.3}
+.gh-sub{font-size:.88em;color:var(--tm);line-height:1.6}
+.gh-diff{font-family:'Orbitron',monospace;font-size:.65em;padding:6px 14px;border-radius:20px;border:1px solid;flex-shrink:0;align-self:flex-start;margin-top:4px}
+.gc1 .gh-diff{color:var(--g1);border-color:var(--g1);background:rgba(0,229,255,.07)}
+.gc2 .gh-diff{color:var(--g2);border-color:var(--g2);background:rgba(57,255,20,.07)}
+.gc3 .gh-diff{color:var(--g3);border-color:var(--g3);background:rgba(255,215,0,.07)}
+.gc4 .gh-diff{color:var(--g4);border-color:var(--g4);background:rgba(255,140,0,.07)}
+.gc5 .gh-diff{color:var(--g5);border-color:var(--g5);background:rgba(255,0,110,.07)}
+
+.gb{padding:32px}
+
+/* STEPS inside group */
+.sl{counter-reset:s}
+.st{display:flex;gap:16px;margin-bottom:24px;position:relative}
+.st:not(:last-child)::after{content:'';position:absolute;left:19px;top:40px;width:2px;height:calc(100% - 10px);background:var(--bdr)}
+.sn{width:38px;height:38px;border-radius:50%;background:var(--bg);border:2px solid var(--nc);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:.78em;font-weight:700;color:var(--nc);flex-shrink:0;position:relative;z-index:1}
+.gc1 .sn{border-color:var(--g1);color:var(--g1)}
+.gc2 .sn{border-color:var(--g2);color:var(--g2)}
+.gc3 .sn{border-color:var(--g3);color:var(--g3)}
+.gc4 .sn{border-color:var(--g4);color:var(--g4)}
+.gc5 .sn{border-color:var(--g5);color:var(--g5)}
+.sc{padding-top:6px;flex:1}
+.sc h4{font-size:.97em;font-weight:800;color:var(--tx);margin-bottom:7px}
+.sc p{font-size:.9em;color:#5a88aa;line-height:1.8;margin-bottom:8px}
+.sc ul,.sc ol{padding-left:20px}
+.sc li{font-size:.9em;color:#5a88aa;line-height:1.75;margin-bottom:5px}
+.sc li strong,.sc b{color:#90c0d8}
+
+/* TIP / WARNING / NOTE */
+.tip{background:rgba(255,215,0,.05);border:1px solid rgba(255,215,0,.28);border-radius:8px;padding:12px 16px;margin:12px 0;font-size:.88em;color:#c0a030;line-height:1.65}
+.tip strong{color:var(--gold)}
+.wrn{background:rgba(255,0,110,.05);border:1px solid rgba(255,0,110,.28);border-radius:8px;padding:12px 16px;margin:12px 0;font-size:.88em;color:#c03060;line-height:1.65}
+.wrn strong{color:var(--pk)}
+.note{background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.2);border-radius:8px;padding:12px 16px;margin:12px 0;font-size:.88em;color:#3a7890;line-height:1.65}
+.note strong{color:var(--nc)}
+
+/* CODE BLOCK */
+.tb{background:#020a0f;border:1px solid #0a2030;border-radius:10px;overflow:hidden;margin:14px 0}
+.th{background:#07141c;padding:8px 16px;display:flex;align-items:center;gap:8px;font-size:.68em;color:var(--tm);letter-spacing:1px;border-bottom:1px solid #0a2030;font-family:'Share Tech Mono',monospace}
+.td-dot{width:10px;height:10px;border-radius:50%}.d1{background:#ff5f57}.d2{background:#febc2e}.d3{background:#28c840}
+.tc{padding:16px 20px;font-family:'Share Tech Mono',monospace;font-size:.83em;color:#90c8e0;line-height:2;white-space:pre-wrap}
+.tc .cmd{color:var(--ng)}.tc .cmt{color:#1e3848;font-style:italic}.tc .hl{color:var(--gold)}.tc .out{color:#304858}
+
+/* LATEX BLOCK */
+.lb{background:#030810;border:1px solid #0c1e30;border-radius:10px;overflow:hidden;margin:14px 0}
+.lh{background:#07121e;padding:8px 16px;display:flex;align-items:center;gap:8px;font-size:.68em;color:var(--tm);letter-spacing:1px;border-bottom:1px solid #0c1e30;font-family:'Share Tech Mono',monospace}
+.lc{padding:16px 20px;font-family:'Share Tech Mono',monospace;font-size:.81em;color:#b8d8ee;line-height:1.9;white-space:pre-wrap}
+.lc .kw{color:#a07fff}.lc .cm{color:#1e3040;font-style:italic}.lc .hl{color:var(--gold)}.lc .str{color:#78c379}
+
+/* TOPIC GRID */
+.tg{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:16px 0}
+.tgc{background:rgba(255,255,255,.02);border:1px solid var(--bdr);border-radius:10px;padding:16px;transition:border-color .3s,background .3s}
+.tgc:hover{border-color:var(--gold);background:rgba(255,215,0,.035)}
+.tgc .tl{font-family:'Orbitron',monospace;font-size:.56em;letter-spacing:2px;color:var(--gold);margin-bottom:7px}
+.tgc h4{font-size:.87em;font-weight:800;color:var(--tx);margin-bottom:5px}
+.tgc p{font-size:.78em;color:var(--tm);line-height:1.6}
+
+/* OBJECTIVE BLOCK */
+.ob{border-radius:10px;padding:20px 24px;margin:16px 0}
+.gc1 .ob{background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.22)}
+.gc2 .ob{background:rgba(57,255,20,.04);border:1px solid rgba(57,255,20,.22)}
+.gc3 .ob{background:rgba(255,215,0,.04);border:1px solid rgba(255,215,0,.22)}
+.gc4 .ob{background:rgba(255,140,0,.04);border:1px solid rgba(255,140,0,.22)}
+.gc5 .ob{background:rgba(255,0,110,.04);border:1px solid rgba(255,0,110,.22)}
+.ol{font-family:'Orbitron',monospace;font-size:.58em;letter-spacing:2px;margin-bottom:8px;font-weight:700}
+.gc1 .ol{color:var(--g1)}.gc2 .ol{color:var(--g2)}.gc3 .ol{color:var(--g3)}.gc4 .ol{color:var(--g4)}.gc5 .ol{color:var(--g5)}
+.ob p{font-size:.9em;color:#5a88aa;line-height:1.75;margin-bottom:6px}
+.ob ul{padding-left:20px}
+.ob li{font-size:.88em;color:#5a88aa;line-height:1.75;margin-bottom:5px}
+.ob li strong{color:#90c0d8}
+
+/* DELIVERABLE BOX */
+.dlv{border-radius:10px;padding:18px 22px;margin:16px 0}
+.gc1 .dlv{background:rgba(0,229,255,.05);border:1px dashed rgba(0,229,255,.35)}
+.gc2 .dlv{background:rgba(57,255,20,.05);border:1px dashed rgba(57,255,20,.35)}
+.gc3 .dlv{background:rgba(255,215,0,.05);border:1px dashed rgba(255,215,0,.35)}
+.gc4 .dlv{background:rgba(255,140,0,.05);border:1px dashed rgba(255,140,0,.35)}
+.gc5 .dlv{background:rgba(255,0,110,.05);border:1px dashed rgba(255,0,110,.35)}
+.dlv-lbl{font-family:'Orbitron',monospace;font-size:.58em;letter-spacing:2px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.gc1 .dlv-lbl{color:var(--g1)}.gc2 .dlv-lbl{color:var(--g2)}.gc3 .dlv-lbl{color:var(--g3)}.gc4 .dlv-lbl{color:var(--g4)}.gc5 .dlv-lbl{color:var(--g5)}
+.dlv ul{padding-left:18px}
+.dlv li{font-size:.88em;color:#5a88aa;line-height:1.85;margin-bottom:4px}
+.dlv li strong{color:#90c0d8}
+
+/* SEARCHES / ELICIT */
+.elb{background:rgba(0,229,255,.032);border:1px dashed rgba(0,229,255,.38);border-radius:12px;padding:20px 22px;margin:18px 0}
+.elt{font-family:'Orbitron',monospace;font-size:.58em;letter-spacing:2px;color:var(--nc);margin-bottom:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+.elq{font-family:'Share Tech Mono',monospace;font-size:.86em;color:#c0f0ff;background:rgba(0,0,0,.45);padding:10px 14px;border-radius:6px;margin:7px 0;border-left:3px solid var(--nc);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.elq span{flex:1}
+.elq .copy-btn{font-family:'Orbitron',monospace;font-size:.58em;padding:3px 10px;border:1px solid var(--nc);border-radius:4px;color:var(--nc);background:transparent;cursor:pointer;letter-spacing:1px;transition:background .2s}
+.elq .copy-btn:hover{background:rgba(0,229,255,.15)}
+.el-why{font-size:.8em;color:var(--tm);margin-top:4px;margin-bottom:10px;font-style:italic;padding-left:4px}
+
+/* CHECKLIST */
+.cl{list-style:none;padding:0;margin:14px 0}
+.cl li{display:flex;align-items:flex-start;gap:10px;font-size:.88em;color:#406878;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.025)}
+.cl li .ck{width:20px;height:20px;border:2px solid var(--nc);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s;font-size:.8em;color:var(--nc);margin-top:1px}
+.cl li .ck:hover{background:rgba(0,229,255,.18)}
+.cl li .ck.done{background:rgba(0,229,255,.25)}
+
+/* MILESTONE */
+.ms{background:linear-gradient(135deg,rgba(0,229,255,.05),rgba(0,102,255,.05));border:1px solid rgba(0,229,255,.18);border-radius:10px;padding:18px 22px;margin:24px 0 0;display:flex;align-items:center;gap:14px}
+.mi{font-size:2em;flex-shrink:0}
+.ms h4{font-family:'Orbitron',monospace;font-size:.73em;letter-spacing:1px;color:var(--nc);margin-bottom:4px}
+.ms p{font-size:.85em;color:#406878;line-height:1.65}
+
+/* FINAL CARD */
+.fc{background:radial-gradient(ellipse at center,rgba(0,102,255,.12),rgba(0,0,0,0) 70%),var(--cb);
+  border:1px solid var(--nb);border-radius:14px;padding:48px;text-align:center;margin-top:48px;
+  box-shadow:0 0 40px rgba(0,102,255,.1)}
+.fc h2{font-family:'Orbitron',monospace;font-size:1.35em;color:var(--nc);text-shadow:0 0 20px var(--nc);margin-bottom:12px}
+.fc p{color:var(--tm);max-width:580px;margin:0 auto 20px;line-height:1.8}
+.tr{font-size:4em;margin-bottom:16px;display:block;animation:fl 3s ease-in-out infinite}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+/* TOAST */
+#toast{position:fixed;bottom:30px;right:30px;background:var(--cb);border:1px solid var(--nc);color:var(--nc);font-family:'Orbitron',monospace;font-size:.72em;letter-spacing:1px;padding:12px 20px;border-radius:6px;box-shadow:0 0 20px rgba(0,229,255,.18);transform:translateY(80px);opacity:0;transition:transform .3s,opacity .3s;z-index:99999}
+#toast.show{transform:translateY(0);opacity:1}
+
+code{font-family:'Share Tech Mono',monospace;background:rgba(0,229,255,.08);padding:2px 7px;border-radius:4px;font-size:.9em;color:var(--nc)}
+
+/* SEC BOX */
+.sec-box{background:rgba(255,215,0,.03);border:1px solid rgba(255,215,0,.18);border-radius:10px;padding:18px 22px;margin:14px 0}
+.sec-box .sec-lbl{font-family:'Orbitron',monospace;font-size:.58em;letter-spacing:2px;color:var(--gold);margin-bottom:8px;font-weight:700}
+.sec-box h4{font-size:.95em;font-weight:800;color:var(--tx);margin-bottom:6px}
+.sec-box p{font-size:.87em;color:#5a7a5a;line-height:1.75}
+
+/* SEPARATOR */
+.sep{height:1px;background:linear-gradient(90deg,transparent,var(--bdr),transparent);margin:48px 0}
+
+@media(max-width:620px){.gh{flex-wrap:wrap}.gh-diff{order:3}.tc,.lc{font-size:.74em}.gb{padding:18px}}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hbadge">&#9658; INFRAESTRUTURA PARA BIG DATA &middot; FATEC OURINHOS &middot; 2026</div>
+  <h1>&#128293; TEMAS POR GRUPO: <span>PESQUISA DIFERENCIADA</span></h1>
+  <p class="hero-sub">Cada grupo investiga um recorte diferente do ecossistema Hadoop. Mesmo base pr&aacute;tica — <strong style="color:var(--gold)">perguntas de pesquisa distintas</strong>. Escolha seu grupo e siga o guia espec&iacute;fico at&eacute; o artigo completo.</p>
+  <div class="xpg">
+    <div class="xpl"><span>&#9889; PROGRESSO DO GRUPO</span><span id="xd">0 / 500 XP</span></div>
+    <div class="xpt"><div class="xpf" id="xf" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- NAV -->
+<div class="nav-pills">
+  <a class="nav-pill g1h" href="#g1">G1 · Pseudo-Distribuído</a>
+  <a class="nav-pill g2h" href="#g2">G2 · Hadoop vs Local</a>
+  <a class="nav-pill g3h" href="#g3">G3 · Volume de Dados</a>
+  <a class="nav-pill g4h" href="#g4">G4 · Spark vs MapReduce</a>
+  <a class="nav-pill g5h" href="#g5">G5 · Falhas &amp; Tolerância</a>
+  <a class="nav-pill" href="#comum">&#128218; Seções Comuns</a>
+  <a class="nav-pill" href="#checklist">&#9989; Checklist Final</a>
+</div>
+
+<!-- BRIEFING -->
+<div class="intro">
+  <h2>// BRIEFING DA MISS&Atilde;O</h2>
+  <p>Todos os grupos partem da <strong>mesma base pr&aacute;tica</strong> das semanas 01, 02 e 03: Linux no Google Cloud Shell, Hadoop HDFS no Ubuntu 22.04 e MapReduce com WordCount. A diferen&ccedil;a est&aacute; na <strong>pergunta de pesquisa</strong> que cada grupo responde com seu artigo.</p>
+  <p>Este guia apresenta, para cada um dos 5 grupos, o <strong>recorte tem&aacute;tico espec&iacute;fico</strong>: a pergunta norteadora, os objetivos diferenciados, os experimentos adicionais, as buscas bibliogr&aacute;ficas e o que deve aparecer como resultado. As <strong>seções comuns</strong> (Overleaf, referencial base, conclus&atilde;o) est&atilde;o no guia principal &mdash; consulte-o em paralelo.</p>
+  <div class="chips">
+    <span class="chip cb-c">&#128187; Grupo 1 · Pseudo-Distribuído</span>
+    <span class="chip cg-c">&#9889; Grupo 2 · Hadoop vs Local</span>
+    <span class="chip cgo-c">&#128202; Grupo 3 · Volume de Dados</span>
+    <span class="chip co-c">&#128293; Grupo 4 · Spark vs MapReduce</span>
+    <span class="chip cpk-c">&#9888;&#65039; Grupo 5 · Falhas &amp; Tolerância</span>
+  </div>
+</div>
+
+<!-- GROUP SELECTOR -->
+<div class="sl-lbl">&#127919; ESCOLHA SEU GRUPO</div>
+<div class="gselector">
+  <a href="#g1" class="gsel-card g1">
+    <div class="gsel-num">G1</div>
+    <div class="gsel-emoji">&#128024;</div>
+    <div class="gsel-title">Hadoop Pseudo-Distribuído</div>
+    <div class="gsel-sub">Nível base · documentação completa do setup</div>
+  </a>
+  <a href="#g2" class="gsel-card g2">
+    <div class="gsel-num">G2</div>
+    <div class="gsel-emoji">&#9889;</div>
+    <div class="gsel-title">Hadoop vs Processamento Local</div>
+    <div class="gsel-sub">Comparativo · benchmark de tempo e recursos</div>
+  </a>
+  <a href="#g3" class="gsel-card g3">
+    <div class="gsel-num">G3</div>
+    <div class="gsel-emoji">&#128202;</div>
+    <div class="gsel-title">Diferentes Tamanhos de Dados</div>
+    <div class="gsel-sub">Escalonamento · análise de desempenho por volume</div>
+  </a>
+  <a href="#g4" class="gsel-card g4">
+    <div class="gsel-num">G4</div>
+    <div class="gsel-emoji">&#128293;</div>
+    <div class="gsel-title">Spark vs MapReduce</div>
+    <div class="gsel-sub">Frameworks · in-memory vs batch processing</div>
+  </a>
+  <a href="#g5" class="gsel-card g5">
+    <div class="gsel-num">G5</div>
+    <div class="gsel-emoji">&#9888;&#65039;</div>
+    <div class="gsel-title">Tolerância a Falhas</div>
+    <div class="gsel-sub">Resiliência · simulação e análise teórica</div>
+  </a>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- GRUPO 1 -->
+<!-- ============================================================ -->
+<div class="sl-lbl" id="g1">GRUPO 1 &mdash; HADOOP EM MODO PSEUDO-DISTRIBU&Iacute;DO</div>
+<div class="gc gc1">
+  <div class="gh">
+    <div class="g-badge">G1</div>
+    <div class="gh-meta">
+      <div class="gh-tag">GRUPO 1 · INFRAESTRUTURA BASE</div>
+      <div class="gh-title">&#128024; Hadoop em Modo Pseudo-Distribuído: Implantação, Configuração e Análise</div>
+      <div class="gh-sub">Documentar com profundidade técnica todo o processo de setup do Hadoop em modo pseudo-distribuído, validando cada daemon e analisando como o HDFS simula a distribuição real de dados em um único nó.</div>
+    </div>
+    <div class="gh-diff">NÍVEL BÁSICO</div>
+  </div>
+  <div class="gb">
+
+    <div class="ob">
+      <div class="ol">&#127919; PERGUNTA NORTEADORA</div>
+      <p><strong>Como o Apache Hadoop 3.3 em modo pseudo-distribuído replica o comportamento de um cluster real no ambiente de um único nó Ubuntu 22.04, e quais são as implicações práticas para aprendizado de infraestruturas Big Data?</strong></p>
+    </div>
+
+    <div class="sl">
+      <div class="st">
+        <div class="sn">1</div>
+        <div class="sc">
+          <h4>Diferencial do Grupo 1: foco na profundidade técnica do setup</h4>
+          <p>Enquanto outros grupos usam o setup como ponto de partida para outros experimentos, o Grupo 1 <strong>faz do setup o próprio objeto de estudo</strong>. Cada decisão de configuração deve ser justificada teoricamente no artigo.</p>
+          <div class="tg">
+            <div class="tgc"><div class="tl">EXPLORAR</div><h4>Cada arquivo XML</h4><p>Documentar core-site.xml, hdfs-site.xml, mapred-site.xml e yarn-site.xml com explicação de cada parâmetro configurado</p></div>
+            <div class="tgc"><div class="tl">ANALISAR</div><h4>Os 5 daemons</h4><p>NameNode, DataNode, SecondaryNameNode, ResourceManager e NodeManager — função, porta TCP e como verificar com jps e logs</p></div>
+            <div class="tgc"><div class="tl">DOCUMENTAR</div><h4>Erros e soluções</h4><p>Todo erro encontrado durante o setup deve virar um item de "Resultados e Discussão" — problemas reais são dados valiosos</p></div>
+            <div class="tgc"><div class="tl">VISUALIZAR</div><h4>Interface Web do Hadoop</h4><p>Explorar e documentar as UIs: NameNode (porta 9870), ResourceManager (porta 8088) e histórico de jobs</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">2</div>
+        <div class="sc">
+          <h4>Objetivo Geral e Objetivos Específicos do Grupo 1</h4>
+          <div class="sec-box">
+            <div class="sec-lbl">&#127919; OBJETIVO GERAL SUGERIDO</div>
+            <p style="font-size:.88em;color:#507860;line-height:1.8">"Implantar, configurar e analisar o Apache Hadoop 3.3 em modo pseudo-distribuído no Ubuntu 22.04, documentando o processo técnico completo, validando os serviços distribuídos e avaliando como este modo simula as características de um cluster real de Big Data."</p>
+          </div>
+          <div class="sec-box" style="margin-top:12px">
+            <div class="sec-lbl">&#9989; OBJETIVOS ESPECÍFICOS</div>
+            <p style="font-size:.86em;color:#507860;line-height:1.9">
+              <strong>OE1:</strong> Preparar o ambiente Linux Ubuntu 22.04 com as dependências obrigatórias (Java JDK 11, SSH sem senha, variáveis de ambiente).<br>
+              <strong>OE2:</strong> Instalar e configurar o Apache Hadoop 3.3.6, detalhando cada arquivo XML de configuração e seu impacto no comportamento do cluster.<br>
+              <strong>OE3:</strong> Iniciar e validar os 5 daemons do modo pseudo-distribuído via comando <code>jps</code>, analisando as interfaces web de monitoramento.<br>
+              <strong>OE4:</strong> Executar operações HDFS (<code>-mkdir</code>, <code>-put</code>, <code>-ls</code>, <code>-cat</code>, <code>-rm</code>) e o programa WordCount, registrando resultados.<br>
+              <strong>OE5:</strong> Relacionar as características do modo pseudo-distribuído com o modelo conceitual de clusters Hadoop totalmente distribuídos.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">3</div>
+        <div class="sc">
+          <h4>Experimentos adicionais exclusivos do Grupo 1</h4>
+          <p>Além do setup padrão da disciplina, o Grupo 1 deve realizar e documentar os seguintes experimentos complementares:</p>
+          <div class="tb">
+            <div class="th"><span class="td-dot d1"></span><span class="td-dot d2"></span><span class="td-dot d3"></span>&nbsp; Experimentos adicionais — Grupo 1</div>
+            <div class="tc"><span class="cmt"># 1. Inspecionar o estado dos daemons via logs</span>
+<span class="cmd">$ cat $HADOOP_HOME/logs/hadoop-hadoop-namenode-*.log | tail -30</span>
+<span class="cmd">$ cat $HADOOP_HOME/logs/yarn-hadoop-resourcemanager-*.log | tail -20</span>
+
+<span class="cmt"># 2. Verificar o relatório de saúde do NameNode</span>
+<span class="cmd">$ hdfs dfsadmin -report</span>
+
+<span class="cmt"># 3. Explorar blocos de um arquivo no HDFS</span>
+<span class="cmd">$ hdfs fsck /user/hadoop/input/corpus.txt -files -blocks -locations</span>
+
+<span class="cmt"># 4. Monitorar uso de recursos durante um job MapReduce</span>
+<span class="cmd">$ watch -n 2 jps</span>
+<span class="cmt"># (em outro terminal, execute o WordCount e observe os processos)</span>
+
+<span class="cmt"># 5. Verificar replicação (deve ser 1 no modo pseudo-distribuído)</span>
+<span class="cmd">$ hdfs dfs -stat "%r" /user/hadoop/input/corpus.txt</span>
+<span class="out">1</span></div>
+          </div>
+          <div class="note"><strong>&#128204; Por que fator de replicação = 1?</strong> No modo pseudo-distribuído há apenas um DataNode, então replicar em 3 nós &eacute; imposs&iacute;vel. Isso deve ser discutido no artigo como limita&ccedil;&atilde;o do modo e vantagem do modo totalmente distribu&iacute;do.</div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">4</div>
+        <div class="sc">
+          <h4>Buscas bibliográficas específicas do Grupo 1</h4>
+          <div class="elb">
+            <div class="elt">&#128269; ELICIT.ORG — BUSCAS GRUPO 1</div>
+            <div class="elq"><span>Apache Hadoop pseudo-distributed mode single node configuration performance</span><button class="copy-btn" onclick="cp(this,'Apache Hadoop pseudo-distributed mode single node configuration performance')">COPIAR</button></div>
+            <div class="el-why">&#8627; Artigos sobre comportamento do modo pseudo-distribuído vs totalmente distribuído</div>
+            <div class="elq"><span>HDFS NameNode DataNode architecture fault tolerance replication</span><button class="copy-btn" onclick="cp(this,'HDFS NameNode DataNode architecture fault tolerance replication')">COPIAR</button></div>
+            <div class="el-why">&#8627; Paper original do HDFS (Shvachko et al., 2010) e artigos derivados</div>
+            <div class="elq"><span>Hadoop YARN resource manager cluster monitoring distributed computing</span><button class="copy-btn" onclick="cp(this,'Hadoop YARN resource manager cluster monitoring distributed computing')">COPIAR</button></div>
+            <div class="el-why">&#8627; Para embasar a análise do YARN e ResourceManager</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">5</div>
+        <div class="sc">
+          <h4>O que deve aparecer nos Resultados do Grupo 1</h4>
+          <div class="dlv">
+            <div class="dlv-lbl">&#128230; ENTREGÁVEIS MÍNIMOS</div>
+            <ul>
+              <li><strong>Tabela de configuração:</strong> cada parâmetro dos XMLs com seu valor e justificativa</li>
+              <li><strong>Screenshot:</strong> saída do <code>jps</code> com os 5 daemons ativos</li>
+              <li><strong>Screenshot:</strong> interface web do NameNode (porta 9870) mostrando o DataNode registrado</li>
+              <li><strong>Screenshot:</strong> interface web do ResourceManager (porta 8088) com o job WordCount concluído</li>
+              <li><strong>Saída do <code>hdfs dfsadmin -report</code>:</strong> analisando capacidade e replicação</li>
+              <li><strong>Tabela de operações HDFS:</strong> comando, resultado esperado e resultado obtido</li>
+              <li><strong>Resultado WordCount:</strong> top 10 palavras com frequência</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ms"><div class="mi">&#128024;</div><div><h4>GRUPO 1 — SEÇÃO ESPECÍFICA COMPLETA</h4><p>Agora acesse o <a href="guia-artigo-bigdata.html" style="color:var(--nc)">Guia Principal</a> para as seções comuns: Overleaf, Referencial Teórico base, Metodologia e Conclusão.</p></div></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- GRUPO 2 -->
+<!-- ============================================================ -->
+<div class="sl-lbl" id="g2">GRUPO 2 &mdash; HADOOP VS PROCESSAMENTO LOCAL</div>
+<div class="gc gc2">
+  <div class="gh">
+    <div class="g-badge">G2</div>
+    <div class="gh-meta">
+      <div class="gh-tag">GRUPO 2 · COMPARATIVO</div>
+      <div class="gh-title">&#9889; Hadoop vs Processamento Local: Benchmark de Desempenho com WordCount</div>
+      <div class="gh-sub">Comparar o tempo de execução e uso de recursos do MapReduce no Hadoop contra o processamento sequencial do mesmo arquivo com Python ou shell script, analisando quando a sobrecarga do Hadoop se justifica.</div>
+    </div>
+    <div class="gh-diff">NÍVEL INTERMEDIÁRIO</div>
+  </div>
+  <div class="gb">
+
+    <div class="ob">
+      <div class="ol">&#127919; PERGUNTA NORTEADORA</div>
+      <p><strong>Em qual ponto o overhead de configuração e inicialização do Hadoop MapReduce se torna compensatório em relação ao processamento sequencial local, e como o tamanho do corpus textual influencia essa relação de desempenho?</strong></p>
+    </div>
+
+    <div class="sl">
+      <div class="st">
+        <div class="sn">1</div>
+        <div class="sc">
+          <h4>Hipótese e design do experimento comparativo</h4>
+          <p>Para arquivos pequenos, o Hadoop costuma ser <strong>mais lento</strong> que o processamento local por causa do overhead de inicialização do job YARN, divisão em blocos e comunicação interna. Para volumes maiores, a tendência se inverte. O Grupo 2 vai medir onde está essa fronteira.</p>
+          <div class="note"><strong>&#128204; Nota metodológica importante:</strong> Em modo pseudo-distribuído (1 n&oacute;), voc&ecirc; n&atilde;o vai ver a escala real do Hadoop. Isso &eacute; exatamente o ponto: o artigo deve discutir por que o Hadoop &eacute; projetado para clusters maiores e que o overhead observado aqui seria amortizado com mais n&oacute;s.</div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">2</div>
+        <div class="sc">
+          <h4>Objetivo Geral e Objetivos Específicos do Grupo 2</h4>
+          <div class="sec-box">
+            <div class="sec-lbl">&#127919; OBJETIVO GERAL SUGERIDO</div>
+            <p style="font-size:.88em;color:#507860;line-height:1.8">"Comparar o desempenho do processamento de contagem de palavras (WordCount) entre o framework Apache Hadoop MapReduce e o processamento sequencial em Python, analisando o tempo de execução, o uso de recursos e a escalabilidade de cada abordagem em função do volume de dados."</p>
+          </div>
+          <div class="sec-box" style="margin-top:12px">
+            <div class="sec-lbl">&#9989; OBJETIVOS ESPECÍFICOS</div>
+            <p style="font-size:.86em;color:#507860;line-height:1.9">
+              <strong>OE1:</strong> Implementar a contagem de palavras em Python puro (<code>collections.Counter</code>) como baseline de comparação.<br>
+              <strong>OE2:</strong> Executar o WordCount no Hadoop MapReduce sobre os mesmos arquivos de entrada.<br>
+              <strong>OE3:</strong> Medir o tempo de execução de ambas as abordagens para ao menos 3 tamanhos de arquivo distintos.<br>
+              <strong>OE4:</strong> Analisar o overhead de inicialização do Hadoop (tempo de job setup vs tempo de processamento efetivo).<br>
+              <strong>OE5:</strong> Discutir em que escala de dados o Hadoop se torna vantajoso e por que o modo pseudo-distribuído limita a observação desse ponto.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">3</div>
+        <div class="sc">
+          <h4>Script Python de comparação e geração de corpus</h4>
+          <div class="tb">
+            <div class="th"><span class="td-dot d1"></span><span class="td-dot d2"></span><span class="td-dot d3"></span>&nbsp; wordcount_local.py — baseline Python</div>
+            <div class="tc"><span class="cmt">#!/usr/bin/env python3</span>
+<span class="cmt"># Execução: python3 wordcount_local.py corpus_10k.txt</span>
+import sys, time
+from collections import Counter
+
+start = time.time()
+with open(sys.argv[1], 'r', encoding='utf-8') as f:
+    words = f.read().lower().split()
+counter = Counter(words)
+elapsed = time.time() - start
+
+print(f"[INFO] Arquivo: {sys.argv[1]}")
+print(f"[INFO] Palavras únicas: {len(counter)}")
+print(f"[INFO] Tempo total: {elapsed:.4f}s")
+for word, count in counter.most_common(10):
+    print(f"  {word}: {count}")</div>
+          </div>
+          <div class="tb">
+            <div class="th"><span class="td-dot d1"></span><span class="td-dot d2"></span><span class="td-dot d3"></span>&nbsp; Gerador de corpus para teste — gera_corpus.py</div>
+            <div class="tc"><span class="cmt"># Gera corpora de diferentes tamanhos para comparação</span>
+import random, sys
+words = ['hadoop','dados','linux','distribuído','hdfs','cluster',
+         'processamento','arquivo','mapreduce','sistema','nó',
+         'rede','computação','bigdata','análise','velocidade']
+n = int(sys.argv[1])  <span class="cmt"># nº de palavras</span>
+print(' '.join(random.choices(words, k=n)))
+
+<span class="cmt"># Gere 3 corpora:</span>
+<span class="cmd">$ python3 gera_corpus.py 1000   > corpus_1k.txt</span>
+<span class="cmd">$ python3 gera_corpus.py 50000  > corpus_50k.txt</span>
+<span class="cmd">$ python3 gera_corpus.py 500000 > corpus_500k.txt</span></div>
+          </div>
+          <div class="tb">
+            <div class="th"><span class="td-dot d1"></span><span class="td-dot d2"></span><span class="td-dot d3"></span>&nbsp; Benchmark — execução comparativa com time</div>
+            <div class="tc"><span class="cmt"># Python local — capture o tempo com time</span>
+<span class="cmd">$ time python3 wordcount_local.py corpus_1k.txt</span>
+<span class="cmd">$ time python3 wordcount_local.py corpus_50k.txt</span>
+<span class="cmd">$ time python3 wordcount_local.py corpus_500k.txt</span>
+
+<span class="cmt"># Hadoop MapReduce — execute e anote o tempo total do job</span>
+<span class="cmd">$ hdfs dfs -rm -r /user/hadoop/output</span>
+<span class="cmd">$ time hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/\</span>
+<span class="cmd">  hadoop-mapreduce-examples-3.3.6.jar \</span>
+<span class="cmd">  wordcount /user/hadoop/input/corpus_1k.txt /user/hadoop/output</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">4</div>
+        <div class="sc">
+          <h4>Buscas bibliográficas específicas do Grupo 2</h4>
+          <div class="elb">
+            <div class="elt">&#128269; ELICIT.ORG — BUSCAS GRUPO 2</div>
+            <div class="elq"><span>Hadoop MapReduce performance comparison sequential processing benchmark</span><button class="copy-btn" onclick="cp(this,'Hadoop MapReduce performance comparison sequential processing benchmark')">COPIAR</button></div>
+            <div class="el-why">&#8627; Artigos que comparam Hadoop com processamento local/sequencial</div>
+            <div class="elq"><span>overhead distributed computing small data Hadoop inefficiency</span><button class="copy-btn" onclick="cp(this,'overhead distributed computing small data Hadoop inefficiency')">COPIAR</button></div>
+            <div class="el-why">&#8627; Literatura sobre quando NÃO usar Hadoop — importante para a discussão</div>
+            <div class="elq"><span>Big Data processing latency throughput comparison frameworks</span><button class="copy-btn" onclick="cp(this,'Big Data processing latency throughput comparison frameworks')">COPIAR</button></div>
+            <div class="el-why">&#8627; Artigos sobre métricas de comparação de frameworks de processamento</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">5</div>
+        <div class="sc">
+          <h4>O que deve aparecer nos Resultados do Grupo 2</h4>
+          <div class="dlv">
+            <div class="dlv-lbl">&#128230; ENTREGÁVEIS MÍNIMOS</div>
+            <ul>
+              <li><strong>Tabela comparativa:</strong> corpus × abordagem × tempo de execução (tabela 3×2 mínima)</li>
+              <li><strong>Gráfico de barras ou linha:</strong> tempo (eixo Y) por tamanho de corpus (eixo X) para Python e Hadoop</li>
+              <li><strong>Análise do overhead:</strong> quanto tempo o Hadoop gasta em inicialização do job vs processamento real (extraia do log)</li>
+              <li><strong>Discussão do ponto de equilíbrio:</strong> estimativa de qual volume tornaria o Hadoop vantajoso em cluster real</li>
+              <li><strong>Screenshot</strong> da saída do <code>time</code> para cada execução Python e do log de conclusão do job Hadoop</li>
+            </ul>
+          </div>
+          <div class="tip"><strong>&#128161; Dica para o gráfico:</strong> Use Python com <code>matplotlib</code> (<code>plt.bar</code>) ou planilha Google Sheets para gerar a visualização e exporte como PNG para inserir no Overleaf com <code>\includegraphics</code>.</div>
+        </div>
+      </div>
+    </div>
+    <div class="ms"><div class="mi">&#9889;</div><div><h4>GRUPO 2 — SEÇÃO ESPECÍFICA COMPLETA</h4><p>Acesse o <a href="guia-artigo-bigdata.html" style="color:var(--nc)">Guia Principal</a> para as seções comuns: Overleaf, Referencial base, Metodologia e Conclusão.</p></div></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- GRUPO 3 -->
+<!-- ============================================================ -->
+<div class="sl-lbl" id="g3">GRUPO 3 &mdash; DIFERENTES TAMANHOS DE DADOS</div>
+<div class="gc gc3">
+  <div class="gh">
+    <div class="g-badge">G3</div>
+    <div class="gh-meta">
+      <div class="gh-tag">GRUPO 3 · ESCALONAMENTO</div>
+      <div class="gh-title">&#128202; Volume como Variável: Como o HDFS e o MapReduce se comportam com diferentes tamanhos de corpus?</div>
+      <div class="gh-sub">Investigar como o comportamento do HDFS (divisão em blocos, replicação lógica) e o desempenho do MapReduce se alteram conforme o volume de dados aumenta — de kilobytes a megabytes — em ambiente pseudo-distribuído.</div>
+    </div>
+    <div class="gh-diff">NÍVEL INTERMEDIÁRIO</div>
+  </div>
+  <div class="gb">
+
+    <div class="ob">
+      <div class="ol">&#127919; PERGUNTA NORTEADORA</div>
+      <p><strong>Como o volume de dados (de 1 KB a 100 MB) afeta o comportamento do HDFS na divisão em blocos e o tempo de processamento do MapReduce WordCount no Apache Hadoop 3.3 em modo pseudo-distribuído?</strong></p>
+    </div>
+
+    <div class="sl">
+      <div class="st">
+        <div class="sn">1</div>
+        <div class="sc">
+          <h4>Desenho do experimento de escalonamento</h4>
+          <p>O Grupo 3 cria corpora de texto de tamanhos progressivamente maiores e mede como o HDFS e o MapReduce respondem. O ponto central é a <strong>divisão em blocos de 128 MB</strong>: arquivos abaixo disso ocupam exatamente 1 bloco; acima, são distribuídos em múltiplos blocos.</p>
+          <div class="tg">
+            <div class="tgc"><div class="tl">FASE 1</div><h4>Corpus pequenos</h4><p>10 KB, 100 KB, 500 KB — todos dentro de 1 bloco HDFS. Medir tempo e observar que 1 único bloco é criado</p></div>
+            <div class="tgc"><div class="tl">FASE 2</div><h4>Corpus médios</h4><p>1 MB, 10 MB, 50 MB — ainda 1 bloco, mas com volume que começa a revelar o pipeline MapReduce</p></div>
+            <div class="tgc"><div class="tl">FASE 3</div><h4>Corpus grande</h4><p>~150 MB — ultrapassa o bloco de 128 MB, gerando 2 blocos. Observar a divisão e o paralelismo</p></div>
+            <div class="tgc"><div class="tl">MEDIR</div><h4>Métricas-chave</h4><p>Tempo de job, número de blocos (<code>hdfs fsck</code>), número de mappers gerados (log YARN)</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">2</div>
+        <div class="sc">
+          <h4>Objetivo Geral e Objetivos Específicos do Grupo 3</h4>
+          <div class="sec-box">
+            <div class="sec-lbl">&#127919; OBJETIVO GERAL SUGERIDO</div>
+            <p style="font-size:.88em;color:#507860;line-height:1.8">"Analisar o comportamento do Apache Hadoop HDFS e do paradigma MapReduce em função do volume de dados processado, avaliando o impacto do tamanho do arquivo na divisão em blocos, no número de tarefas Map geradas e no tempo total de execução do WordCount."</p>
+          </div>
+          <div class="sec-box" style="margin-top:12px">
+            <div class="sec-lbl">&#9989; OBJETIVOS ESPECÍFICOS</div>
+            <p style="font-size:.86em;color:#507860;line-height:1.9">
+              <strong>OE1:</strong> Gerar um conjunto de corpora textuais com volumes controlados: 10 KB, 100 KB, 1 MB, 10 MB, 50 MB e ~150 MB.<br>
+              <strong>OE2:</strong> Carregar cada corpus no HDFS e verificar o número de blocos alocados via <code>hdfs fsck</code>.<br>
+              <strong>OE3:</strong> Executar o WordCount de cada corpus e registrar o tempo de execução e o número de tarefas Map e Reduce geradas.<br>
+              <strong>OE4:</strong> Construir tabela e gráfico comparativo relacionando volume × blocos × mappers × tempo.<br>
+              <strong>OE5:</strong> Identificar o ponto de transição de 1 para 2 blocos e discutir as implicações para o paralelismo.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">3</div>
+        <div class="sc">
+          <h4>Scripts para geração e análise dos corpora</h4>
+          <div class="tb">
+            <div class="th"><span class="td-dot d1"></span><span class="td-dot d2"></span><span class="td-dot d3"></span>&nbsp; gera_corpus_tamanho.py — gera arquivo com tamanho alvo em bytes</div>
+            <div class="tc"><span class="cmt">#!/usr/bin/env python3</span>
+<span class="cmt"># Uso: python3 gera_corpus_tamanho.py 10000 > corpus_10k.txt  (10 KB)</span>
+import random, sys
+vocab = ['hadoop','dados','linux','hdfs','cluster','mapreduce',
+         'distribuído','sistema','arquivo','processamento','bloco',
+         'namenode','datanode','yarn','computação','bigdata']
+target = int(sys.argv[1])
+output = []
+while sum(len(w)+1 for w in output) < target:
+    output.append(random.choice(vocab))
+print(' '.join(output))
+
+<span class="cmt"># Gere todos os corpora:</span>
+<span class="cmd">$ python3 gera_corpus_tamanho.py 10000       > corpus_10k.txt</span>
+<span class="cmd">$ python3 gera_corpus_tamanho.py 100000      > corpus_100k.txt</span>
+<span class="cmd">$ python3 gera_corpus_tamanho.py 1000000     > corpus_1mb.txt</span>
+<span class="cmd">$ python3 gera_corpus_tamanho.py 10000000    > corpus_10mb.txt</span>
+<span class="cmd">$ python3 gera_corpus_tamanho.py 50000000    > corpus_50mb.txt</span>
+<span class="cmd">$ python3 gera_corpus_tamanho.py 155000000   > corpus_150mb.txt</span></div>
+          </div>
+          <div class="tb">
+            <div class="th"><span class="td-dot d1"></span><span class="td-dot d2"></span><span class="td-dot d3"></span>&nbsp; Análise de blocos — para cada arquivo no HDFS</div>
+            <div class="tc"><span class="cmt"># Upload de todos os arquivos</span>
+<span class="cmd">$ hdfs dfs -put corpus_*.txt /user/hadoop/input/</span>
+
+<span class="cmt"># Para cada arquivo, verifique o número de blocos</span>
+<span class="cmd">$ hdfs fsck /user/hadoop/input/corpus_10k.txt -files -blocks</span>
+<span class="cmd">$ hdfs fsck /user/hadoop/input/corpus_150mb.txt -files -blocks</span>
+<span class="cmt"># Anote: "Total blocks (validated): X" em cada saída</span>
+
+<span class="cmt"># Execute WordCount para cada arquivo (com time para capturar duração)</span>
+<span class="cmd">$ hdfs dfs -rm -r /user/hadoop/output</span>
+<span class="cmd">$ time hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/\</span>
+<span class="cmd">  hadoop-mapreduce-examples-3.3.6.jar wordcount \</span>
+<span class="cmd">  /user/hadoop/input/corpus_10k.txt /user/hadoop/output</span>
+<span class="cmt"># No log, procure: "Map input records=X" e número de mappers</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">4</div>
+        <div class="sc">
+          <h4>Buscas bibliográficas específicas do Grupo 3</h4>
+          <div class="elb">
+            <div class="elt">&#128269; ELICIT.ORG — BUSCAS GRUPO 3</div>
+            <div class="elq"><span>HDFS block size data locality MapReduce performance scalability</span><button class="copy-btn" onclick="cp(this,'HDFS block size data locality MapReduce performance scalability')">COPIAR</button></div>
+            <div class="el-why">&#8627; Artigos sobre como o tamanho do bloco HDFS influencia o desempenho</div>
+            <div class="elq"><span>Hadoop data volume scalability performance analysis benchmark</span><button class="copy-btn" onclick="cp(this,'Hadoop data volume scalability performance analysis benchmark')">COPIAR</button></div>
+            <div class="el-why">&#8627; Estudos que variam o volume de dados em experimentos Hadoop</div>
+            <div class="elq"><span>Big Data volume characteristics data growth distributed storage</span><button class="copy-btn" onclick="cp(this,'Big Data volume characteristics data growth distributed storage')">COPIAR</button></div>
+            <div class="el-why">&#8627; Para embasar o V de Volume no referencial teórico</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">5</div>
+        <div class="sc">
+          <h4>O que deve aparecer nos Resultados do Grupo 3</h4>
+          <div class="dlv">
+            <div class="dlv-lbl">&#128230; ENTREGÁVEIS MÍNIMOS</div>
+            <ul>
+              <li><strong>Tabela principal:</strong> Corpus | Tamanho | Nº de Blocos | Nº de Mappers | Tempo de Execução (mín 6 linhas)</li>
+              <li><strong>Gráfico linha:</strong> Tamanho do corpus (eixo X) × Tempo de execução (eixo Y)</li>
+              <li><strong>Screenshot do <code>hdfs fsck</code>:</strong> mostrando 1 bloco para corpus pequeno e 2 blocos para corpus de 150 MB</li>
+              <li><strong>Trecho do log YARN:</strong> mostrando número de Map tasks por execução</li>
+              <li><strong>Discussão:</strong> o que acontece quando o arquivo ultrapassa 128 MB e como isso mudaria em um cluster real com múltiplos DataNodes</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ms"><div class="mi">&#128202;</div><div><h4>GRUPO 3 — SEÇÃO ESPECÍFICA COMPLETA</h4><p>Acesse o <a href="guia-artigo-bigdata.html" style="color:var(--nc)">Guia Principal</a> para as seções comuns: Overleaf, Referencial base, Metodologia e Conclusão.</p></div></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- GRUPO 4 -->
+<!-- ============================================================ -->
+<div class="sl-lbl" id="g4">GRUPO 4 &mdash; SPARK VS MAPREDUCE</div>
+<div class="gc gc4">
+  <div class="gh">
+    <div class="g-badge">G4</div>
+    <div class="gh-meta">
+      <div class="gh-tag">GRUPO 4 · FRAMEWORKS</div>
+      <div class="gh-title">&#128293; Apache Spark vs MapReduce: Processamento In-Memory contra Batch no Mesmo Cluster</div>
+      <div class="gh-sub">Instalar e executar o Apache Spark no modo local sobre o mesmo ambiente Ubuntu 22.04, comparar sua execução de WordCount com o MapReduce do Hadoop e discutir os paradigmas de processamento in-memory vs batch.</div>
+    </div>
+    <div class="gh-diff">NÍVEL AVANÇADO</div>
+  </div>
+  <div class="gb">
+
+    <div class="ob">
+      <div class="ol">&#127919; PERGUNTA NORTEADORA</div>
+      <p><strong>Quais são as diferenças práticas e conceituais entre o processamento MapReduce do Hadoop e o processamento in-memory do Apache Spark ao executar a mesma tarefa WordCount sobre o mesmo corpus textual no Ubuntu 22.04?</strong></p>
+    </div>
+
+    <div class="sl">
+      <div class="st">
+        <div class="sn">1</div>
+        <div class="sc">
+          <h4>Por que Spark? O contexto da evolução dos frameworks</h4>
+          <p>O MapReduce foi revolucionário em 2004, mas tem uma limitação importante: ele grava os resultados intermediários em disco entre cada fase Map e Reduce. O Spark (2009, UC Berkeley) surgiu para resolver isso mantendo os dados em memória RAM (<strong>RDD — Resilient Distributed Dataset</strong>), podendo ser <strong>10 a 100× mais rápido</strong> em operações iterativas.</p>
+          <div class="tip"><strong>&#128161; Foco do artigo:</strong> O grupo não precisa configurar Spark no HDFS — basta usar o modo <strong>local[*]</strong> do Spark sobre arquivos locais e comparar com o job MapReduce no HDFS. O que importa é a análise conceitual e os números de tempo.</div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">2</div>
+        <div class="sc">
+          <h4>Objetivo Geral e Objetivos Específicos do Grupo 4</h4>
+          <div class="sec-box">
+            <div class="sec-lbl">&#127919; OBJETIVO GERAL SUGERIDO</div>
+            <p style="font-size:.88em;color:#507860;line-height:1.8">"Comparar o Apache Spark e o MapReduce do Apache Hadoop na execução da tarefa WordCount, analisando as diferenças de paradigma (in-memory vs batch), tempo de execução e arquitetura de processamento, discutindo as condições em que cada framework é mais adequado."</p>
+          </div>
+          <div class="sec-box" style="margin-top:12px">
+            <div class="sec-lbl">&#9989; OBJETIVOS ESPECÍFICOS</div>
+            <p style="font-size:.86em;color:#507860;line-height:1.9">
+              <strong>OE1:</strong> Instalar o Apache Spark 3.x no Ubuntu 22.04 em modo local (sem cluster dedicado).<br>
+              <strong>OE2:</strong> Implementar o WordCount com PySpark e executá-lo sobre corpus de teste idêntico ao usado no Hadoop.<br>
+              <strong>OE3:</strong> Comparar os tempos de execução de Spark e Hadoop MapReduce para ao menos 2 tamanhos de corpus.<br>
+              <strong>OE4:</strong> Analisar as diferenças arquiteturais: RDD vs blocos HDFS, processamento in-memory vs gravação em disco, DAG vs pipeline Map-Shuffle-Reduce.<br>
+              <strong>OE5:</strong> Identificar cenários de uso onde cada framework é mais adequado (batch histórico vs análise iterativa).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">3</div>
+        <div class="sc">
+          <h4>Instalação do Spark e script PySpark WordCount</h4>
+          <div class="tb">
+            <div class="th"><span class="td-dot d1"></span><span class="td-dot d2"></span><span class="td-dot d3"></span>&nbsp; Instalação do Apache Spark 3.5 no Ubuntu 22.04</div>
+            <div class="tc"><span class="cmt"># Download do Spark (sem Hadoop embutido, usamos o nosso)</span>
+<span class="cmd">$ wget https://downloads.apache.org/spark/spark-3.5.1/\</span>
+<span class="cmd">  spark-3.5.1-bin-hadoop3.tgz</span>
+<span class="cmd">$ tar -xzf spark-3.5.1-bin-hadoop3.tgz -C /usr/local/</span>
+<span class="cmd">$ sudo mv /usr/local/spark-3.5.1-bin-hadoop3 /usr/local/spark</span>
+
+<span class="cmt"># Adicionar ao ~/.bashrc</span>
+<span class="cmd">$ echo 'export SPARK_HOME=/usr/local/spark' >> ~/.bashrc</span>
+<span class="cmd">$ echo 'export PATH=$PATH:$SPARK_HOME/bin' >> ~/.bashrc</span>
+<span class="cmd">$ source ~/.bashrc</span>
+
+<span class="cmt"># Verificar instalação</span>
+<span class="cmd">$ spark-shell --version</span>
+<span class="out">Spark 3.5.1 built for Hadoop 3.3.4</span></div>
+          </div>
+          <div class="tb">
+            <div class="th"><span class="td-dot d1"></span><span class="td-dot d2"></span><span class="td-dot d3"></span>&nbsp; wordcount_spark.py — PySpark WordCount</div>
+            <div class="tc"><span class="cmt">#!/usr/bin/env python3</span>
+import sys, time
+from pyspark import SparkContext, SparkConf
+
+conf = SparkConf().setAppName("WordCount").setMaster("local[*]")
+sc = SparkContext(conf=conf)
+sc.setLogLevel("WARN")
+
+start = time.time()
+text = sc.textFile(sys.argv[1])
+counts = (text.flatMap(lambda line: line.lower().split())
+              .map(lambda word: (word, 1))
+              .reduceByKey(lambda a, b: a + b)
+              .sortBy(lambda x: x[1], ascending=False))
+result = counts.take(10)
+elapsed = time.time() - start
+
+print(f"\n[SPARK] Top 10 palavras:")
+for word, count in result:
+    print(f"  {word}: {count}")
+print(f"[SPARK] Tempo total: {elapsed:.4f}s")
+sc.stop()
+
+<span class="cmt"># Execução:</span>
+<span class="cmd">$ time python3 wordcount_spark.py corpus_10mb.txt</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">4</div>
+        <div class="sc">
+          <h4>Buscas bibliográficas específicas do Grupo 4</h4>
+          <div class="elb">
+            <div class="elt">&#128269; ELICIT.ORG — BUSCAS GRUPO 4</div>
+            <div class="elq"><span>Apache Spark MapReduce comparison performance in-memory processing</span><button class="copy-btn" onclick="cp(this,'Apache Spark MapReduce comparison performance in-memory processing')">COPIAR</button></div>
+            <div class="el-why">&#8627; Artigos clássicos de comparação Spark vs MapReduce (Zaharia et al., 2010 é referência-chave)</div>
+            <div class="elq"><span>RDD resilient distributed dataset Spark architecture fault tolerance</span><button class="copy-btn" onclick="cp(this,'RDD resilient distributed dataset Spark architecture fault tolerance')">COPIAR</button></div>
+            <div class="el-why">&#8627; Paper original do Spark: Zaharia et al. (2012) — citar é obrigatório</div>
+            <div class="elq"><span>Hadoop Spark Big Data framework selection use case comparison</span><button class="copy-btn" onclick="cp(this,'Hadoop Spark Big Data framework selection use case comparison')">COPIAR</button></div>
+            <div class="el-why">&#8627; Artigos que discutem quando usar cada framework</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">5</div>
+        <div class="sc">
+          <h4>O que deve aparecer nos Resultados do Grupo 4</h4>
+          <div class="dlv">
+            <div class="dlv-lbl">&#128230; ENTREGÁVEIS MÍNIMOS</div>
+            <ul>
+              <li><strong>Tabela comparativa:</strong> Framework | Corpus | Tempo de Execução | Paradigma | Armazenamento intermediário</li>
+              <li><strong>Diagrama arquitetural:</strong> DAG do Spark (RDD lineage) vs pipeline Map-Shuffle-Reduce do Hadoop — pode ser feito no draw.io</li>
+              <li><strong>Screenshot:</strong> saída do PySpark com top 10 palavras e tempo</li>
+              <li><strong>Screenshot:</strong> saída do MapReduce Hadoop com os mesmos dados</li>
+              <li><strong>Seção de discussão:</strong> em que cenários o Spark vence, em que o MapReduce ainda é adequado (batch histórico, ETL de longa duração)</li>
+              <li><strong>Referência obrigatória:</strong> Zaharia et al. (2010 ou 2012) — paper original do Spark</li>
+            </ul>
+          </div>
+          <div class="wrn"><strong>&#9888; Atenção:</strong> Se o Google Cloud Shell não aguentar instalar o Spark (ambiente efêmero), documente a tentativa de instalação e conduza a comparação de forma <strong>teórica e bibliográfica</strong>, citando benchmarks publicados em artigos. Isso também é científico e válido.</div>
+        </div>
+      </div>
+    </div>
+    <div class="ms"><div class="mi">&#128293;</div><div><h4>GRUPO 4 — SEÇÃO ESPECÍFICA COMPLETA</h4><p>Acesse o <a href="guia-artigo-bigdata.html" style="color:var(--nc)">Guia Principal</a> para as seções comuns: Overleaf, Referencial base, Metodologia e Conclusão.</p></div></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- GRUPO 5 -->
+<!-- ============================================================ -->
+<div class="sl-lbl" id="g5">GRUPO 5 &mdash; TOLERÂNCIA A FALHAS</div>
+<div class="gc gc5">
+  <div class="gh">
+    <div class="g-badge">G5</div>
+    <div class="gh-meta">
+      <div class="gh-tag">GRUPO 5 · RESILIÊNCIA</div>
+      <div class="gh-title">&#9888;&#65039; Simulação de Falhas e Tolerância no HDFS: Testes Práticos e Análise Teórica</div>
+      <div class="gh-sub">Explorar os mecanismos de tolerância a falhas do Apache Hadoop — replicação de blocos, heartbeat, detecção de DataNode falho — por meio de testes práticos possíveis no modo pseudo-distribuído combinados com análise teórica do comportamento em cluster real.</div>
+    </div>
+    <div class="gh-diff">NÍVEL AVANÇADO</div>
+  </div>
+  <div class="gb">
+
+    <div class="ob">
+      <div class="ol">&#127919; PERGUNTA NORTEADORA</div>
+      <p><strong>Quais mecanismos o Apache Hadoop HDFS utiliza para garantir a disponibilidade e a integridade dos dados em cenários de falha de nós, e como esses mecanismos podem ser observados e testados em ambiente pseudo-distribuído?</strong></p>
+    </div>
+
+    <div class="sl">
+      <div class="st">
+        <div class="sn">1</div>
+        <div class="sc">
+          <h4>Fundamentos de tolerância a falhas no HDFS — o que estudar</h4>
+          <p>O HDFS foi projetado com a premissa de que <strong>falhas de hardware são a norma, não a exceção</strong>. Seus mecanismos de resiliência incluem:</p>
+          <div class="tg">
+            <div class="tgc"><div class="tl">REPLICAÇÃO</div><h4>Fator de réplica 3</h4><p>Cada bloco de 128 MB é replicado em 3 DataNodes distintos. Se um falhar, os dados permanecem acessíveis</p></div>
+            <div class="tgc"><div class="tl">HEARTBEAT</div><h4>Sinal de vida dos DataNodes</h4><p>A cada 3 segundos, cada DataNode envia um heartbeat ao NameNode. Após 10 heartbeats perdidos, é declarado morto</p></div>
+            <div class="tgc"><div class="tl">BLOCK REPORT</div><h4>Inventário de blocos</h4><p>Periodicamente, DataNodes informam ao NameNode quais blocos possuem — permite detectar corrupção ou falta</p></div>
+            <div class="tgc"><div class="tl">REREPLICA</div><h4>Re-replicação automática</h4><p>Quando um DataNode morre, o NameNode detecta blocos sub-replicados e ordena re-replicação nos nós vivos</p></div>
+          </div>
+          <div class="note"><strong>&#128204; Limitação do modo pseudo-distribuído:</strong> Com apenas 1 DataNode, n&atilde;o &eacute; poss&iacute;vel simular a re-replica&ccedil;&atilde;o autom&aacute;tica (n&atilde;o h&aacute; outro n&oacute; para replicar). O artigo deve descrever o que ocorreria em cluster real — isso &eacute; an&aacute;lise te&oacute;rica v&aacute;lida e esperada.</div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">2</div>
+        <div class="sc">
+          <h4>Objetivo Geral e Objetivos Específicos do Grupo 5</h4>
+          <div class="sec-box">
+            <div class="sec-lbl">&#127919; OBJETIVO GERAL SUGERIDO</div>
+            <p style="font-size:.88em;color:#507860;line-height:1.8">"Analisar os mecanismos de tolerância a falhas do Apache Hadoop HDFS por meio de testes práticos em ambiente pseudo-distribuído e análise teórica do comportamento em cluster de múltiplos nós, avaliando como a replicação de blocos, o protocolo de heartbeat e a re-replicação automática garantem a disponibilidade dos dados."</p>
+          </div>
+          <div class="sec-box" style="margin-top:12px">
+            <div class="sec-lbl">&#9989; OBJETIVOS ESPECÍFICOS</div>
+            <p style="font-size:.86em;color:#507860;line-height:1.9">
+              <strong>OE1:</strong> Descrever os mecanismos de tolerância a falhas do HDFS: replicação, heartbeat, block report e re-replicação.<br>
+              <strong>OE2:</strong> Simular a interrupção forçada do DataNode no modo pseudo-distribuído e observar a resposta do NameNode.<br>
+              <strong>OE3:</strong> Verificar a integridade dos dados após reinicialização do DataNode usando <code>hdfs fsck</code>.<br>
+              <strong>OE4:</strong> Analisar os logs do NameNode para identificar as mensagens de detecção de falha e recuperação.<br>
+              <strong>OE5:</strong> Descrever teoricamente o comportamento esperado do mesmo cenário em cluster de 3+ DataNodes, incluindo re-replicação automática.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">3</div>
+        <div class="sc">
+          <h4>Experimentos práticos de simulação de falhas</h4>
+          <div class="tb">
+            <div class="th"><span class="td-dot d1"></span><span class="td-dot d2"></span><span class="td-dot d3"></span>&nbsp; Experimento 1 — Matar o DataNode e observar o NameNode</div>
+            <div class="tc"><span class="cmt"># 1. Certifique-se de que o cluster está rodando e tem dados no HDFS</span>
+<span class="cmd">$ jps</span>
+<span class="out">NameNode, DataNode, SecondaryNameNode, ResourceManager, NodeManager</span>
+
+<span class="cmt"># 2. Carregue um arquivo de teste se ainda não tiver</span>
+<span class="cmd">$ hdfs dfs -put corpus.txt /user/hadoop/input/</span>
+<span class="cmd">$ hdfs fsck /user/hadoop/input/corpus.txt -files -blocks</span>
+<span class="cmt"># Anote o estado HEALTHY antes da falha</span>
+
+<span class="cmt"># 3. Mate SOMENTE o processo DataNode (sem parar o NameNode)</span>
+<span class="cmd">$ kill -9 $(jps | grep DataNode | awk '{print $1}')</span>
+<span class="cmd">$ jps</span>
+<span class="cmt"># DataNode deve ter sumido da lista</span>
+
+<span class="cmt"># 4. Tente acessar o arquivo — pode demorar até o timeout do heartbeat</span>
+<span class="cmd">$ hdfs dfs -ls /user/hadoop/input/</span>
+<span class="cmd">$ hdfs fsck /user/hadoop/input/corpus.txt</span>
+<span class="cmt"># Observe mensagens de MISSING blocks ou UNDER REPLICATED</span>
+
+<span class="cmt"># 5. Monitore o log do NameNode para ver detecção de falha</span>
+<span class="cmd">$ tail -f $HADOOP_HOME/logs/hadoop-hadoop-namenode-*.log | grep -i "dead\|lost\|unreachable"</span></div>
+          </div>
+          <div class="tb">
+            <div class="th"><span class="td-dot d1"></span><span class="td-dot d2"></span><span class="td-dot d3"></span>&nbsp; Experimento 2 — Reiniciar o DataNode e verificar recuperação</div>
+            <div class="tc"><span class="cmt"># Reinicie apenas o DataNode</span>
+<span class="cmd">$ hdfs --daemon start datanode</span>
+<span class="cmd">$ jps</span>
+<span class="cmt"># DataNode deve reaparecer</span>
+
+<span class="cmt"># Verifique a integridade dos dados após a recuperação</span>
+<span class="cmd">$ hdfs fsck /user/hadoop/input/corpus.txt -files -blocks</span>
+<span class="cmt"># Status deve voltar a HEALTHY</span>
+
+<span class="cmt"># Verifique no log o re-registro do DataNode</span>
+<span class="cmd">$ tail -20 $HADOOP_HOME/logs/hadoop-hadoop-namenode-*.log</span>
+
+<span class="cmt"># Experimento 3 — Corrupção teórica: verificar checksums</span>
+<span class="cmd">$ hdfs fsck / -includeSnapshots -blocks</span>
+<span class="cmt"># Procure por "CORRUPT BLOCKS" — em ambiente limpo deve ser 0</span></div>
+          </div>
+          <div class="wrn"><strong>&#9888; Atenção:</strong> Após matar o DataNode, aguarde pelo menos <strong>30 segundos</strong> antes de tentar acessar os dados. O NameNode precisa passar pelo timeout de detecção de falha para declarar o n&oacute; como morto. O comportamento exato depende da configura&ccedil;&atilde;o de <code>dfs.heartbeat.interval</code>.</div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">4</div>
+        <div class="sc">
+          <h4>Análise teórica: o que aconteceria em cluster real de 3 nós</h4>
+          <div class="sec-box">
+            <div class="sec-lbl">&#128196; CENÁRIO TEÓRICO — DESCREVER NO ARTIGO</div>
+            <p style="font-size:.86em;color:#507860;line-height:1.9">
+              Com 3 DataNodes (replication factor = 3), cada bloco existe em 3 cópias em nós diferentes. Quando o DataNode 2 falha:<br><br>
+              1. Após ~30s sem heartbeat, NameNode declara DataNode 2 como morto.<br>
+              2. NameNode verifica quais blocos estavam no DataNode 2 (via último block report).<br>
+              3. Para cada bloco agora com apenas 2 réplicas, NameNode seleciona um DataNode vivo e ordena re-replicação.<br>
+              4. DataNode 1 ou 3 copia o bloco deficiente para outro nó disponível.<br>
+              5. Quando DataNode 2 se recupera, NameNode pode opcionalmente remover réplicas em excesso.<br><br>
+              Em pseudo-distribuído (1 DataNode), a etapa 3-4 não acontece — não há onde replicar.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">5</div>
+        <div class="sc">
+          <h4>Buscas bibliográficas e entregáveis do Grupo 5</h4>
+          <div class="elb">
+            <div class="elt">&#128269; ELICIT.ORG — BUSCAS GRUPO 5</div>
+            <div class="elq"><span>HDFS fault tolerance replication block recovery distributed file system</span><button class="copy-btn" onclick="cp(this,'HDFS fault tolerance replication block recovery distributed file system')">COPIAR</button></div>
+            <div class="el-why">&#8627; Inclui o paper original do HDFS (Shvachko et al., 2010) — citar é obrigatório</div>
+            <div class="elq"><span>Hadoop failure detection heartbeat NameNode DataNode availability</span><button class="copy-btn" onclick="cp(this,'Hadoop failure detection heartbeat NameNode DataNode availability')">COPIAR</button></div>
+            <div class="el-why">&#8627; Artigos sobre o protocolo de heartbeat e detecção de falhas no Hadoop</div>
+            <div class="elq"><span>distributed systems fault tolerance consistency availability CAP theorem</span><button class="copy-btn" onclick="cp(this,'distributed systems fault tolerance consistency availability CAP theorem')">COPIAR</button></div>
+            <div class="el-why">&#8627; Para contextualizar tolerância a falhas no referencial teórico de sistemas distribuídos</div>
+          </div>
+          <div class="dlv" style="margin-top:16px">
+            <div class="dlv-lbl">&#128230; ENTREGÁVEIS MÍNIMOS</div>
+            <ul>
+              <li><strong>Screenshot pré-falha:</strong> <code>hdfs fsck</code> mostrando estado HEALTHY com DataNode ativo</li>
+              <li><strong>Screenshot pós-falha:</strong> <code>hdfs fsck</code> mostrando UNDER REPLICATED ou MISSING blocks</li>
+              <li><strong>Trecho de log:</strong> NameNode detectando o DataNode como morto (grep por "dead" ou "unreachable" nos logs)</li>
+              <li><strong>Screenshot de recuperação:</strong> <code>jps</code> e <code>fsck</code> após reinicialização do DataNode</li>
+              <li><strong>Diagrama do cenário teórico:</strong> cluster de 3 nós com falha e re-replicação (draw.io)</li>
+              <li><strong>Tabela:</strong> comparação entre comportamento em pseudo-distribuído vs cluster real</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ms"><div class="mi">&#9888;&#65039;</div><div><h4>GRUPO 5 — SEÇÃO ESPECÍFICA COMPLETA</h4><p>Acesse o <a href="guia-artigo-bigdata.html" style="color:var(--nc)">Guia Principal</a> para as seções comuns: Overleaf, Referencial base, Metodologia e Conclusão.</p></div></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SEÇÕES COMUNS -->
+<!-- ============================================================ -->
+<div class="sep"></div>
+<div class="sl-lbl" id="comum">&#128218; SE&Ccedil;&Otilde;ES COMUNS A TODOS OS GRUPOS</div>
+
+<div style="background:var(--cb);border:1px solid var(--bdr);border-radius:14px;padding:32px;margin-bottom:28px;">
+  <div style="font-family:'Orbitron',monospace;font-size:.65em;letter-spacing:3px;color:var(--nc);margin-bottom:14px;">ESTRUTURA DO ARTIGO — TODAS AS SEÇÕES OBRIGATÓRIAS</div>
+  <div class="tg">
+    <div class="tgc"><div class="tl">SEÇÃO 1</div><h4>Introdução</h4><p>Contexto, pergunta de pesquisa do seu grupo, objetivo geral e organização do artigo. Use o Guia Principal M3.</p></div>
+    <div class="tgc"><div class="tl">SEÇÃO 2</div><h4>Referencial Teórico</h4><p>Big Data (5Vs), Linux, HDFS, MapReduce — base igual para todos. Adicione subseção específica do tema do grupo. Use o Guia Principal M4.</p></div>
+    <div class="tgc"><div class="tl">SEÇÃO 3</div><h4>Metodologia</h4><p>Tipo de pesquisa, ambiente experimental, etapas gerais + etapas específicas do grupo. Use o Guia Principal M5.</p></div>
+    <div class="tgc"><div class="tl">SEÇÃO 4</div><h4>Resultados</h4><p>Tabelas, gráficos, screenshots e análise específica do tema do seu grupo. Itens descritos acima em cada grupo.</p></div>
+    <div class="tgc"><div class="tl">SEÇÃO 5</div><h4>Conclusão</div><p>Responda cada OE, mencione as limitações do modo pseudo-distribuído e sugira trabalhos futuros. Use o Guia Principal M6.</p></div>
+    <div class="tgc"><div class="tl">CAPA + REF</div><h4>Capa e Referências</h4><p>Todos os integrantes + papéis na capa. Mínimo 5 referências acadêmicas no padrão ABNT. Use o Guia Principal M1 e M2.</p></div>
+  </div>
+  <div class="note" style="margin-top:16px"><strong>&#128218; Guia Principal:</strong> Consulte o <a href="guia-artigo-bigdata.html" style="color:var(--nc)">Guia do Artigo Científico</a> para as miss&otilde;es M1 a M6, que cobrem Overleaf, pesquisa bibliogr&aacute;fica, estrutura de cada se&ccedil;&atilde;o e checklist final. As seções espec&iacute;ficas de cada grupo descritas aqui <strong>complementam</strong>, n&atilde;o substituem, o guia principal.</div>
+</div>
+
+<!-- CHECKLIST -->
+<div class="sl-lbl" id="checklist">&#9989; CHECKLIST FINAL — TODOS OS GRUPOS</div>
+<div style="background:var(--cb);border:1px solid var(--bdr);border-radius:14px;padding:32px;margin-bottom:28px;">
+  <ul class="cl">
+    <li><span class="ck" onclick="ckToggle(this)"></span> Capa com nome de todos os integrantes e papéis (Infraestrutura, Engenheiro de Dados, Analista, Redator)</li>
+    <li><span class="ck" onclick="ckToggle(this)"></span> Resumo em português (150–250 palavras) com palavras-chave incluindo o tema específico do grupo</li>
+    <li><span class="ck" onclick="ckToggle(this)"></span> Abstract em inglês com keywords</li>
+    <li><span class="ck" onclick="ckToggle(this)"></span> Introdução com a pergunta norteadora específica do grupo claramente formulada</li>
+    <li><span class="ck" onclick="ckToggle(this)"></span> Referencial teórico base (Big Data, Linux, HDFS, MapReduce) + subseção específica do tema</li>
+    <li><span class="ck" onclick="ckToggle(this)"></span> Metodologia descrevendo o ambiente e as etapas específicas do grupo</li>
+    <li><span class="ck" onclick="ckToggle(this)"></span> Resultados com todos os entregáveis mínimos do grupo (tabelas, gráficos, screenshots)</li>
+    <li><span class="ck" onclick="ckToggle(this)"></span> Discussão conectando resultados com o referencial teórico e a pergunta norteadora</li>
+    <li><span class="ck" onclick="ckToggle(this)"></span> Conclusão respondendo cada OE e mencionando limitações do modo pseudo-distribuído</li>
+    <li><span class="ck" onclick="ckToggle(this)"></span> Mínimo 5 referências acadêmicas (incluindo as específicas do tema do grupo)</li>
+    <li><span class="ck" onclick="ckToggle(this)"></span> PDF compilado no Overleaf sem erros, com no mínimo 8 páginas</li>
+  </ul>
+</div>
+
+<!-- FINAL CARD -->
+<div class="fc">
+  <span class="tr">&#128293;</span>
+  <h2>5 GRUPOS · 5 RECORTES · 1 ECOSSISTEMA</h2>
+  <p>Cada grupo vai mais fundo em um aspecto diferente do Hadoop. Juntos, os artigos formam um panorama completo da infraestrutura Big Data — do setup básico à tolerância a falhas.</p>
+  <p style="font-size:.82em;color:#2a4858;margin-top:8px">IAL008 &middot; Infraestrutura para Big Data &middot; FATEC Ourinhos &middot; Prof. Isaque Katahira &middot; 2026</p>
+</div>
+
+</div><!-- /wrap -->
+
+<div id="toast"></div>
+
+<script>
+let xp = 0;
+const opened = new Set();
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+function addXP(){
+  if(xp < 500){
+    xp = Math.min(500, xp + 100);
+    document.getElementById('xd').textContent = xp + ' / 500 XP';
+    document.getElementById('xf').style.width = (xp/500*100)+'%';
+    showToast('+100 XP conquistados!');
+  }
+}
+
+// XP ao clicar nos cards de grupo
+document.querySelectorAll('.gsel-card').forEach(card=>{
+  card.addEventListener('click', ()=>{
+    if(!opened.has(card)){
+      opened.add(card);
+      addXP();
+    }
+  });
+});
+
+function ckToggle(el){
+  el.classList.toggle('done');
+  el.textContent = el.classList.contains('done') ? '✓' : '';
+  if(el.classList.contains('done')) showToast('Item concluído!');
+}
+
+function cp(btn, text){
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig = btn.textContent;
+    btn.textContent = 'COPIADO!';
+    setTimeout(()=>btn.textContent=orig, 1500);
+  }).catch(()=>showToast('Erro ao copiar'));
+}
+</script>
+</body>
+</html>

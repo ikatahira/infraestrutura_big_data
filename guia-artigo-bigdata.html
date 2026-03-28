@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia: Artigo Científico — Big Data & Linux | FATEC Ourinhos 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ng:#39ff14;--nc:#00e5ff;--nb:#1a6fff;--gold:#ffd700;
+  --or:#ff8c00;--pk:#ff006e;--bg:#050d12;--cb:#0a1520;
+  --bdr:#0e2030;--tx:#d0e8f5;--tm:#406080;--xp:#0a1828;
+  --gr:#0d1f10;--gn:#1aff6e;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(0,102,255,.018) 40px,rgba(0,102,255,.018) 41px),
+             repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(0,102,255,.018) 40px,rgba(0,102,255,.018) 41px);
+  pointer-events:none;z-index:0}
+
+/* HERO */
+.hero{position:relative;text-align:center;padding:64px 20px 80px;
+  background:radial-gradient(ellipse at 50% -10%,#001840 0%,var(--bg) 70%);
+  border-bottom:1px solid var(--nb);overflow:hidden;z-index:1}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--nb),var(--nc),var(--nb),transparent);
+  animation:scanH 3s linear infinite}
+@keyframes scanH{0%{opacity:.4}50%{opacity:1}100%{opacity:.4}}
+.hbadge{display:inline-block;background:rgba(0,102,255,.14);border:1px solid var(--nb);
+  color:var(--nc);font-family:'Orbitron',monospace;font-size:.65em;letter-spacing:3px;
+  padding:6px 18px;border-radius:2px;margin-bottom:20px;text-transform:uppercase}
+.hero h1{font-family:'Orbitron',monospace;font-size:clamp(1.3em,4vw,2.5em);font-weight:900;
+  color:var(--nc);text-shadow:0 0 20px var(--nc),0 0 60px rgba(0,229,255,.2);
+  line-height:1.2;margin-bottom:10px}
+.hero h1 span{color:var(--gold);text-shadow:0 0 20px var(--gold)}
+.hero-sub{font-size:.97em;color:var(--tm);max-width:660px;margin:0 auto 32px;line-height:1.8}
+.xpg{max-width:700px;margin:0 auto;background:var(--xp);border:1px solid var(--bdr);border-radius:4px;padding:12px 20px}
+.xpl{display:flex;justify-content:space-between;font-family:'Orbitron',monospace;font-size:.68em;color:var(--gold);margin-bottom:8px}
+.xpt{height:10px;background:#040c14;border-radius:5px;overflow:hidden;border:1px solid #0a1e30}
+.xpf{height:100%;background:linear-gradient(90deg,var(--nb),var(--nc));border-radius:5px;width:0%;animation:xpp 2s ease-in-out infinite}
+@keyframes xpp{0%,100%{box-shadow:0 0 6px var(--nc)}50%{box-shadow:0 0 18px var(--nc)}}
+
+/* WRAP */
+.wrap{max-width:960px;margin:0 auto;padding:48px 20px 100px;position:relative;z-index:1}
+
+/* INTRO CARD */
+.intro{background:linear-gradient(135deg,rgba(0,102,255,.07),rgba(0,229,255,.04));
+  border:1px solid var(--bdr);border-radius:14px;padding:32px;margin-bottom:42px;position:relative;overflow:hidden}
+.intro::before{content:'🐘';position:absolute;right:24px;top:20px;font-size:4em;opacity:.07}
+.intro h2{font-family:'Orbitron',monospace;color:var(--nc);font-size:.85em;letter-spacing:2px;margin-bottom:14px}
+.intro p{color:#7aa8c8;line-height:1.85;margin-bottom:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chip{font-family:'Share Tech Mono',monospace;font-size:.75em;padding:4px 12px;border-radius:20px;border:1px solid;letter-spacing:1px}
+.cb{color:var(--nc);border-color:var(--nc);background:rgba(0,229,255,.06)}
+.cg{color:var(--ng);border-color:var(--ng);background:rgba(57,255,20,.06)}
+.cgo{color:var(--gold);border-color:var(--gold);background:rgba(255,215,0,.06)}
+.co{color:var(--or);border-color:var(--or);background:rgba(255,140,0,.06)}
+.cpk{color:var(--pk);border-color:var(--pk);background:rgba(255,0,110,.06)}
+
+/* SECTION LABEL */
+.sl-lbl{font-family:'Orbitron',monospace;font-size:.6em;letter-spacing:4px;color:var(--tm);
+  text-transform:uppercase;margin:48px 0 20px;display:flex;align-items:center;gap:12px}
+.sl-lbl::after{content:'';flex:1;height:1px;background:var(--bdr)}
+
+/* VIDEO CARD */
+.vc{background:#04101a;border:1px solid rgba(0,229,255,.2);border-radius:14px;padding:22px 24px 26px;margin:18px 0}
+.vl{font-family:'Orbitron',monospace;font-size:.58em;letter-spacing:2px;color:var(--nc);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.vl::before{content:'▶'}
+.vt{font-weight:800;font-size:.97em;color:var(--tx);margin-bottom:6px}
+.vd{font-size:.84em;color:var(--tm);margin-bottom:14px;line-height:1.65}
+.vw{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;border:1px solid var(--bdr)}
+.vw iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
+
+/* QUEST CARDS */
+.qc{background:var(--cb);border:1px solid var(--bdr);border-radius:14px;margin-bottom:28px;overflow:hidden;transition:border-color .3s,transform .2s}
+.qc:hover{border-color:var(--nc);transform:translateY(-2px)}
+.qh{display:flex;align-items:center;gap:16px;padding:22px 26px;cursor:pointer;border-bottom:1px solid transparent;transition:border-color .3s,background .3s;user-select:none}
+.qh:hover{background:rgba(0,229,255,.03);border-bottom-color:var(--bdr)}
+.qh.active{border-bottom-color:var(--nc);background:rgba(0,229,255,.055)}
+.qi{width:58px;height:58px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.75em;flex-shrink:0;border:2px solid}
+.q1 .qi{background:rgba(57,255,20,.09);border-color:var(--ng)}
+.q2 .qi{background:rgba(0,229,255,.09);border-color:var(--nc)}
+.q3 .qi{background:rgba(255,215,0,.09);border-color:var(--gold)}
+.q4 .qi{background:rgba(255,140,0,.09);border-color:var(--or)}
+.q5 .qi{background:rgba(0,102,255,.14);border-color:var(--nb)}
+.q6 .qi{background:rgba(255,0,110,.1);border-color:var(--pk)}
+.qm{flex:1}
+.qw{font-family:'Orbitron',monospace;font-size:.6em;letter-spacing:2px;color:var(--tm);text-transform:uppercase;margin-bottom:4px}
+.qt{font-weight:800;font-size:1.08em;color:var(--tx);margin-bottom:4px}
+.qs{font-size:.86em;color:var(--tm)}
+.qxp{font-family:'Orbitron',monospace;font-size:.78em;font-weight:700;padding:6px 14px;border-radius:20px;flex-shrink:0;border:1px solid}
+.q1 .qxp{color:var(--ng);border-color:var(--ng);background:rgba(57,255,20,.07)}
+.q2 .qxp{color:var(--nc);border-color:var(--nc);background:rgba(0,229,255,.07)}
+.q3 .qxp{color:var(--gold);border-color:var(--gold);background:rgba(255,215,0,.07)}
+.q4 .qxp{color:var(--or);border-color:var(--or);background:rgba(255,140,0,.07)}
+.q5 .qxp{color:var(--nb);border-color:var(--nb);background:rgba(0,102,255,.1)}
+.q6 .qxp{color:var(--pk);border-color:var(--pk);background:rgba(255,0,110,.08)}
+.qch{font-size:1.2em;color:var(--tm);transition:transform .3s;margin-left:8px}
+.qh.active .qch{transform:rotate(90deg)}
+.qb{display:none;padding:30px 30px 36px;animation:fi .25s ease}
+.qb.open{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+/* STEPS */
+.sl{counter-reset:s}
+.st{display:flex;gap:16px;margin-bottom:22px;position:relative}
+.st:not(:last-child)::after{content:'';position:absolute;left:19px;top:40px;width:2px;height:calc(100% - 10px);background:var(--bdr)}
+.sn{width:38px;height:38px;border-radius:50%;background:var(--bg);border:2px solid var(--nc);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:.78em;font-weight:700;color:var(--nc);flex-shrink:0;position:relative;z-index:1}
+.sc{padding-top:6px;flex:1}
+.sc h4{font-size:.97em;font-weight:800;color:var(--tx);margin-bottom:7px}
+.sc p{font-size:.9em;color:#5a88aa;line-height:1.8;margin-bottom:8px}
+.sc ul,.sc ol{padding-left:20px}
+.sc li{font-size:.9em;color:#5a88aa;line-height:1.75;margin-bottom:5px}
+.sc li strong{color:#90c0d8}
+.sc b{color:#90c0d8}
+
+/* TIP / WARNING / NOTE */
+.tip{background:rgba(255,215,0,.05);border:1px solid rgba(255,215,0,.28);border-radius:8px;padding:12px 16px;margin:12px 0;font-size:.88em;color:#c0a030;line-height:1.65}
+.tip strong{color:var(--gold)}
+.wrn{background:rgba(255,0,110,.05);border:1px solid rgba(255,0,110,.28);border-radius:8px;padding:12px 16px;margin:12px 0;font-size:.88em;color:#c03060;line-height:1.65}
+.wrn strong{color:var(--pk)}
+.note{background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.2);border-radius:8px;padding:12px 16px;margin:12px 0;font-size:.88em;color:#3a7890;line-height:1.65}
+.note strong{color:var(--nc)}
+
+/* ELICIT BLOCK */
+.elb{background:rgba(0,229,255,.032);border:1px dashed rgba(0,229,255,.38);border-radius:12px;padding:20px 22px;margin:18px 0}
+.elt{font-family:'Orbitron',monospace;font-size:.58em;letter-spacing:2px;color:var(--nc);margin-bottom:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+.elq{font-family:'Share Tech Mono',monospace;font-size:.86em;color:#c0f0ff;background:rgba(0,0,0,.45);padding:10px 14px;border-radius:6px;margin:7px 0;border-left:3px solid var(--nc);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.elq span{flex:1}
+.elq .copy-btn{font-family:'Orbitron',monospace;font-size:.58em;padding:3px 10px;border:1px solid var(--nc);border-radius:4px;color:var(--nc);background:transparent;cursor:pointer;letter-spacing:1px;transition:background .2s}
+.elq .copy-btn:hover{background:rgba(0,229,255,.15)}
+.elf{font-size:.8em;color:var(--tm);margin-top:12px;line-height:1.65}
+.elf strong{color:#608898}
+.el-why{font-size:.82em;color:#3d6878;margin:6px 0 0;font-style:italic}
+
+/* CODE BLOCK */
+.tb{background:#020a0f;border:1px solid #0a2030;border-radius:10px;overflow:hidden;margin:14px 0}
+.th{background:#07141c;padding:8px 16px;display:flex;align-items:center;gap:8px;font-size:.68em;color:var(--tm);letter-spacing:1px;border-bottom:1px solid #0a2030;font-family:'Share Tech Mono',monospace}
+.td{width:10px;height:10px;border-radius:50%}.d1{background:#ff5f57}.d2{background:#febc2e}.d3{background:#28c840}
+.tc{padding:16px 20px;font-family:'Share Tech Mono',monospace;font-size:.83em;color:#90c8e0;line-height:2;white-space:pre-wrap}
+.tc .cmd{color:var(--ng)}.tc .cmt{color:#1e3848;font-style:italic}.tc .hl{color:var(--gold)}.tc .out{color:#304858}
+
+/* LATEX BLOCK */
+.lb{background:#030810;border:1px solid #0c1e30;border-radius:10px;overflow:hidden;margin:14px 0}
+.lh{background:#07121e;padding:8px 16px;display:flex;align-items:center;gap:8px;font-size:.68em;color:var(--tm);letter-spacing:1px;border-bottom:1px solid #0c1e30;font-family:'Share Tech Mono',monospace}
+.lc{padding:16px 20px;font-family:'Share Tech Mono',monospace;font-size:.81em;color:#b8d8ee;line-height:1.9;white-space:pre-wrap}
+.lc .kw{color:#a07fff}.lc .cm{color:#1e3040;font-style:italic}.lc .hl{color:var(--gold)}.lc .str{color:#78c379}
+
+/* TOPIC GRID */
+.tg{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:16px 0}
+.tgc{background:rgba(255,255,255,.02);border:1px solid var(--bdr);border-radius:10px;padding:16px;transition:border-color .3s,background .3s}
+.tgc:hover{border-color:var(--gold);background:rgba(255,215,0,.035)}
+.tgc .tl{font-family:'Orbitron',monospace;font-size:.56em;letter-spacing:2px;color:var(--gold);margin-bottom:7px}
+.tgc h4{font-size:.87em;font-weight:800;color:var(--tx);margin-bottom:5px}
+.tgc p{font-size:.78em;color:var(--tm);line-height:1.6}
+
+/* CHECKLIST */
+.cl{list-style:none;padding:0;margin:14px 0}
+.cl li{display:flex;align-items:flex-start;gap:10px;font-size:.88em;color:#406878;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.025)}
+.cl li .ck{width:20px;height:20px;border:2px solid var(--nc);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s;font-size:.8em;color:var(--nc);margin-top:1px}
+.cl li .ck:hover{background:rgba(0,229,255,.18)}
+.cl li .ck.done{background:rgba(0,229,255,.25)}
+
+/* OBJECTIVE BLOCK */
+.ob{background:rgba(57,255,20,.04);border:1px solid rgba(57,255,20,.22);border-radius:10px;padding:20px 24px;margin:16px 0}
+.ol{font-family:'Orbitron',monospace;font-size:.58em;letter-spacing:2px;color:var(--ng);margin-bottom:8px;font-weight:700}
+.ob p{font-size:.9em;color:#60a870;line-height:1.75;margin-bottom:6px}
+.ob ul{padding-left:20px}
+.ob li{font-size:.88em;color:#507860;line-height:1.75;margin-bottom:5px}
+.ob li strong{color:#70b880}
+
+/* MILESTONE */
+.ms{background:linear-gradient(135deg,rgba(0,229,255,.05),rgba(0,102,255,.05));border:1px solid rgba(0,229,255,.18);border-radius:10px;padding:18px 22px;margin:24px 0;display:flex;align-items:center;gap:14px}
+.mi{font-size:2em;flex-shrink:0}
+.ms h4{font-family:'Orbitron',monospace;font-size:.73em;letter-spacing:1px;color:var(--nc);margin-bottom:4px}
+.ms p{font-size:.85em;color:#406878;line-height:1.65}
+
+/* SECTION STRUCTURE */
+.sec-box{background:rgba(255,215,0,.03);border:1px solid rgba(255,215,0,.18);border-radius:10px;padding:18px 22px;margin:14px 0}
+.sec-box .sec-lbl{font-family:'Orbitron',monospace;font-size:.58em;letter-spacing:2px;color:var(--gold);margin-bottom:8px;font-weight:700}
+.sec-box h4{font-size:.95em;font-weight:800;color:var(--tx);margin-bottom:6px}
+.sec-box p{font-size:.87em;color:#5a7a5a;line-height:1.75}
+
+/* FINAL CARD */
+.fc{background:radial-gradient(ellipse at center,rgba(0,102,255,.12),rgba(0,0,0,0) 70%),var(--cb);
+  border:1px solid var(--nb);border-radius:14px;padding:48px;text-align:center;margin-top:48px;
+  box-shadow:0 0 40px rgba(0,102,255,.1)}
+.fc h2{font-family:'Orbitron',monospace;font-size:1.35em;color:var(--nc);text-shadow:0 0 20px var(--nc);margin-bottom:12px}
+.fc p{color:var(--tm);max-width:540px;margin:0 auto 20px;line-height:1.8}
+.tr{font-size:4em;margin-bottom:16px;display:block;animation:fl 3s ease-in-out infinite}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+/* TOAST */
+#toast{position:fixed;bottom:30px;right:30px;background:var(--cb);border:1px solid var(--nc);color:var(--nc);font-family:'Orbitron',monospace;font-size:.72em;letter-spacing:1px;padding:12px 20px;border-radius:6px;box-shadow:0 0 20px rgba(0,229,255,.18);transform:translateY(80px);opacity:0;transition:transform .3s,opacity .3s;z-index:99999}
+#toast.show{transform:translateY(0);opacity:1}
+
+code{font-family:'Share Tech Mono',monospace;background:rgba(0,229,255,.08);padding:2px 7px;border-radius:4px;font-size:.9em;color:var(--nc)}
+
+/* NAV PILLS */
+.nav-pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:40px}
+.nav-pill{font-family:'Orbitron',monospace;font-size:.6em;letter-spacing:1px;padding:6px 14px;border:1px solid var(--bdr);border-radius:20px;color:var(--tm);cursor:pointer;transition:all .2s;text-decoration:none}
+.nav-pill:hover{border-color:var(--nc);color:var(--nc);background:rgba(0,229,255,.05)}
+
+@media(max-width:620px){.qh{flex-wrap:wrap}.qxp{order:3}.tc,.lc{font-size:.74em}.qb{padding:18px}}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hbadge">&#9658; INFRAESTRUTURA PARA BIG DATA &middot; FATEC OURINHOS &middot; 2026</div>
+  <h1>GUIA COMPLETO: <span>ARTIGO CIENT&Iacute;FICO</span></h1>
+  <p class="hero-sub">Do Linux ao LaTeX — transforme suas pr&aacute;ticas com comandos Linux e Hadoop HDFS em um artigo cient&iacute;fico completo no padr&atilde;o FATEC/Overleaf. 6 miss&otilde;es explicadas passo a passo para voc&ecirc; fazer sozinho.</p>
+  <div class="xpg">
+    <div class="xpl"><span>&#9889; PROGRESS</span><span id="xd">0 / 600 XP</span></div>
+    <div class="xpt"><div class="xpf" id="xf" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- NAV -->
+<div class="nav-pills">
+  <a class="nav-pill" href="#m1">M1 · Template Overleaf</a>
+  <a class="nav-pill" href="#m2">M2 · Elicit &amp; Pesquisa</a>
+  <a class="nav-pill" href="#m3">M3 · Objetivos &amp; Introdução</a>
+  <a class="nav-pill" href="#m4">M4 · Referencial Teórico</a>
+  <a class="nav-pill" href="#m5">M5 · Metodologia</a>
+  <a class="nav-pill" href="#m6">M6 · Resultados &amp; Submissão</a>
+</div>
+
+<!-- BRIEFING -->
+<div class="intro">
+  <h2>// BRIEFING DA MISS&Atilde;O</h2>
+  <p>Nas 3 primeiras semanas da disciplina voc&ecirc; aprendeu <strong>Linux no Google Cloud Shell</strong> (semana 01), instalou e configurou o <strong>Hadoop HDFS no Ubuntu&nbsp;22.04</strong> (semana 02), e implementou o paradigma <strong>MapReduce</strong> com WordCount e LogAnalyzer (semana 03). Todos esses experimentos pr&aacute;ticos s&atilde;o o seu <em>material cient&iacute;fico</em>.</p>
+  <p>Este guia vai te levar, passo a passo, a transformar tudo isso em um <strong>artigo cient&iacute;fico completo</strong> no padr&atilde;o ABNT/FATEC, usando o Overleaf (LaTeX online). Voc&ecirc; n&atilde;o vai inventar experimentos &mdash; vai <em>documentar, analisar e conectar &agrave; literatura acad&ecirc;mica</em> o que j&aacute; vivenciou.</p>
+  <div class="chips">
+    <span class="chip cg">&#127823; Linux CLI</span>
+    <span class="chip cb">&#9729; Google Cloud Shell</span>
+    <span class="chip cgo">&#128024; Hadoop HDFS</span>
+    <span class="chip co">&#9889; MapReduce</span>
+    <span class="chip cg">&#128295; Shell Script</span>
+    <span class="chip cb">&#128196; YARN / NameNode</span>
+    <span class="chip cpk">&#128214; Overleaf / LaTeX</span>
+    <span class="chip cgo">&#128269; Elicit.org</span>
+  </div>
+</div>
+
+<!-- VÍDEO TEMPLATE FATEC / OVERLEAF -->
+<div class="sl-lbl">&#127909; V&Iacute;DEO OBRIGAT&Oacute;RIO — COMECE POR AQUI</div>
+<div class="vc">
+  <div class="vl">VIDEO · TUTORIAL</div>
+  <div class="vt">&#128218; Como usar o Template FATEC no Overleaf</div>
+  <div class="vd">Assista a este v&iacute;deo <strong>antes de qualquer outra coisa</strong>. Ele mostra exatamente como acessar o template LaTeX da FATEC no Overleaf, editar os campos de autoria, gerar o PDF final e exportar. Voc&ecirc; vai usar esse template em todas as etapas deste guia.</div>
+  <div class="vw">
+    <iframe src="https://www.youtube.com/embed/qAbATVnBepA" title="Template FATEC no Overleaf" allowfullscreen loading="lazy"></iframe>
+  </div>
+  <div class="note" style="margin-top:14px"><strong>&#9888; Aten&ccedil;&atilde;o:</strong> Ap&oacute;s assistir, fa&ccedil;a login em <code>overleaf.com</code> com seu e-mail e <strong>abra o template FATEC</strong> indicado pelo professor antes de avan&ccedil;ar para a Miss&atilde;o 1.</div>
+</div>
+
+<div class="vc" style="margin-top:12px">
+  <div class="vl">VIDEO · REFER&Ecirc;NCIA EXPERIMENTAL</div>
+  <div class="vt">&#128024; Instale o Hadoop HDFS no Ubuntu 22.04 — Prof. Isaque Katahira</div>
+  <div class="vd">Este &eacute; o v&iacute;deo que acompanhou a Semana 02. Voc&ecirc; pode usar os <strong>timestamps dos seus pr&oacute;prios comandos</strong> executados como refer&ecirc;ncia para a se&ccedil;&atilde;o de Metodologia. Anote quais etapas deram certo, quais geraram erros, e o que voc&ecirc; fez para resolver.</div>
+  <div class="vw">
+    <iframe src="https://www.youtube.com/embed/IQ1HJwC9mnM" title="Instalar Hadoop HDFS Ubuntu 22.04" allowfullscreen loading="lazy"></iframe>
+  </div>
+</div>
+
+<!-- ===== MISSÃO 1 ===== -->
+<div class="sl-lbl" id="m1">MISS&Atilde;O 01 &mdash; CONFIGURAR O TEMPLATE NO OVERLEAF</div>
+<div class="qc q1">
+  <div class="qh" onclick="tog(this)">
+    <div class="qi">&#128218;</div>
+    <div class="qm">
+      <div class="qw">MISS&Atilde;O 01 &middot; AMBIENTE</div>
+      <div class="qt">Configurar o Template FATEC no Overleaf</div>
+      <div class="qs">Criar o projeto, preencher capa e entender a estrutura LaTeX</div>
+    </div>
+    <div class="qxp">+100 XP</div>
+    <div class="qch">&#9658;</div>
+  </div>
+  <div class="qb">
+    <div class="ob">
+      <div class="ol">&#127919; OBJETIVO DESTA MISS&Atilde;O</div>
+      <p>Ao concluir esta miss&atilde;o, voc&ecirc; ter&aacute; um projeto Overleaf funcional com o template FATEC, com sua capa preenchida corretamente e entender&aacute; como cada arquivo LaTeX se conecta ao PDF final.</p>
+    </div>
+
+    <div class="sl">
+      <div class="st">
+        <div class="sn">1</div>
+        <div class="sc">
+          <h4>Acessar o Overleaf e criar o projeto</h4>
+          <p>Acesse <strong>overleaf.com</strong> e fa&ccedil;a login (crie uma conta gratuita se ainda n&atilde;o tiver). O Overleaf &eacute; um editor LaTeX online &mdash; voc&ecirc; n&atilde;o precisa instalar nada no computador.</p>
+          <p>O professor disponibilizar&aacute; o link do template FATEC. Ao abrir, clique em <strong>"Open as Template"</strong> para criar uma c&oacute;pia editável na sua conta.</p>
+          <div class="tip"><strong>&#128161; Dica:</strong> N&atilde;o edite o template original — sempre use "Open as Template" para criar sua pr&oacute;pria c&oacute;pia. Assim o template original fica preservado para outros alunos.</div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">2</div>
+        <div class="sc">
+          <h4>Entender a estrutura dos arquivos</h4>
+          <p>No painel esquerdo do Overleaf, voc&ecirc; ver&aacute; os arquivos do projeto. O mais importante é o arquivo principal (<code>main.tex</code> ou similar). Clique nele para abrir.</p>
+          <div class="tg">
+            <div class="tgc"><div class="tl">ARQUIVO PRINCIPAL</div><h4>main.tex</h4><p>Onde fica o esqueleto do artigo: \section, \subsection e o \input de cada parte</p></div>
+            <div class="tgc"><div class="tl">BIBLIOGRAFIA</div><h4>referencias.bib</h4><p>Arquivo com todas as refer&ecirc;ncias no formato BibTeX. Cada artigo/livro vira uma entrada aqui</p></div>
+            <div class="tgc"><div class="tl">CONFIGURAÇÃO</div><h4>setup.tex / preamble</h4><p>Pacotes e configura&ccedil;&otilde;es LaTeX. N&atilde;o altere sem entender o que faz</p></div>
+            <div class="tgc"><div class="tl">IMAGENS</div><h4>pasta /img ou /figures</h4><p>Coloque aqui os screenshots do terminal, diagramas de arquitetura e gr&aacute;ficos</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">3</div>
+        <div class="sc">
+          <h4>Preencher a capa (metadados do artigo)</h4>
+          <p>Localize no <code>main.tex</code> os campos de metadados e preencha com seus dados. Exemplo do que voc&ecirc; vai encontrar:</p>
+          <div class="lb">
+            <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Capa</div>
+            <div class="lc"><span class="kw">\title</span>{<span class="str">Implantação e Análise de Infraestrutura Big Data com Hadoop HDFS em Ambiente Linux</span>}
+<span class="kw">\author</span>{<span class="str">SEU NOME COMPLETO</span>}
+<span class="kw">\institution</span>{<span class="str">Faculdade de Tecnologia de Ourinhos — FATEC</span>}
+<span class="kw">\course</span>{<span class="str">Ciência de Dados</span>}
+<span class="kw">\discipline</span>{<span class="str">Infraestrutura para Big Data (IAL008)</span>}
+<span class="kw">\professor</span>{<span class="str">Prof. Isaque Katahira</span>}
+<span class="kw">\semester</span>{<span class="str">1º Semestre de 2026</span>}</div>
+          </div>
+          <div class="wrn"><strong>&#9888; Aten&ccedil;&atilde;o:</strong> O nome do arquivo e os campos exatos dependem do template FATEC fornecido pelo professor. Adapte conforme o que voc&ecirc; vê no seu projeto Overleaf.</div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">4</div>
+        <div class="sc">
+          <h4>Compilar e gerar o primeiro PDF</h4>
+          <p>Clique no bot&atilde;o <strong>"Recompile"</strong> (ou pressione <strong>Ctrl+Enter</strong>) para gerar o PDF. O painel direito mostrar&aacute; o resultado. Se der erro, leia o log na aba "Logs &amp; output" &mdash; o LaTeX indica exatamente qual linha causou o problema.</p>
+          <div class="tip"><strong>&#128161; Compile frequentemente!</strong> Compile ap&oacute;s cada pequena altera&ccedil;&atilde;o. &Eacute; muito mais f&aacute;cil achar um erro em 2 linhas novas do que em 20 p&aacute;ginas de conteúdo.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ms"><div class="mi">&#127942;</div><div><h4>MISS&Atilde;O 01 CONCLU&Iacute;DA</h4><p>Voc&ecirc; tem um projeto Overleaf com template FATEC funcionando e seu nome na capa. Siga para a Miss&atilde;o 02.</p></div></div>
+  </div>
+</div>
+
+<!-- ===== MISSÃO 2 ===== -->
+<div class="sl-lbl" id="m2">MISS&Atilde;O 02 &mdash; PESQUISA BIBLIOGR&Aacute;FICA COM ELICIT</div>
+<div class="qc q2">
+  <div class="qh" onclick="tog(this)">
+    <div class="qi">&#128269;</div>
+    <div class="qm">
+      <div class="qw">MISS&Atilde;O 02 &middot; PESQUISA</div>
+      <div class="qt">Encontrar artigos científicos com o Elicit.org</div>
+      <div class="qs">Buscas guiadas, filtros, download BibTeX e montagem da bibliografia</div>
+    </div>
+    <div class="qxp">+100 XP</div>
+    <div class="qch">&#9658;</div>
+  </div>
+  <div class="qb">
+    <div class="ob">
+      <div class="ol">&#127919; OBJETIVO DESTA MISS&Atilde;O</div>
+      <p>Ao concluir esta miss&atilde;o, voc&ecirc; ter&aacute; reunido <strong>no m&iacute;nimo 5 artigos cient&iacute;ficos</strong> relevantes para seu trabalho, exportado as refer&ecirc;ncias em BibTeX, e entendido como avali&aacute;-los criticamente.</p>
+    </div>
+
+    <div class="sl">
+      <div class="st">
+        <div class="sn">1</div>
+        <div class="sc">
+          <h4>O que é o Elicit e por que usá-lo?</h4>
+          <p>O <strong>Elicit</strong> (<code>elicit.org</code>) &eacute; um assistente de pesquisa acad&ecirc;mica baseado em intelig&ecirc;ncia artificial. Diferente do Google, ele busca diretamente em bases de artigos cient&iacute;ficos revisados por pares (peer-reviewed). Isso garante que as refer&ecirc;ncias que voc&ecirc; citar ter&atilde;o credibilidade acad&ecirc;mica.</p>
+          <p>Acesse <strong>elicit.org</strong>, crie uma conta gratuita e v&aacute; para a aba <strong>"Literature Review"</strong>.</p>
+          <div class="note"><strong>&#128204; Alternativas:</strong> Se o Elicit n&atilde;o estiver dispon&iacute;vel, use o <strong>Google Acad&ecirc;mico</strong> (scholar.google.com) ou o <strong>Semantic Scholar</strong> (semanticscholar.org). As buscas abaixo funcionam em qualquer um.</div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">2</div>
+        <div class="sc">
+          <h4>Buscas sugeridas para o Elicit — Grupo A: Big Data e Hadoop</h4>
+          <p>Use estas buscas em portugu&ecirc;s e ingl&ecirc;s. Para cada busca, filtre por artigos dos &uacute;ltimos 10 anos (2015&ndash;2025) e por tipo "Journal Article" ou "Conference Paper".</p>
+
+          <div class="elb">
+            <div class="elt">&#128269; ELICIT.ORG — BUSCAS GRUPO A: HADOOP &amp; HDFS</div>
+
+            <div class="elq"><span>Hadoop HDFS performance analysis distributed file system</span><button class="copy-btn" onclick="cp(this,'Hadoop HDFS performance analysis distributed file system')">COPIAR</button></div>
+            <div class="el-why">&#8627; Encontra artigos sobre desempenho e arquitetura do HDFS — ideal para a subse&ccedil;&atilde;o 2.2</div>
+
+            <div class="elq"><span>Big Data infrastructure deployment challenges enterprise</span><button class="copy-btn" onclick="cp(this,'Big Data infrastructure deployment challenges enterprise')">COPIAR</button></div>
+            <div class="el-why">&#8627; Artigos sobre desafios pr&aacute;ticos de implantar Big Data — conecta com sua experi&ecirc;ncia nas semanas 1-3</div>
+
+            <div class="elq"><span>Hadoop ecosystem MapReduce data processing scalability</span><button class="copy-btn" onclick="cp(this,'Hadoop ecosystem MapReduce data processing scalability')">COPIAR</button></div>
+            <div class="el-why">&#8627; Para embasar a se&ccedil;&atilde;o de MapReduce (Semana 03)</div>
+
+            <div class="elq"><span>infraestrutura Big Data Hadoop implantação ambiente Linux</span><button class="copy-btn" onclick="cp(this,'infraestrutura Big Data Hadoop implantação ambiente Linux')">COPIAR</button></div>
+            <div class="el-why">&#8627; Busca em portugu&ecirc;s — pode encontrar artigos brasileiros e da SBBD (Simp&oacute;sio Brasileiro de Banco de Dados)</div>
+
+            <div class="elf"><strong>Objetivo:</strong> Selecione 2&ndash;3 artigos desta busca. Priorize artigos com mais de 20 cita&ccedil;&otilde;es e publicados em revistas com Qualis (ex: Journal of Big Data, Future Generation Computer Systems).</div>
+          </div>
+
+          <div class="elb">
+            <div class="elt">&#128269; ELICIT.ORG — BUSCAS GRUPO B: LINUX CLI &amp; SISTEMAS OPERACIONAIS</div>
+
+            <div class="elq"><span>Linux operating system commands administration learning</span><button class="copy-btn" onclick="cp(this,'Linux operating system commands administration learning')">COPIAR</button></div>
+            <div class="el-why">&#8627; Para embasar o uso de Linux CLI na metodologia — mostra que &eacute; uma pr&aacute;tica estabelecida</div>
+
+            <div class="elq"><span>command line interface Linux system administration education</span><button class="copy-btn" onclick="cp(this,'command line interface Linux system administration education')">COPIAR</button></div>
+            <div class="el-why">&#8627; Artigos sobre ensino de Linux por linha de comando &mdash; conecta com o contexto pedag&oacute;gico da disciplina</div>
+
+            <div class="elq"><span>cloud shell environment educational programming tool</span><button class="copy-btn" onclick="cp(this,'cloud shell environment educational programming tool')">COPIAR</button></div>
+            <div class="el-why">&#8627; Para justificar o uso do Google Cloud Shell como ambiente de aprendizado</div>
+
+            <div class="elf"><strong>Objetivo:</strong> Selecione 1&ndash;2 artigos desta busca para compor a subse&ccedil;&atilde;o sobre Linux na Fundamenta&ccedil;&atilde;o Te&oacute;rica.</div>
+          </div>
+
+          <div class="elb">
+            <div class="elt">&#128269; ELICIT.ORG — BUSCAS GRUPO C: 5Vs DO BIG DATA</div>
+
+            <div class="elq"><span>Big Data characteristics five Vs volume velocity variety</span><button class="copy-btn" onclick="cp(this,'Big Data characteristics five Vs volume velocity variety')">COPIAR</button></div>
+            <div class="el-why">&#8627; Essencial para a introdu&ccedil;&atilde;o e referencial te&oacute;rico. O conceito dos 5Vs precisa de refer&ecirc;ncia s&oacute;lida</div>
+
+            <div class="elq"><span>Big Data definition evolution history IBM Oracle</span><button class="copy-btn" onclick="cp(this,'Big Data definition evolution history IBM Oracle')">COPIAR</button></div>
+            <div class="el-why">&#8627; Artigos hist&oacute;ricos &mdash; &oacute;timos para a introdu&ccedil;&atilde;o contextualizar o surgimento do Big Data</div>
+
+            <div class="elf"><strong>Objetivo:</strong> Pelo menos 1 artigo seminal sobre Big Data (ex: Laney 2001, Zikopoulos 2011). O Elicit vai sugerir os mais citados automaticamente.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">3</div>
+        <div class="sc">
+          <h4>Como avaliar um artigo antes de incluir na sua pesquisa</h4>
+          <p>N&atilde;o inclua qualquer artigo que aparecer &mdash; avalie antes:</p>
+          <ul>
+            <li><strong>Ano:</strong> prefira artigos de 2015 em diante (exceto cl&aacute;ssicos como o paper original do MapReduce do Google, 2004)</li>
+            <li><strong>N&uacute;mero de cita&ccedil;&otilde;es:</strong> artigos com 50+ cita&ccedil;&otilde;es s&atilde;o mais confi&aacute;veis. O Elicit mostra isso automaticamente</li>
+            <li><strong>Tipo:</strong> "Journal Article" &gt; "Conference Paper" &gt; "Preprint". Evite blogs e sites</li>
+            <li><strong>Resumo coerente:</strong> leia o abstract e veja se realmente fala do que você precisa</li>
+          </ul>
+          <div class="tip"><strong>&#128161; Dica do Elicit:</strong> Use a fun&ccedil;&atilde;o "Extract data" para pedir ao Elicit que resuma automaticamente o que cada artigo diz sobre um t&oacute;pico espec&iacute;fico (ex: "O que este artigo diz sobre desempenho do HDFS?"). Isso acelera muito a leitura.</div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">4</div>
+        <div class="sc">
+          <h4>Exportar as referências para o Overleaf (formato BibTeX)</h4>
+          <p>No Elicit, ap&oacute;s selecionar seus artigos, clique em <strong>"Export"</strong> &gt; <strong>"BibTeX"</strong>. Isso gera um arquivo <code>.bib</code> com todas as refer&ecirc;ncias no formato que o LaTeX entende.</p>
+          <p>No Overleaf, abra o arquivo <code>referencias.bib</code> (ou o nome que estiver no template) e <strong>cole o conte&uacute;do</strong> do arquivo BibTeX exportado.</p>
+          <div class="lb">
+            <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; referencias.bib — exemplo de entrada</div>
+            <div class="lc"><span class="cm">% Artigo sobre Hadoop HDFS</span>
+@article{<span class="hl">shvachko2010hadoop</span>,
+  author  = {Shvachko, Konstantin and Kuang, Hairong and Radia, Sanjay and Chansler, Robert},
+  title   = {The Hadoop Distributed File System},
+  journal = {IEEE Symposium on Mass Storage Systems and Technologies},
+  year    = {2010},
+  pages   = {1--10},
+  doi     = {10.1109/MSST.2010.5496972}
+}
+
+<span class="cm">% Artigo sobre Big Data 5Vs</span>
+@article{<span class="hl">laney2001</span>,
+  author  = {Laney, Doug},
+  title   = {3D Data Management: Controlling Data Volume, Velocity and Variety},
+  journal = {META Group Research Note},
+  year    = {2001}
+}</div>
+          </div>
+          <p>Para citar no texto, use o comando <code>\cite{shvachko2010hadoop}</code>. O LaTeX gera a refer&ecirc;ncia automaticamente.</p>
+        </div>
+      </div>
+    </div>
+
+    <ul class="cl">
+      <li><span class="ck" onclick="ckToggle(this)"></span> Conta no Elicit criada e primeira busca realizada</li>
+      <li><span class="ck" onclick="ckToggle(this)"></span> Pelo menos 5 artigos selecionados (dos grupos A, B e C)</li>
+      <li><span class="ck" onclick="ckToggle(this)"></span> BibTeX exportado e colado no Overleaf</li>
+      <li><span class="ck" onclick="ckToggle(this)"></span> PDF compilado sem erros de bibliografia</li>
+    </ul>
+    <div class="ms"><div class="mi">&#128218;</div><div><h4>MISS&Atilde;O 02 CONCLU&Iacute;DA</h4><p>Voc&ecirc; tem a base bibliogr&aacute;fica do seu artigo. Siga para escrever os Objetivos e a Introdução.</p></div></div>
+  </div>
+</div>
+
+<!-- ===== MISSÃO 3 ===== -->
+<div class="sl-lbl" id="m3">MISS&Atilde;O 03 &mdash; OBJETIVOS E INTRODU&Ccedil;&Atilde;O</div>
+<div class="qc q3">
+  <div class="qh" onclick="tog(this)">
+    <div class="qi">&#127919;</div>
+    <div class="qm">
+      <div class="qw">MISS&Atilde;O 03 &middot; ESCRITA</div>
+      <div class="qt">Definir Objetivos e Escrever a Introdução</div>
+      <div class="qs">Objetivo geral, específicos, justificativa e estrutura da introdução</div>
+    </div>
+    <div class="qxp">+100 XP</div>
+    <div class="qch">&#9658;</div>
+  </div>
+  <div class="qb">
+    <div class="ob">
+      <div class="ol">&#127919; OBJETIVO DESTA MISS&Atilde;O</div>
+      <p>Ao concluir esta miss&atilde;o, voc&ecirc; ter&aacute; o <strong>objetivo geral</strong>, os <strong>objetivos espec&iacute;ficos</strong> e a <strong>introdu&ccedil;&atilde;o</strong> do artigo escritos no Overleaf, com os elementos acad&ecirc;micos corretos.</p>
+    </div>
+
+    <div class="sl">
+      <div class="st">
+        <div class="sn">1</div>
+        <div class="sc">
+          <h4>Objetivo Geral — o que você quer alcançar com o artigo inteiro</h4>
+          <p>O objetivo geral descreve, em <strong>uma &uacute;nica frase</strong>, o prop&oacute;sito central do artigo. Ele deve sempre come&ccedil;ar com um <strong>verbo no infinitivo</strong> (analisar, implementar, avaliar, demonstrar...).</p>
+          <div class="sec-box">
+            <div class="sec-lbl">&#128161; EXEMPLO DE OBJETIVO GERAL PARA O SEU ARTIGO</div>
+            <h4>Formata&ccedil;&atilde;o no LaTeX (dentro da Introduction ou seção dedicada)</h4>
+            <p style="font-family:'Share Tech Mono',monospace;font-size:.85em;color:#70b870;margin-top:10px;line-height:1.8">
+              "Implementar, configurar e analisar uma infraestrutura de Big Data baseada no Apache Hadoop HDFS em ambiente Linux Ubuntu 22.04, avaliando o processo de instalação, os comandos operacionais do sistema de arquivos distribuído e o paradigma MapReduce como mecanismo de processamento paralelo."
+            </p>
+          </div>
+          <div class="tip"><strong>&#128161; Regra de ouro:</strong> O objetivo geral deve ser atingível dentro das 3 semanas de pr&aacute;tica que voc&ecirc; j&aacute; fez. N&atilde;o prometa o que voc&ecirc; n&atilde;o pode mostrar.</div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">2</div>
+        <div class="sc">
+          <h4>Objetivos Específicos — o passo a passo do objetivo geral</h4>
+          <p>Os objetivos espec&iacute;ficos s&atilde;o de 3 a 5 metas menores e concretas que, juntas, formam o objetivo geral. Cada um tamb&eacute;m come&ccedil;a com verbo no infinitivo.</p>
+          <div class="sec-box">
+            <div class="sec-lbl">&#128161; OBJETIVOS ESPECÍFICOS SUGERIDOS</div>
+            <p style="font-size:.86em;color:#507860;line-height:1.8">
+              <strong>OE1:</strong> Configurar o ambiente Linux Ubuntu 22.04 com as dependências necessárias (Java JDK, SSH, variáveis de ambiente) para suportar a instalação do Hadoop 3.3.<br><br>
+              <strong>OE2:</strong> Instalar e configurar o Apache Hadoop em modo pseudo-distribuído, validando os serviços NameNode, DataNode e YARN.<br><br>
+              <strong>OE3:</strong> Operar o sistema de arquivos HDFS utilizando comandos <code>hdfs dfs</code>, documentando as operações de criação de diretórios, upload, listagem e remoção de arquivos.<br><br>
+              <strong>OE4:</strong> Implementar e executar um programa MapReduce (WordCount) no ambiente Hadoop, analisando o pipeline de processamento distribuído.<br><br>
+              <strong>OE5:</strong> Relacionar os resultados obtidos com os conceitos teóricos dos 5Vs do Big Data, identificando como o HDFS endereça os desafios de Volume e Velocidade.
+            </p>
+          </div>
+          <div class="note"><strong>&#128204; Aten&ccedil;&atilde;o:</strong> Cada objetivo espec&iacute;fico deve aparecer <em>respondido</em> em alguma parte do artigo (Metodologia ou Resultados). Se voc&ecirc; escreveu um OE, o leitor precisa encontrar onde ele foi atingido.</div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">3</div>
+        <div class="sc">
+          <h4>Estrutura da Introdução — 5 parágrafos</h4>
+          <p>A introdu&ccedil;&atilde;o de um artigo cient&iacute;fico segue uma estrutura previs&iacute;vel. Use este roteiro:</p>
+          <div class="tg">
+            <div class="tgc"><div class="tl">PARÁGRAFO 1</div><h4>Contexto geral</h4><p>Situe o leitor: por que Big Data é relevante hoje? Dados sobre crescimento exponencial de dados, IoT, redes sociais.</p></div>
+            <div class="tgc"><div class="tl">PARÁGRAFO 2</div><h4>Problema</h4><p>Qual o desafio que motivou o trabalho? Ex: Entender como ferramentas como Hadoop viabilizam o processamento de grandes volumes.</p></div>
+            <div class="tgc"><div class="tl">PARÁGRAFO 3</div><h4>Justificativa</h4><p>Por que isso importa para a área de Ciência de Dados? Por que fazer na prática em Linux, e não só teoria?</p></div>
+            <div class="tgc"><div class="tl">PARÁGRAFO 4</div><h4>Objetivo geral</h4><p>Apresente o objetivo geral do artigo. Use a frase que você definiu no Passo 1 desta missão.</p></div>
+            <div class="tgc"><div class="tl">PARÁGRAFO 5</div><h4>Organização do artigo</h4><p>"Este artigo está organizado da seguinte forma: a Seção 2 apresenta o referencial teórico..."</p></div>
+          </div>
+
+          <div class="lb">
+            <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Introdução</div>
+            <div class="lc"><span class="kw">\section</span>{Introdução}
+
+O crescimento exponencial na geração de dados digitais tem imposto novos desafios
+às organizações. Segundo \cite{<span class="hl">laney2001</span>}, dados com alto Volume, Velocidade
+e Variedade exigem infraestruturas especializadas capazes de armazená-los e
+processá-los de forma distribuída.
+
+<span class="cm">% Parágrafo do problema, justificativa, objetivo geral e organização</span>
+Este trabalho tem como objetivo \ldots
+
+Este artigo está organizado como segue: a Seção~\ref{sec:referencial} apresenta
+o referencial teórico; a Seção~\ref{sec:metodologia} descreve a metodologia
+adotada; a Seção~\ref{sec:resultados} apresenta e discute os resultados;
+e a Seção~\ref{sec:conclusao} conclui o trabalho.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ms"><div class="mi">&#127919;</div><div><h4>MISS&Atilde;O 03 CONCLU&Iacute;DA</h4><p>Objetivos definidos e introdu&ccedil;&atilde;o redigida. Siga para construir o Referencial Te&oacute;rico.</p></div></div>
+  </div>
+</div>
+
+<!-- ===== MISSÃO 4 ===== -->
+<div class="sl-lbl" id="m4">MISS&Atilde;O 04 &mdash; REFERENCIAL TE&Oacute;RICO</div>
+<div class="qc q4">
+  <div class="qh" onclick="tog(this)">
+    <div class="qi">&#128218;</div>
+    <div class="qm">
+      <div class="qw">MISS&Atilde;O 04 &middot; TEORIA</div>
+      <div class="qt">Construir o Referencial Teórico</div>
+      <div class="qs">Big Data, Linux, HDFS, MapReduce — subseções explicadas com referências</div>
+    </div>
+    <div class="qxp">+100 XP</div>
+    <div class="qch">&#9658;</div>
+  </div>
+  <div class="qb">
+    <div class="ob">
+      <div class="ol">&#127919; OBJETIVO DESTA MISS&Atilde;O</div>
+      <p>Ao concluir esta miss&atilde;o, voc&ecirc; ter&aacute; o Referencial Te&oacute;rico completo com 4 subse&ccedil;&otilde;es, cada uma com pelo menos 1 cita&ccedil;&atilde;o bibliogr&aacute;fica, usando os artigos do Elicit.</p>
+    </div>
+
+    <div class="sl">
+      <div class="st">
+        <div class="sn">1</div>
+        <div class="sc">
+          <h4>O que é o Referencial Teórico e para que serve</h4>
+          <p>O referencial te&oacute;rico (tamb&eacute;m chamado de "Fundamenta&ccedil;&atilde;o Te&oacute;rica" ou "Revis&atilde;o Bibliogr&aacute;fica") &eacute; a se&ccedil;&atilde;o onde voc&ecirc; mostra ao leitor que voc&ecirc; <strong>estudou o assunto</strong> e que seu trabalho est&aacute; ancorado em conhecimento publicado. Ele n&atilde;o &eacute; um copia-e-cola de defini&ccedil;&otilde;es — &eacute; uma s&iacute;ntese cr&iacute;tica do que outros pesquisadores j&aacute; descobriram.</p>
+          <div class="tip"><strong>&#128161; Dica cr&iacute;tica:</strong> Cada par&aacute;grafo do referencial deve ter pelo menos uma cita&ccedil;&atilde;o. Se voc&ecirc; afirmar algo sem citar, parece opini&atilde;o. Com cita&ccedil;&atilde;o, vira fato cient&iacute;fico.</div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">2</div>
+        <div class="sc">
+          <h4>Subseção 2.1 — Big Data: Conceito e os 5Vs</h4>
+          <p>Esta subse&ccedil;&atilde;o deve cobrir: o que &eacute; Big Data, como surgiu o termo, e os 5 Vs (Volume, Velocidade, Variedade, Veracidade, Valor). Conecte com a Semana 01 da disciplina.</p>
+          <div class="sec-box">
+            <div class="sec-lbl">ESTRUTURA SUGERIDA DA SUBSEÇÃO 2.1</div>
+            <p style="font-size:.86em;color:#507860;line-height:1.8">
+              <strong>Parágrafo 1:</strong> Definição de Big Data segundo autores seminais (ex: Laney 2001, IBM, Gartner). Citar pelo menos 1 artigo do Grupo C do Elicit.<br><br>
+              <strong>Parágrafo 2:</strong> Explicar cada um dos 5Vs com exemplos práticos (ex: Twitter gera Velocidade; redes de sensores IoT geram Volume).<br><br>
+              <strong>Parágrafo 3:</strong> Por que infraestruturas tradicionais (bancos de dados relacionais, servidores únicos) não conseguem lidar com Big Data? O que isso motivou o desenvolvimento do Hadoop.
+            </p>
+          </div>
+          <div class="lb">
+            <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Subseção 2.1</div>
+            <div class="lc"><span class="kw">\subsection</span>{Big Data: Conceito e Características}
+\label{subsec:bigdata}
+
+O termo Big Data refere-se a conjuntos de dados cujo volume, velocidade de
+geração e variedade de formatos superam a capacidade das ferramentas tradicionais
+de gerenciamento de banco de dados \cite{<span class="hl">laney2001</span>}.
+
+Laney (\citeyear{<span class="hl">laney2001</span>}) foi pioneiro ao identificar as três dimensões
+fundamentais — Volume, Velocidade e Variedade — que posteriormente foram
+ampliadas para os \textit{5Vs} com a adição de Veracidade e Valor
+\cite{<span class="hl">suaReferencia2</span>}.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">3</div>
+        <div class="sc">
+          <h4>Subseção 2.2 — Linux como Base para Ambientes Distribuídos</h4>
+          <p>Esta subse&ccedil;&atilde;o justifica por que o Linux &eacute; o sistema operacional padr&atilde;o para Big Data. Use os artigos do Grupo B do Elicit.</p>
+          <div class="sec-box">
+            <div class="sec-lbl">ESTRUTURA SUGERIDA DA SUBSEÇÃO 2.2</div>
+            <p style="font-size:.86em;color:#507860;line-height:1.8">
+              <strong>Parágrafo 1:</strong> Características do Linux que o tornam adequado para servidores (open-source, estabilidade, gerenciamento via CLI, permissões de sistema).<br><br>
+              <strong>Parágrafo 2:</strong> O papel da linha de comando (CLI) — comandos como <code>ls</code>, <code>mkdir</code>, <code>chmod</code>, <code>ssh</code>, <code>scp</code> — no gerenciamento de infraestruturas distribuídas.<br><br>
+              <strong>Parágrafo 3:</strong> O Google Cloud Shell como ambiente de prática acessível, eliminando a necessidade de hardware dedicado para aprendizado inicial.
+            </p>
+          </div>
+          <div class="note"><strong>&#128204; Conecte com sua pr&aacute;tica:</strong> Mencione que as Semanas 01 e 02 da disciplina utilizaram Ubuntu 22.04 e Google Cloud Shell exatamente por esses motivos — isso mostra que a pr&aacute;tica pedagógica tem embasamento te&oacute;rico.</div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">4</div>
+        <div class="sc">
+          <h4>Subseção 2.3 — Apache Hadoop e o HDFS</h4>
+          <p>Esta &eacute; a subse&ccedil;&atilde;o central do trabalho. Use os artigos do Grupo A do Elicit e o paper original do HDFS (Shvachko et al., 2010).</p>
+          <div class="sec-box">
+            <div class="sec-lbl">ESTRUTURA SUGERIDA DA SUBSEÇÃO 2.3</div>
+            <p style="font-size:.86em;color:#507860;line-height:1.8">
+              <strong>Parágrafo 1:</strong> Origem do Hadoop (Google MapReduce paper 2004, Google File System 2003). Mencionar Doug Cutting e Mike Cafarella como criadores.<br><br>
+              <strong>Parágrafo 2:</strong> Arquitetura do HDFS — NameNode, DataNode, blocos de 128MB, replicação. Usar uma figura (diagrama) para ilustrar.<br><br>
+              <strong>Parágrafo 3:</strong> Modos de configuração: Standalone (sem distribuição), Pseudo-distribuído (1 máquina simula cluster), Totalmente Distribuído (múltiplas máquinas). O trabalho usa modo pseudo-distribuído.<br><br>
+              <strong>Parágrafo 4:</strong> Principais comandos HDFS (<code>hdfs dfs -ls</code>, <code>-put</code>, <code>-get</code>, <code>-mkdir</code>) e como se assemelham ao shell Linux.
+            </p>
+          </div>
+          <div class="tip"><strong>&#128161; Figura obrigat&oacute;ria:</strong> Inclua um diagrama da arquitetura NameNode-DataNode. Voc&ecirc; pode criar no draw.io (gratuito), exportar como PNG e inserir com <code>\includegraphics</code> no LaTeX.</div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">5</div>
+        <div class="sc">
+          <h4>Subseção 2.4 — MapReduce: Paradigma de Processamento Distribuído</h4>
+          <p>Esta subse&ccedil;&atilde;o cobre o paradigma MapReduce, implementado na Semana 03. Use o paper do Google (Dean &amp; Ghemawat, 2004).</p>
+          <div class="sec-box">
+            <div class="sec-lbl">ESTRUTURA SUGERIDA DA SUBSEÇÃO 2.4</div>
+            <p style="font-size:.86em;color:#507860;line-height:1.8">
+              <strong>Parágrafo 1:</strong> Definição de MapReduce como modelo de programação para processamento paralelo. Publicado pelo Google em 2004 (Dean & Ghemawat).<br><br>
+              <strong>Parágrafo 2:</strong> O pipeline — fase Map (divisão e transformação), Shuffle & Sort (agrupamento automático por chave), fase Reduce (agregação).<br><br>
+              <strong>Parágrafo 3:</strong> O exemplo WordCount como caso clássico: como 1 TB de texto é dividido em blocos, processado em paralelo por múltiplos Mappers, e os resultados agregados pelo Reducer.<br><br>
+              <strong>Parágrafo 4:</strong> O papel do YARN como gerenciador de recursos no ecossistema Hadoop 3.x.
+            </p>
+          </div>
+          <div class="lb">
+            <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Subseção 2.4</div>
+            <div class="lc"><span class="kw">\subsection</span>{MapReduce: Processamento Distribuído}
+\label{subsec:mapreduce}
+
+O MapReduce é um modelo de programação introduzido por
+\cite{<span class="hl">dean2004mapreduce</span>} para processamento e geração de grandes
+conjuntos de dados em clusters de computadores comuns (\textit{commodity hardware}).
+
+O processamento ocorre em duas fases principais: a fase \textbf{Map}, onde
+a função definida pelo programador é aplicada a cada par chave-valor do
+conjunto de entrada, produzindo um conjunto intermediário de pares; e a
+fase \textbf{Reduce}, onde todos os valores com a mesma chave intermediária
+são agrupados e processados pela função de redução \cite{<span class="hl">dean2004mapreduce</span>}.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ms"><div class="mi">&#128218;</div><div><h4>MISS&Atilde;O 04 CONCLU&Iacute;DA</h4><p>Referencial te&oacute;rico com 4 subse&ccedil;&otilde;es e cita&ccedil;&otilde;es. Siga para a Metodologia.</p></div></div>
+  </div>
+</div>
+
+<!-- ===== MISSÃO 5 ===== -->
+<div class="sl-lbl" id="m5">MISS&Atilde;O 05 &mdash; METODOLOGIA</div>
+<div class="qc q5">
+  <div class="qh" onclick="tog(this)">
+    <div class="qi">&#128295;</div>
+    <div class="qm">
+      <div class="qw">MISS&Atilde;O 05 &middot; METODOLOGIA</div>
+      <div class="qt">Descrever a Metodologia do Trabalho</div>
+      <div class="qs">Tipo de pesquisa, ambiente, ferramentas e passo a passo experimental</div>
+    </div>
+    <div class="qxp">+100 XP</div>
+    <div class="qch">&#9658;</div>
+  </div>
+  <div class="qb">
+    <div class="ob">
+      <div class="ol">&#127919; OBJETIVO DESTA MISS&Atilde;O</div>
+      <p>Ao concluir esta miss&atilde;o, a se&ccedil;&atilde;o de Metodologia estar&aacute; completa, descrevendo de forma reproduz&iacute;vel como os experimentos foram conduzidos — para que qualquer pessoa possa repetir o que voc&ecirc; fez.</p>
+    </div>
+
+    <div class="sl">
+      <div class="st">
+        <div class="sn">1</div>
+        <div class="sc">
+          <h4>Classificação da pesquisa</h4>
+          <p>Todo artigo cient&iacute;fico precisa classificar o tipo de pesquisa realizada. O seu trabalho se enquadra em:</p>
+          <div class="tg">
+            <div class="tgc"><div class="tl">QUANTO À NATUREZA</div><h4>Aplicada</h4><p>Visa resolver um problema prático: instalar e operar uma infraestrutura Big Data real.</p></div>
+            <div class="tgc"><div class="tl">QUANTO À ABORDAGEM</div><h4>Qualitativa</h4><p>Análise descritiva dos processos, comandos e comportamentos observados durante a instalação.</p></div>
+            <div class="tgc"><div class="tl">QUANTO AOS OBJETIVOS</div><h4>Exploratória</h4><p>Explora como funciona o Hadoop HDFS em ambiente Linux, sem hipótese prévia a testar.</p></div>
+            <div class="tgc"><div class="tl">QUANTO AOS PROCEDIMENTOS</div><h4>Experimental / Estudo de Caso</h4><p>Experimento prático controlado em ambiente virtualizado (Ubuntu 22.04).</p></div>
+          </div>
+          <div class="lb">
+            <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Metodologia</div>
+            <div class="lc"><span class="kw">\section</span>{Metodologia}
+\label{sec:metodologia}
+
+Esta pesquisa classifica-se como \textbf{aplicada} quanto à sua natureza,
+de abordagem \textbf{qualitativa} e de natureza \textbf{exploratória} quanto
+aos seus objetivos. Do ponto de vista dos procedimentos técnicos, configura-se
+como um \textbf{estudo experimental}, pois envolve a implementação e análise
+de um ambiente computacional controlado \cite{<span class="hl">gil2008</span>}.</div>
+          </div>
+          <div class="tip"><strong>&#128161; Dica:</strong> Busque no Elicit: <em>"research methodology classification exploratory applied qualitative"</em> + o livro "Como Elaborar Projetos de Pesquisa" de Gil (2008) — &eacute; a refer&ecirc;ncia cl&aacute;ssica para classifica&ccedil;&atilde;o de pesquisa no Brasil.</div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">2</div>
+        <div class="sc">
+          <h4>Ambiente experimental — descrever o hardware e software</h4>
+          <p>Descreva o ambiente exato onde os experimentos foram realizados. Isso &eacute; fundamental para a reprodutibilidade.</p>
+          <div class="sec-box">
+            <div class="sec-lbl">TABELA SUGERIDA — AMBIENTE EXPERIMENTAL</div>
+            <p style="font-size:.85em;color:#507860;line-height:1.8">
+              No Overleaf, crie uma tabela com: Sistema Operacional (Ubuntu 22.04.x LTS), versão do Java (OpenJDK 11 ou 8), versão do Hadoop (3.3.x), RAM disponível, tipo de configuração (pseudo-distribuído), e o ambiente de hospedagem (máquina local, WSL, Google Cloud Shell ou VM).
+            </p>
+          </div>
+          <div class="lb">
+            <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Tabela de Ambiente</div>
+            <div class="lc"><span class="kw">\begin</span>{table}[h]
+\centering
+\caption{Configuração do Ambiente Experimental}
+\label{tab:ambiente}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Componente} & \textbf{Versão / Especificação} \\
+\hline
+Sistema Operacional & Ubuntu 22.04.3 LTS \\
+Java & OpenJDK 11.0.x \\
+Apache Hadoop & 3.3.6 \\
+Modo de Operação & Pseudo-Distribuído \\
+Ambiente & Google Cloud Shell / Ubuntu WSL \\
+\hline
+\end{tabular}
+\end{table}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">3</div>
+        <div class="sc">
+          <h4>Procedimentos experimentais — Etapa 1: Configuração do Linux (Semana 01)</h4>
+          <p>Documente os comandos que voc&ecirc; executou na Semana 01 como etapa metodol&oacute;gica.</p>
+          <div class="tb">
+            <div class="th"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; terminal — Ubuntu 22.04</div>
+            <div class="tc"><span class="cmt"># Comandos da Semana 01 — fundamentação do ambiente</span>
+<span class="cmd">sudo apt update && sudo apt upgrade -y</span>    <span class="cmt"># Atualização do sistema</span>
+<span class="cmd">sudo apt install openjdk-11-jdk -y</span>         <span class="cmt"># Instalação do Java</span>
+<span class="cmd">java -version</span>                                <span class="cmt"># Verificação</span>
+<span class="out">openjdk version "11.0.22" 2024-01-16</span>
+<span class="cmd">sudo adduser hadoop</span>                          <span class="cmt"># Criação do usuário hadoop</span>
+<span class="cmd">ssh-keygen -t rsa -P "" -f ~/.ssh/id_rsa</span>    <span class="cmt"># Chave SSH sem senha</span>
+<span class="cmd">cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys</span></div>
+          </div>
+          <p style="font-size:.88em;color:#5a88aa;line-height:1.8;margin-top:8px">Inclua no artigo os comandos mais relevantes dentro de um ambiente <code>\begin{verbatim}...\end{verbatim}</code> ou use o pacote <code>listings</code> do LaTeX para formatação com syntax highlighting.</p>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">4</div>
+        <div class="sc">
+          <h4>Procedimentos experimentais — Etapa 2: Instalação do Hadoop (Semana 02)</h4>
+          <p>Descreva o processo de instala&ccedil;&atilde;o e configura&ccedil;&atilde;o. N&atilde;o precisa copiar todos os comandos &mdash; escolha os mais representativos de cada fase.</p>
+          <div class="sec-box">
+            <div class="sec-lbl">SUBETAPAS A DESCREVER</div>
+            <p style="font-size:.86em;color:#507860;line-height:1.8">
+              <strong>2.1</strong> Download e extração do Hadoop (<code>wget</code>, <code>tar -xzf</code>)<br>
+              <strong>2.2</strong> Configuração das variáveis de ambiente (<code>JAVA_HOME</code>, <code>HADOOP_HOME</code> no <code>.bashrc</code>)<br>
+              <strong>2.3</strong> Edição dos arquivos XML de configuração (<code>core-site.xml</code>, <code>hdfs-site.xml</code>, <code>mapred-site.xml</code>, <code>yarn-site.xml</code>)<br>
+              <strong>2.4</strong> Formatação do NameNode (<code>hdfs namenode -format</code>)<br>
+              <strong>2.5</strong> Inicialização dos daemons (<code>start-dfs.sh</code>, <code>start-yarn.sh</code>) e validação com <code>jps</code>
+            </p>
+          </div>
+          <div class="tb">
+            <div class="th"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; terminal — validação do cluster</div>
+            <div class="tc"><span class="cmd">jps</span>
+<span class="out">12345 NameNode</span>
+<span class="out">12456 DataNode</span>
+<span class="out">12567 SecondaryNameNode</span>
+<span class="out">12678 ResourceManager</span>
+<span class="out">12789 NodeManager</span>
+<span class="out">12900 Jps</span>
+<span class="cmt"># Os 5 processos acima confirmam que o cluster está ativo</span></div>
+          </div>
+          <div class="tip"><strong>&#128161; Screenshot:</strong> Inclua um print screen do seu pr&oacute;prio terminal mostrando a sa&iacute;da do <code>jps</code>. Isso &eacute; a sua "evid&ecirc;ncia experimental" — fundamental para um artigo pr&aacute;tico. Use <code>\includegraphics</code> no LaTeX.</div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">5</div>
+        <div class="sc">
+          <h4>Procedimentos experimentais — Etapa 3: Operação do HDFS e MapReduce (Semanas 02–03)</h4>
+          <p>Documente os experimentos com o HDFS e o MapReduce como etapas metodol&oacute;gicas encadeadas.</p>
+          <div class="tb">
+            <div class="th"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; terminal — operações HDFS</div>
+            <div class="tc"><span class="cmt"># Criação de diretório e upload de arquivo</span>
+<span class="cmd">hdfs dfs -mkdir -p /user/hadoop/input</span>
+<span class="cmd">hdfs dfs -put /home/hadoop/input.txt /user/hadoop/input/</span>
+<span class="cmd">hdfs dfs -ls /user/hadoop/input/</span>
+<span class="out">Found 1 items</span>
+<span class="out">-rw-r--r--   1 hadoop supergroup       1024 2026-03-10 /user/hadoop/input/input.txt</span>
+
+<span class="cmt"># Execução do WordCount</span>
+<span class="cmd">hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.3.6.jar \
+  wordcount /user/hadoop/input /user/hadoop/output</span>
+
+<span class="cmt"># Visualização dos resultados</span>
+<span class="cmd">hdfs dfs -cat /user/hadoop/output/part-r-00000 | head -20</span>
+<span class="out">hadoop    15</span>
+<span class="out">linux     23</span>
+<span class="out">bigdata   11</span></div>
+          </div>
+          <p style="font-size:.88em;color:#5a88aa;line-height:1.8;margin-top:8px">Anote o tempo de execu&ccedil;&atilde;o do job MapReduce (mostrado no terminal ao final). Esse dado pode ser discutido nos Resultados como evid&ecirc;ncia de desempenho.</p>
+        </div>
+      </div>
+    </div>
+    <div class="ms"><div class="mi">&#128295;</div><div><h4>MISS&Atilde;O 05 CONCLU&Iacute;DA</h4><p>Metodologia completa com classifica&ccedil;&atilde;o, ambiente e procedimentos documentados. Siga para Resultados e Conclus&atilde;o.</p></div></div>
+  </div>
+</div>
+
+<!-- ===== MISSÃO 6 ===== -->
+<div class="sl-lbl" id="m6">MISS&Atilde;O 06 &mdash; RESULTADOS, DISCUSS&Atilde;O E CONCLUS&Atilde;O</div>
+<div class="qc q6">
+  <div class="qh" onclick="tog(this)">
+    <div class="qi">&#128202;</div>
+    <div class="qm">
+      <div class="qw">MISS&Atilde;O 06 &middot; FINALIZAÇÃO</div>
+      <div class="qt">Resultados, Discussão, Conclusão e Submissão</div>
+      <div class="qs">Analisar os dados, concluir e gerar o PDF final em conformidade FATEC</div>
+    </div>
+    <div class="qxp">+100 XP</div>
+    <div class="qch">&#9658;</div>
+  </div>
+  <div class="qb">
+    <div class="ob">
+      <div class="ol">&#127919; OBJETIVO DESTA MISS&Atilde;O</div>
+      <p>Ao concluir esta miss&atilde;o, o artigo estar&aacute; completo e pronto para entrega: Resultados escritos, Discuss&atilde;o conectando pr&aacute;tica e teoria, Conclus&atilde;o respondendo os objetivos espec&iacute;ficos e PDF final gerado no Overleaf.</p>
+    </div>
+
+    <div class="sl">
+      <div class="st">
+        <div class="sn">1</div>
+        <div class="sc">
+          <h4>Seção de Resultados — o que você observou</h4>
+          <p>Na se&ccedil;&atilde;o de Resultados, voc&ecirc; apresenta <strong>o que aconteceu</strong> durante os experimentos, sem ainda interpretar. Para cada etapa da metodologia, apresente:</p>
+          <ul>
+            <li><strong>Instalação bem-sucedida:</strong> O cluster subiu? Quais processos o <code>jps</code> mostrou? Inclua screenshot.</li>
+            <li><strong>Operações HDFS:</strong> Os comandos funcionaram? Quais arquivos foram criados? Mostre a saída do <code>hdfs dfs -ls</code>.</li>
+            <li><strong>MapReduce WordCount:</strong> O job completou? Qual foi o tempo de execução? Mostre as primeiras linhas do <code>output/part-r-00000</code>.</li>
+            <li><strong>Dificuldades encontradas:</strong> Houve erros? Como foram resolvidos? Isso é muito válido em artigos práticos.</li>
+          </ul>
+          <div class="note"><strong>&#128204; Aten&ccedil;&atilde;o:</strong> Um resultado negativo (algo que n&atilde;o funcionou e por qu&ecirc;) tamb&eacute;m &eacute; resultado cient&iacute;fico. N&atilde;o omita problemas &mdash; documente-os e explique a solução.</div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">2</div>
+        <div class="sc">
+          <h4>Seção de Discussão — conectar prática e teoria</h4>
+          <p>A Discuss&atilde;o &eacute; onde voc&ecirc; interpreta os resultados &agrave; luz do referencial te&oacute;rico. &Eacute; a se&ccedil;&atilde;o mais sofisticada do artigo. Responda:</p>
+          <div class="tg">
+            <div class="tgc"><div class="tl">PERGUNTA 1</div><h4>O HDFS realmente endereça os 5Vs?</h4><p>Os resultados confirmam como o HDFS lida com Volume (arquivos grandes), Velocidade (leitura paralela) e Variedade (qualquer formato)?</p></div>
+            <div class="tgc"><div class="tl">PERGUNTA 2</div><h4>O Linux CLI foi essencial?</h4><p>Por que não seria possível fazer a mesma coisa via interface gráfica? O que a CLI permite que uma GUI não permitiria em escala?</p></div>
+            <div class="tgc"><div class="tl">PERGUNTA 3</div><h4>O MapReduce funcionou como a teoria prevê?</h4><p>O pipeline Map → Shuffle → Reduce observado no terminal corresponde ao descrito por Dean & Ghemawat (2004)?</p></div>
+            <div class="tgc"><div class="tl">PERGUNTA 4</div><h4>Limitações do experimento</h4><p>O que o modo pseudo-distribuído não consegue simular que um cluster real faria? (Tolerância a falhas, replicação real, etc.)</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">3</div>
+        <div class="sc">
+          <h4>Conclusão — responder cada objetivo específico</h4>
+          <p>A conclus&atilde;o deve ser direta: volte a cada <strong>objetivo espec&iacute;fico</strong> definido na Introdução e afirme se foi atingido ou n&atilde;o. Depois, aponte encaminhamentos futuros.</p>
+          <div class="lb">
+            <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Conclusão</div>
+            <div class="lc"><span class="kw">\section</span>{Conclusão}
+\label{sec:conclusao}
+
+Este trabalho apresentou a implementação e análise de uma infraestrutura Big Data
+baseada no Apache Hadoop HDFS em ambiente Linux Ubuntu 22.04.
+
+Em relação aos objetivos específicos, verificou-se que: (OE1) o ambiente Linux
+foi configurado com sucesso, incluindo Java JDK e SSH sem senha; (OE2) o Hadoop
+3.3 foi instalado e iniciado em modo pseudo-distribuído, com todos os cinco
+\textit{daemons} confirmados pelo comando \texttt{jps}; (OE3) as operações básicas
+do HDFS (\texttt{-mkdir}, \texttt{-put}, \texttt{-ls}, \texttt{-cat}) foram
+executadas com sucesso; (OE4) o programa WordCount foi executado e produziu
+resultados corretos; e (OE5) os resultados demonstram como o HDFS endereça
+os desafios de Volume e Velocidade dos 5Vs \cite{<span class="hl">laney2001</span>}.
+
+Como trabalho futuro, sugere-se a configuração de um cluster verdadeiramente
+distribuído com múltiplos nós, permitindo avaliar a tolerância a falhas e
+a replicação de blocos em cenários de falha real.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">4</div>
+        <div class="sc">
+          <h4>Resumo (Abstract) — escreva por último</h4>
+          <p>O resumo &eacute; escrito ap&oacute;s o artigo todo estar pronto. Ele tem entre 150 e 250 palavras e deve conter, nessa ordem: contexto, problema/objetivo, metodologia, resultados e conclus&atilde;o. N&atilde;o &eacute; uma introdu&ccedil;&atilde;o &mdash; &eacute; uma vers&atilde;o ultra-condensada do artigo inteiro.</p>
+          <p>Em artigos FATEC, o resumo vem em portugu&ecirc;s (<code>\begin{resumo}</code>) e em ingl&ecirc;s (<code>\begin{abstract}</code>). Verifique a configura&ccedil;&atilde;o do seu template.</p>
+          <div class="tip"><strong>&#128161; Palavras-chave:</strong> Coloque de 3 a 6 palavras-chave separadas por ponto e v&iacute;rgula. Sugest&atilde;o: <em>Big Data; Hadoop HDFS; Linux; MapReduce; Computação Distribuída; Infraestrutura de Dados.</em></div>
+        </div>
+      </div>
+
+      <div class="st">
+        <div class="sn">5</div>
+        <div class="sc">
+          <h4>Checklist final antes de entregar</h4>
+          <ul class="cl" style="margin-top:0">
+            <li><span class="ck" onclick="ckToggle(this)"></span> Capa preenchida corretamente (nome, disciplina, professor, semestre)</li>
+            <li><span class="ck" onclick="ckToggle(this)"></span> Resumo em portugu&ecirc;s com palavras-chave</li>
+            <li><span class="ck" onclick="ckToggle(this)"></span> Abstract em ingl&ecirc;s com keywords</li>
+            <li><span class="ck" onclick="ckToggle(this)"></span> Introdu&ccedil;&atilde;o com objetivo geral definido</li>
+            <li><span class="ck" onclick="ckToggle(this)"></span> Objetivos espec&iacute;ficos listados (3 a 5)</li>
+            <li><span class="ck" onclick="ckToggle(this)"></span> Referencial te&oacute;rico com 4 subse&ccedil;&otilde;es e cita&ccedil;&otilde;es</li>
+            <li><span class="ck" onclick="ckToggle(this)"></span> Metodologia com classifica&ccedil;&atilde;o e ambiente descrito</li>
+            <li><span class="ck" onclick="ckToggle(this)"></span> Resultados com screenshots do terminal</li>
+            <li><span class="ck" onclick="ckToggle(this)"></span> Discuss&atilde;o conectando resultados com o referencial</li>
+            <li><span class="ck" onclick="ckToggle(this)"></span> Conclus&atilde;o respondendo os objetivos espec&iacute;ficos</li>
+            <li><span class="ck" onclick="ckToggle(this)"></span> Lista de refer&ecirc;ncias com m&iacute;nimo de 5 fontes acad&ecirc;micas</li>
+            <li><span class="ck" onclick="ckToggle(this)"></span> PDF final compilado sem erros no Overleaf</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="ms"><div class="mi">&#127942;</div><div><h4>ARTIGO CONCLU&Iacute;DO — 600 XP CONQUISTADOS!</h4><p>Baixe o PDF do Overleaf (Menu &gt; Download &gt; PDF) e entregue conforme as instru&ccedil;&otilde;es do professor. Parab&eacute;ns!</p></div></div>
+  </div>
+</div>
+
+<!-- FINAL CARD -->
+<div class="fc">
+  <span class="tr">&#127881;</span>
+  <h2>MISS&Atilde;O PRINCIPAL CONCLU&Iacute;DA</h2>
+  <p>Voc&ecirc; transformou 3 semanas de pr&aacute;tica com Linux e Hadoop em um artigo cient&iacute;fico completo no padr&atilde;o FATEC/Overleaf. Isso &eacute; Ci&ecirc;ncia de Dados na pr&aacute;tica.</p>
+  <p style="font-size:.82em;color:#2a4858;margin-top:8px">IAL008 &middot; Infraestrutura para Big Data &middot; FATEC Ourinhos &middot; Prof. Isaque Katahira &middot; 2026</p>
+</div>
+
+</div><!-- /wrap -->
+
+<div id="toast"></div>
+
+<script>
+function tog(el){
+  const open = el.classList.contains('active');
+  document.querySelectorAll('.qh.active').forEach(h=>{
+    h.classList.remove('active');
+    h.nextElementSibling.classList.remove('open');
+  });
+  if(!open){
+    el.classList.add('active');
+    el.nextElementSibling.classList.add('open');
+    setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),150);
+    addXP();
+  }
+}
+
+let xp = 0;
+const opened = new Set();
+function addXP(){
+  const activeQ = document.querySelector('.qh.active');
+  if(!activeQ || opened.has(activeQ)) return;
+  opened.add(activeQ);
+  xp = Math.min(600, xp + 100);
+  document.getElementById('xd').textContent = xp + ' / 600 XP';
+  document.getElementById('xf').style.width = (xp/600*100)+'%';
+  showToast('+100 XP conquistados!');
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+function ckToggle(el){
+  el.classList.toggle('done');
+  el.textContent = el.classList.contains('done') ? '✓' : '';
+}
+
+function cp(btn, text){
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig = btn.textContent;
+    btn.textContent = 'COPIADO!';
+    setTimeout(()=>btn.textContent=orig, 1500);
+  }).catch(()=>showToast('Erro ao copiar'));
+}
+
+// Open first quest on load
+document.addEventListener('DOMContentLoaded',()=>{
+  const first = document.querySelector('.qh');
+  if(first) tog(first);
+});
+</script>
+</body>
+</html>

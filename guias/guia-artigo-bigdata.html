@@ -373,10 +373,10 @@ code{font-family:'Share Tech Mono',monospace;background:rgba(0,229,255,.08);padd
           <h4>Entender a estrutura dos arquivos</h4>
           <p>No painel esquerdo do Overleaf, voc&ecirc; ver&aacute; os arquivos do projeto. O mais importante é o arquivo principal (<code>main.tex</code> ou similar). Clique nele para abrir.</p>
           <div class="tg">
-            <div class="tgc"><div class="tl">ARQUIVO PRINCIPAL</div><h4>main.tex</h4><p>Onde fica o esqueleto do artigo: \section, \subsection e o \input de cada parte</p></div>
-            <div class="tgc"><div class="tl">BIBLIOGRAFIA</div><h4>referencias.bib</h4><p>Arquivo com todas as refer&ecirc;ncias no formato BibTeX. Cada artigo/livro vira uma entrada aqui</p></div>
-            <div class="tgc"><div class="tl">CONFIGURAÇÃO</div><h4>setup.tex / preamble</h4><p>Pacotes e configura&ccedil;&otilde;es LaTeX. N&atilde;o altere sem entender o que faz</p></div>
-            <div class="tgc"><div class="tl">IMAGENS</div><h4>pasta /img ou /figures</h4><p>Coloque aqui os screenshots do terminal, diagramas de arquitetura e gr&aacute;ficos</p></div>
+            <div class="tgc"><div class="tl">ARQUIVO PRINCIPAL</div><h4>main.tex</h4><p>Onde fica todo o conteúdo: \section, \subsection, texto, figuras e tabelas</p></div>
+            <div class="tgc"><div class="tl">BIBLIOGRAFIA</div><h4>bibliografia.bib</h4><p>Arquivo com todas as referências no formato BibTeX. Cada artigo/livro vira uma entrada aqui</p></div>
+            <div class="tgc"><div class="tl">CONFIGURAÇÃO</div><h4>preâmbulo no main.tex</h4><p>Pacotes e configurações ficam no topo do próprio main.tex. Não altere sem entender o que faz</p></div>
+            <div class="tgc"><div class="tl">IMAGENS</div><h4>pasta /figuras</h4><p>Coloque aqui os screenshots do terminal e diagramas. Use \includegraphics{figuras/nome.png}</p></div>
           </div>
         </div>
       </div>
@@ -388,13 +388,24 @@ code{font-family:'Share Tech Mono',monospace;background:rgba(0,229,255,.08);padd
           <p>Localize no <code>main.tex</code> os campos de metadados e preencha com seus dados. Exemplo do que voc&ecirc; vai encontrar:</p>
           <div class="lb">
             <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Capa</div>
-            <div class="lc"><span class="kw">\title</span>{<span class="str">Implantação e Análise de Infraestrutura Big Data com Hadoop HDFS em Ambiente Linux</span>}
-<span class="kw">\author</span>{<span class="str">SEU NOME COMPLETO</span>}
-<span class="kw">\institution</span>{<span class="str">Faculdade de Tecnologia de Ourinhos — FATEC</span>}
-<span class="kw">\course</span>{<span class="str">Ciência de Dados</span>}
-<span class="kw">\discipline</span>{<span class="str">Infraestrutura para Big Data (IAL008)</span>}
-<span class="kw">\professor</span>{<span class="str">Prof. Isaque Katahira</span>}
-<span class="kw">\semester</span>{<span class="str">1º Semestre de 2026</span>}</div>
+            <div class="lc"><span class="cm">% ── Título do artigo ──────────────────────────────────</span>
+<span class="kw">\titulo</span>{IMPLANTAÇÃO E ANÁLISE DE INFRAESTRUTURA BIG DATA
+COM APACHE HADOOP HDFS EM AMBIENTE LINUX}
+
+<span class="cm">% ── Autores (substitua pelos nomes reais do grupo) ────</span>
+<span class="kw">\autor</span>{
+  Nome Primeiro Aluno\texorpdfstring{\textsuperscript{*}}{}
+  \\
+  Nome Segundo Aluno\texorpdfstring{\textsuperscript{*}}{}
+  \\
+  Prof. Esp. Isaque Katahira\texorpdfstring{\textsuperscript{**}}{}
+}
+
+<span class="cm">% ── Rodapés automáticos (edite o curso e e-mails) ─────</span>
+<span class="cm">% Localize \footnotetext no main.tex e preencha:</span>
+<span class="cm">% Curso Superior de Tecnologia em Ciência de Dados</span>
+<span class="cm">% {primeiro.aluno,segundo.aluno}@fatec.sp.gov.br</span>
+<span class="cm">% isaque.katahira@fatecourinhos.edu.br</span></div>
           </div>
           <div class="wrn"><strong>&#9888; Aten&ccedil;&atilde;o:</strong> O nome do arquivo e os campos exatos dependem do template FATEC fornecido pelo professor. Adapte conforme o que voc&ecirc; vê no seu projeto Overleaf.</div>
         </div>
@@ -517,12 +528,13 @@ code{font-family:'Share Tech Mono',monospace;background:rgba(0,229,255,.08);padd
         <div class="sc">
           <h4>Exportar as referências para o Overleaf (formato BibTeX)</h4>
           <p>No Elicit, ap&oacute;s selecionar seus artigos, clique em <strong>"Export"</strong> &gt; <strong>"BibTeX"</strong>. Isso gera um arquivo <code>.bib</code> com todas as refer&ecirc;ncias no formato que o LaTeX entende.</p>
-          <p>No Overleaf, abra o arquivo <code>referencias.bib</code> (ou o nome que estiver no template) e <strong>cole o conte&uacute;do</strong> do arquivo BibTeX exportado.</p>
+          <p>No Overleaf, abra o arquivo <code>bibliografia.bib</code> e <strong>cole o conte&uacute;do</strong> do arquivo BibTeX exportado logo abaixo das entradas j&aacute; existentes.</p>
           <div class="lb">
-            <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; referencias.bib — exemplo de entrada</div>
-            <div class="lc"><span class="cm">% Artigo sobre Hadoop HDFS</span>
+            <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; bibliografia.bib — exemplos de entrada</div>
+            <div class="lc"><span class="cm">% Artigo de periódico (Journal Article)</span>
 @article{<span class="hl">shvachko2010hadoop</span>,
-  author  = {Shvachko, Konstantin and Kuang, Hairong and Radia, Sanjay and Chansler, Robert},
+  author  = {Shvachko, Konstantin and Kuang, Hairong
+             and Radia, Sanjay and Chansler, Robert},
   title   = {The Hadoop Distributed File System},
   journal = {IEEE Symposium on Mass Storage Systems and Technologies},
   year    = {2010},
@@ -530,15 +542,24 @@ code{font-family:'Share Tech Mono',monospace;background:rgba(0,229,255,.08);padd
   doi     = {10.1109/MSST.2010.5496972}
 }
 
-<span class="cm">% Artigo sobre Big Data 5Vs</span>
+<span class="cm">% Artigo técnico / relatório</span>
 @article{<span class="hl">laney2001</span>,
   author  = {Laney, Doug},
-  title   = {3D Data Management: Controlling Data Volume, Velocity and Variety},
+  title   = {3D Data Management: Controlling Data Volume,
+             Velocity and Variety},
   journal = {META Group Research Note},
   year    = {2001}
+}
+
+<span class="cm">% Site / recurso online (use @online como no template)</span>
+@online{<span class="hl">apache-hadoop-site</span>,
+  title        = {Apache Hadoop},
+  author       = {{Apache Software Foundation}},
+  year         = {2024},
+  howpublished = {https://hadoop.apache.org}
 }</div>
           </div>
-          <p>Para citar no texto, use o comando <code>\cite{shvachko2010hadoop}</code>. O LaTeX gera a refer&ecirc;ncia automaticamente.</p>
+          <p>Para citar no texto use <code>\cite{shvachko2010hadoop}</code> (cita&ccedil;&atilde;o indireta no final) ou <code>\citeonline{shvachko2010hadoop}</code> (quando o autor entra na frase). O LaTeX gera a refer&ecirc;ncia automaticamente.</p>
         </div>
       </div>
     </div>
@@ -585,6 +606,16 @@ code{font-family:'Share Tech Mono',monospace;background:rgba(0,229,255,.08);padd
               "Implementar, configurar e analisar uma infraestrutura de Big Data baseada no Apache Hadoop HDFS em ambiente Linux Ubuntu 22.04, avaliando o processo de instalação, os comandos operacionais do sistema de arquivos distribuído e o paradigma MapReduce como mecanismo de processamento paralelo."
             </p>
           </div>
+          <div class="lb">
+            <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Objetivo Geral (dentro da Introdução)</div>
+            <div class="lc"><span class="cm">% Cole este trecho dentro do \section{\textbf{INTRODUÇÃO}},
+% no parágrafo do objetivo geral</span>
+Este trabalho tem como objetivo \textbf{implementar, configurar e analisar}
+uma infraestrutura de Big Data baseada no Apache Hadoop HDFS em ambiente
+Linux Ubuntu 22.04, avaliando o processo de instala&ccedil;&atilde;o, os comandos
+operacionais do sistema de arquivos distribu&iacute;do e o paradigma MapReduce
+como mecanismo de processamento paralelo.</div>
+          </div>
           <div class="tip"><strong>&#128161; Regra de ouro:</strong> O objetivo geral deve ser atingível dentro das 3 semanas de pr&aacute;tica que voc&ecirc; j&aacute; fez. N&atilde;o prometa o que voc&ecirc; n&atilde;o pode mostrar.</div>
         </div>
       </div>
@@ -604,6 +635,28 @@ code{font-family:'Share Tech Mono',monospace;background:rgba(0,229,255,.08);padd
               <strong>OE5:</strong> Relacionar os resultados obtidos com os conceitos teóricos dos 5Vs do Big Data, identificando como o HDFS endereça os desafios de Volume e Velocidade.
             </p>
           </div>
+          <div class="lb">
+            <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Objetivos Específicos (dentro da Introdução)</div>
+            <div class="lc"><span class="cm">% Cole este bloco logo após o parágrafo do objetivo geral,
+% ainda dentro do \section{\textbf{INTRODUÇÃO}}</span>
+S&atilde;o objetivos espec&iacute;ficos deste trabalho:
+\begin{enumerate}
+  \item Configurar o ambiente Linux Ubuntu 22.04 com as depend&ecirc;ncias
+        necess&aacute;rias (Java JDK, SSH, vari&aacute;veis de ambiente) para suportar
+        a instala&ccedil;&atilde;o do Hadoop 3.3;
+  \item Instalar e configurar o Apache Hadoop em modo pseudo-distribu&iacute;do,
+        validando os servi&ccedil;os NameNode, DataNode e YARN;
+  \item Operar o sistema de arquivos HDFS utilizando comandos
+        \texttt{hdfs dfs}, documentando opera&ccedil;&otilde;es de cria&ccedil;&atilde;o de
+        diret&oacute;rios, \textit{upload}, listagem e remo&ccedil;&atilde;o de arquivos;
+  \item Implementar e executar um programa MapReduce (\textit{WordCount})
+        no ambiente Hadoop, analisando o pipeline de processamento
+        distribu&iacute;do;
+  \item Relacionar os resultados obtidos com os conceitos te&oacute;ricos dos
+        5Vs do Big Data, identificando como o HDFS endere&ccedil;a os desafios
+        de Volume e Velocidade \cite{laney2001}.
+\end{enumerate}</div>
+          </div>
           <div class="note"><strong>&#128204; Aten&ccedil;&atilde;o:</strong> Cada objetivo espec&iacute;fico deve aparecer <em>respondido</em> em alguma parte do artigo (Metodologia ou Resultados). Se voc&ecirc; escreveu um OE, o leitor precisa encontrar onde ele foi atingido.</div>
         </div>
       </div>
@@ -622,21 +675,45 @@ code{font-family:'Share Tech Mono',monospace;background:rgba(0,229,255,.08);padd
           </div>
 
           <div class="lb">
-            <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Introdução</div>
-            <div class="lc"><span class="kw">\section</span>{Introdução}
+            <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Introdução completa (5 parágrafos)</div>
+            <div class="lc"><span class="kw">\section</span>{\textbf{INTRODUÇÃO}}
 
-O crescimento exponencial na geração de dados digitais tem imposto novos desafios
-às organizações. Segundo \cite{<span class="hl">laney2001</span>}, dados com alto Volume, Velocidade
-e Variedade exigem infraestruturas especializadas capazes de armazená-los e
-processá-los de forma distribuída.
+<span class="cm">% Parágrafo 1 — Contexto geral</span>
+O crescimento exponencial na gera&ccedil;&atilde;o de dados digitais tem imposto
+novos desafios &agrave;s organiza&ccedil;&otilde;es. Estima-se que o volume de dados
+produzidos globalmente duplica a cada dois anos, impulsionado pela
+Internet das Coisas (IoT), redes sociais e sistemas transacionais
+\cite{laney2001}. Esse cen&aacute;rio exige infraestruturas especializadas
+capazes de armazenar e processar dados de forma distribu&iacute;da e escal&aacute;vel.
 
-<span class="cm">% Parágrafo do problema, justificativa, objetivo geral e organização</span>
-Este trabalho tem como objetivo \ldots
+<span class="cm">% Parágrafo 2 — Problema</span>
+Ferramentas tradicionais de gerenciamento de banco de dados relacional
+n&atilde;o foram projetadas para lidar com dados que apresentam simultaneamente
+alto Volume, Velocidade e Variedade \cite{laney2001}. Surge, portanto,
+a necessidade de compreender como tecnologias como o Apache Hadoop
+viabilizam o processamento de grandes volumes de dados em
+\textit{hardware} comum.
 
-Este artigo está organizado como segue: a Seção~\ref{sec:referencial} apresenta
-o referencial teórico; a Seção~\ref{sec:metodologia} descreve a metodologia
-adotada; a Seção~\ref{sec:resultados} apresenta e discute os resultados;
-e a Seção~\ref{sec:conclusao} conclui o trabalho.</div>
+<span class="cm">% Parágrafo 3 — Justificativa</span>
+A pr&aacute;tica em ambiente Linux &eacute; fundamental para profissionais de
+Ci&ecirc;ncia de Dados, pois a grande maioria dos clusters de Big Data
+opera sobre sistemas baseados em Unix \cite{shvachko2010hadoop}.
+Configurar e operar o Hadoop em ambiente Linux permite compreender,
+em profundidade, os mecanismos de distribui&ccedil;&atilde;o, replica&ccedil;&atilde;o e
+processamento paralelo que sustentam as solu&ccedil;&otilde;es de Big Data.
+
+<span class="cm">% Parágrafo 4 — Objetivo geral</span>
+Este trabalho tem como objetivo \textbf{implementar, configurar e analisar}
+uma infraestrutura de Big Data baseada no Apache Hadoop HDFS em ambiente
+Linux Ubuntu 22.04, avaliando o processo de instala&ccedil;&atilde;o, os comandos
+operacionais do sistema de arquivos distribu&iacute;do e o paradigma MapReduce
+como mecanismo de processamento paralelo.
+
+<span class="cm">% Parágrafo 5 — Organização do artigo</span>
+Este artigo est&aacute; organizado como segue: a Se&ccedil;&atilde;o 2 apresenta o
+referencial te&oacute;rico; a Se&ccedil;&atilde;o 3 descreve a metodologia adotada;
+a Se&ccedil;&atilde;o 4 apresenta e discute os resultados; e a Se&ccedil;&atilde;o 5
+conclui o trabalho.</div>
           </div>
         </div>
       </div>
@@ -689,17 +766,22 @@ e a Seção~\ref{sec:conclusao} conclui o trabalho.</div>
           </div>
           <div class="lb">
             <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Subseção 2.1</div>
-            <div class="lc"><span class="kw">\subsection</span>{Big Data: Conceito e Características}
-\label{subsec:bigdata}
+            <div class="lc"><span class="kw">\section</span>{\textbf{REFERENCIAL TEÓRICO}}
 
-O termo Big Data refere-se a conjuntos de dados cujo volume, velocidade de
-geração e variedade de formatos superam a capacidade das ferramentas tradicionais
-de gerenciamento de banco de dados \cite{<span class="hl">laney2001</span>}.
+<span class="cm">% Parágrafo introdutório da seção (opcional, mas recomendado)</span>
+Esta seção apresenta os conceitos fundamentais que embasam o presente
+trabalho, abordando Big Data, o sistema operacional Linux, o Apache
+Hadoop HDFS e o paradigma MapReduce.
 
-Laney (\citeyear{<span class="hl">laney2001</span>}) foi pioneiro ao identificar as três dimensões
-fundamentais — Volume, Velocidade e Variedade — que posteriormente foram
-ampliadas para os \textit{5Vs} com a adição de Veracidade e Valor
-\cite{<span class="hl">suaReferencia2</span>}.</div>
+<span class="kw">\subsection</span>{Big Data: Conceito e Características}
+
+O termo Big Data refere-se a conjuntos de dados cujo volume, velocidade
+de gera&ccedil;&atilde;o e variedade de formatos superam a capacidade das ferramentas
+tradicionais de gerenciamento de banco de dados \cite{laney2001}.
+
+Segundo \citeonline{laney2001}, as tr&ecirc;s dimens&otilde;es fundamentais ---
+Volume, Velocidade e Variedade --- foram posteriormente ampliadas para
+os \textit{5Vs} com a adi&ccedil;&atilde;o de Veracidade e Valor \cite{suaReferencia2}.</div>
           </div>
         </div>
       </div>
@@ -716,6 +798,21 @@ ampliadas para os \textit{5Vs} com a adição de Veracidade e Valor
               <strong>Parágrafo 2:</strong> O papel da linha de comando (CLI) — comandos como <code>ls</code>, <code>mkdir</code>, <code>chmod</code>, <code>ssh</code>, <code>scp</code> — no gerenciamento de infraestruturas distribuídas.<br><br>
               <strong>Parágrafo 3:</strong> O Google Cloud Shell como ambiente de prática acessível, eliminando a necessidade de hardware dedicado para aprendizado inicial.
             </p>
+          </div>
+          <div class="lb">
+            <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Subseção 2.2</div>
+            <div class="lc"><span class="kw">\subsection</span>{Linux como Base para Ambientes Distribuídos}
+
+O Linux consolidou-se como o sistema operacional padr&atilde;o para
+infraestruturas de Big Data em virtude de sua estabilidade, natureza
+\textit{open-source} e robusto modelo de permiss&otilde;es \cite{suaReferenciaLinux}.
+
+A interface de linha de comando (CLI) --- com comandos como \texttt{ls},
+\texttt{mkdir}, \texttt{chmod}, \texttt{ssh} e \texttt{scp} --- permite
+o gerenciamento granular de infraestruturas distribu&iacute;das sem sobrecarga
+de interface gr&aacute;fica, sendo essencial em ambientes de servidor.
+Neste trabalho, o Ubuntu 22.04 LTS e o Google Cloud Shell foram
+utilizados como ambientes de pr&aacute;tica \cite{suaReferenciaLinux}.</div>
           </div>
           <div class="note"><strong>&#128204; Conecte com sua pr&aacute;tica:</strong> Mencione que as Semanas 01 e 02 da disciplina utilizaram Ubuntu 22.04 e Google Cloud Shell exatamente por esses motivos — isso mostra que a pr&aacute;tica pedagógica tem embasamento te&oacute;rico.</div>
         </div>
@@ -734,6 +831,32 @@ ampliadas para os \textit{5Vs} com a adição de Veracidade e Valor
               <strong>Parágrafo 3:</strong> Modos de configuração: Standalone (sem distribuição), Pseudo-distribuído (1 máquina simula cluster), Totalmente Distribuído (múltiplas máquinas). O trabalho usa modo pseudo-distribuído.<br><br>
               <strong>Parágrafo 4:</strong> Principais comandos HDFS (<code>hdfs dfs -ls</code>, <code>-put</code>, <code>-get</code>, <code>-mkdir</code>) e como se assemelham ao shell Linux.
             </p>
+          </div>
+          <div class="lb">
+            <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Subseção 2.3</div>
+            <div class="lc"><span class="kw">\subsection</span>{Apache Hadoop e o HDFS}
+
+O Apache Hadoop originou-se a partir dos trabalhos publicados pelo
+Google sobre o \textit{Google File System} \cite{ghemawat2003gfs}
+e sobre o paradigma MapReduce \cite{dean2004mapreduce}, sendo
+implementado por Doug Cutting e Mike Cafarella como projeto
+\textit{open-source}.
+
+O HDFS (\textit{Hadoop Distributed File System}) organiza-se em
+torno de dois tipos de n&oacute;s: o \textbf{NameNode}, respons&aacute;vel pelos
+metadados e pelo namespace do sistema de arquivos, e os
+\textbf{DataNodes}, que armazenam fisicamente os blocos de dados
+--- tipicamente de 128~MB --- com fator de replica&ccedil;&atilde;o padr&atilde;o de
+tr&ecirc;s c&oacute;pias \cite{shvachko2010hadoop}.
+
+<span class="cm">% Insira aqui o diagrama da arquitetura NameNode-DataNode</span>
+\begin{figure}[ht]
+  \centering
+  \caption{Arquitetura do HDFS: NameNode e DataNodes.}
+  \includegraphics[width=0.8\textwidth]{figuras/hdfs-arquitetura.png}
+  \caption*{\\Fonte: elaborado pelo autor.}
+  \label{fig:hdfs}
+\end{figure}</div>
           </div>
           <div class="tip"><strong>&#128161; Figura obrigat&oacute;ria:</strong> Inclua um diagrama da arquitetura NameNode-DataNode. Voc&ecirc; pode criar no draw.io (gratuito), exportar como PNG e inserir com <code>\includegraphics</code> no LaTeX.</div>
         </div>
@@ -755,18 +878,19 @@ ampliadas para os \textit{5Vs} com a adição de Veracidade e Valor
           </div>
           <div class="lb">
             <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Subseção 2.4</div>
-            <div class="lc"><span class="kw">\subsection</span>{MapReduce: Processamento Distribuído}
-\label{subsec:mapreduce}
+            <div class="lc"><span class="kw">\subsection</span>{MapReduce: Paradigma de Processamento Distribuído}
 
-O MapReduce é um modelo de programação introduzido por
-\cite{<span class="hl">dean2004mapreduce</span>} para processamento e geração de grandes
-conjuntos de dados em clusters de computadores comuns (\textit{commodity hardware}).
+O MapReduce &eacute; um modelo de programação introduzido por
+\citeonline{dean2004mapreduce} para processamento e gera&ccedil;&atilde;o de
+grandes conjuntos de dados em clusters de computadores comuns
+(\textit{commodity hardware}).
 
-O processamento ocorre em duas fases principais: a fase \textbf{Map}, onde
-a função definida pelo programador é aplicada a cada par chave-valor do
-conjunto de entrada, produzindo um conjunto intermediário de pares; e a
-fase \textbf{Reduce}, onde todos os valores com a mesma chave intermediária
-são agrupados e processados pela função de redução \cite{<span class="hl">dean2004mapreduce</span>}.</div>
+O processamento ocorre em duas fases principais: a fase \textbf{Map},
+onde a fun&ccedil;&atilde;o definida pelo programador &eacute; aplicada a cada par
+chave-valor da entrada, produzindo um conjunto intermedi&aacute;rio de
+pares; e a fase \textbf{Reduce}, onde todos os valores com a mesma
+chave intermedi&aacute;ria s&atilde;o agrupados e processados pela fun&ccedil;&atilde;o de
+redu&ccedil;&atilde;o \cite{dean2004mapreduce}.</div>
           </div>
         </div>
       </div>
@@ -808,16 +932,16 @@ são agrupados e processados pela função de redução \cite{<span class="hl">d
           </div>
           <div class="lb">
             <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Metodologia</div>
-            <div class="lc"><span class="kw">\section</span>{Metodologia}
-\label{sec:metodologia}
+            <div class="lc"><span class="kw">\section</span>{\textbf{METODOLOGIA}}
 
-Esta pesquisa classifica-se como \textbf{aplicada} quanto à sua natureza,
-de abordagem \textbf{qualitativa} e de natureza \textbf{exploratória} quanto
-aos seus objetivos. Do ponto de vista dos procedimentos técnicos, configura-se
-como um \textbf{estudo experimental}, pois envolve a implementação e análise
-de um ambiente computacional controlado \cite{<span class="hl">gil2008</span>}.</div>
+Esta pesquisa classifica-se como \textbf{aplicada} quanto &agrave; sua natureza,
+de abordagem \textbf{qualitativa} e de natureza \textbf{explorat&oacute;ria} quanto
+aos seus objetivos. Do ponto de vista dos procedimentos t&eacute;cnicos,
+configura-se como um \textbf{estudo experimental}, pois envolve a
+implementa&ccedil;&atilde;o e an&aacute;lise de um ambiente computacional controlado
+\cite{gerhardt2009metodos}.</div>
           </div>
-          <div class="tip"><strong>&#128161; Dica:</strong> Busque no Elicit: <em>"research methodology classification exploratory applied qualitative"</em> + o livro "Como Elaborar Projetos de Pesquisa" de Gil (2008) — &eacute; a refer&ecirc;ncia cl&aacute;ssica para classifica&ccedil;&atilde;o de pesquisa no Brasil.</div>
+          <div class="tip"><strong>&#128161; Dica:</strong> A refer&ecirc;ncia cl&aacute;ssica para classifica&ccedil;&atilde;o de pesquisa no Brasil j&aacute; est&aacute; no seu <code>bibliografia.bib</code>: use <code>\cite{gerhardt2009metodos}</code> para citar Gerhardt e Silveira (2009) — "M&eacute;todos de Pesquisa".</div>
         </div>
       </div>
 
@@ -834,21 +958,22 @@ de um ambiente computacional controlado \cite{<span class="hl">gil2008</span>}.<
           </div>
           <div class="lb">
             <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Tabela de Ambiente</div>
-            <div class="lc"><span class="kw">\begin</span>{table}[h]
-\centering
-\caption{Configuração do Ambiente Experimental}
-\label{tab:ambiente}
-\begin{tabular}{|l|l|}
-\hline
-\textbf{Componente} & \textbf{Versão / Especificação} \\
-\hline
-Sistema Operacional & Ubuntu 22.04.3 LTS \\
-Java & OpenJDK 11.0.x \\
-Apache Hadoop & 3.3.6 \\
-Modo de Operação & Pseudo-Distribuído \\
-Ambiente & Google Cloud Shell / Ubuntu WSL \\
-\hline
-\end{tabular}
+            <div class="lc"><span class="kw">\begin</span>{table}[ht]
+  \centering
+  \caption{Configura&ccedil;&atilde;o do Ambiente Experimental.}
+  \begin{tabular}{l l}
+    \toprule
+    \textbf{Componente} & \textbf{Vers&atilde;o / Especifica&ccedil;&atilde;o} \\
+    \midrule
+    Sistema Operacional & Ubuntu 22.04.3 LTS \\
+    Java               & OpenJDK 11.0.x \\
+    Apache Hadoop      & 3.3.6 \\
+    Modo de Opera&ccedil;&atilde;o  & Pseudo-Distribu&iacute;do \\
+    Ambiente           & Google Cloud Shell / Ubuntu WSL \\
+    \bottomrule
+  \end{tabular}
+  \caption*{\\Fonte: elaborado pelo autor.}
+  \label{tab:ambiente}
 \end{table}</div>
           </div>
         </div>
@@ -968,6 +1093,64 @@ Ambiente & Google Cloud Shell / Ubuntu WSL \\
             <li><strong>Dificuldades encontradas:</strong> Houve erros? Como foram resolvidos? Isso é muito válido em artigos práticos.</li>
           </ul>
           <div class="note"><strong>&#128204; Aten&ccedil;&atilde;o:</strong> Um resultado negativo (algo que n&atilde;o funcionou e por qu&ecirc;) tamb&eacute;m &eacute; resultado cient&iacute;fico. N&atilde;o omita problemas &mdash; documente-os e explique a solução.</div>
+          <div class="lb">
+            <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Resultados</div>
+            <div class="lc"><span class="kw">\section</span>{\textbf{RESULTADOS}}
+
+Esta se&ccedil;&atilde;o apresenta os resultados obtidos em cada etapa
+experimental descrita na metodologia.
+
+<span class="cm">% Resultado 1 — Instalação e validação do cluster</span>
+\subsection{Instalação e Validação do Cluster}
+
+A instala&ccedil;&atilde;o do Hadoop 3.3 foi conclu&iacute;da com sucesso no ambiente
+Ubuntu 22.04. A execu&ccedil;&atilde;o do comando \texttt{jps} confirmou a
+inicializa&ccedil;&atilde;o dos cinco \textit{daemons} esperados: NameNode,
+DataNode, SecondaryNameNode, ResourceManager e NodeManager,
+conforme ilustrado na Figura \ref{fig:jps}.
+
+\begin{figure}[ht]
+  \centering
+  \caption{Sa&iacute;da do comando \texttt{jps} confirmando os processos do cluster.}
+  \includegraphics[width=0.75\textwidth]{figuras/jps-output.png}
+  \caption*{\\Fonte: elaborado pelo autor.}
+  \label{fig:jps}
+\end{figure}
+
+<span class="cm">% Resultado 2 — Operações HDFS</span>
+\subsection{Operações no HDFS}
+
+As opera&ccedil;&otilde;es b&aacute;sicas do HDFS foram executadas com &ecirc;xito.
+A listagem do diret&oacute;rio ap&oacute;s o \textit{upload} do arquivo de
+entrada retornou:
+
+\begin{verbatim}
+Found 1 items
+-rw-r--r-- 1 hadoop supergroup 1024 2026-03-10 /user/hadoop/input/input.txt
+\end{verbatim}
+
+<span class="cm">% Resultado 3 — MapReduce WordCount</span>
+\subsection{Execução do MapReduce WordCount}
+
+O \textit{job} MapReduce foi conclu&iacute;do em aproximadamente
+\textbf{XX segundos} (substitua pelo seu tempo real). As primeiras
+linhas do arquivo de sa&iacute;da \texttt{part-r-00000} indicaram a
+contagem correta de palavras:
+
+\begin{verbatim}
+hadoop    15
+linux     23
+bigdata   11
+\end{verbatim}
+
+<span class="cm">% Resultado 4 — Dificuldades (se houver)</span>
+\subsection{Dificuldades e Soluções}
+
+<span class="cm">% Descreva aqui erros encontrados e como foram resolvidos.
+% Ex: erro de permissão SSH, porta ocupada, variável JAVA_HOME incorreta.</span>
+Durante a instala&ccedil;&atilde;o, [descreva aqui qualquer dificuldade
+encontrada e a solu&ccedil;&atilde;o adotada].</div>
+          </div>
         </div>
       </div>
 
@@ -982,6 +1165,32 @@ Ambiente & Google Cloud Shell / Ubuntu WSL \\
             <div class="tgc"><div class="tl">PERGUNTA 3</div><h4>O MapReduce funcionou como a teoria prevê?</h4><p>O pipeline Map → Shuffle → Reduce observado no terminal corresponde ao descrito por Dean & Ghemawat (2004)?</p></div>
             <div class="tgc"><div class="tl">PERGUNTA 4</div><h4>Limitações do experimento</h4><p>O que o modo pseudo-distribuído não consegue simular que um cluster real faria? (Tolerância a falhas, replicação real, etc.)</p></div>
           </div>
+          <div class="lb">
+            <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Discussão</div>
+            <div class="lc"><span class="kw">\section</span>{\textbf{DISCUSSÃO}}
+
+Os resultados obtidos confirmam que o HDFS &eacute; capaz de endere&ccedil;ar
+os desafios de Volume e Velocidade propostos pelos 5Vs do Big Data
+\cite{laney2001}. O armazenamento distribu&iacute;do em blocos de 128~MB e
+a leitura paralela pelos DataNodes correspondem diretamente &agrave;s
+caracter&iacute;sticas de escalabilidade horizontal descritas por
+\citeonline{shvachko2010hadoop}.
+
+A interface de linha de comando do Linux mostrou-se essencial para
+a opera&ccedil;&atilde;o do cluster. Diferentemente de interfaces gr&aacute;ficas,
+a CLI permite a automa&ccedil;&atilde;o via \textit{scripts} e o controle
+granular de permiss&otilde;es --- requisitos indispens&aacute;veis em ambientes
+de produ&ccedil;&atilde;o com m&uacute;ltiplos n&oacute;s.
+
+O pipeline MapReduce observado no terminal --- fases Map,
+Shuffle\,\&\,Sort e Reduce --- correspondeu ao modelo te&oacute;rico
+descrito por \citeonline{dean2004mapreduce}, validando a
+implementa&ccedil;&atilde;o pr&aacute;tica do paradigma de processamento distribu&iacute;do.
+
+Como principal limita&ccedil;&atilde;o, o modo pseudo-distribu&iacute;do n&atilde;o permite
+simular cen&aacute;rios de falha de n&oacute;, replica&ccedil;&atilde;o real entre m&aacute;quinas
+distintas nem a lat&ecirc;ncia de rede t&iacute;pica de um cluster f&iacute;sico.</div>
+          </div>
         </div>
       </div>
 
@@ -992,24 +1201,27 @@ Ambiente & Google Cloud Shell / Ubuntu WSL \\
           <p>A conclus&atilde;o deve ser direta: volte a cada <strong>objetivo espec&iacute;fico</strong> definido na Introdução e afirme se foi atingido ou n&atilde;o. Depois, aponte encaminhamentos futuros.</p>
           <div class="lb">
             <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Conclusão</div>
-            <div class="lc"><span class="kw">\section</span>{Conclusão}
-\label{sec:conclusao}
+            <div class="lc"><span class="kw">\section</span>{\textbf{CONCLUSÃO}}
 
-Este trabalho apresentou a implementação e análise de uma infraestrutura Big Data
-baseada no Apache Hadoop HDFS em ambiente Linux Ubuntu 22.04.
+Este trabalho apresentou a implementa&ccedil;&atilde;o e an&aacute;lise de uma
+infraestrutura Big Data baseada no Apache Hadoop HDFS em ambiente
+Linux Ubuntu 22.04.
 
-Em relação aos objetivos específicos, verificou-se que: (OE1) o ambiente Linux
-foi configurado com sucesso, incluindo Java JDK e SSH sem senha; (OE2) o Hadoop
-3.3 foi instalado e iniciado em modo pseudo-distribuído, com todos os cinco
-\textit{daemons} confirmados pelo comando \texttt{jps}; (OE3) as operações básicas
-do HDFS (\texttt{-mkdir}, \texttt{-put}, \texttt{-ls}, \texttt{-cat}) foram
-executadas com sucesso; (OE4) o programa WordCount foi executado e produziu
-resultados corretos; e (OE5) os resultados demonstram como o HDFS endereça
-os desafios de Volume e Velocidade dos 5Vs \cite{<span class="hl">laney2001</span>}.
+Em rela&ccedil;&atilde;o aos objetivos espec&iacute;ficos, verificou-se que: (OE1) o
+ambiente Linux foi configurado com sucesso, incluindo Java JDK e SSH
+sem senha; (OE2) o Hadoop 3.3 foi instalado e iniciado em modo
+pseudo-distribu&iacute;do, com todos os cinco \textit{daemons} confirmados
+pelo comando \texttt{jps}; (OE3) as opera&ccedil;&otilde;es b&aacute;sicas do HDFS
+(\texttt{-mkdir}, \texttt{-put}, \texttt{-ls}, \texttt{-cat}) foram
+executadas com sucesso; (OE4) o programa WordCount foi executado e
+produziu resultados corretos; e (OE5) os resultados demonstram como
+o HDFS endere&ccedil;a os desafios de Volume e Velocidade dos 5Vs
+\cite{laney2001}.
 
-Como trabalho futuro, sugere-se a configuração de um cluster verdadeiramente
-distribuído com múltiplos nós, permitindo avaliar a tolerância a falhas e
-a replicação de blocos em cenários de falha real.</div>
+Como trabalho futuro, sugere-se a configura&ccedil;&atilde;o de um cluster
+verdadeiramente distribu&iacute;do com m&uacute;ltiplos n&oacute;s, permitindo avaliar
+a toler&acirc;ncia a falhas e a replica&ccedil;&atilde;o de blocos em cen&aacute;rios de
+falha real.</div>
           </div>
         </div>
       </div>
@@ -1018,9 +1230,49 @@ a replicação de blocos em cenários de falha real.</div>
         <div class="sn">4</div>
         <div class="sc">
           <h4>Resumo (Abstract) — escreva por último</h4>
-          <p>O resumo &eacute; escrito ap&oacute;s o artigo todo estar pronto. Ele tem entre 150 e 250 palavras e deve conter, nessa ordem: contexto, problema/objetivo, metodologia, resultados e conclus&atilde;o. N&atilde;o &eacute; uma introdu&ccedil;&atilde;o &mdash; &eacute; uma vers&atilde;o ultra-condensada do artigo inteiro.</p>
-          <p>Em artigos FATEC, o resumo vem em portugu&ecirc;s (<code>\begin{resumo}</code>) e em ingl&ecirc;s (<code>\begin{abstract}</code>). Verifique a configura&ccedil;&atilde;o do seu template.</p>
-          <div class="tip"><strong>&#128161; Palavras-chave:</strong> Coloque de 3 a 6 palavras-chave separadas por ponto e v&iacute;rgula. Sugest&atilde;o: <em>Big Data; Hadoop HDFS; Linux; MapReduce; Computação Distribuída; Infraestrutura de Dados.</em></div>
+          <p>O resumo &eacute; escrito ap&oacute;s o artigo todo estar pronto. Ele tem entre 150 e 500 palavras e deve conter, nessa ordem: contexto, problema/objetivo, metodologia, resultados e conclus&atilde;o. N&atilde;o &eacute; uma introdu&ccedil;&atilde;o &mdash; &eacute; uma vers&atilde;o ultra-condensada do artigo inteiro.</p>
+          <p>No template FATEC, o resumo fica <strong>antes do texto principal</strong>, dentro do ambiente <code>resumoumacoluna</code>, e o abstract em ingl&ecirc;s usa <code>otherlanguage*</code>. Veja como preencher:</p>
+          <div class="lb">
+            <div class="lh"><span class="td d1"></span><span class="td d2"></span><span class="td d3"></span>&nbsp; main.tex — Resumo e Abstract</div>
+            <div class="lc"><span class="cm">% ── RESUMO (português) ───────────────────────────────</span>
+<span class="kw">\begin</span>{resumoumacoluna}
+Este trabalho apresenta a implementa&ccedil;&atilde;o e an&aacute;lise de uma
+infraestrutura de Big Data baseada no Apache Hadoop HDFS em ambiente
+Linux Ubuntu 22.04. O objetivo foi configurar o Hadoop em modo
+pseudo-distribu&iacute;do, operar o sistema de arquivos HDFS e executar o
+paradigma MapReduce por meio do programa WordCount. A metodologia
+caracteriza-se como pesquisa aplicada, qualitativa e explorat&oacute;ria,
+com procedimentos experimentais realizados em ambiente controlado.
+Os resultados confirmaram a inicializa&ccedil;&atilde;o dos cinco \textit{daemons}
+do cluster, a execu&ccedil;&atilde;o bem-sucedida das opera&ccedil;&otilde;es HDFS e a
+produ&ccedil;&atilde;o correta do output do WordCount, validando a infraestrutura
+como base funcional para processamento distribu&iacute;do de Big Data.
+
+\vspace{\onelineskip}
+\noindent
+\textbf{Palavras-chave}: Big Data. Hadoop HDFS. Linux. MapReduce. Infraestrutura de Dados.
+<span class="kw">\end</span>{resumoumacoluna}
+
+<span class="cm">% ── ABSTRACT (inglês) ────────────────────────────────</span>
+\renewcommand{\resumoname}{ABSTRACT}
+<span class="kw">\begin</span>{resumoumacoluna}
+  \begin{otherlanguage*}{english}
+    \textit{This work presents the implementation and analysis of a
+    Big Data infrastructure based on Apache Hadoop HDFS on a Linux
+    Ubuntu 22.04 environment. The objective was to configure Hadoop
+    in pseudo-distributed mode, operate the HDFS file system and
+    execute the MapReduce paradigm through the WordCount program.
+    Results confirmed the initialization of all five cluster daemons,
+    successful HDFS operations, and correct WordCount output.}
+
+    \vspace{\onelineskip}
+    \noindent
+    \textbf{Keywords}: \textit{Big Data. Hadoop HDFS. Linux. MapReduce. Data Infrastructure.}
+  \end{otherlanguage*}
+<span class="kw">\end</span>{resumoumacoluna}
+</div>
+          </div>
+          <div class="tip"><strong>&#128161; Palavras-chave:</strong> No template FATEC as palavras-chave s&atilde;o separadas por <strong>ponto</strong> (n&atilde;o ponto e v&iacute;rgula), conforme a ABNT NBR 6028. Sugest&atilde;o: <em>Big Data. Hadoop HDFS. Linux. MapReduce. Computação Distribuída.</em></div>
         </div>
       </div>
 

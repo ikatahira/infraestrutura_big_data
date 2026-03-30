@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tarefas por Integrante — Artigo Big Data | FATEC Ourinhos 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ng:#39ff14;--nc:#00e5ff;--nb:#1a6fff;--gold:#ffd700;
+  --or:#ff8c00;--pk:#ff006e;--bg:#050d12;--cb:#0a1520;
+  --bdr:#0e2030;--tx:#d0e8f5;--tm:#406080;--xp:#0a1828;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;
+  background:
+    repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(0,102,255,.018) 40px,rgba(0,102,255,.018) 41px),
+    repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(0,102,255,.018) 40px,rgba(0,102,255,.018) 41px);
+  pointer-events:none;z-index:0}
+
+/* HERO */
+.hero{position:relative;text-align:center;padding:56px 20px 72px;
+  background:radial-gradient(ellipse at 50% -10%,#001840 0%,var(--bg) 70%);
+  border-bottom:1px solid var(--nb);overflow:hidden;z-index:1}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--nb),var(--nc),var(--nb),transparent);
+  animation:scanH 3s linear infinite}
+@keyframes scanH{0%{opacity:.4}50%{opacity:1}100%{opacity:.4}}
+.hbadge{display:inline-block;background:rgba(0,102,255,.14);border:1px solid var(--nb);
+  color:var(--nc);font-family:'Orbitron',monospace;font-size:.65em;letter-spacing:3px;
+  padding:6px 18px;border-radius:2px;margin-bottom:20px;text-transform:uppercase}
+.hero h1{font-family:'Orbitron',monospace;font-size:clamp(1.2em,4vw,2.2em);font-weight:900;
+  color:var(--nc);text-shadow:0 0 20px var(--nc),0 0 60px rgba(0,229,255,.2);
+  line-height:1.2;margin-bottom:10px}
+.hero h1 span{color:var(--gold);text-shadow:0 0 20px var(--gold)}
+.hero-sub{font-size:.95em;color:var(--tm);max-width:600px;margin:0 auto 28px;line-height:1.8}
+
+/* WRAP */
+.wrap{max-width:980px;margin:0 auto;padding:48px 20px 100px;position:relative;z-index:1}
+
+/* TAB NAV */
+.tab-nav{display:flex;gap:0;margin-bottom:40px;border-radius:12px;overflow:hidden;border:1px solid var(--bdr);background:var(--cb)}
+.tab-btn{flex:1;padding:16px 10px;font-family:'Orbitron',monospace;font-size:.58em;letter-spacing:1.5px;
+  text-transform:uppercase;border:none;background:transparent;color:var(--tm);cursor:pointer;
+  transition:all .25s;border-right:1px solid var(--bdr);position:relative;line-height:1.5}
+.tab-btn:last-child{border-right:none}
+.tab-btn .t-icon{font-size:1.6em;display:block;margin-bottom:5px}
+.tab-btn.p1.active{background:rgba(0,102,255,.18);color:var(--nb)}
+.tab-btn.p2.active{background:rgba(57,255,20,.12);color:var(--ng)}
+.tab-btn.p3.active{background:rgba(255,215,0,.12);color:var(--gold)}
+.tab-btn.p4.active{background:rgba(255,0,110,.12);color:var(--pk)}
+.tab-btn.p1:hover:not(.active){background:rgba(0,102,255,.07);color:#7aabdd}
+.tab-btn.p2:hover:not(.active){background:rgba(57,255,20,.05);color:#80cc80}
+.tab-btn.p3:hover:not(.active){background:rgba(255,215,0,.05);color:#ccaa40}
+.tab-btn.p4:hover:not(.active){background:rgba(255,0,110,.06);color:#cc5080}
+
+/* PANEL */
+.panel{display:none;animation:fi .3s ease}
+.panel.active{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* PAPEL HEADER */
+.papel-header{border-radius:14px;padding:28px 32px;margin-bottom:32px;position:relative;overflow:hidden}
+.p1 .papel-header{background:linear-gradient(135deg,rgba(0,102,255,.12),rgba(0,102,255,.04));border:1px solid rgba(0,102,255,.35)}
+.p2 .papel-header{background:linear-gradient(135deg,rgba(57,255,20,.09),rgba(57,255,20,.03));border:1px solid rgba(57,255,20,.3)}
+.p3 .papel-header{background:linear-gradient(135deg,rgba(255,215,0,.1),rgba(255,215,0,.03));border:1px solid rgba(255,215,0,.3)}
+.p4 .papel-header{background:linear-gradient(135deg,rgba(255,0,110,.1),rgba(255,0,110,.03));border:1px solid rgba(255,0,110,.3)}
+.papel-emoji{font-size:3.5em;position:absolute;right:28px;top:20px;opacity:.15}
+.papel-role{font-family:'Orbitron',monospace;font-size:.58em;letter-spacing:3px;margin-bottom:8px;font-weight:700;text-transform:uppercase}
+.p1 .papel-role{color:var(--nb)}
+.p2 .papel-role{color:var(--ng)}
+.p3 .papel-role{color:var(--gold)}
+.p4 .papel-role{color:var(--pk)}
+.papel-header h2{font-size:1.3em;font-weight:900;color:var(--tx);margin-bottom:8px}
+.papel-header p{font-size:.88em;color:var(--tm);line-height:1.75;max-width:600px}
+.papel-resp{display:inline-block;margin-top:14px;font-family:'Share Tech Mono',monospace;font-size:.75em;
+  padding:5px 14px;border-radius:20px;border:1px solid}
+.p1 .papel-resp{color:var(--nb);border-color:rgba(0,102,255,.4);background:rgba(0,102,255,.08)}
+.p2 .papel-resp{color:var(--ng);border-color:rgba(57,255,20,.35);background:rgba(57,255,20,.06)}
+.p3 .papel-resp{color:var(--gold);border-color:rgba(255,215,0,.35);background:rgba(255,215,0,.06)}
+.p4 .papel-resp{color:var(--pk);border-color:rgba(255,0,110,.35);background:rgba(255,0,110,.07)}
+
+/* PROGRESSO */
+.prog-bar-wrap{background:var(--cb);border:1px solid var(--bdr);border-radius:10px;padding:16px 22px;margin-bottom:32px;display:flex;align-items:center;gap:18px}
+.prog-label{font-family:'Orbitron',monospace;font-size:.62em;letter-spacing:2px;color:var(--tm);white-space:nowrap}
+.prog-track{flex:1;height:10px;background:#040c14;border-radius:5px;overflow:hidden;border:1px solid #0a1e30}
+.prog-fill{height:100%;border-radius:5px;width:0%;transition:width .4s ease}
+.p1 .prog-fill{background:linear-gradient(90deg,var(--nb),#60a8ff)}
+.p2 .prog-fill{background:linear-gradient(90deg,#20aa20,var(--ng))}
+.p3 .prog-fill{background:linear-gradient(90deg,#c0900a,var(--gold))}
+.p4 .prog-fill{background:linear-gradient(90deg,#cc0058,var(--pk))}
+.prog-count{font-family:'Orbitron',monospace;font-size:.68em;font-weight:700;white-space:nowrap}
+.p1 .prog-count{color:var(--nb)}
+.p2 .prog-count{color:var(--ng)}
+.p3 .prog-count{color:var(--gold)}
+.p4 .prog-count{color:var(--pk)}
+
+/* MISSÃO BLOCO */
+.missao{margin-bottom:20px;border-radius:12px;overflow:hidden;border:1px solid var(--bdr);background:var(--cb)}
+.missao-header{display:flex;align-items:center;gap:14px;padding:16px 22px;cursor:pointer;
+  user-select:none;transition:background .25s;border-bottom:1px solid transparent}
+.missao-header:hover{background:rgba(255,255,255,.02)}
+.missao-header.open{border-bottom-color:var(--bdr)}
+.m-num{width:46px;height:46px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',monospace;font-size:.75em;font-weight:900;flex-shrink:0;border:2px solid}
+.p1 .m-num{background:rgba(0,102,255,.12);border-color:var(--nb);color:var(--nb)}
+.p2 .m-num{background:rgba(57,255,20,.1);border-color:var(--ng);color:var(--ng)}
+.p3 .m-num{background:rgba(255,215,0,.1);border-color:var(--gold);color:var(--gold)}
+.p4 .m-num{background:rgba(255,0,110,.1);border-color:var(--pk);color:var(--pk)}
+.m-info{flex:1}
+.m-tag{font-family:'Orbitron',monospace;font-size:.52em;letter-spacing:2px;color:var(--tm);text-transform:uppercase;margin-bottom:3px}
+.m-title{font-weight:800;font-size:.95em;color:var(--tx)}
+.m-arrow{font-size:1em;color:var(--tm);transition:transform .3s}
+.missao-header.open .m-arrow{transform:rotate(90deg)}
+.m-badge{font-family:'Share Tech Mono',monospace;font-size:.72em;padding:4px 12px;border-radius:20px;
+  flex-shrink:0;border:1px solid;color:var(--tm);border-color:var(--bdr)}
+
+.missao-body{display:none;padding:22px 24px 26px;animation:fi .2s ease}
+.missao-body.open{display:block}
+
+/* TAREFA */
+.tarefa{display:flex;gap:12px;margin-bottom:18px;align-items:flex-start}
+.tarefa:last-child{margin-bottom:0}
+.t-ck{width:22px;height:22px;border-radius:5px;border:2px solid;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.8em;
+  transition:background .2s,transform .1s;margin-top:2px}
+.t-ck:active{transform:scale(.9)}
+.p1 .t-ck{border-color:var(--nb);color:var(--nb)}
+.p2 .t-ck{border-color:var(--ng);color:var(--ng)}
+.p3 .t-ck{border-color:var(--gold);color:var(--gold)}
+.p4 .t-ck{border-color:var(--pk);color:var(--pk)}
+.p1 .t-ck.done{background:rgba(0,102,255,.3)}
+.p2 .t-ck.done{background:rgba(57,255,20,.25)}
+.p3 .t-ck.done{background:rgba(255,215,0,.25)}
+.p4 .t-ck.done{background:rgba(255,0,110,.25)}
+.t-text{flex:1}
+.t-text strong{display:block;font-size:.93em;font-weight:800;color:var(--tx);margin-bottom:4px}
+.t-text p{font-size:.84em;color:#4a7890;line-height:1.75}
+.t-text p code{font-family:'Share Tech Mono',monospace;background:rgba(0,229,255,.08);
+  padding:1px 6px;border-radius:3px;font-size:.92em;color:var(--nc)}
+
+/* HINT */
+.hint{background:rgba(255,215,0,.04);border:1px dashed rgba(255,215,0,.3);border-radius:8px;
+  padding:10px 14px;margin-top:10px;font-size:.8em;color:#8a7020;line-height:1.65}
+.hint strong{color:var(--gold)}
+
+/* TOAST */
+#toast{position:fixed;bottom:30px;right:30px;background:var(--cb);border:1px solid var(--nc);
+  color:var(--nc);font-family:'Orbitron',monospace;font-size:.72em;letter-spacing:1px;
+  padding:12px 20px;border-radius:6px;box-shadow:0 0 20px rgba(0,229,255,.18);
+  transform:translateY(80px);opacity:0;transition:transform .3s,opacity .3s;z-index:99999}
+#toast.show{transform:translateY(0);opacity:1}
+
+/* FINAL CARD */
+.fc{background:radial-gradient(ellipse at center,rgba(0,102,255,.12),transparent 70%),var(--cb);
+  border:1px solid var(--nb);border-radius:14px;padding:40px;text-align:center;margin-top:48px}
+.fc h2{font-family:'Orbitron',monospace;font-size:1.1em;color:var(--nc);margin-bottom:10px}
+.fc p{color:var(--tm);max-width:500px;margin:0 auto;line-height:1.8;font-size:.9em}
+.tr{font-size:3em;display:block;margin-bottom:12px;animation:fl 3s ease-in-out infinite}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* BACK LINK */
+.back{display:inline-flex;align-items:center;gap:8px;font-family:'Orbitron',monospace;
+  font-size:.6em;letter-spacing:2px;color:var(--tm);text-decoration:none;margin-bottom:32px;
+  border:1px solid var(--bdr);padding:8px 16px;border-radius:6px;transition:all .2s}
+.back:hover{color:var(--nc);border-color:var(--nc);background:rgba(0,229,255,.05)}
+
+@media(max-width:620px){
+  .tab-btn{font-size:.5em;padding:12px 6px}
+  .tab-btn .t-icon{font-size:1.4em}
+  .papel-header{padding:20px}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hbadge">⚡ INFRAESTRUTURA PARA BIG DATA · FATEC OURINHOS · 2026</div>
+  <h1>TAREFAS POR <span>INTEGRANTE</span></h1>
+  <p class="hero-sub">Cada papel tem responsabilidades específicas ao longo das 6 missões. Selecione seu papel e acompanhe o que você precisa fazer.</p>
+</div>
+
+<div class="wrap">
+
+  <a class="back" href="guia-artigo-bigdata.html">◀ VOLTAR AO GUIA COMPLETO</a>
+
+  <!-- TAB NAV -->
+  <div class="tab-nav">
+    <button class="tab-btn p1 active" onclick="showPanel(1)">
+      <span class="t-icon">💻</span>Papel 1<br>DevOps
+    </button>
+    <button class="tab-btn p2" onclick="showPanel(2)">
+      <span class="t-icon">📦</span>Papel 2<br>Data Engineer
+    </button>
+    <button class="tab-btn p3" onclick="showPanel(3)">
+      <span class="t-icon">📊</span>Papel 3<br>Data Analyst
+    </button>
+    <button class="tab-btn p4" onclick="showPanel(4)">
+      <span class="t-icon">✍️</span>Papel 4<br>Sci. Writer
+    </button>
+  </div>
+
+  <!-- ===== PAPEL 1 ===== -->
+  <div id="panel-1" class="panel p1 active">
+    <div class="papel-header">
+      <span class="papel-emoji">💻</span>
+      <div class="papel-role">Papel 1 · DevOps / SysAdmin</div>
+      <h2>Infraestrutura & Ambiente</h2>
+      <p>Você é o responsável por tudo que envolve o ambiente computacional: instalação, configuração, prints do terminal e evidências visuais de que o experimento realmente funcionou.</p>
+      <span class="papel-resp">📌 Seções do artigo: Metodologia (ambiente) · Resultados (prints)</span>
+    </div>
+
+    <div class="prog-bar-wrap">
+      <span class="prog-label">⚡ PROGRESSO</span>
+      <div class="prog-track"><div class="prog-fill" id="prog-1"></div></div>
+      <span class="prog-count" id="count-1">0 / 6</span>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M1</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 01 · Template Overleaf</div>
+          <div class="m-title">Configurar o projeto e criar a pasta de figuras</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'1')"></span>
+          <div class="t-text">
+            <strong>Criar a pasta /figuras e fazer upload do primeiro print</strong>
+            <p>No Overleaf, crie a pasta <code>figuras/</code> e faça upload de pelo menos <strong>uma imagem real</strong> da tela do terminal — pode ser a instalação do Java (<code>sudo apt install openjdk-11-jdk</code>) ou a configuração do SSH. Insira a imagem no <code>main.tex</code> com <code>\includegraphics</code> como figura de teste, adicionando número, legenda e fonte.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M2</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 02 · Pesquisa Bibliográfica</div>
+          <div class="m-title">Localizar a documentação oficial do Hadoop</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'1')"></span>
+          <div class="t-text">
+            <strong>Adicionar a referência oficial do Apache Hadoop</strong>
+            <p>Acesse <code>hadoop.apache.org</code> e localize a página sobre <strong>configuração em modo pseudo-distribuído</strong>. Adicione essa URL como entrada <code>@online</code> no arquivo <code>bibliografia.bib</code> do Overleaf. Referências de documentação oficial reforçam a credibilidade técnica do artigo.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M3</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 03 · Objetivos & Introdução</div>
+          <div class="m-title">Adicionar OE6 sobre documentação de erros</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'1')"></span>
+          <div class="t-text">
+            <strong>Acrescentar o Objetivo Específico 6 (OE6)</strong>
+            <p>No <code>\begin{enumerate}</code> dos objetivos específicos, adicione: <em>"Identificar e documentar os principais erros encontrados durante a instalação e configuração do Hadoop, descrevendo as soluções adotadas."</em> Este OE será respondido por você na subseção de Dificuldades e Soluções dos Resultados.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M4</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 04 · Referencial Teórico</div>
+          <div class="m-title">Criar o diagrama da arquitetura HDFS</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'1')"></span>
+          <div class="t-text">
+            <strong>Adicionar o diagrama NameNode–DataNode na subseção 2.3</strong>
+            <p>Crie um diagrama da arquitetura HDFS usando <strong>draw.io</strong> (<code>app.diagrams.net</code>), Canva ou similar. Mostre NameNode, DataNodes e blocos de dados. Exporte como PNG, faça upload em <code>figuras/</code> no Overleaf e insira com <code>\includegraphics</code> na subseção 2.3, com legenda e fonte.</p>
+            <div class="hint"><strong>💡 Dica:</strong> No draw.io, use o template "Network" como ponto de partida. Adicione caixas para NameNode e pelo menos 2 DataNodes, com setas indicando replicação.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M5</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 05 · Metodologia</div>
+          <div class="m-title">Print da instalação + versões reais do ambiente</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'1')"></span>
+          <div class="t-text">
+            <strong>Adicionar imagem real da instalação na seção de Metodologia</strong>
+            <p>Capture a tela do terminal mostrando a formatação do NameNode (<code>hdfs namenode -format</code>) ou o output do <code>jps</code> com os 5 daemons ativos. Faça upload em <code>figuras/</code> e insira como figura numerada na Metodologia. Comprova que o experimento foi realizado de verdade.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M6</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 06 · Resultados & Conclusão</div>
+          <div class="m-title">Print dos resultados do terminal nos Resultados</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'1')"></span>
+          <div class="t-text">
+            <strong>Inserir print real do terminal na seção de Resultados</strong>
+            <p>Além do bloco <code>\begin{verbatim}</code>, adicione um <strong>print real do terminal</strong> mostrando o output do <code>jps</code> (5 daemons) ou do <code>hdfs dfs -ls /user/hadoop/output</code> após o WordCount. Isso torna o resultado visual e evidencia que o experimento foi executado com sucesso.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /panel-1 -->
+
+  <!-- ===== PAPEL 2 ===== -->
+  <div id="panel-2" class="panel p2">
+    <div class="papel-header">
+      <span class="papel-emoji">📦</span>
+      <div class="papel-role">Papel 2 · Data Engineer</div>
+      <h2>Engenheiro de Dados</h2>
+      <p>Você executa as operações no HDFS, trabalha com datasets e organiza os testes. No artigo, é o responsável pela seção de Resultados HDFS e pela tabela de operações, além de reforçar as referências técnicas.</p>
+      <span class="papel-resp">📌 Seções do artigo: Resultados HDFS · Tabela de Operações · BibTeX</span>
+    </div>
+
+    <div class="prog-bar-wrap">
+      <span class="prog-label">⚡ PROGRESSO</span>
+      <div class="prog-track"><div class="prog-fill" id="prog-2"></div></div>
+      <span class="prog-count" id="count-2">0 / 6</span>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M1</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 01 · Template Overleaf</div>
+          <div class="m-title">Documentar a estrutura de arquivos do projeto</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'2')"></span>
+          <div class="t-text">
+            <strong>Comentar a estrutura de arquivos no topo do main.tex</strong>
+            <p>No Overleaf, abra o painel de arquivos e adicione um bloco de comentário no topo do <code>main.tex</code> assim: <code>% ARQUIVOS: main.tex (conteúdo), bibliografia.bib (referências), figuras/ (imagens)...</code> Documente o propósito de cada arquivo. Isso ajuda todos do grupo a navegar no projeto.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M2</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 02 · Pesquisa Bibliográfica</div>
+          <div class="m-title">Adicionar +2 referências na subseção 2.3 (HDFS)</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'2')"></span>
+          <div class="t-text">
+            <strong>Buscar e adicionar 2 artigos extras sobre HDFS</strong>
+            <p>Use o Elicit com a busca: <em>"HDFS NameNode DataNode fault tolerance replication"</em>. Selecione <strong>2 artigos</strong> com mais de 30 citações (além do Shvachko 2010). Exporte o BibTeX e cole no <code>bibliografia.bib</code>. Esses artigos reforçarão a subseção 2.3 do referencial teórico.</p>
+            <div class="hint"><strong>💡 Filtro recomendado:</strong> No Elicit, ative o filtro "Journal Article" e período 2010–2024 para encontrar os mais relevantes sobre HDFS em produção.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M3</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 03 · Objetivos & Introdução</div>
+          <div class="m-title">Acrescentar justificativa técnica da escolha do Hadoop</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'2')"></span>
+          <div class="t-text">
+            <strong>Escrever no Parágrafo 3 da Introdução por que o Hadoop foi escolhido</strong>
+            <p>No Parágrafo 3 (Justificativa), acrescente 2–3 frases explicando por que o Hadoop foi escolhido em vez de alternativas como Apache Spark ou Flink (ex: maior adoção didática, ecossistema mais maduro para aprendizado de HDFS). Inclua ao menos 1 citação do BibTeX para embasar.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M4</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 04 · Referencial Teórico</div>
+          <div class="m-title">Adicionar diagrama do pipeline MapReduce</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'2')"></span>
+          <div class="t-text">
+            <strong>Criar diagrama Map → Shuffle → Reduce na subseção 2.4</strong>
+            <p>Crie um diagrama mostrando o fluxo do MapReduce com exemplo do WordCount: entrada de texto → Mappers (pares chave-valor) → Shuffle&Sort → Reducer (contagem final). Use draw.io, exporte como PNG, faça upload em <code>figuras/</code> e insira na subseção 2.4 com legenda.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M5</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 05 · Metodologia</div>
+          <div class="m-title">Substituir valores genéricos pelas versões reais do ambiente</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'2')"></span>
+          <div class="t-text">
+            <strong>Preencher a tabela de ambiente com as versões exatas do grupo</strong>
+            <p>No terminal, execute os comandos abaixo e substitua os valores genéricos da tabela LaTeX pelas versões <strong>reais do ambiente que o grupo usou</strong>:</p>
+            <p><code>java -version</code> &nbsp;·&nbsp; <code>hadoop version</code> &nbsp;·&nbsp; <code>lsb_release -a</code> &nbsp;·&nbsp; <code>free -h</code> (RAM)</p>
+            <p>Registre os resultados exatos na tabela <code>\begin{tabular}</code> da Metodologia.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M6</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 06 · Resultados & Conclusão</div>
+          <div class="m-title">Criar tabela de operações HDFS executadas</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'2')"></span>
+          <div class="t-text">
+            <strong>Adicionar tabela LaTeX com os comandos HDFS e seus resultados</strong>
+            <p>Na subseção de Resultados HDFS, crie uma tabela com as colunas: <em>Comando | Descrição | Resultado Observado</em>. Liste pelo menos 5 comandos executados (<code>-mkdir</code>, <code>-put</code>, <code>-ls</code>, <code>-cat</code>, <code>-get</code>) com o resultado real de cada um. Tabelas de resultados valorizam muito artigos técnicos.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /panel-2 -->
+
+  <!-- ===== PAPEL 3 ===== -->
+  <div id="panel-3" class="panel p3">
+    <div class="papel-header">
+      <span class="papel-emoji">📊</span>
+      <div class="papel-role">Papel 3 · Data Analyst</div>
+      <h2>Analista / Experimentação</h2>
+      <p>Você executa o MapReduce, coleta os resultados e gera tabelas e análises. No artigo, é o responsável pela seção de MapReduce WordCount, por dados quantitativos e por garantir que cada objetivo específico seja respondido.</p>
+      <span class="papel-resp">📌 Seções do artigo: Resultados MapReduce · Análise dos dados · Objetivos Específicos</span>
+    </div>
+
+    <div class="prog-bar-wrap">
+      <span class="prog-label">⚡ PROGRESSO</span>
+      <div class="prog-track"><div class="prog-fill" id="prog-3"></div></div>
+      <span class="prog-count" id="count-3">0 / 6</span>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M1</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 01 · Template Overleaf</div>
+          <div class="m-title">Rascunhar o OE6 no main.tex desde já</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'3')"></span>
+          <div class="t-text">
+            <strong>Escrever o Objetivo Específico 6 como rascunho no main.tex</strong>
+            <p>Além dos 5 objetivos sugeridos no guia, você deve <strong>acrescentar um OE6</strong> voltado para comparar o desempenho percebido entre o modo standalone e o pseudo-distribuído. Escreva-o no <code>main.tex</code> já agora — mesmo que incompleto — com um comentário <code>% RASCUNHO</code> para revisão posterior.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M2</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 02 · Pesquisa Bibliográfica</div>
+          <div class="m-title">Encontrar referência sobre MapReduce WordCount</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'3')"></span>
+          <div class="t-text">
+            <strong>Buscar +1 artigo acadêmico que usa o WordCount como experimento</strong>
+            <p>No Elicit, busque: <em>"MapReduce WordCount example Hadoop tutorial evaluation"</em>. Encontre ao menos <strong>1 artigo ou TCC</strong> que utiliza o WordCount como experimento de referência (como o grupo está fazendo). Cole o BibTeX no <code>bibliografia.bib</code> e anote o <code>cite-key</code> para usar na subseção 2.4 e na seção de Resultados.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M3</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 03 · Objetivos & Introdução</div>
+          <div class="m-title">Adicionar estatística real no Parágrafo 1 da Introdução</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'3')"></span>
+          <div class="t-text">
+            <strong>Inserir dado quantitativo real no contexto da Introdução</strong>
+            <p>No Parágrafo 1 (Contexto geral), acrescente pelo menos <strong>uma estatística real e recente</strong> sobre crescimento de dados — ex: volume global em zettabytes/ano, número de dispositivos IoT conectados, ou volume gerado por redes sociais por minuto. Busque no Elicit ou Google Acadêmico um artigo (2020–2025) e cite corretamente com <code>\cite{}</code>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M4</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 04 · Referencial Teórico</div>
+          <div class="m-title">Adicionar +2 referências na subseção 2.2 (Linux)</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'3')"></span>
+          <div class="t-text">
+            <strong>Reforçar a subseção 2.2 com 2 referências sobre Linux</strong>
+            <p>A subseção 2.2 (Linux como Base) precisa de ao menos <strong>2 referências</strong> além das já citadas. Busque no Elicit: <em>"Linux server administration enterprise environment"</em> e <em>"Ubuntu LTS long term support stability"</em>. Adicione os BibTeX e insira os <code>\cite{}</code> no texto da subseção 2.2.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M5</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 05 · Metodologia</div>
+          <div class="m-title">Documentar pelo menos 1 erro real encontrado</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'3')"></span>
+          <div class="t-text">
+            <strong>Adicionar parágrafo sobre erro real e solução adotada</strong>
+            <p>No final da Metodologia, escreva um parágrafo descrevendo <strong>um erro real</strong> que o grupo encontrou (ex: porta ocupada, JAVA_HOME incorreto, SSH sem chave autorizada). Descreva: <em>o sintoma → a causa → a solução</em>. Isso responde ao OE6 e demonstra maturidade técnica ao avaliador.</p>
+            <div class="hint"><strong>💡 Exemplo de estrutura:</strong> "Durante a inicialização do NameNode, ocorreu o erro [mensagem]. A causa identificada foi [causa]. A solução adotada consistiu em [solução]."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M6</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 06 · Resultados & Conclusão</div>
+          <div class="m-title">Garantir que o OE6 está respondido na Conclusão</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'3')"></span>
+          <div class="t-text">
+            <strong>Acrescentar o OE6 na lista da Conclusão</strong>
+            <p>Na Conclusão, verifique que todos os objetivos específicos estão respondidos pelo número. Acrescente: <em>"(OE6) os principais erros de configuração foram identificados e documentados, com soluções reproduzíveis descritas na seção de Resultados."</em> A conclusão deve bater 1:1 com cada OE definido na Introdução.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /panel-3 -->
+
+  <!-- ===== PAPEL 4 ===== -->
+  <div id="panel-4" class="panel p4">
+    <div class="papel-header">
+      <span class="papel-emoji">✍️</span>
+      <div class="papel-role">Papel 4 · Scientific Writer</div>
+      <h2>Redator Científico</h2>
+      <p>Você escreve o artigo no Overleaf, padroniza conforme ABNT/FATEC e organiza todas as referências. É o responsável pela coesão textual, pelo Referencial Teórico, pelo Resumo/Abstract e pela Introdução.</p>
+      <span class="papel-resp">📌 Seções do artigo: Referencial Teórico · Resumo / Abstract · Introdução · ABNT</span>
+    </div>
+
+    <div class="prog-bar-wrap">
+      <span class="prog-label">⚡ PROGRESSO</span>
+      <div class="prog-track"><div class="prog-fill" id="prog-4"></div></div>
+      <span class="prog-count" id="count-4">0 / 6</span>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M1</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 01 · Template Overleaf</div>
+          <div class="m-title">Escrever o Parágrafo 5 da Introdução como mapa do artigo</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'4')"></span>
+          <div class="t-text">
+            <strong>Redigir o parágrafo de organização do artigo no main.tex</strong>
+            <p>No <code>main.tex</code>, escreva já (mesmo que incompleto) o Parágrafo 5 da Introdução: <em>"Este artigo está organizado como segue: a Seção 2 apresenta o referencial teórico; a Seção 3 descreve a metodologia; a Seção 4 apresenta os resultados; e a Seção 5 conclui o trabalho."</em> Esse parágrafo serve como mapa de trabalho para todo o grupo.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M2</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 02 · Pesquisa Bibliográfica</div>
+          <div class="m-title">Montar a tabela de controle bibliográfico do grupo</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'4')"></span>
+          <div class="t-text">
+            <strong>Criar documento compartilhado com tabela de todas as referências</strong>
+            <p>Crie um Google Docs ou Notion compartilhado com o grupo, contendo uma tabela: <em>Autor | Ano | Título | Cite-key no BibTeX | Subseção onde será citado</em>. Liste <strong>todas as referências coletadas</strong> por todos os integrantes. Isso evita entradas duplicadas com nomes diferentes no <code>bibliografia.bib</code>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M3</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 03 · Objetivos & Introdução</div>
+          <div class="m-title">Revisar coerência verbo–objetivo em todos os OEs</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'4')"></span>
+          <div class="t-text">
+            <strong>Garantir que cada objetivo específico usa um verbo diferente no infinitivo</strong>
+            <p>Releia todos os OEs e confirme que cada um começa com um <strong>verbo diferente no infinitivo</strong> (configurar, instalar, operar, implementar, relacionar, identificar…). Não repita o mesmo verbo. Ajuste a redação no <code>main.tex</code> e anote ao lado de cada OE em qual seção ele será "respondido" (com comentário <code>%</code>).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M4</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 04 · Referencial Teórico</div>
+          <div class="m-title">Escrever o parágrafo introdutório da Seção 2</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'4')"></span>
+          <div class="t-text">
+            <strong>Adicionar parágrafo de abertura antes da primeira \subsection</strong>
+            <p>Antes da primeira <code>\subsection</code> do Referencial Teórico, acrescente um parágrafo introdutório: <em>"Esta seção apresenta os conceitos fundamentais que embasam o presente trabalho, abordando Big Data e seus 5Vs, o sistema operacional Linux, o Apache Hadoop HDFS e o paradigma MapReduce."</em> Esse parágrafo amarra o referencial e demonstra domínio da estrutura acadêmica.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M5</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 05 · Metodologia</div>
+          <div class="m-title">Padronizar \texttt{} e \textbf{} em toda a seção</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'4')"></span>
+          <div class="t-text">
+            <strong>Revisar formatação LaTeX em toda a Metodologia</strong>
+            <p>Releia toda a seção de Metodologia e garanta: <strong>comandos de terminal</strong> em <code>\texttt{}</code> (ex: <code>\texttt{hdfs namenode -format}</code>), nomes de arquivos também (<code>\texttt{core-site.xml}</code>), termos técnicos em itálico (<code>\textit{pseudo-distribuído}</code>), e conceitos-chave em negrito (<code>\textbf{NameNode}</code>). Padronização tipográfica conta na avaliação.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="missao">
+      <div class="missao-header" onclick="toggleM(this)">
+        <div class="m-num">M6</div>
+        <div class="m-info">
+          <div class="m-tag">Missão 06 · Resultados & Conclusão</div>
+          <div class="m-title">Executar o checklist ABNT antes do PDF final</div>
+        </div>
+        <span class="m-badge">1 tarefa</span>
+        <span class="m-arrow">▶</span>
+      </div>
+      <div class="missao-body">
+        <div class="tarefa">
+          <span class="t-ck" onclick="tick(this,'4')"></span>
+          <div class="t-text">
+            <strong>Verificar conformidade ABNT/FATEC antes da compilação final</strong>
+            <p>Antes de compilar o PDF definitivo, verifique item a item:</p>
+            <p>✔ Todas as figuras têm número, legenda <em>acima</em> e fonte <em>abaixo</em><br>
+               ✔ Todas as tabelas têm caption acima e fonte abaixo<br>
+               ✔ Nenhum <code>\cite{suaReferencia}</code> genérico sem autor real<br>
+               ✔ Referências em ordem alfabética no <code>.bib</code><br>
+               ✔ Artigo compila sem erros ou warnings vermelhos no Overleaf<br>
+               ✔ Resumo entre 150–500 palavras, com palavras-chave separadas por ponto</p>
+            <div class="hint"><strong>💡 Dica final:</strong> Anote os itens que você corrigiu para relatar ao professor — demonstra rigor na revisão.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /panel-4 -->
+
+  <div class="fc">
+    <span class="tr">🚀</span>
+    <h2>CADA PAPEL IMPORTA</h2>
+    <p>O artigo só fica completo quando todos os 4 papéis cumprem suas tarefas. Acompanhe seu progresso acima e sincronize com o grupo no guia principal.</p>
+    <p style="font-size:.8em;color:#1a3040;margin-top:10px">IAL008 · Infraestrutura para Big Data · FATEC Ourinhos · Prof. Isaque Katahira · 2026</p>
+  </div>
+
+</div><!-- /wrap -->
+
+<div id="toast"></div>
+
+<script>
+// Contadores por papel: papel → total de tarefas
+const TOTAL = {1:6, 2:6, 3:6, 4:6};
+const counts = {1:0, 2:0, 3:0, 4:0};
+
+function showPanel(n){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+n).classList.add('active');
+  document.querySelectorAll('.tab-btn')[n-1].classList.add('active');
+}
+
+function toggleM(header){
+  const isOpen = header.classList.contains('open');
+  // Fecha todos do mesmo panel
+  header.closest('.panel').querySelectorAll('.missao-header.open').forEach(h=>{
+    h.classList.remove('open');
+    h.nextElementSibling.classList.remove('open');
+  });
+  if(!isOpen){
+    header.classList.add('open');
+    header.nextElementSibling.classList.add('open');
+  }
+}
+
+function tick(el, papel){
+  el.classList.toggle('done');
+  el.textContent = el.classList.contains('done') ? '✓' : '';
+  // reconta
+  const panel = document.getElementById('panel-'+papel);
+  const done = panel.querySelectorAll('.t-ck.done').length;
+  const tot = TOTAL[papel];
+  document.getElementById('count-'+papel).textContent = done+' / '+tot;
+  document.getElementById('prog-'+papel).style.width = (done/tot*100)+'%';
+  if(el.classList.contains('done')) showToast('✓ Tarefa concluída!');
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2000);
+}
+</script>
+</body>
+</html>

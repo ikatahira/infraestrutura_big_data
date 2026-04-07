@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avaliação Teórica — Infraestrutura para Big Data</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050b14;
+  --surf: #0b1422;
+  --surf2: #0f1d30;
+  --card: #111e2e;
+  --bdr: rgba(0,200,255,0.12);
+  --bdr2: rgba(255,255,255,0.06);
+  --cyan: #00c8ff;
+  --cyan-d: rgba(0,200,255,0.08);
+  --green: #00e59b;
+  --green-d: rgba(0,229,155,0.08);
+  --red: #ff4f6e;
+  --red-d: rgba(255,79,110,0.08);
+  --yellow: #ffc94d;
+  --yellow-d: rgba(255,201,77,0.08);
+  --purple: #b87fff;
+  --text: #c8dff0;
+  --text-dim: #4a6880;
+  --text-bright: #e8f4ff;
+  --mono: 'JetBrains Mono', monospace;
+  --display: 'Syne', sans-serif;
+  --body: 'DM Sans', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* BG GRID */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,200,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,200,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── HEADER ─── */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(5,11,20,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--bdr);
+  padding: 0;
+}
+.header-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.header-badge {
+  background: linear-gradient(135deg, rgba(0,200,255,0.2), rgba(0,200,255,0.06));
+  border: 1px solid rgba(0,200,255,0.3);
+  border-radius: 10px;
+  width: 42px; height: 42px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3em;
+  flex-shrink: 0;
+}
+.header-text { flex: 1; }
+.header-text h1 { font-family: var(--display); font-size: 0.95em; font-weight: 800; color: var(--text-bright); }
+.header-text p  { font-size: 0.72em; color: var(--text-dim); font-family: var(--mono); }
+
+.score-hud {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surf2);
+  border: 1px solid var(--bdr);
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-family: var(--mono);
+}
+.score-hud .pts { font-size: 1.15em; font-weight: 600; color: var(--yellow); }
+.score-hud .max { font-size: 0.72em; color: var(--text-dim); }
+
+/* ─── WRAPPER ─── */
+.wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── HERO ─── */
+.hero {
+  background: linear-gradient(135deg, #0a1828 0%, #0c2240 50%, #0f1e3a 100%);
+  border: 1px solid rgba(0,200,255,0.2);
+  border-radius: 16px;
+  padding: 36px 40px;
+  margin-bottom: 36px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 360px; height: 360px;
+  background: radial-gradient(circle, rgba(0,200,255,0.1) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero-tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.7em;
+  background: rgba(0,200,255,0.12);
+  border: 1px solid rgba(0,200,255,0.25);
+  color: var(--cyan);
+  padding: 3px 12px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.hero h2 {
+  font-family: var(--display);
+  font-size: 2em;
+  font-weight: 800;
+  color: var(--text-bright);
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+.hero h2 em { color: var(--cyan); font-style: normal; }
+.hero p { color: var(--text-dim); font-size: 0.9em; max-width: 580px; line-height: 1.7; }
+.hero-meta {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+.hero-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 0.8em;
+  color: var(--text);
+}
+.hero-chip span { font-weight: 600; color: var(--text-bright); }
+
+/* ─── PROGRESS BAR ─── */
+.progress-wrap {
+  background: var(--surf);
+  border: 1px solid var(--bdr);
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin-bottom: 32px;
+}
+.progress-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 0.82em;
+  color: var(--text-dim);
+}
+.progress-pct { font-family: var(--mono); font-weight: 600; color: var(--cyan); }
+.progress-track {
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  height: 8px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--green));
+  border-radius: 8px;
+  width: 0%;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.progress-dots {
+  display: flex;
+  gap: 4px;
+  margin-top: 10px;
+}
+.pdot {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.06);
+  transition: background 0.3s;
+}
+.pdot.answered { background: rgba(0,200,255,0.4); }
+.pdot.correct  { background: var(--green); }
+.pdot.wrong    { background: var(--red); }
+
+/* ─── SECTION LABEL ─── */
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  margin-top: 36px;
+}
+.section-label:first-of-type { margin-top: 0; }
+.section-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--bdr), transparent);
+}
+.section-pill {
+  font-family: var(--mono);
+  font-size: 0.7em;
+  font-weight: 600;
+  color: var(--cyan);
+  background: var(--cyan-d);
+  border: 1px solid rgba(0,200,255,0.2);
+  padding: 4px 14px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  white-space: nowrap;
+}
+
+/* ─── QUESTION CARD ─── */
+.q-card {
+  background: var(--card);
+  border: 1px solid var(--bdr2);
+  border-radius: 14px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+.q-card.state-correct { border-color: rgba(0,229,155,0.3); }
+.q-card.state-wrong   { border-color: rgba(255,79,110,0.3); }
+
+.q-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 20px 22px 16px;
+}
+.q-num {
+  font-family: var(--mono);
+  font-size: 0.72em;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: var(--surf2);
+  border: 1px solid var(--bdr2);
+  border-radius: 6px;
+  padding: 3px 9px;
+  white-space: nowrap;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.q-pts {
+  font-family: var(--mono);
+  font-size: 0.7em;
+  color: var(--yellow);
+  background: var(--yellow-d);
+  border: 1px solid rgba(255,201,77,0.15);
+  border-radius: 6px;
+  padding: 3px 9px;
+  white-space: nowrap;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.q-text {
+  flex: 1;
+  font-size: 0.95em;
+  line-height: 1.7;
+  color: var(--text-bright);
+  font-weight: 400;
+}
+.q-code {
+  font-family: var(--mono);
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--bdr);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 0 22px 16px;
+  font-size: 0.82em;
+  color: var(--cyan);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* OPTIONS */
+.q-options {
+  padding: 0 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.opt {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--bdr2);
+  cursor: pointer;
+  transition: all 0.2s;
+  background: transparent;
+  text-align: left;
+  width: 100%;
+  font-family: var(--body);
+  font-size: 0.88em;
+  color: var(--text);
+  line-height: 1.5;
+}
+.opt:hover:not(:disabled) {
+  background: rgba(0,200,255,0.06);
+  border-color: rgba(0,200,255,0.25);
+  color: var(--text-bright);
+}
+.opt-letter {
+  font-family: var(--mono);
+  font-size: 0.82em;
+  font-weight: 700;
+  color: var(--text-dim);
+  background: var(--surf2);
+  border-radius: 5px;
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.opt:hover:not(:disabled) .opt-letter {
+  color: var(--cyan);
+  background: var(--cyan-d);
+}
+.opt.selected {
+  background: rgba(0,200,255,0.08);
+  border-color: rgba(0,200,255,0.4);
+}
+.opt.selected .opt-letter {
+  background: var(--cyan);
+  color: #000;
+}
+.opt.correct-ans {
+  background: var(--green-d);
+  border-color: rgba(0,229,155,0.4);
+  color: var(--text-bright);
+}
+.opt.correct-ans .opt-letter { background: var(--green); color: #000; }
+.opt.wrong-ans {
+  background: var(--red-d);
+  border-color: rgba(255,79,110,0.4);
+  color: var(--text);
+}
+.opt.wrong-ans .opt-letter { background: var(--red); color: #fff; }
+.opt:disabled { cursor: default; }
+
+/* FEEDBACK */
+.q-feedback {
+  margin: 0 22px 18px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 0.85em;
+  line-height: 1.6;
+  display: none;
+}
+.q-feedback.show { display: block; }
+.q-feedback.fb-correct {
+  background: var(--green-d);
+  border: 1px solid rgba(0,229,155,0.25);
+  color: var(--green);
+}
+.q-feedback.fb-wrong {
+  background: var(--red-d);
+  border: 1px solid rgba(255,79,110,0.25);
+  color: #ff9aaa;
+}
+.fb-icon { font-size: 1.1em; margin-right: 4px; }
+
+/* ─── RESULT PANEL ─── */
+.result-panel {
+  display: none;
+  background: var(--card);
+  border: 1px solid var(--bdr);
+  border-radius: 16px;
+  padding: 36px 40px;
+  text-align: center;
+  margin-top: 32px;
+  position: relative;
+  overflow: hidden;
+}
+.result-panel.show { display: block; }
+.result-panel::before {
+  content: '';
+  position: absolute;
+  top: -60px; left: 50%;
+  transform: translateX(-50%);
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(0,229,155,0.1) 0%, transparent 65%);
+  pointer-events: none;
+}
+.result-emoji { font-size: 3.5em; margin-bottom: 12px; }
+.result-title {
+  font-family: var(--display);
+  font-size: 1.8em;
+  font-weight: 800;
+  color: var(--text-bright);
+  margin-bottom: 8px;
+}
+.result-sub { color: var(--text-dim); font-size: 0.9em; margin-bottom: 28px; }
+
+.result-grid {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.r-stat {
+  background: var(--surf2);
+  border: 1px solid var(--bdr);
+  border-radius: 12px;
+  padding: 14px 24px;
+  min-width: 110px;
+}
+.r-stat-n {
+  font-family: var(--display);
+  font-size: 2em;
+  font-weight: 800;
+  display: block;
+}
+.r-stat-l { font-size: 0.72em; color: var(--text-dim); display: block; margin-top: 2px; }
+.r-stat-n.c { color: var(--green); }
+.r-stat-n.w { color: var(--red); }
+.r-stat-n.s { color: var(--cyan); }
+
+.result-note {
+  background: rgba(0,200,255,0.06);
+  border: 1px solid var(--bdr);
+  border-radius: 10px;
+  padding: 14px 20px;
+  font-size: 0.85em;
+  color: var(--text);
+  line-height: 1.6;
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.btn-retry {
+  padding: 12px 32px;
+  background: linear-gradient(135deg, var(--cyan), #007bcc);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  font-family: var(--display);
+  font-size: 0.9em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+.btn-retry:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,200,255,0.3); }
+
+/* ─── SUBMIT BAR ─── */
+.submit-bar {
+  position: sticky;
+  bottom: 0;
+  background: rgba(5,11,20,0.95);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid var(--bdr);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 50;
+}
+.submit-status { font-size: 0.83em; color: var(--text-dim); font-family: var(--mono); }
+.submit-status strong { color: var(--cyan); }
+.btn-submit {
+  padding: 12px 36px;
+  background: linear-gradient(135deg, var(--cyan), #007bcc);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  font-family: var(--display);
+  font-size: 0.9em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+.btn-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,200,255,0.3);
+}
+.btn-submit:disabled {
+  background: var(--surf2);
+  color: var(--text-dim);
+  cursor: default;
+}
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  right: 24px;
+  background: var(--surf2);
+  border: 1px solid var(--bdr);
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 0.84em;
+  color: var(--text-bright);
+  z-index: 999;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.3s;
+  pointer-events: none;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+
+@media (max-width: 600px) {
+  .hero { padding: 24px 22px; }
+  .hero h2 { font-size: 1.5em; }
+  .q-head { padding: 16px 16px 12px; }
+  .q-options { padding: 0 16px 16px; }
+  .q-code { margin: 0 16px 14px; }
+  .q-feedback { margin: 0 16px 14px; }
+  .result-panel { padding: 24px 20px; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="header-badge">📡</div>
+    <div class="header-text">
+      <h1>Avaliação Teórica — Infraestrutura para Big Data</h1>
+      <p>IAL008 · FATec Ourinhos · Prof. Isaque Katahira · 2026</p>
+    </div>
+    <div class="score-hud">
+      <span class="pts" id="liveScore">0</span>
+      <span class="max">/ 10 pts</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrapper">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">⚡ Avaliação Teórica</div>
+    <h2>Semanas <em>01 · 02 · 03</em></h2>
+    <p>Responda todas as questões com atenção. Cada alternativa possui feedback explicativo para consolidar o aprendizado. Boa sorte!</p>
+    <div class="hero-meta">
+      <div class="hero-chip">📋 <span>15 Questões</span></div>
+      <div class="hero-chip">⭐ <span>10 pontos</span></div>
+      <div class="hero-chip">📚 <span>Big Data · HDFS · MapReduce</span></div>
+      <div class="hero-chip">⏱ <span>~25 min</span></div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="progress-top">
+      <span>Progresso da avaliação</span>
+      <span class="progress-pct" id="progPct">0 / 15</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
+    <div class="progress-dots" id="progDots"></div>
+  </div>
+
+  <!-- ===== SEMANA 01 ===== -->
+  <div class="section-label">
+    <div class="section-pill">📦 Semana 01 — Fundamentos de Big Data</div>
+    <div class="section-line"></div>
+  </div>
+
+  <!-- Q1 -->
+  <div class="q-card" data-q="1" data-correct="b" data-pts="0.67">
+    <div class="q-head">
+      <span class="q-num">Q01</span>
+      <p class="q-text">Qual é a principal característica que diferencia o Big Data do processamento de dados tradicional com RDBMS?</p>
+      <span class="q-pts">0,67 pt</span>
+    </div>
+    <div class="q-options">
+      <button class="opt" data-val="a"><span class="opt-letter">A</span>O Big Data utiliza bancos de dados relacionais mais rápidos e com maior capacidade de armazenamento em uma única máquina.</button>
+      <button class="opt" data-val="b"><span class="opt-letter">B</span>O Big Data distribui o processamento entre dezenas, centenas ou milhares de máquinas, superando os limites de uma única máquina.</button>
+      <button class="opt" data-val="c"><span class="opt-letter">C</span>O Big Data armazena apenas dados estruturados em tabelas, mas com compressão mais eficiente do que os sistemas tradicionais.</button>
+      <button class="opt" data-val="d"><span class="opt-letter">D</span>O Big Data elimina a necessidade de hardware especializado ao executar todo o processamento em software.</button>
+    </div>
+    <div class="q-feedback"></div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="q-card" data-q="2" data-correct="c" data-pts="0.67">
+    <div class="q-head">
+      <span class="q-num">Q02</span>
+      <p class="q-text">Associe cada "V" do Big Data à ferramenta do ecossistema Hadoop mencionada na disciplina que o resolve primariamente:</p>
+    </div>
+    <div class="q-options">
+      <button class="opt" data-val="a"><span class="opt-letter">A</span>Volume → Kafka · Velocidade → HDFS · Variedade → MongoDB</button>
+      <button class="opt" data-val="b"><span class="opt-letter">B</span>Volume → MongoDB · Velocidade → Spark · Variedade → HDFS</button>
+      <button class="opt" data-val="c"><span class="opt-letter">C</span>Volume → HDFS · Velocidade → Kafka · Variedade → MongoDB</button>
+      <button class="opt" data-val="d"><span class="opt-letter">D</span>Volume → Spark · Velocidade → MongoDB · Variedade → Kafka</button>
+    </div>
+    <div class="q-feedback"></div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="q-card" data-q="3" data-correct="b" data-pts="0.67">
+    <div class="q-head">
+      <span class="q-num">Q03</span>
+      <p class="q-text">Um sistema precisa adicionar mais capacidade de armazenamento. Em vez de trocar o servidor por um mais caro, a equipe adiciona mais máquinas comuns ao cluster. Esse tipo de expansão é chamado de:</p>
+    </div>
+    <div class="q-options">
+      <button class="opt" data-val="a"><span class="opt-letter">A</span>Escalabilidade vertical, pois o sistema escala aumentando os recursos do servidor existente.</button>
+      <button class="opt" data-val="b"><span class="opt-letter">B</span>Escalabilidade horizontal, pois o sistema escala adicionando mais máquinas ao cluster.</button>
+      <button class="opt" data-val="c"><span class="opt-letter">C</span>Tolerância a falhas, pois o sistema se protege de falhas através da redundância de hardware.</button>
+      <button class="opt" data-val="d"><span class="opt-letter">D</span>Replicação distribuída, pois os dados são copiados entre máquinas para aumentar a disponibilidade.</button>
+    </div>
+    <div class="q-feedback"></div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="q-card" data-q="4" data-correct="d" data-pts="0.67">
+    <div class="q-head">
+      <span class="q-num">Q04</span>
+      <p class="q-text">Um sensor IoT industrial envia leituras de temperatura a cada 10 milissegundos. Qual "V" do Big Data esse cenário exemplifica principalmente?</p>
+    </div>
+    <div class="q-options">
+      <button class="opt" data-val="a"><span class="opt-letter">A</span>Variedade, pois os dados vêm de múltiplas fontes heterogêneas.</button>
+      <button class="opt" data-val="b"><span class="opt-letter">B</span>Veracidade, pois a precisão dos dados é crítica para decisões industriais.</button>
+      <button class="opt" data-val="c"><span class="opt-letter">C</span>Valor, pois os dados precisam gerar insights acionáveis para o negócio.</button>
+      <button class="opt" data-val="d"><span class="opt-letter">D</span>Velocidade, pois os dados chegam em alta frequência e precisam ser processados rapidamente.</button>
+    </div>
+    <div class="q-feedback"></div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="q-card" data-q="5" data-correct="a" data-pts="0.67">
+    <div class="q-head">
+      <span class="q-num">Q05</span>
+      <p class="q-text">Na aula prática de Linux, foi criada a seguinte estrutura de diretórios: <code style="font-family:var(--mono);color:var(--cyan);background:rgba(0,200,255,0.08);padding:1px 6px;border-radius:4px">bigdata/raw</code>, <code style="font-family:var(--mono);color:var(--cyan);background:rgba(0,200,255,0.08);padding:1px 6px;border-radius:4px">bigdata/processed</code> e <code style="font-family:var(--mono);color:var(--cyan);background:rgba(0,200,255,0.08);padding:1px 6px;border-radius:4px">bigdata/logs</code>. Essa estrutura espelha a organização de qual tecnologia de Big Data?</p>
+    </div>
+    <div class="q-options">
+      <button class="opt" data-val="a"><span class="opt-letter">A</span>HDFS e Data Lakes (como S3 e Azure Data Lake), onde dados brutos, processados e logs ficam em caminhos separados.</button>
+      <button class="opt" data-val="b"><span class="opt-letter">B</span>Apache Kafka, que organiza eventos em tópicos separados por estágio de processamento.</button>
+      <button class="opt" data-val="c"><span class="opt-letter">C</span>MongoDB, que organiza coleções em bancos de dados com zonas de isolamento de dados.</button>
+      <button class="opt" data-val="d"><span class="opt-letter">D</span>Apache Spark, que divide internamente os dados em partições raw, processed e checkpoint.</button>
+    </div>
+    <div class="q-feedback"></div>
+  </div>
+
+  <!-- ===== SEMANA 02 ===== -->
+  <div class="section-label">
+    <div class="section-pill">🐘 Semana 02 — Hadoop HDFS</div>
+    <div class="section-line"></div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="q-card" data-q="6" data-correct="b" data-pts="0.67">
+    <div class="q-head">
+      <span class="q-num">Q06</span>
+      <p class="q-text">Por que é necessário instalar o Java Development Kit (JDK) antes de configurar o Hadoop?</p>
+    </div>
+    <div class="q-options">
+      <button class="opt" data-val="a"><span class="opt-letter">A</span>Porque o sistema operacional Ubuntu exige o JDK para gerenciar pacotes e dependências do sistema.</button>
+      <button class="opt" data-val="b"><span class="opt-letter">B</span>Porque o Hadoop é escrito em Java e depende da JVM para executar todos os seus serviços e processar dados.</button>
+      <button class="opt" data-val="c"><span class="opt-letter">C</span>Porque o Java é necessário apenas para compilar o código do usuário que será submetido ao cluster Hadoop.</button>
+      <button class="opt" data-val="d"><span class="opt-letter">D</span>Porque o SSH utiliza Java internamente para cifrar a comunicação entre os nós do cluster.</button>
+    </div>
+    <div class="q-feedback"></div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="q-card" data-q="7" data-correct="c" data-pts="0.67">
+    <div class="q-head">
+      <span class="q-num">Q07</span>
+      <p class="q-text">Na configuração do Hadoop, é necessário configurar autenticação SSH sem senha. Qual é a principal razão técnica para isso?</p>
+    </div>
+    <div class="q-options">
+      <button class="opt" data-val="a"><span class="opt-letter">A</span>Para aumentar a velocidade de transferência de arquivos entre o NameNode e os DataNodes.</button>
+      <button class="opt" data-val="b"><span class="opt-letter">B</span>Para que o usuário não precise digitar senha ao executar comandos no terminal do cluster.</button>
+      <button class="opt" data-val="c"><span class="opt-letter">C</span>Para que o Hadoop possa iniciar e parar serviços nos nós automaticamente sem intervenção humana, sem expor senhas em texto plano.</button>
+      <button class="opt" data-val="d"><span class="opt-letter">D</span>Para criptografar os blocos de dados armazenados no HDFS usando chaves assimétricas.</button>
+    </div>
+    <div class="q-feedback"></div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="q-card" data-q="8" data-correct="a" data-pts="0.67">
+    <div class="q-head">
+      <span class="q-num">Q08</span>
+      <p class="q-text">O Hadoop pode ser operado em três modos distintos. Qual modo é utilizado quando instalamos tudo em uma única máquina para fins de desenvolvimento e aprendizado?</p>
+    </div>
+    <div class="q-options">
+      <button class="opt" data-val="a"><span class="opt-letter">A</span>Pseudo-distribuído, onde o cluster simula múltiplos nós em uma única máquina usando processos separados.</button>
+      <button class="opt" data-val="b"><span class="opt-letter">B</span>Standalone, onde o Hadoop executa como um único processo Java sem separação de serviços.</button>
+      <button class="opt" data-val="c"><span class="opt-letter">C</span>Totalmente distribuído, onde todos os nós operam na mesma máquina virtual para simular um cluster real.</button>
+      <button class="opt" data-val="d"><span class="opt-letter">D</span>Local, onde o Hadoop armazena os dados diretamente no sistema de arquivos local sem usar o HDFS.</button>
+    </div>
+    <div class="q-feedback"></div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="q-card" data-q="9" data-correct="d" data-pts="0.67">
+    <div class="q-head">
+      <span class="q-num">Q09</span>
+      <p class="q-text">Na arquitetura do HDFS, qual é a função principal do <strong>NameNode</strong>?</p>
+    </div>
+    <div class="q-options">
+      <button class="opt" data-val="a"><span class="opt-letter">A</span>Armazenar os blocos de dados dos arquivos e servir esses dados aos clientes que os requisitam.</button>
+      <button class="opt" data-val="b"><span class="opt-letter">B</span>Executar as tarefas de Map e Reduce nos blocos de dados distribuídos pelo cluster.</button>
+      <button class="opt" data-val="c"><span class="opt-letter">C</span>Gerenciar os recursos de CPU e memória de cada nó do cluster para o YARN.</button>
+      <button class="opt" data-val="d"><span class="opt-letter">D</span>Gerenciar os metadados do sistema de arquivos: nomes dos arquivos, localização dos blocos e informações sobre os DataNodes.</button>
+    </div>
+    <div class="q-feedback"></div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="q-card" data-q="10" data-correct="b" data-pts="0.67">
+    <div class="q-head">
+      <span class="q-num">Q10</span>
+      <p class="q-text">Uma vantagem fundamental do HDFS sobre um sistema de arquivos tradicional (ext4, NTFS) em um ambiente Big Data é:</p>
+    </div>
+    <div class="q-options">
+      <button class="opt" data-val="a"><span class="opt-letter">A</span>O HDFS possui suporte nativo a transações ACID, garantindo consistência de dados em operações concorrentes.</button>
+      <button class="opt" data-val="b"><span class="opt-letter">B</span>O HDFS replica automaticamente os blocos de dados entre múltiplos nós, oferecendo tolerância a falhas sem ponto único de falha.</button>
+      <button class="opt" data-val="c"><span class="opt-letter">C</span>O HDFS permite acesso randômico de alta velocidade a registros individuais, sendo ideal para sistemas OLTP.</button>
+      <button class="opt" data-val="d"><span class="opt-letter">D</span>O HDFS utiliza hardware especializado (SSD NVMe) para garantir desempenho superior ao armazenamento em disco magnético.</button>
+    </div>
+    <div class="q-feedback"></div>
+  </div>
+
+  <!-- ===== SEMANA 03 ===== -->
+  <div class="section-label">
+    <div class="section-pill">⚙️ Semana 03 — MapReduce</div>
+    <div class="section-line"></div>
+  </div>
+
+  <!-- Q11 -->
+  <div class="q-card" data-q="11" data-correct="c" data-pts="0.67">
+    <div class="q-head">
+      <span class="q-num">Q11</span>
+      <p class="q-text">No pipeline do MapReduce, qual fase é responsável por agrupar automaticamente todos os pares (chave, valor) com a mesma chave antes de enviá-los ao Reducer?</p>
+    </div>
+    <div class="q-options">
+      <button class="opt" data-val="a"><span class="opt-letter">A</span>Map — o Mapper já organiza os pares por chave antes de emiti-los.</button>
+      <button class="opt" data-val="b"><span class="opt-letter">B</span>Reduce — o próprio Reducer agrupa os valores com a mesma chave no início do processamento.</button>
+      <button class="opt" data-val="c"><span class="opt-letter">C</span>Shuffle &amp; Sort — fase intermediária automática do framework que garante que todos os valores de uma chave vão para o mesmo Reducer.</button>
+      <button class="opt" data-val="d"><span class="opt-letter">D</span>InputFormat — fase de leitura do HDFS que pré-agrupa os dados por chave antes de enviá-los aos Mappers.</button>
+    </div>
+    <div class="q-feedback"></div>
+  </div>
+
+  <!-- Q12 -->
+  <div class="q-card" data-q="12" data-correct="b" data-pts="0.67">
+    <div class="q-head">
+      <span class="q-num">Q12</span>
+      <p class="q-text">Considere o seguinte trecho de código Python (mrjob) para contagem de palavras:</p>
+    </div>
+    <div class="q-code">def mapper(self, _, line):
+    palavras = re.findall(r'\b\w+\b', line.lower())
+    for palavra in palavras:
+        yield palavra, 1</div>
+    <div class="q-options">
+      <button class="opt" data-val="a"><span class="opt-letter">A</span>O Mapper recebe a linha "hadoop spark hadoop" e emite apenas 2 pares, pois agrupa palavras repetidas antes de emitir.</button>
+      <button class="opt" data-val="b"><span class="opt-letter">B</span>O Mapper recebe a linha "hadoop spark hadoop" e emite 3 pares: ("hadoop",1), ("spark",1), ("hadoop",1) — um por palavra encontrada.</button>
+      <button class="opt" data-val="c"><span class="opt-letter">C</span>O Mapper recebe a linha inteira e emite um único par com a linha como chave e o número de palavras como valor.</button>
+      <button class="opt" data-val="d"><span class="opt-letter">D</span>O Mapper emite pares somente para palavras que aparecem mais de uma vez na linha, ignorando ocorrências únicas.</button>
+    </div>
+    <div class="q-feedback"></div>
+  </div>
+
+  <!-- Q13 -->
+  <div class="q-card" data-q="13" data-correct="a" data-pts="0.67">
+    <div class="q-head">
+      <span class="q-num">Q13</span>
+      <p class="q-text">Após a fase de Shuffle &amp; Sort, o Reducer recebe os dados no seguinte formato para a palavra "big": <code style="font-family:var(--mono);color:var(--cyan);background:rgba(0,200,255,0.08);padding:1px 6px;border-radius:4px">("big", [1, 1, 1, 1])</code>. O que o Reducer do WordCount faz com essa entrada?</p>
+    </div>
+    <div class="q-options">
+      <button class="opt" data-val="a"><span class="opt-letter">A</span>Itera sobre a lista de valores e soma todos, emitindo o par ("big", 4) como resultado final.</button>
+      <button class="opt" data-val="b"><span class="opt-letter">B</span>Conta quantos elementos existem na lista e emite o par ("big", len([1,1,1,1])) = ("big", 4), sem somar.</button>
+      <button class="opt" data-val="c"><span class="opt-letter">C</span>Emite um par separado ("big", 1) para cada valor na lista, deixando a soma para uma fase posterior.</button>
+      <button class="opt" data-val="d"><span class="opt-letter">D</span>Descarta os valores duplicados e emite apenas ("big", 1), pois cada palavra deve ter contagem unitária no output.</button>
+    </div>
+    <div class="q-feedback"></div>
+  </div>
+
+  <!-- Q14 -->
+  <div class="q-card" data-q="14" data-correct="d" data-pts="0.67">
+    <div class="q-head">
+      <span class="q-num">Q14</span>
+      <p class="q-text">Na prática do Linux (Semana 01), o seguinte comando foi executado: <code style="font-family:var(--mono);color:var(--cyan);background:rgba(0,200,255,0.08);padding:1px 6px;border-radius:4px">cat dados.csv | grep "produtoA" | wc -l</code>. Qual a analogia correta com o MapReduce?</p>
+    </div>
+    <div class="q-options">
+      <button class="opt" data-val="a"><span class="opt-letter">A</span>cat = Shuffle, grep = Map, wc = Reduce — o pipe reorganiza os dados antes de filtrá-los e contá-los.</button>
+      <button class="opt" data-val="b"><span class="opt-letter">B</span>cat = Reduce, grep = Shuffle, wc = Map — a leitura é a fase final, o filtro agrupa os dados e a contagem os emite.</button>
+      <button class="opt" data-val="c"><span class="opt-letter">C</span>cat = Map, grep = Reduce, wc = Shuffle — a leitura emite dados, o filtro os reduz e a contagem os reorganiza.</button>
+      <button class="opt" data-val="d"><span class="opt-letter">D</span>cat = Map (lê/emite dados), grep = Shuffle (filtra/agrupa), wc = Reduce (conta/sumariza o resultado).</button>
+    </div>
+    <div class="q-feedback"></div>
+  </div>
+
+  <!-- Q15 -->
+  <div class="q-card" data-q="15" data-correct="c" data-pts="0.62">
+    <div class="q-head">
+      <span class="q-num">Q15</span>
+      <p class="q-text">O MapReduce foi criado pelo Google em 2004 para processar grandes volumes de dados em paralelo. Qual é a principal razão pela qual esse modelo permite escalar para centenas de máquinas com eficiência?</p>
+    </div>
+    <div class="q-options">
+      <button class="opt" data-val="a"><span class="opt-letter">A</span>Porque o Reducer é executado em uma máquina central de alto desempenho que concentra todo o processamento de sumarização.</button>
+      <button class="opt" data-val="b"><span class="opt-letter">B</span>Porque o MapReduce exige que todos os nós tenham hardware idêntico, garantindo distribuição perfeitamente homogênea.</button>
+      <button class="opt" data-val="c"><span class="opt-letter">C</span>Porque cada Mapper processa seu bloco de dados de forma independente, sem precisar comunicar com outros Mappers — o que permite paralelismo máximo.</button>
+      <button class="opt" data-val="d"><span class="opt-letter">D</span>Porque o framework replica o resultado de cada Mapper em todos os nós, eliminando a necessidade de fase de Shuffle.</button>
+    </div>
+    <div class="q-feedback"></div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result-panel" id="resultPanel">
+    <div class="result-emoji" id="resultEmoji">🎉</div>
+    <div class="result-title" id="resultTitle">Avaliação Concluída!</div>
+    <div class="result-sub" id="resultSub">Veja seu desempenho abaixo</div>
+    <div class="result-grid">
+      <div class="r-stat"><span class="r-stat-n c" id="rCorrect">0</span><span class="r-stat-l">Acertos</span></div>
+      <div class="r-stat"><span class="r-stat-n w" id="rWrong">0</span><span class="r-stat-l">Erros</span></div>
+      <div class="r-stat"><span class="r-stat-n s" id="rScore">0,00</span><span class="r-stat-l">Pontos</span></div>
+    </div>
+    <div class="result-note" id="resultNote"></div>
+    <button class="btn-retry" onclick="resetQuiz()">↺ Refazer Avaliação</button>
+  </div>
+
+</div>
+
+<!-- SUBMIT BAR -->
+<div class="submit-bar">
+  <span class="submit-status">Respondidas: <strong id="answeredCount">0</strong> / 15</span>
+  <button class="btn-submit" id="submitBtn" onclick="submitQuiz()" disabled>Finalizar Avaliação</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- GABARITO PANEL -->
+<div id="gabPanel" style="display:none; max-width:900px; margin:32px auto 80px; padding:0 24px; position:relative; z-index:1;">
+  <div style="background:var(--card); border:1px solid var(--bdr); border-radius:16px; overflow:hidden;">
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#0a1828,#0c2240); border-bottom:1px solid var(--bdr); padding:24px 28px; display:flex; align-items:center; gap:14px;">
+      <div style="font-size:2em;">📋</div>
+      <div>
+        <div style="font-family:var(--display); font-size:1.25em; font-weight:800; color:var(--text-bright);">Gabarito Oficial</div>
+        <div style="font-size:0.8em; color:var(--text-dim); font-family:var(--mono); margin-top:2px;">Resultado detalhado após envio da avaliação</div>
+      </div>
+    </div>
+
+    <!-- Summary chips -->
+    <div style="display:flex; gap:12px; flex-wrap:wrap; padding:20px 28px 0;">
+      <div style="background:rgba(0,229,155,0.1); border:1px solid rgba(0,229,155,0.3); border-radius:10px; padding:10px 20px; text-align:center; min-width:110px;">
+        <div style="font-family:var(--display); font-size:1.8em; font-weight:800; color:var(--green);" id="gabCorrectCount">0</div>
+        <div style="font-size:0.72em; color:var(--text-dim); margin-top:2px;">✅ Acertos</div>
+      </div>
+      <div style="background:rgba(255,79,110,0.1); border:1px solid rgba(255,79,110,0.3); border-radius:10px; padding:10px 20px; text-align:center; min-width:110px;">
+        <div style="font-family:var(--display); font-size:1.8em; font-weight:800; color:var(--red);" id="gabWrongCount">0</div>
+        <div style="font-size:0.72em; color:var(--text-dim); margin-top:2px;">❌ Erros</div>
+      </div>
+      <div style="background:rgba(0,200,255,0.08); border:1px solid var(--bdr); border-radius:10px; padding:10px 20px; text-align:center; min-width:110px;">
+        <div style="font-family:var(--display); font-size:1.8em; font-weight:800; color:var(--cyan);" id="gabTotalScore">0,00</div>
+        <div style="font-size:0.72em; color:var(--text-dim); margin-top:2px;">🏅 Pontos / 10</div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div style="padding:20px 28px 28px; overflow-x:auto;">
+      <table style="width:100%; border-collapse:collapse; font-size:0.86em;">
+        <thead>
+          <tr style="border-bottom:1px solid var(--bdr);">
+            <th class="gab-th">Questão</th>
+            <th class="gab-th" style="text-align:left;">Tema</th>
+            <th class="gab-th">Gabarito</th>
+            <th class="gab-th">Sua Resp.</th>
+            <th class="gab-th">Status</th>
+          </tr>
+        </thead>
+        <tbody id="gabBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+.gab-th {
+  font-family: var(--mono);
+  font-size: 0.75em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 8px 10px;
+  text-align: center;
+}
+#gabBody tr {
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.15s;
+}
+#gabBody tr:hover { background: rgba(255,255,255,0.02); }
+.gab-q {
+  font-family: var(--mono);
+  font-size: 0.82em;
+  font-weight: 600;
+  color: var(--text-dim);
+  padding: 10px 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+.gab-topic {
+  color: var(--text);
+  padding: 10px 10px;
+  line-height: 1.4;
+}
+.gab-ans {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 0.95em;
+  padding: 10px 10px;
+  text-align: center;
+  border-radius: 6px;
+}
+.gab-correct { color: var(--green); }
+.gab-user-ok { color: var(--green); }
+.gab-user-err { color: var(--red); }
+.gab-status { text-align: center; padding: 10px 10px; font-size: 1.1em; }
+</style>
+
+<script>
+const FEEDBACKS = {
+  1: {
+    correct: "Correto! A principal diferença é justamente a distribuição do processamento. Enquanto um RDBMS como MySQL está limitado a uma única máquina, o Hadoop distribui dados e processamento entre centenas de máquinas, superando os limites físicos de hardware.",
+    wrong: "Errado. A diferença fundamental é a arquitetura distribuída: o Big Data usa dezenas ou centenas de máquinas baratas (commodity hardware) em vez de uma única máquina cara. O MySQL, por exemplo, é limitado pelos recursos de uma única máquina."
+  },
+  2: {
+    correct: "Perfeito! Conforme ensinado na S01: Volume → HDFS (armazena dados distribuídos), Velocidade → Kafka (processa streams em tempo real), Variedade → MongoDB (banco NoSQL flexível para dados heterogêneos).",
+    wrong: "Errado. A associação correta é: Volume → HDFS (sistema de arquivos distribuído para grandes volumes), Velocidade → Kafka (Semana 09, para streaming), e Variedade → MongoDB (Semana 07, para dados semi-estruturados e não-estruturados)."
+  },
+  3: {
+    correct: "Exato! Escalabilidade horizontal significa adicionar mais máquinas ao cluster. O Hadoop foi projetado para esse modelo — você adiciona commodity hardware (máquinas comuns e baratas) ao cluster conforme a demanda crescer.",
+    wrong: "Errado. Escalabilidade vertical seria trocar por um servidor mais caro e potente. O que foi descrito — adicionar mais máquinas — é escalabilidade horizontal, o modelo preferido no Big Data por ser mais barato e escalável sem limite prático."
+  },
+  4: {
+    correct: "Correto! Velocidade (Velocity) é o V que trata da rapidez com que os dados são gerados e precisam ser processados. Leituras a cada 10 ms representam alta velocidade de ingestão, que ferramentas como Kafka são projetadas para suportar.",
+    wrong: "Errado. O cenário descreve dados chegando a cada 10 milissegundos — isso caracteriza principalmente a Velocidade (Velocity), o V que trata da rapidez de geração e necessidade de processamento em tempo real dos dados."
+  },
+  5: {
+    correct: "Perfeito! A estrutura raw/processed/logs é a base de um Data Lake — padrão usado tanto no HDFS quanto em soluções modernas como Amazon S3 e Azure Data Lake Storage. Dados brutos chegam em 'raw', são processados em 'processed' e os registros de auditoria ficam em 'logs'.",
+    wrong: "Errado. A organização raw/processed/logs espelha a lógica do HDFS e de Data Lakes modernos (S3, Azure Data Lake), onde cada zona tem uma função clara: raw = dados brutos, processed = dados tratados, logs = monitoramento e auditoria."
+  },
+  6: {
+    correct: "Correto! O Hadoop é fundamentalmente uma plataforma escrita em Java. Todos os seus componentes — NameNode, DataNode, ResourceManager, NodeManager — executam como processos da JVM. Sem o JDK instalado, nenhum serviço Hadoop pode ser iniciado.",
+    wrong: "Errado. A razão é direta: o Hadoop é escrito em Java e todos os seus serviços (NameNode, DataNode, etc.) são executados como processos da JVM (Java Virtual Machine). O JDK é uma dependência obrigatória do Hadoop 3.x."
+  },
+  7: {
+    correct: "Correto! O SSH sem senha com chaves RSA permite que o Hadoop (especificamente os scripts start-dfs.sh e start-yarn.sh) inicie e pare serviços remotamente em cada nó do cluster de forma automática, sem intervenção humana e sem expor credenciais.",
+    wrong: "Errado. O SSH sem senha é necessário para que o Hadoop possa gerenciar os nós do cluster de forma autônoma — iniciando e parando serviços remotamente via scripts (start-dfs.sh, stop-dfs.sh). Em clusters de produção com dezenas de máquinas, isso é essencial para automação segura."
+  },
+  8: {
+    correct: "Correto! O modo pseudo-distribuído (pseudo-distributed) simula um cluster completo em uma única máquina, com cada serviço Hadoop (NameNode, DataNode, ResourceManager) rodando em um processo Java separado. É ideal para aprendizado e desenvolvimento.",
+    wrong: "Errado. O modo correto para uma única máquina de desenvolvimento é o pseudo-distribuído. No modo standalone (local), o Hadoop roda como um único processo Java e usa o sistema de arquivos local — não o HDFS. O pseudo-distribuído simula o cluster real em uma só máquina."
+  },
+  9: {
+    correct: "Exato! O NameNode é o maestro do HDFS: ele mantém o namespace do sistema de arquivos (nomes e hierarquia de diretórios), controla onde cada bloco está armazenado (em quais DataNodes) e gerencia o estado de saúde dos DataNodes. Ele não armazena dados — isso é função dos DataNodes.",
+    wrong: "Errado. O NameNode gerencia os metadados: nomes dos arquivos, estrutura de diretórios e mapeamento de blocos para DataNodes. Quem armazena os blocos de dados efetivamente são os DataNodes. O NameNode é o 'diretório' do sistema, não o 'armário' onde os dados ficam."
+  },
+  10: {
+    correct: "Correto! A replicação automática de blocos (por padrão, fator 3) é uma das características mais importantes do HDFS. Se um DataNode falha, os dados ainda estão disponíveis em outros nós. Isso elimina o single point of failure que existe em sistemas de arquivos tradicionais.",
+    wrong: "Errado. A grande vantagem do HDFS é a tolerância a falhas via replicação automática de blocos entre múltiplos DataNodes. Se um servidor falhar, os dados permanecem disponíveis em outros nós. Sistemas de arquivos tradicionais não têm esse mecanismo distribuído nativo."
+  },
+  11: {
+    correct: "Correto! O Shuffle & Sort é uma fase intermediária e automática do framework Hadoop. O programador não escreve código para ela — o framework garante que todos os pares com a mesma chave de diferentes Mappers sejam enviados para o mesmo Reducer.",
+    wrong: "Errado. O Shuffle & Sort é a fase intermediária automática do MapReduce. O Mapper emite pares sem ordenação; o Shuffle garante que todos os pares com a mesma chave (de diferentes Mappers em diferentes máquinas) sejam agrupados e enviados ao mesmo Reducer."
+  },
+  12: {
+    correct: "Exato! O Mapper não é inteligente — ele emite (palavra, 1) para CADA ocorrência encontrada na linha, sem verificar se a palavra já apareceu antes. Para 'hadoop spark hadoop': emite ('hadoop',1), ('spark',1), ('hadoop',1) = 3 pares. O agrupamento é responsabilidade do Shuffle.",
+    wrong: "Errado. O Mapper emite um par (palavra, 1) para CADA palavra encontrada na linha, sem agrupar duplicatas. Para 'hadoop spark hadoop': 3 palavras → 3 pares emitidos: ('hadoop',1), ('spark',1), ('hadoop',1). O agrupamento é feito pelo Shuffle & Sort, não pelo Mapper."
+  },
+  13: {
+    correct: "Correto! O Reducer do WordCount recebe ('big', [1, 1, 1, 1]) e executa yield palavra, sum(contagens), ou seja, soma todos os valores da lista: sum([1,1,1,1]) = 4. O resultado final emitido é ('big', 4).",
+    wrong: "Errado. O Reducer executa yield palavra, sum(contagens). Para ('big', [1, 1, 1, 1]): sum([1,1,1,1]) = 4. O Reducer emite o par ('big', 4). A soma dos valores é a operação central do Reduce no WordCount."
+  },
+  14: {
+    correct: "Correto! O pipe Linux é uma analogia direta ao MapReduce: cat lê e emite os dados (Map), grep filtra/agrupa os dados de interesse (Shuffle), wc -l conta/sumariza o resultado (Reduce). É o mesmo conceito estrutural, mas executado de forma centralizada em vez de distribuída.",
+    wrong: "Errado. A analogia correta é: cat = Map (lê os dados e os 'emite' para o próximo estágio), grep = Shuffle (filtra e agrupa os dados relevantes), wc = Reduce (conta/sumariza). O conceito de pipeline — dados passando por etapas de transformação — é idêntico ao MapReduce."
+  },
+  15: {
+    correct: "Perfeito! O paralelismo do MapReduce vem do isolamento dos Mappers: cada um processa seu bloco de dados de forma completamente independente, sem comunicação com outros Mappers. Isso permite distribuir o trabalho por centenas de máquinas simultaneamente, com escala quase linear.",
+    wrong: "Errado. A chave do paralelismo do MapReduce é a independência dos Mappers: cada Mapper processa seu bloco de dados sem precisar se comunicar com outros Mappers. Isso permite paralelismo máximo — adicionar mais máquinas ao cluster aumenta linearmente a capacidade de processamento."
+  }
+};
+
+const TOTAL_QUESTIONS = 15;
+let answers = {};
+let submitted = false;
+
+function initDots() {
+  const dots = document.getElementById('progDots');
+  dots.innerHTML = '';
+  for (let i = 1; i <= TOTAL_QUESTIONS; i++) {
+    const d = document.createElement('div');
+    d.className = 'pdot';
+    d.id = 'dot-' + i;
+    dots.appendChild(d);
+  }
+}
+
+function updateProgress() {
+  const count = Object.keys(answers).length;
+  document.getElementById('progPct').textContent = count + ' / ' + TOTAL_QUESTIONS;
+  document.getElementById('progFill').style.width = (count / TOTAL_QUESTIONS * 100) + '%';
+  document.getElementById('answeredCount').textContent = count;
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = count < TOTAL_QUESTIONS || submitted;
+}
+
+document.querySelectorAll('.q-card').forEach(card => {
+  const qNum = card.dataset.q;
+  card.querySelectorAll('.opt').forEach(opt => {
+    opt.addEventListener('click', function() {
+      if (submitted || answers[qNum]) return;
+      answers[qNum] = this.dataset.val;
+      card.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+      this.classList.add('selected');
+      document.getElementById('dot-' + qNum).className = 'pdot answered';
+      updateProgress();
+    });
+  });
+});
+
+function showToast(msg, duration = 2200) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+function submitQuiz() {
+  if (Object.keys(answers).length < TOTAL_QUESTIONS) {
+    showToast('⚠️ Responda todas as questões antes de finalizar!');
+    return;
+  }
+  submitted = true;
+  document.getElementById('submitBtn').disabled = true;
+
+  let correct = 0;
+  let totalScore = 0;
+
+  document.querySelectorAll('.q-card').forEach(card => {
+    const qNum = card.dataset.q;
+    const correctAns = card.dataset.correct;
+    const pts = parseFloat(card.dataset.pts);
+    const userAns = answers[qNum];
+    const fb = card.querySelector('.q-feedback');
+    const isCorrect = userAns === correctAns;
+
+    card.querySelectorAll('.opt').forEach(opt => {
+      opt.disabled = true;
+      if (opt.dataset.val === correctAns) opt.classList.add('correct-ans');
+      if (opt.dataset.val === userAns && !isCorrect) opt.classList.add('wrong-ans');
+      opt.classList.remove('selected');
+    });
+
+    if (isCorrect) {
+      correct++;
+      totalScore += pts;
+      card.classList.add('state-correct');
+      fb.className = 'q-feedback show fb-correct';
+      fb.innerHTML = '<span class="fb-icon">✅</span>' + FEEDBACKS[parseInt(qNum)].correct;
+    } else {
+      card.classList.add('state-wrong');
+      fb.className = 'q-feedback show fb-wrong';
+      fb.innerHTML = '<span class="fb-icon">❌</span>' + FEEDBACKS[parseInt(qNum)].wrong;
+    }
+
+    const dot = document.getElementById('dot-' + qNum);
+    dot.className = 'pdot ' + (isCorrect ? 'correct' : 'wrong');
+  });
+
+  const scoreStr = totalScore.toFixed(2).replace('.', ',');
+  document.getElementById('liveScore').textContent = scoreStr;
+  document.getElementById('rCorrect').textContent = correct;
+  document.getElementById('rWrong').textContent = TOTAL_QUESTIONS - correct;
+  document.getElementById('rScore').textContent = scoreStr;
+
+  let emoji, title, sub, note;
+  const pct = (correct / TOTAL_QUESTIONS) * 100;
+
+  if (pct >= 90) {
+    emoji = '🏆'; title = 'Excelente!'; sub = 'Desempenho excepcional — domínio completo do conteúdo!';
+    note = '🎯 Você demonstrou sólida compreensão dos fundamentos de Big Data, arquitetura HDFS e o paradigma MapReduce. Continue assim!';
+  } else if (pct >= 70) {
+    emoji = '🎯'; title = 'Muito Bom!'; sub = 'Ótimo desempenho — conteúdo bem assimilado!';
+    note = '📚 Você assimilou bem os conceitos centrais. Revise os tópicos onde errou, especialmente os feedbacks detalhados acima.';
+  } else if (pct >= 50) {
+    emoji = '📘'; title = 'Aprovado'; sub = 'Desempenho satisfatório — alguns pontos merecem revisão.';
+    note = '🔄 Você compreende os conceitos básicos, mas precisa revisar os temas onde errou. Releia as seções correspondentes das semanas 01, 02 e 03.';
+  } else {
+    emoji = '📖'; title = 'Precisa Revisar'; sub = 'Revise o material e tente novamente.';
+    note = '💡 Não desanime! Revise o material das semanas 01 (5Vs, Big Data), 02 (Hadoop HDFS, modos de operação) e 03 (MapReduce, Mapper, Reducer, Shuffle) e refaça a avaliação.';
+  }
+
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultSub').textContent = sub;
+  document.getElementById('resultNote').textContent = note;
+  document.getElementById('resultPanel').classList.add('show');
+
+  document.getElementById('resultPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Build gabarito
+  const gabRows = [
+    {q:'Q01', correct:'B', topic:'Fundamentos de Big Data'},
+    {q:'Q02', correct:'C', topic:'Os 5 Vs — Ferramentas'},
+    {q:'Q03', correct:'B', topic:'Escalabilidade horizontal'},
+    {q:'Q04', correct:'D', topic:'Velocidade (Vs do Big Data)'},
+    {q:'Q05', correct:'A', topic:'Estrutura Data Lake / HDFS'},
+    {q:'Q06', correct:'B', topic:'JDK e Hadoop'},
+    {q:'Q07', correct:'C', topic:'SSH sem senha'},
+    {q:'Q08', correct:'A', topic:'Modos de operação Hadoop'},
+    {q:'Q09', correct:'D', topic:'NameNode — metadados HDFS'},
+    {q:'Q10', correct:'B', topic:'Tolerância a falhas HDFS'},
+    {q:'Q11', correct:'C', topic:'Shuffle & Sort'},
+    {q:'Q12', correct:'B', topic:'Mapper — emissão de pares'},
+    {q:'Q13', correct:'A', topic:'Reducer — soma WordCount'},
+    {q:'Q14', correct:'D', topic:'Analogia pipe Linux × MapReduce'},
+    {q:'Q15', correct:'C', topic:'Paralelismo MapReduce'},
+  ];
+
+  let gabHtml = '';
+  gabRows.forEach((row, i) => {
+    const qNum = i + 1;
+    const userVal = (answers[qNum] || '—').toUpperCase();
+    const isC = userVal === row.correct;
+    gabHtml += `<tr>
+      <td class="gab-q">${row.q}</td>
+      <td class="gab-topic">${row.topic}</td>
+      <td class="gab-ans gab-correct">${row.correct}</td>
+      <td class="gab-ans ${isC ? 'gab-user-ok' : 'gab-user-err'}">${userVal}</td>
+      <td class="gab-status">${isC ? '✅' : '❌'}</td>
+    </tr>`;
+  });
+
+  document.getElementById('gabBody').innerHTML = gabHtml;
+  document.getElementById('gabCorrectCount').textContent = correct;
+  document.getElementById('gabWrongCount').textContent = TOTAL_QUESTIONS - correct;
+  document.getElementById('gabTotalScore').textContent = scoreStr;
+  document.getElementById('gabPanel').style.display = 'block';
+  setTimeout(() => document.getElementById('gabPanel').scrollIntoView({ behavior: 'smooth', block: 'start' }), 600);
+}
+
+function resetQuiz() {
+  answers = {};
+  submitted = false;
+  document.querySelectorAll('.q-card').forEach(card => {
+    card.classList.remove('state-correct', 'state-wrong');
+    card.querySelectorAll('.opt').forEach(opt => {
+      opt.disabled = false;
+      opt.classList.remove('selected', 'correct-ans', 'wrong-ans');
+    });
+    const fb = card.querySelector('.q-feedback');
+    fb.className = 'q-feedback';
+    fb.innerHTML = '';
+  });
+  document.getElementById('resultPanel').classList.remove('show');
+  document.getElementById('liveScore').textContent = '0';
+  document.getElementById('submitBtn').disabled = true;
+  initDots();
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+initDots();
+updateProgress();
+</script>
+</body>
+</html>

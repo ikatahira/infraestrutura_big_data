@@ -1420,6 +1420,10 @@
                         <div class="step-desc">Na VM criada, vá em Configurações → Armazenamento → clique no ícone de disco → "Escolher arquivo de disco óptico virtual" → selecione a ISO baixada. Inicie a VM e siga o instalador do Ubuntu (escolha "Instalação Mínima" para economizar espaço).</div>
                     </div>
                 </div>
+                <div style="margin-top:14px;border-radius:8px;overflow:hidden;border:1px solid var(--border);text-align:center;">
+                    <div style="background:var(--surface2);padding:7px 14px;font-size:.75em;color:var(--text-muted);text-align:left;border-bottom:1px solid var(--border);">🖥️ Tela inicial do Ubuntu na VirtualBox</div>
+                    <img src="telainicialubuntuhadoop.png" alt="Tela inicial do Ubuntu no VirtualBox" style="width:100%;max-width:900px;display:block;margin:0 auto;">
+                </div>
             </div>
 
             <!-- Passo 5 -->
@@ -1431,16 +1435,19 @@
                         <div class="step-desc">Após instalar o Ubuntu, abra o Terminal (Ctrl+Alt+T) e execute os comandos abaixo para atualizar todos os pacotes. Isso garante que você está com as versões mais recentes e evita conflitos na instalação do Hadoop.</div>
                     </div>
                 </div>
-                <div class="code-block">
+                <div style="margin-top:14px;border-radius:8px;overflow:hidden;border:1px solid var(--border);text-align:center;">
+                    <div style="background:var(--surface2);padding:7px 14px;font-size:.75em;color:var(--text-muted);text-align:left;border-bottom:1px solid var(--border);">🖥️ Abrindo o Terminal no Ubuntu — clique no ícone de apps (canto inferior esquerdo) e pesquise "terml"</div>
+                    <img src="telaterminal.png" alt="Abrindo o Terminal no Ubuntu" style="width:100%;max-width:900px;display:block;margin:0 auto;">
+                </div>
+                <div class="code-block" style="margin-top:14px;">
                     <div class="code-block-header">
                         <span class="code-lang">bash — Ubuntu 22.04</span>
-                        <button class="copy-btn" onclick="copyCode(this, 'sudo apt update && sudo apt upgrade -y')">📋 Copiar</button>
+                        <button class="copy-btn" onclick="copyCode(this, 'sudo apt update')">📋 Copiar</button>
                     </div>
                     <div class="code-body"><code><span class="comment"># sudo = executa com privilégios de administrador</span>
 <span class="comment"># apt = gerenciador de pacotes do Ubuntu</span>
 <span class="comment"># update = atualiza a LISTA de pacotes disponíveis (não instala nada ainda)</span>
-<span class="comment"># upgrade -y = instala as atualizações disponíveis (-y confirma automaticamente)</span>
-<span class="prompt">$ </span>sudo apt update && sudo apt upgrade -y</code></div>
+<span class="prompt">$ </span>sudo apt update</code></div>
                 </div>
                 <div class="expected-output">
                     <div class="expected-output-label">✅ Saída esperada (resumo)</div>
@@ -1449,8 +1456,11 @@
 Get:25 http://br.archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages
 ...
 Reading package lists... Done
-Building dependency tree... Done
-X upgraded, X newly installed, 0 to remove and 0 not upgraded.</div>
+Building dependency tree... Done</div>
+                </div>
+                <div style="margin-top:14px;border-radius:8px;overflow:hidden;border:1px solid var(--border);text-align:center;">
+                    <div style="background:var(--surface2);padding:7px 14px;font-size:.75em;color:var(--text-muted);text-align:left;border-bottom:1px solid var(--border);">🖥️ Terminal executando <code>sudo -i</code> e <code>apt update</code> — atualizando os repositórios</div>
+                    <img src="atualizarrepositorio.png" alt="Atualizando repositórios no terminal Ubuntu" style="width:100%;max-width:900px;display:block;margin:0 auto;">
                 </div>
             </div>
 

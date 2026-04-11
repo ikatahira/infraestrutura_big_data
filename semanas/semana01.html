@@ -961,7 +961,7 @@
             <div class="xp-bar-wrap">
                 <div class="xp-bar-fill" id="xpBarFill"></div>
             </div>
-            <div class="xp-points" id="xpPoints">0 / 550 XP</div>
+            <div class="xp-points" id="xpPoints">0 / 650 XP</div>
         </div>
     </div>
 </header>
@@ -973,11 +973,11 @@
     <p class="hero-desc">Esta é a sua primeira missão. Você vai entender <em>por que</em> o Big Data existe, o que o diferencia do processamento tradicional, e vai preparar seu ambiente de trabalho (Ubuntu 22.04 ou WSL) para as próximas semanas.</p>
     <div class="hero-stats">
         <div class="hero-stat">
-            <div class="hero-stat-val">5</div>
+            <div class="hero-stat-val">6</div>
             <div class="hero-stat-label">Missões</div>
         </div>
         <div class="hero-stat">
-            <div class="hero-stat-val">550</div>
+            <div class="hero-stat-val">650</div>
             <div class="hero-stat-label">XP Total</div>
         </div>
         <div class="hero-stat">
@@ -1022,7 +1022,9 @@
         <div class="mission-line" id="line2"></div>
         <div class="mission-dot locked" onclick="scrollToMission(3)" title="Missão 4: Ambiente Ubuntu 22.04">M4</div>
         <div class="mission-line" id="line3"></div>
-        <div class="mission-dot locked" onclick="scrollToMission(4)" title="Missão 5: Exploração de Dados">M5</div>
+        <div class="mission-dot locked" onclick="scrollToMission(4)" title="Missão 5: Ambiente WSL">M5</div>
+        <div class="mission-line" id="line4"></div>
+        <div class="mission-dot locked" onclick="scrollToMission(5)" title="Missão 6: Exploração de Dados">M6</div>
     </div>
 </div>
 
@@ -1044,7 +1046,7 @@
             <div class="discipline-item">
                 <div class="discipline-item-label">🎯 O que você vai dominar hoje</div>
                 <div class="discipline-item-text">
-                    Ao concluir as 5 missões, você saberá <strong>explicar o que é Big Data e por que ele surgiu</strong>, identificar os <strong>5Vs na prática</strong>, entender o ecossistema Hadoop em alto nível, e terá o <strong>ambiente Linux preparado</strong> para instalar o Hadoop na próxima semana.
+                    Ao concluir as 6 missões, você saberá <strong>explicar o que é Big Data e por que ele surgiu</strong>, identificar os <strong>5Vs na prática</strong>, entender o ecossistema Hadoop em alto nível, e terá o <strong>ambiente Linux preparado</strong> para instalar o Hadoop na próxima semana.
                 </div>
             </div>
         </div>
@@ -1336,16 +1338,8 @@
 
     <div class="section-divider">
         <div class="section-divider-line"></div>
-        <div class="section-divider-label">🖥️ Ambiente Prático — Ubuntu 22.04</div>
+        <div class="section-divider-label">🖥️ Ambiente Prático — Ubuntu 22.04 e WSL</div>
         <div class="section-divider-line"></div>
-    </div>
-
-    <div style="margin-bottom:20px;padding:16px 20px;background:rgba(120,80,220,0.07);border:1px solid rgba(120,80,220,0.25);border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-        <div>
-            <div style="font-family:var(--font-display);font-size:0.8em;font-weight:700;color:#c0a0f0;margin-bottom:4px;">🪟 Usuário Windows?</div>
-            <div style="font-size:0.83em;color:var(--text-dim);line-height:1.6;">Se preferir usar o <strong style="color:#c0a0f0;">WSL2</strong> ao invés de uma VM VirtualBox, acesse o guia complementar.</div>
-        </div>
-        <a href="semana01_02.html" style="text-decoration:none;padding:10px 20px;border-radius:8px;background:rgba(120,80,220,0.15);border:1px solid rgba(120,80,220,0.4);color:#c0a0f0;font-family:var(--font-display);font-size:0.8em;font-weight:700;white-space:nowrap;transition:all 0.2s;">🪟 Guia WSL2 ➡</a>
     </div>
 
     <!-- ════════════════════════════════════════════════ -->
@@ -1408,12 +1402,47 @@
                     <div class="step-num">03</div>
                     <div class="step-content">
                         <div class="step-title">Criar a Máquina Virtual no VirtualBox</div>
-                        <div class="step-desc">No VirtualBox, clique em <code>Novo</code>. Configure: Nome: <code>BigData-Ubuntu</code>, Tipo: <code>Linux</code>, Versão: <code>Ubuntu (64-bit)</code>, RAM: <strong>4096 MB (4 GB)</strong>, Disco: <strong>40 GB</strong> (dinâmico).</div>
+                        <div class="step-desc">No VirtualBox, clique em <code>Novo</code>. Use as configurações abaixo — são as mesmas que usaremos durante todo o semestre:</div>
                     </div>
                 </div>
+
+                <div style="margin:14px 0;background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+                    <div style="background:var(--surface2);padding:8px 16px;font-size:.75em;color:var(--text-muted);border-bottom:1px solid var(--border);font-family:var(--font-mono);letter-spacing:.05em;">⚙️ Configurações da VM</div>
+                    <div style="padding:14px 18px;display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;font-size:.85em;">
+                        <div><span style="color:var(--text-muted);">Nome:</span> <code style="color:var(--accent);">UbuntuHadoop</code></div>
+                        <div><span style="color:var(--text-muted);">Tipo:</span> <code>Linux</code></div>
+                        <div><span style="color:var(--text-muted);">Versão:</span> <code>Ubuntu (64-bit)</code></div>
+                        <div><span style="color:var(--text-muted);">Memória RAM:</span> <code style="color:var(--accent);">4096 MB (4 GB)</code></div>
+                        <div><span style="color:var(--text-muted);">Disco:</span> <code>25 GB</code> (dinâmico)</div>
+                        <div><span style="color:var(--text-muted);">Rede:</span> <code>NAT</code></div>
+                        <div><span style="color:var(--text-muted);">Memória de Vídeo:</span> <code>16 MB</code></div>
+                        <div><span style="color:var(--text-muted);">Áudio:</span> <code>ICH AC97</code></div>
+                    </div>
+                </div>
+
                 <div class="alert alert-warn">
                     <span class="alert-icon">⚠️</span>
                     <span>Configure pelo menos <strong>2 CPUs</strong> nas configurações da VM (aba Sistema → Processador). O Hadoop precisa de múltiplos núcleos para simular o ambiente distribuído.</span>
+                </div>
+
+                <div style="margin-top:14px;border-radius:8px;overflow:hidden;border:1px solid var(--border);text-align:center;">
+                    <div style="background:var(--surface2);padding:7px 14px;font-size:.75em;color:var(--text-muted);text-align:left;border-bottom:1px solid var(--border);">🖥️ Tela inicial do VirtualBox — VM <code>UbuntuHadoop</code> criada no grupo da disciplina</div>
+                    <img src="telainicialvirtualbox.png" alt="Tela inicial do VirtualBox com a VM UbuntuHadoop" style="width:100%;max-width:900px;display:block;margin:0 auto;">
+                </div>
+
+                <div style="margin-top:14px;border-radius:8px;overflow:hidden;border:1px solid var(--border);text-align:center;">
+                    <div style="background:var(--surface2);padding:7px 14px;font-size:.75em;color:var(--text-muted);text-align:left;border-bottom:1px solid var(--border);">⚙️ Configurações gerais da VM — Geral e Sistema (memória, ordem de boot)</div>
+                    <img src="configuracaoinicial2.png" alt="Configurações gerais da VM no VirtualBox" style="width:100%;max-width:900px;display:block;margin:0 auto;">
+                </div>
+
+                <div style="margin-top:14px;border-radius:8px;overflow:hidden;border:1px solid var(--border);text-align:center;">
+                    <div style="background:var(--surface2);padding:7px 14px;font-size:.75em;color:var(--text-muted);text-align:left;border-bottom:1px solid var(--border);">🌐 Configuração de Rede — Adaptador 1 em modo NAT</div>
+                    <img src="configuracaoinicial_rede.png" alt="Configuração de rede da VM no VirtualBox" style="width:100%;max-width:900px;display:block;margin:0 auto;">
+                </div>
+
+                <div style="margin-top:14px;border-radius:8px;overflow:hidden;border:1px solid var(--border);text-align:center;">
+                    <div style="background:var(--surface2);padding:7px 14px;font-size:.75em;color:var(--text-muted);text-align:left;border-bottom:1px solid var(--border);">📋 Resumo completo das configurações da VM <code>UbuntuHadoop</code></div>
+                    <img src="configuracaoinicial.png" alt="Resumo completo das configurações da VM" style="width:100%;max-width:900px;display:block;margin:0 auto;">
                 </div>
             </div>
 
@@ -1560,10 +1589,193 @@ Filesystem      Size  Used Avail Use% Mounted on
     </div>
 
     <!-- ════════════════════════════════════════════════ -->
-    <!-- MISSÃO 5 — Exploração de Dados no Terminal -->
+    <!-- MISSÃO 5 — Ambiente WSL -->
     <!-- ════════════════════════════════════════════════ -->
     <div class="mission-card" id="mission4">
         <div class="mission-header" onclick="toggleMission(4)">
+            <div class="mission-num">M5</div>
+            <div class="mission-meta">
+                <div class="mission-title">🪟 Alternativa: Ambiente WSL2 — Ubuntu no Windows</div>
+                <div class="mission-tags">
+                    <span class="tag tag-xp">⚡ +100 XP</span>
+                    <span class="tag tag-time">⏱ ~20 min</span>
+                    <span class="tag tag-type">Instalação</span>
+                    <span class="tag tag-wsl">🪟 WSL2</span>
+                </div>
+            </div>
+            <div class="mission-status" id="status4">🔒</div>
+            <div class="mission-toggle">▾</div>
+        </div>
+        <div class="mission-body">
+            <div class="mission-intro">
+                Se você não tem recursos para rodar uma VM ou prefere trabalhar nativamente no Windows, o <strong>WSL2 (Windows Subsystem for Linux 2)</strong> é uma excelente alternativa. Ele executa um kernel Linux real dentro do Windows com desempenho próximo ao nativo. Você pode instalar o Hadoop, Spark e Kafka normalmente pelo WSL2.
+            </div>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">ℹ️</span>
+                <span><strong>WSL2 vs VirtualBox:</strong> O WSL2 integra-se ao Windows (compartilha arquivos facilmente entre os sistemas) e consome menos recursos. A desvantagem é que algumas configurações de rede do Hadoop precisam de ajustes extras. Para uso didático neste semestre, <strong>ambos funcionam igualmente bem</strong>.</span>
+            </div>
+
+            <!-- Passo 1 -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-num">01</div>
+                    <div class="step-content">
+                        <div class="step-title">Habilitar o WSL2 no Windows</div>
+                        <div class="step-desc">Abra o <strong>PowerShell como Administrador</strong> (clique direito no menu Iniciar → "Windows PowerShell (Admin)") e execute o comando abaixo. O sistema pode pedir para reiniciar.</div>
+                    </div>
+                </div>
+                <div class="code-block code-block-wsl">
+                    <div class="code-block-header">
+                        <span class="code-lang" style="color:#c0a0f0">powershell — Administrador</span>
+                        <button class="copy-btn" onclick="copyCode(this, 'wsl --install')">📋 Copiar</button>
+                    </div>
+                    <div class="code-body"><code style="color:#d0b0f0"><span class="comment"># Este comando único faz tudo: habilita WSL, instala WSL2 e instala Ubuntu</span>
+<span class="prompt" style="color:#c0a0f0">PS> </span>wsl --install</code></div>
+                </div>
+                <div class="expected-output">
+                    <div class="expected-output-label">✅ Saída esperada</div>
+                    <div class="output-box">Installing: Virtual Machine Platform
+Virtual Machine Platform has been installed.
+Installing: Windows Subsystem for Linux
+Windows Subsystem for Linux has been installed.
+Installing: Ubuntu
+Ubuntu has been installed.
+The requested operation is successful.</div>
+                </div>
+                <div class="alert alert-warn">
+                    <span class="alert-icon">⚠️</span>
+                    <span>Se o comando acima instalar Ubuntu 20.04 (versão antiga), force a versão 22.04: <code>wsl --install -d Ubuntu-22.04</code></span>
+                </div>
+            </div>
+
+            <!-- Passo 2 -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-num">02</div>
+                    <div class="step-content">
+                        <div class="step-title">Verificar a versão do WSL instalada</div>
+                        <div class="step-desc">Confirme que está usando o WSL <strong>versão 2</strong> (e não a versão 1, que é mais antiga e tem desempenho inferior).</div>
+                    </div>
+                </div>
+                <div class="code-block code-block-wsl">
+                    <div class="code-block-header">
+                        <span class="code-lang" style="color:#c0a0f0">powershell</span>
+                        <button class="copy-btn" onclick="copyCode(this, 'wsl --list --verbose')">📋 Copiar</button>
+                    </div>
+                    <div class="code-body"><code style="color:#d0b0f0"><span class="comment"># --list = lista as distribuições instaladas</span>
+<span class="comment"># --verbose = mostra detalhes incluindo a versão do WSL</span>
+<span class="prompt" style="color:#c0a0f0">PS> </span>wsl --list --verbose</code></div>
+                </div>
+                <div class="expected-output">
+                    <div class="expected-output-label">✅ Saída esperada — a coluna VERSION deve ser 2</div>
+                    <div class="output-box">  NAME            STATE           VERSION
+* Ubuntu-22.04    Running         2</div>
+                </div>
+                <div class="alert alert-warn">
+                    <span class="alert-icon">⚠️</span>
+                    <span>Se a versão aparecer como <code>1</code>, converta para WSL2 com: <code>wsl --set-version Ubuntu-22.04 2</code></span>
+                </div>
+            </div>
+
+            <!-- Passo 3 -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-num">03</div>
+                    <div class="step-content">
+                        <div class="step-title">Abrir o terminal Ubuntu no WSL2</div>
+                        <div class="step-desc">Busque "Ubuntu" no menu Iniciar e abra. Na primeira vez, ele pedirá para criar um nome de usuário e senha (use algo simples, como <code>aluno</code> / <code>bigdata</code>). A partir de agora, todos os comandos são idênticos ao Ubuntu 22.04 na VM.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passo 4 -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-num">04</div>
+                    <div class="step-content">
+                        <div class="step-title">Atualizar o sistema WSL</div>
+                        <div class="step-desc">Os mesmos comandos do Ubuntu VM funcionam aqui. Atualize os pacotes para garantir compatibilidade com o Hadoop.</div>
+                    </div>
+                </div>
+                <div class="code-block code-block-wsl">
+                    <div class="code-block-header">
+                        <span class="code-lang" style="color:#c0a0f0">bash — WSL2 Ubuntu 22.04</span>
+                        <button class="copy-btn" onclick="copyCode(this, 'sudo apt update && sudo apt upgrade -y\nsudo apt install -y curl wget git htop net-tools vim')">📋 Copiar</button>
+                    </div>
+                    <div class="code-body"><code style="color:#d0b0f0"><span class="comment"># Idêntico ao Ubuntu VM — o WSL2 é um Ubuntu completo!</span>
+<span class="prompt" style="color:#c0a0f0">$ </span>sudo apt update && sudo apt upgrade -y
+<span class="prompt" style="color:#c0a0f0">$ </span>sudo apt install -y curl wget git htop net-tools vim</code></div>
+                </div>
+            </div>
+
+            <!-- Passo 5 -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-num">05</div>
+                    <div class="step-content">
+                        <div class="step-title">Diferenças importantes: WSL2 vs VM</div>
+                        <div class="step-desc">No WSL2, há algumas diferenças de configuração que você precisará ter em mente ao instalar o Hadoop na próxima semana.</div>
+                    </div>
+                </div>
+                <div class="compare-table" style="margin: 0 18px 16px;">
+                    <table>
+                        <tr>
+                            <th>Situação</th>
+                            <th>Ubuntu VM (VirtualBox)</th>
+                            <th>WSL2 Ubuntu</th>
+                        </tr>
+                        <tr>
+                            <td>Endereço IP</td>
+                            <td>Fixo ou dinâmico (192.168.x.x)</td>
+                            <td>Muda a cada reinício do Windows</td>
+                        </tr>
+                        <tr>
+                            <td>Acesso ao HDFS Web UI</td>
+                            <td>http://localhost:9870 direto</td>
+                            <td>Funciona pelo navegador Windows normalmente</td>
+                        </tr>
+                        <tr>
+                            <td>Arquivos Windows</td>
+                            <td>Precisa de pastas compartilhadas</td>
+                            <td>Acessível em /mnt/c/, /mnt/d/ etc.</td>
+                        </tr>
+                        <tr>
+                            <td>Performance</td>
+                            <td>Ligeiramente melhor para I/O</td>
+                            <td>Excelente para uso geral</td>
+                        </tr>
+                        <tr>
+                            <td>Recomendado para</td>
+                            <td class="td-good">Máquinas com 16 GB+ de RAM</td>
+                            <td class="td-good">Máquinas com 8-12 GB de RAM</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">✅</span>
+                <span><strong>WSL2 pronto!</strong> A partir da próxima missão e de todas as semanas seguintes, todos os comandos Linux funcionam igualmente bem no Ubuntu VM e no WSL2. Quando houver diferença, iremos indicar explicitamente.</span>
+            </div>
+
+            <div class="checkpoint">
+                <div class="checkpoint-title">🏁 Checkpoint M5</div>
+                <ul class="checkpoint-items">
+                    <li class="checkpoint-item"><input type="checkbox" id="c4a"><label for="c4a">WSL2 instalado com Ubuntu 22.04 (VERSION = 2)</label></li>
+                    <li class="checkpoint-item"><input type="checkbox" id="c4b"><label for="c4b">Sistema atualizado com <code>apt update && apt upgrade</code></label></li>
+                    <li class="checkpoint-item"><input type="checkbox" id="c4c"><label for="c4c">Entendi as principais diferenças entre WSL2 e VM para uso neste semestre</label></li>
+                </ul>
+            </div>
+            <button class="complete-btn" id="btn4" onclick="completeMission(4, 100)">✅ Missão 5 Concluída — Coletar +100 XP</button>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════ -->
+    <!-- MISSÃO 6 — Exploração de Dados no Terminal -->
+    <!-- ════════════════════════════════════════════════ -->
+    <div class="mission-card" id="mission5">
+        <div class="mission-header" onclick="toggleMission(5)">
             <div class="mission-num">M6</div>
             <div class="mission-meta">
                 <div class="mission-title">🔬 Mão na Massa — Explorar Dados com Linux</div>
@@ -1575,7 +1787,7 @@ Filesystem      Size  Used Avail Use% Mounted on
                     <span class="tag tag-ementa">📋 Ementa: Tipos de dados — estruturado, semi-estruturado, não-estruturado</span>
                 </div>
             </div>
-            <div class="mission-status" id="status4">🔒</div>
+            <div class="mission-status" id="status5">🔒</div>
             <div class="mission-toggle">▾</div>
         </div>
         <div class="mission-body">
@@ -1757,7 +1969,7 @@ EOF
                     <li class="checkpoint-item"><input type="checkbox" id="c5d"><label for="c5d">Consigo explicar por que o MongoDB existe (campos variáveis no JSON)</label></li>
                 </ul>
             </div>
-            <button class="complete-btn" id="btn4" onclick="completeMission(4, 100)">✅ Missão 5 Concluída — Coletar +100 XP</button>
+            <button class="complete-btn" id="btn5" onclick="completeMission(5, 100)">✅ Missão 6 Concluída — Coletar +100 XP</button>
         </div>
     </div>
 
@@ -1766,7 +1978,7 @@ EOF
         <span class="final-badge-icon">🏆</span>
         <h2>Semana 01 Concluída!</h2>
         <p>Você dominou os fundamentos de Big Data, os 5Vs, o ecossistema Hadoop e preparou seu ambiente Linux. Está pronto para instalar o Hadoop na próxima semana!</p>
-        <div class="final-xp">🏅 550 XP Coletados!</div>
+        <div class="final-xp">🏅 650 XP Coletados!</div>
     </div>
 
     <!-- SEÇÃO DE REFERÊNCIA RÁPIDA -->
@@ -1852,14 +2064,13 @@ EOF
 <!-- NAV -->
 <div class="nav-bar">
     <span class="nav-link disabled">⬅ Semana Anterior</span>
-    <a href="semana01_02.html" class="nav-link" style="color:#c0a0f0;border-color:rgba(120,80,220,0.4);">🪟 WSL2 — Alternativa Windows</a>
     <a href="semana02.html" class="nav-link">Semana 02 — Hadoop HDFS ➡</a>
 </div>
 
 <script>
-    const TOTAL_XP = 550;
-    const missionXP = [100, 100, 100, 150, 100];
-    let completed = new Array(5).fill(false);
+    const TOTAL_XP = 650;
+    const missionXP = [100, 100, 100, 150, 100, 100];
+    let completed = new Array(6).fill(false);
     let currentXP = 0;
 
     try {
@@ -1921,7 +2132,7 @@ EOF
         showToast('+' + xp + ' XP — Missão ' + (idx+1) + ' completa!');
 
         const nextIdx = idx + 1;
-        if (nextIdx < 5) {
+        if (nextIdx < 6) {
             setTimeout(() => {
                 const nextCard = document.getElementById('mission' + nextIdx);
                 if (nextCard) {

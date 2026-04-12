@@ -1338,7 +1338,7 @@
 
     <div class="section-divider">
         <div class="section-divider-line"></div>
-        <div class="section-divider-label">🖥️ Ambiente Prático — Ubuntu 22.04 e WSL</div>
+        <div class="section-divider-label">🖥️ Ambiente Prático — Ubuntu 22.04</div>
         <div class="section-divider-line"></div>
     </div>
 
@@ -1457,7 +1457,7 @@
                     <div class="step-num">04</div>
                     <div class="step-content">
                         <div class="step-title">Instalar o Ubuntu 22.04</div>
-                        <div class="step-desc">Na VM criada, vá em Configurações → Armazenamento → clique no ícone de disco → "Escolher arquivo de disco óptico virtual" → selecione a ISO baixada. Inicie a VM e siga o instalador do Ubuntu (escolha "Instalação Mínima" para economizar espaço).</div>
+                        <div class="step-desc">Na VM criada, vá em Configurações → Armazenamento → clique no ícone de disco → "Escolher arquivo de disco óptico virtual" → selecione a ISO baixada. Inicie a VM e siga o instalador do Ubuntu.</div>
                     </div>
                 </div>
                 <div style="margin-top:14px;border-radius:8px;overflow:hidden;border:1px solid var(--border);text-align:center;">
@@ -1593,187 +1593,10 @@ Filesystem      Size  Used Avail Use% Mounted on
         </div>
     </div>
 
-    <!-- ════════════════════════════════════════════════ -->
-    <!-- MISSÃO 5 — Ambiente WSL -->
-    <!-- ════════════════════════════════════════════════ -->
-    <div class="mission-card" id="mission4">
-        <div class="mission-header" onclick="toggleMission(4)">
-            <div class="mission-num">M5</div>
-            <div class="mission-meta">
-                <div class="mission-title">🪟 Alternativa: Ambiente WSL2 — Ubuntu no Windows</div>
-                <div class="mission-tags">
-                    <span class="tag tag-xp">⚡ +100 XP</span>
-                    <span class="tag tag-time">⏱ ~20 min</span>
-                    <span class="tag tag-type">Instalação</span>
-                    <span class="tag tag-wsl">🪟 WSL2</span>
-                </div>
-            </div>
-            <div class="mission-status" id="status4">🔒</div>
-            <div class="mission-toggle">▾</div>
-        </div>
-        <div class="mission-body">
-            <div class="mission-intro">
-                Se você não tem recursos para rodar uma VM ou prefere trabalhar nativamente no Windows, o <strong>WSL2 (Windows Subsystem for Linux 2)</strong> é uma excelente alternativa. Ele executa um kernel Linux real dentro do Windows com desempenho próximo ao nativo. Você pode instalar o Hadoop, Spark e Kafka normalmente pelo WSL2.
-            </div>
-
-            <div class="alert alert-info">
-                <span class="alert-icon">ℹ️</span>
-                <span><strong>WSL2 vs VirtualBox:</strong> O WSL2 integra-se ao Windows (compartilha arquivos facilmente entre os sistemas) e consome menos recursos. A desvantagem é que algumas configurações de rede do Hadoop precisam de ajustes extras. Para uso didático neste semestre, <strong>ambos funcionam igualmente bem</strong>.</span>
-            </div>
-
-            <!-- Passo 1 -->
-            <div class="step">
-                <div class="step-header">
-                    <div class="step-num">01</div>
-                    <div class="step-content">
-                        <div class="step-title">Habilitar o WSL2 no Windows</div>
-                        <div class="step-desc">Abra o <strong>PowerShell como Administrador</strong> (clique direito no menu Iniciar → "Windows PowerShell (Admin)") e execute o comando abaixo. O sistema pode pedir para reiniciar.</div>
-                    </div>
-                </div>
-                <div class="code-block code-block-wsl">
-                    <div class="code-block-header">
-                        <span class="code-lang" style="color:#c0a0f0">powershell — Administrador</span>
-                        <button class="copy-btn" onclick="copyCode(this, 'wsl --install')">📋 Copiar</button>
-                    </div>
-                    <div class="code-body"><code style="color:#d0b0f0"><span class="comment"># Este comando único faz tudo: habilita WSL, instala WSL2 e instala Ubuntu</span>
-<span class="prompt" style="color:#c0a0f0">PS> </span>wsl --install</code></div>
-                </div>
-                <div class="expected-output">
-                    <div class="expected-output-label">✅ Saída esperada</div>
-                    <div class="output-box">Installing: Virtual Machine Platform
-Virtual Machine Platform has been installed.
-Installing: Windows Subsystem for Linux
-Windows Subsystem for Linux has been installed.
-Installing: Ubuntu
-Ubuntu has been installed.
-The requested operation is successful.</div>
-                </div>
-                <div class="alert alert-warn">
-                    <span class="alert-icon">⚠️</span>
-                    <span>Se o comando acima instalar Ubuntu 20.04 (versão antiga), force a versão 22.04: <code>wsl --install -d Ubuntu-22.04</code></span>
-                </div>
-            </div>
-
-            <!-- Passo 2 -->
-            <div class="step">
-                <div class="step-header">
-                    <div class="step-num">02</div>
-                    <div class="step-content">
-                        <div class="step-title">Verificar a versão do WSL instalada</div>
-                        <div class="step-desc">Confirme que está usando o WSL <strong>versão 2</strong> (e não a versão 1, que é mais antiga e tem desempenho inferior).</div>
-                    </div>
-                </div>
-                <div class="code-block code-block-wsl">
-                    <div class="code-block-header">
-                        <span class="code-lang" style="color:#c0a0f0">powershell</span>
-                        <button class="copy-btn" onclick="copyCode(this, 'wsl --list --verbose')">📋 Copiar</button>
-                    </div>
-                    <div class="code-body"><code style="color:#d0b0f0"><span class="comment"># --list = lista as distribuições instaladas</span>
-<span class="comment"># --verbose = mostra detalhes incluindo a versão do WSL</span>
-<span class="prompt" style="color:#c0a0f0">PS> </span>wsl --list --verbose</code></div>
-                </div>
-                <div class="expected-output">
-                    <div class="expected-output-label">✅ Saída esperada — a coluna VERSION deve ser 2</div>
-                    <div class="output-box">  NAME            STATE           VERSION
-* Ubuntu-22.04    Running         2</div>
-                </div>
-                <div class="alert alert-warn">
-                    <span class="alert-icon">⚠️</span>
-                    <span>Se a versão aparecer como <code>1</code>, converta para WSL2 com: <code>wsl --set-version Ubuntu-22.04 2</code></span>
-                </div>
-            </div>
-
-            <!-- Passo 3 -->
-            <div class="step">
-                <div class="step-header">
-                    <div class="step-num">03</div>
-                    <div class="step-content">
-                        <div class="step-title">Abrir o terminal Ubuntu no WSL2</div>
-                        <div class="step-desc">Busque "Ubuntu" no menu Iniciar e abra. Na primeira vez, ele pedirá para criar um nome de usuário e senha (use algo simples, como <code>aluno</code> / <code>bigdata</code>). A partir de agora, todos os comandos são idênticos ao Ubuntu 22.04 na VM.</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Passo 4 -->
-            <div class="step">
-                <div class="step-header">
-                    <div class="step-num">04</div>
-                    <div class="step-content">
-                        <div class="step-title">Atualizar o sistema WSL</div>
-                        <div class="step-desc">Os mesmos comandos do Ubuntu VM funcionam aqui. Atualize os pacotes para garantir compatibilidade com o Hadoop.</div>
-                    </div>
-                </div>
-                <div class="code-block code-block-wsl">
-                    <div class="code-block-header">
-                        <span class="code-lang" style="color:#c0a0f0">bash — WSL2 Ubuntu 22.04</span>
-                        <button class="copy-btn" onclick="copyCode(this, 'sudo apt update && sudo apt upgrade -y\nsudo apt install -y curl wget git htop net-tools vim')">📋 Copiar</button>
-                    </div>
-                    <div class="code-body"><code style="color:#d0b0f0"><span class="comment"># Idêntico ao Ubuntu VM — o WSL2 é um Ubuntu completo!</span>
-<span class="prompt" style="color:#c0a0f0">$ </span>sudo apt update && sudo apt upgrade -y
-<span class="prompt" style="color:#c0a0f0">$ </span>sudo apt install -y curl wget git htop net-tools vim</code></div>
-                </div>
-            </div>
-
-            <!-- Passo 5 -->
-            <div class="step">
-                <div class="step-header">
-                    <div class="step-num">05</div>
-                    <div class="step-content">
-                        <div class="step-title">Diferenças importantes: WSL2 vs VM</div>
-                        <div class="step-desc">No WSL2, há algumas diferenças de configuração que você precisará ter em mente ao instalar o Hadoop na próxima semana.</div>
-                    </div>
-                </div>
-                <div class="compare-table" style="margin: 0 18px 16px;">
-                    <table>
-                        <tr>
-                            <th>Situação</th>
-                            <th>Ubuntu VM (VirtualBox)</th>
-                            <th>WSL2 Ubuntu</th>
-                        </tr>
-                        <tr>
-                            <td>Endereço IP</td>
-                            <td>Fixo ou dinâmico (192.168.x.x)</td>
-                            <td>Muda a cada reinício do Windows</td>
-                        </tr>
-                        <tr>
-                            <td>Acesso ao HDFS Web UI</td>
-                            <td>http://localhost:9870 direto</td>
-                            <td>Funciona pelo navegador Windows normalmente</td>
-                        </tr>
-                        <tr>
-                            <td>Arquivos Windows</td>
-                            <td>Precisa de pastas compartilhadas</td>
-                            <td>Acessível em /mnt/c/, /mnt/d/ etc.</td>
-                        </tr>
-                        <tr>
-                            <td>Performance</td>
-                            <td>Ligeiramente melhor para I/O</td>
-                            <td>Excelente para uso geral</td>
-                        </tr>
-                        <tr>
-                            <td>Recomendado para</td>
-                            <td class="td-good">Máquinas com 16 GB+ de RAM</td>
-                            <td class="td-good">Máquinas com 8-12 GB de RAM</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-
-            <div class="alert alert-success">
-                <span class="alert-icon">✅</span>
-                <span><strong>WSL2 pronto!</strong> A partir da próxima missão e de todas as semanas seguintes, todos os comandos Linux funcionam igualmente bem no Ubuntu VM e no WSL2. Quando houver diferença, iremos indicar explicitamente.</span>
-            </div>
-
-            <div class="checkpoint">
-                <div class="checkpoint-title">🏁 Checkpoint M5</div>
-                <ul class="checkpoint-items">
-                    <li class="checkpoint-item"><input type="checkbox" id="c4a"><label for="c4a">WSL2 instalado com Ubuntu 22.04 (VERSION = 2)</label></li>
-                    <li class="checkpoint-item"><input type="checkbox" id="c4b"><label for="c4b">Sistema atualizado com <code>apt update && apt upgrade</code></label></li>
-                    <li class="checkpoint-item"><input type="checkbox" id="c4c"><label for="c4c">Entendi as principais diferenças entre WSL2 e VM para uso neste semestre</label></li>
-                </ul>
-            </div>
-            <button class="complete-btn" id="btn4" onclick="completeMission(4, 100)">✅ Missão 5 Concluída — Coletar +100 XP</button>
-        </div>
+    <!-- MISSÃO 5 — Ambiente WSL2 movida para semana01_02.html -->
+    <div class="alert alert-info" style="margin:0 0 16px;">
+        <span class="alert-icon">🪟</span>
+        <span><strong>Usando Windows?</strong> Se preferir o WSL2 ao invés do VirtualBox, acesse <a href="semana01_02.html" style="color:var(--accent)"><strong>Semana 01.02 — Ambiente WSL2</strong></a> para as instruções completas de instalação.</span>
     </div>
 
     <!-- ════════════════════════════════════════════════ -->

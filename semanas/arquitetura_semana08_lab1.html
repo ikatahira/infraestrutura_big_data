@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 06 — Medindo Ciclos de Clock com Timer1 | Arquitetura de Computadores</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Unbounded:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root { --accent: #ff7a1a; }
+:root {
+  --bg:#0b0f0e; --bg2:#111715; --bg3:#161d1b; --panel:#0e1310;
+  --green:#00ff88; --green2:#00c967; --cyan:#00e5ff;
+  --yellow:#ffe033; --orange:#ff7a1a; --red:#ff3b5c; --purple:#b36bff;
+  --text:#e8f0ec; --text2:#7a9488; --text3:#3a5248;
+  --border:#1e2e28; --border2:#243830;
+  --mono:'Space Mono',monospace;
+  --display:'Unbounded',sans-serif;
+  --body:'DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--body);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:.4;
+}
+
+/* ── HEADER ── */
+header{padding:48px 40px 32px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+.header-tag{font-family:var(--mono);font-size:10px;color:var(--orange);
+  letter-spacing:.25em;text-transform:uppercase;margin-bottom:12px;
+  display:flex;align-items:center;gap:8px;}
+.header-tag::before{content:'';width:24px;height:1px;background:var(--orange);}
+.header-title{font-family:var(--display);font-size:clamp(20px,3.5vw,40px);
+  font-weight:900;line-height:1.05;letter-spacing:-.02em;color:var(--text);max-width:760px;}
+.header-title span{color:var(--orange);}
+.header-subtitle{margin-top:10px;font-size:14px;color:var(--text2);max-width:580px;line-height:1.6;font-weight:300;}
+.header-meta{position:absolute;top:48px;right:40px;text-align:right;
+  font-family:var(--mono);font-size:10px;color:var(--text3);line-height:1.8;}
+.header-anchor{display:inline-flex;align-items:center;gap:8px;
+  margin-top:20px;background:rgba(255,122,26,.08);border:1px solid rgba(255,122,26,.3);
+  border-radius:6px;padding:8px 16px;font-family:var(--mono);font-size:10px;
+  color:var(--orange);letter-spacing:.08em;}
+.header-anchor strong{color:var(--text);font-style:normal;}
+
+/* ── CONTAINER ── */
+.container{max-width:1200px;margin:0 auto;padding:0 40px 80px;}
+.section-label{font-family:var(--mono);font-size:9px;color:var(--orange);
+  letter-spacing:.25em;text-transform:uppercase;
+  display:flex;align-items:center;gap:10px;margin-bottom:20px;margin-top:52px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border2);}
+
+/* ── OBJ BOX ── */
+.obj-box{background:var(--bg3);border:1px solid var(--border2);border-radius:12px;
+  padding:28px 32px;position:relative;overflow:hidden;}
+.obj-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--orange),var(--yellow),var(--orange));}
+.obj-title{font-family:var(--display);font-size:12px;font-weight:700;
+  color:var(--orange);letter-spacing:.1em;margin-bottom:16px;}
+.obj-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.obj-list li{font-size:14px;color:var(--text);line-height:1.5;
+  display:flex;align-items:flex-start;gap:10px;}
+.obj-list li::before{content:'▸';color:var(--orange);font-size:12px;margin-top:2px;flex-shrink:0;}
+
+/* ── MATERIAIS ── */
+.mat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+.mat-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;
+  padding:14px 16px;display:flex;align-items:flex-start;gap:10px;}
+.mat-icon{font-size:20px;flex-shrink:0;margin-top:2px;}
+.mat-info{}
+.mat-name{font-size:13px;font-weight:600;color:var(--text);}
+.mat-qty{font-family:var(--mono);font-size:10px;color:var(--orange);letter-spacing:.06em;margin-top:2px;}
+.mat-note{font-size:11px;color:var(--text2);margin-top:3px;line-height:1.5;}
+
+/* ── STEPS ── */
+.step-list{display:flex;flex-direction:column;gap:0;}
+.step{display:flex;gap:0;position:relative;}
+.step::before{content:'';position:absolute;left:20px;top:48px;bottom:0;width:1px;
+  background:var(--border2);z-index:0;}
+.step:last-child::before{display:none;}
+.step-num-wrap{flex-shrink:0;width:40px;display:flex;flex-direction:column;align-items:center;padding-top:4px;}
+.step-num{width:40px;height:40px;border-radius:50%;background:var(--bg3);
+  border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-size:12px;font-weight:900;color:var(--orange);
+  position:relative;z-index:1;flex-shrink:0;}
+.step-body{flex:1;padding:0 0 36px 20px;}
+.step-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px;line-height:1.4;}
+.step-desc{font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:12px;}
+
+/* ── CÓDIGO ── */
+.code-block{background:#07100d;border:1px solid var(--border2);border-radius:8px;
+  overflow:hidden;margin-top:12px;}
+.code-header{background:var(--bg2);padding:10px 16px;display:flex;align-items:center;
+  justify-content:space-between;border-bottom:1px solid var(--border2);}
+.code-filename{font-family:var(--mono);font-size:10px;color:var(--orange);letter-spacing:.08em;}
+.code-lang{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;}
+.code-body{padding:18px 20px;overflow-x:auto;}
+.code-body pre{font-family:var(--mono);font-size:12px;line-height:1.8;color:var(--text2);white-space:pre;}
+/* Syntax highlight manual */
+.kw{color:#ff7a1a;}       /* keywords */
+.fn{color:#00e5ff;}       /* funções */
+.cm{color:#3a5248;font-style:italic;} /* comentários */
+.st{color:#00ff88;}       /* strings */
+.nm{color:#ffe033;}       /* números */
+.tp{color:#b36bff;}       /* tipos */
+.pp{color:#ff3b5c;}       /* preprocessor */
+
+/* ── DIAGRAMA ESQUEMÁTICO ── */
+.schematic-box{background:var(--bg3);border:1px solid rgba(255,122,26,.2);border-radius:10px;
+  padding:24px;margin-top:12px;}
+.schematic-title{font-family:var(--mono);font-size:10px;color:var(--orange);
+  letter-spacing:.15em;text-transform:uppercase;margin-bottom:16px;}
+.schematic-inner{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.pin-table{width:100%;border-collapse:collapse;font-size:12px;}
+.pin-table th{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  padding:8px 12px;border-bottom:1px solid var(--border2);color:var(--text2);background:var(--bg2);text-align:left;}
+.pin-table td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle;}
+.pin-table td:first-child{font-family:var(--mono);font-size:10px;color:var(--orange);font-weight:700;}
+.pin-table tr:last-child td{border-bottom:none;}
+.pin-desc{font-size:11px;color:var(--text3);margin-top:3px;}
+.schematic-note{font-size:12px;color:var(--text2);line-height:1.7;}
+
+/* ── RESULTADO ESPERADO ── */
+.result-box{background:rgba(0,255,136,.04);border:1px solid rgba(0,255,136,.2);
+  border-radius:10px;padding:20px 24px;margin-top:12px;}
+.result-title{font-family:var(--display);font-size:11px;font-weight:700;
+  color:var(--green);letter-spacing:.1em;margin-bottom:10px;}
+.result-monitor{background:#070f0a;border:1px solid var(--border);border-radius:6px;
+  padding:14px 16px;font-family:var(--mono);font-size:11px;line-height:2;color:var(--green2);}
+.result-monitor .rline-head{color:var(--green);font-weight:700;}
+.result-monitor .rline-val{color:var(--yellow);}
+.result-monitor .rline-dim{color:var(--text3);}
+.result-desc{font-size:12px;color:var(--text2);line-height:1.7;margin-top:12px;}
+
+/* ── ANÁLISE ── */
+.analysis-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:12px;}
+.analysis-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:18px 16px;}
+.analysis-card-title{font-family:var(--mono);font-size:10px;color:var(--cyan);
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.analysis-card-body{font-size:12px;color:var(--text2);line-height:1.7;}
+.analysis-card-body strong{color:var(--text);}
+.formula{display:inline-block;background:rgba(0,229,255,.07);border:1px solid rgba(0,229,255,.2);
+  border-radius:4px;padding:4px 10px;font-family:var(--mono);font-size:11px;
+  color:var(--cyan);margin:4px 0;}
+
+/* ── RUBRICA ── */
+.rubric-wrap{overflow-x:auto;margin-top:12px;}
+.rubric{width:100%;border-collapse:collapse;font-size:12px;}
+.rubric th{background:var(--bg2);font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;padding:10px 14px;text-align:left;
+  border-bottom:1px solid var(--border2);color:var(--text2);}
+.rubric td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top;line-height:1.5;}
+.rubric td:first-child{font-weight:600;color:var(--text);font-size:12px;}
+.rubric tr:hover td{background:var(--bg2);}
+.c-ins{color:var(--red);}
+.c-bas{color:var(--yellow);}
+.c-prof{color:var(--cyan);}
+.c-exc{color:var(--green);}
+
+/* ── DICA ── */
+.dica-box{background:var(--bg3);border:1px solid rgba(255,224,51,.2);border-radius:10px;
+  padding:20px 24px;position:relative;overflow:hidden;margin-top:16px;}
+.dica-box::before{content:'💡';position:absolute;right:20px;top:16px;font-size:36px;opacity:.15;}
+.dica-title{font-family:var(--display);font-size:11px;font-weight:700;
+  color:var(--yellow);letter-spacing:.1em;margin-bottom:8px;}
+.dica-text{font-size:13px;color:var(--text2);line-height:1.75;max-width:720px;}
+
+/* ── CONCEITO BOX ── */
+.concept-box{background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.2);
+  border-radius:10px;padding:20px 24px;margin-top:12px;position:relative;overflow:hidden;}
+.concept-box::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--cyan);}
+.concept-title{font-family:var(--display);font-size:11px;font-weight:700;
+  color:var(--cyan);letter-spacing:.1em;margin-bottom:8px;}
+.concept-body{font-size:13px;color:var(--text2);line-height:1.75;}
+.concept-body strong{color:var(--text);}
+
+/* ── ENTREGA ── */
+.entrega-box{background:rgba(179,107,255,.04);border:1px solid rgba(179,107,255,.25);
+  border-radius:10px;padding:20px 24px;margin-top:12px;}
+.entrega-title{font-family:var(--display);font-size:11px;font-weight:700;
+  color:var(--purple);letter-spacing:.1em;margin-bottom:12px;}
+.entrega-list{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.entrega-list li{font-size:13px;color:var(--text2);line-height:1.5;
+  display:flex;align-items:flex-start;gap:10px;}
+.entrega-list li::before{content:'◈';color:var(--purple);font-size:11px;margin-top:2px;flex-shrink:0;}
+.entrega-list li strong{color:var(--text);}
+
+/* ── NAV ── */
+.nav-bar{display:flex;gap:10px;flex-wrap:wrap;padding:24px 40px;
+  border-top:1px solid var(--border);margin-top:40px;}
+.nav-btn{font-family:var(--mono);font-size:10px;letter-spacing:.08em;
+  padding:10px 20px;border-radius:6px;text-decoration:none;border:1px solid;
+  transition:all .2s;display:inline-flex;align-items:center;gap:6px;}
+.nav-btn-sec{color:var(--text2);border-color:var(--border2);background:transparent;}
+.nav-btn-sec:hover{color:var(--text);border-color:var(--text2);}
+.nav-btn-aula{color:var(--cyan);border-color:rgba(0,229,255,.3);background:rgba(0,229,255,.06);}
+.nav-btn-aula:hover{background:rgba(0,229,255,.14);}
+.nav-btn-guia{color:var(--green);border-color:rgba(0,255,136,.3);background:rgba(0,255,136,.06);}
+.nav-btn-guia:hover{background:rgba(0,255,136,.14);}
+.nav-btn-lab{color:var(--orange);border-color:rgba(255,122,26,.35);background:rgba(255,122,26,.08);}
+.nav-btn-lab:hover{background:rgba(255,122,26,.18);}
+
+footer{border-top:1px solid var(--border);padding:28px 40px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.footer-left{font-family:var(--mono);font-size:10px;color:var(--text3);line-height:1.8;}
+.footer-sig{color:var(--orange);font-weight:700;}
+
+@media(max-width:768px){
+  header{padding:28px 20px 20px;} .header-meta{display:none;}
+  .container{padding:0 20px 60px;} .nav-bar{padding:20px;}
+  .schematic-inner{grid-template-columns:1fr;}
+  .analysis-grid{grid-template-columns:1fr;}
+}
+
+/* ── SIMULADOR VISUAL ── */
+.sim-box{background:var(--bg3);border:1px solid rgba(0,229,255,.25);border-radius:12px;
+  overflow:hidden;margin-top:16px;}
+.sim-tabs{display:flex;border-bottom:1px solid var(--border2);}
+.sim-tab{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  padding:10px 18px;cursor:pointer;color:var(--text3);border:none;background:transparent;
+  border-bottom:2px solid transparent;transition:all .2s;}
+.sim-tab.active{color:var(--cyan);border-bottom-color:var(--cyan);background:rgba(0,229,255,.05);}
+.sim-tab:hover:not(.active){color:var(--text2);}
+.sim-panel{display:none;padding:20px;}
+.sim-panel.active{display:block;}
+.sim-img-wrap{background:#1a1a1a;border-radius:8px;overflow:hidden;
+  border:1px solid var(--border2);position:relative;}
+.sim-img-wrap svg{display:block;width:100%;height:auto;}
+.sim-caption{font-family:var(--mono);font-size:10px;color:var(--text3);
+  padding:10px 14px;border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;}
+.sim-caption a{color:var(--cyan);text-decoration:none;}
+.sim-caption a:hover{text-decoration:underline;}
+.sim-badge{display:inline-flex;align-items:center;gap:5px;
+  background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2);
+  border-radius:4px;padding:3px 8px;font-family:var(--mono);font-size:9px;
+  color:var(--cyan);letter-spacing:.08em;margin-left:auto;}
+
+/* ── PASSO DETALHADO ── */
+.substep-list{display:flex;flex-direction:column;gap:0;margin-top:12px;}
+.substep{display:flex;gap:0;position:relative;}
+.substep::before{content:'';position:absolute;left:14px;top:32px;bottom:0;width:1px;
+  background:var(--border);z-index:0;}
+.substep:last-child::before{display:none;}
+.substep-num{width:28px;height:28px;border-radius:50%;background:rgba(255,122,26,.12);
+  border:1px solid rgba(255,122,26,.4);display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:10px;font-weight:700;color:var(--orange);
+  position:relative;z-index:1;flex-shrink:0;margin-top:2px;}
+.substep-body{flex:1;padding:0 0 20px 14px;}
+.substep-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.substep-desc{font-size:12px;color:var(--text2);line-height:1.7;}
+.substep-desc code{font-family:var(--mono);font-size:11px;color:var(--orange);
+  background:rgba(255,122,26,.08);padding:1px 5px;border-radius:3px;}
+.substep-img{background:var(--bg2);border:1px solid var(--border2);border-radius:6px;
+  margin-top:8px;overflow:hidden;}
+.substep-img svg{display:block;width:100%;height:auto;}
+.substep-img-cap{font-family:var(--mono);font-size:9px;color:var(--text3);
+  padding:6px 10px;border-top:1px solid var(--border);}
+.warn-box{background:rgba(255,59,92,.05);border:1px solid rgba(255,59,92,.25);
+  border-radius:6px;padding:10px 14px;margin-top:8px;
+  font-size:12px;color:var(--red);line-height:1.6;}
+.warn-box strong{color:#ff6b7a;}
+.ok-box{background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.2);
+  border-radius:6px;padding:10px 14px;margin-top:8px;
+  font-size:12px;color:var(--green2);line-height:1.6;}
+.ok-box strong{color:var(--green);}
+.check-list{list-style:none;margin-top:10px;display:flex;flex-direction:column;gap:6px;}
+.check-list li{font-size:12px;color:var(--text2);display:flex;align-items:flex-start;gap:8px;line-height:1.6;}
+.check-list li::before{content:'☐';color:var(--orange);font-size:13px;flex-shrink:0;}
+</style>
+</head>
+<body>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">S08 · LAB PRÁTICO · LAB-06 · ARQ-001</div>
+  <h1 class="header-title">Lab 06<br><span>Medindo Ciclos de Clock com Timer1</span></h1>
+  <p class="header-subtitle">CPU e Microarquitetura do Processador · Módulo 2 · Organização do Processador e Desempenho</p>
+  <div class="header-anchor">
+    <span>🎯</span>
+    <span><strong>Âncora conceitual:</strong> CPI, ciclo de instrução, desempenho do processador, relação clock/instrução</span>
+  </div>
+  <div class="header-meta">
+    1º SEMESTRE / 2026<br>
+    FATEC · ADS<br>
+    <span style="color:#ff7a1a">LAB PRÁTICO</span><br>
+    <span style="color:#ffe033">Arduino Uno</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- 01 · OBJETIVOS -->
+  <div class="section-label">01 · Objetivos de Aprendizagem</div>
+  <div class="obj-box">
+    <div class="obj-title">🎯 OBJETIVOS DO LAB 06</div>
+    <ul class="obj-list">
+      <li>Usar o Timer1 de 16 bits do ATmega328P para medir tempo de execução com precisão de nanosegundos</li>
+      <li>Compreender na prática a relação entre frequência de clock, ciclos por instrução (CPI) e tempo de execução</li>
+      <li>Comparar o custo de ciclos de diferentes operações: atribuição, multiplicação, divisão e acesso a memória</li>
+      <li>Demonstrar empiricamente como otimizações de código afetam o número de ciclos gastos</li>
+      <li>Calcular CPI médio e tempo de execução a partir das medições do Timer1</li>
+    </ul>
+  </div>
+
+  <!-- CONCEITO-CHAVE -->
+  <div class="section-label">02 · Conceito-Chave</div>
+  <div class="concept-box">
+    <div class="concept-title">📐 TIMER1 COMO RÉGUA DE NANOSEGUNDOS</div>
+    <div class="concept-body">
+      O ATmega328P opera a <strong>16 MHz</strong> — cada ciclo de clock dura <strong>62,5 ns</strong>. O Timer1 é um contador de 16 bits que incrementa a cada pulso de clock (prescaler = 1). Ao registrar o valor do contador antes e depois de um trecho de código, obtemos diretamente o número de ciclos gastos.<br><br>
+      <span class="formula">T = ciclos × (1 / f_clock) = ciclos × 62,5 ns</span><br><br>
+      Isso transforma o Arduino em um <strong>analisador de desempenho em hardware real</strong> — sem simulação, sem aproximação: ciclos reais medidos em silício real. O ATmega executa a maioria das instruções em <strong>1–2 ciclos</strong>, mas operações como divisão de inteiros consomem até <strong>18–20 ciclos</strong>. Essa diferença, invisível no código-fonte, torna-se concreta aqui.
+    </div>
+  </div>
+
+  <!-- 03 · MATERIAIS -->
+  <div class="section-label">03 · Materiais Necessários</div>
+  <div class="mat-grid">
+    <div class="mat-card">
+      <div class="mat-icon">🔵</div>
+      <div class="mat-info">
+        <div class="mat-name">Arduino Uno R3</div>
+        <div class="mat-qty">1 unidade</div>
+        <div class="mat-note">ATmega328P @ 16 MHz · Timer1 de 16 bits disponível</div>
+      </div>
+    </div>
+    <div class="mat-card">
+      <div class="mat-icon">🔌</div>
+      <div class="mat-info">
+        <div class="mat-name">Cabo USB Tipo A-B</div>
+        <div class="mat-qty">1 unidade</div>
+        <div class="mat-note">Para upload e comunicação serial com o PC</div>
+      </div>
+    </div>
+    <div class="mat-card">
+      <div class="mat-icon">💻</div>
+      <div class="mat-info">
+        <div class="mat-name">Arduino IDE</div>
+        <div class="mat-qty">v1.8+ ou v2.x</div>
+        <div class="mat-note">Serial Monitor ativo a 9600 baud</div>
+      </div>
+    </div>
+    <div class="mat-card">
+      <div class="mat-icon">📄</div>
+      <div class="mat-info">
+        <div class="mat-name">Datasheet ATmega328P</div>
+        <div class="mat-qty">referência</div>
+        <div class="mat-note">Seção 15 — Timer/Counter1 (16-bit)</div>
+      </div>
+    </div>
+    <div class="mat-card">
+      <div class="mat-icon">📊</div>
+      <div class="mat-info">
+        <div class="mat-name">Planilha de Registro</div>
+        <div class="mat-qty">1 por aluno</div>
+        <div class="mat-note">Para anotar os ciclos medidos em cada experimento</div>
+      </div>
+    </div>
+    <div class="mat-card">
+      <div class="mat-icon">⚡</div>
+      <div class="mat-info">
+        <div class="mat-name">Wokwi (opcional)</div>
+        <div class="mat-qty">simulador web</div>
+        <div class="mat-note">wokwi.com — se não houver hardware físico disponível</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AMBIENTE DE SIMULAÇÃO -->
+  <div class="section-label">03b · Ambiente de Simulação</div>
+  <div class="concept-box" style="margin-bottom:0;">
+    <div class="concept-title">🖥️ ESTE LAB NÃO PRECISA DE HARDWARE FÍSICO</div>
+    <div class="concept-body">
+      Se não houver Arduino disponível, use um dos dois simuladores gratuitos abaixo. Ambos emulam o ATmega328P com precisão de ciclos e possuem Serial Monitor integrado. O <strong>Wokwi</strong> é recomendado por ser mais fácil e rápido para este experimento.
+    </div>
+  </div>
+
+  <div class="sim-box">
+    <div class="sim-tabs">
+      <button class="sim-tab active" onclick="showTab('wokwi')">⚡ Wokwi (Recomendado)</button>
+      <button class="sim-tab" onclick="showTab('tinkercad')">🔧 Tinkercad</button>
+    </div>
+
+    <!-- WOKWI PANEL -->
+    <div class="sim-panel active" id="tab-wokwi">
+      <div style="margin-bottom:16px;">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--orange);letter-spacing:.15em;margin-bottom:10px;">PASSO A PASSO — WOKWI.COM</div>
+        <div class="substep-list">
+
+          <div class="substep">
+            <div class="substep-num">1</div>
+            <div class="substep-body">
+              <div class="substep-title">Acesse wokwi.com e crie um novo projeto</div>
+              <div class="substep-desc">Abra <code>wokwi.com</code> no navegador. Clique em <code>New Project</code> no canto superior direito. Na janela de seleção, escolha <code>Arduino Uno</code> como plataforma.</div>
+              <div class="substep-img">
+                <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" style="background:#1a1a2e;">
+                  <defs>
+                    <linearGradient id="wBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style="stop-color:#1a1a2e"/>
+                      <stop offset="100%" style="stop-color:#16213e"/>
+                    </linearGradient>
+                  </defs>
+                  <rect width="700" height="200" fill="url(#wBg)"/>
+                  <!-- Navbar -->
+                  <rect x="0" y="0" width="700" height="44" fill="#0f0f1a" rx="0"/>
+                  <circle cx="26" cy="22" r="12" fill="#00e5a0"/>
+                  <text x="44" y="27" font-family="monospace" font-size="14" font-weight="bold" fill="#00e5a0">wokwi</text>
+                  <!-- New Project button -->
+                  <rect x="560" y="10" width="120" height="24" rx="12" fill="#00e5a0"/>
+                  <text x="620" y="26" font-family="sans-serif" font-size="11" fill="#000" text-anchor="middle" font-weight="bold">+ New Project</text>
+                  <!-- Arrow pointing to button -->
+                  <path d="M 540 22 L 555 22" stroke="#ffe033" stroke-width="2" stroke-dasharray="3,2" fill="none"/>
+                  <polygon points="555,18 563,22 555,26" fill="#ffe033"/>
+                  <text x="490" y="19" font-family="monospace" font-size="9" fill="#ffe033">1. Clique aqui</text>
+                  <!-- Content area -->
+                  <rect x="20" y="60" width="200" height="120" rx="8" fill="#0f1a2e" stroke="#1e3a5f" stroke-width="1"/>
+                  <rect x="230" y="60" width="200" height="120" rx="8" fill="#0f1a2e" stroke="#1e3a5f" stroke-width="1"/>
+                  <rect x="440" y="60" width="200" height="120" rx="8" fill="#0f1a2e" stroke="#00e5a0" stroke-width="2"/>
+                  <!-- Arduino Uno card highlight -->
+                  <rect x="462" y="75" width="60" height="40" rx="4" fill="#003355"/>
+                  <rect x="462" y="75" width="60" height="40" rx="4" fill="none" stroke="#00e5a0" stroke-width="1"/>
+                  <text x="492" y="100" font-family="sans-serif" font-size="9" fill="#00c8ff" text-anchor="middle">Arduino</text>
+                  <text x="492" y="112" font-family="sans-serif" font-size="9" fill="#00c8ff" text-anchor="middle">Uno</text>
+                  <text x="540" y="100" font-family="monospace" font-size="10" fill="#00e5a0">✓ Selecionado</text>
+                  <text x="452" y="140" font-family="monospace" font-size="9" fill="#ffe033">2. Selecione</text>
+                  <text x="452" y="152" font-family="monospace" font-size="9" fill="#ffe033">   Arduino Uno</text>
+                  <text x="30" y="125" font-family="sans-serif" font-size="10" fill="#3a5070" text-anchor="middle">ESP32</text>
+                  <text x="240" y="125" font-family="sans-serif" font-size="10" fill="#3a5070" text-anchor="middle">Raspberry Pi</text>
+                </svg>
+                <div class="substep-img-cap">Tela inicial do Wokwi — selecione "Arduino Uno" na lista de projetos</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="substep">
+            <div class="substep-num">2</div>
+            <div class="substep-body">
+              <div class="substep-title">Conheça a interface do editor</div>
+              <div class="substep-desc">O Wokwi tem três áreas principais: o <code>editor de código</code> (esquerda), o <code>simulador de circuito</code> (direita) e o <code>Serial Monitor</code> (parte inferior após iniciar). Para este lab não precisamos de componentes externos — apenas o Arduino.</div>
+              <div class="substep-img">
+                <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" style="background:#111;">
+                  <!-- Editor left -->
+                  <rect x="0" y="0" width="340" height="280" fill="#1e1e2e"/>
+                  <rect x="0" y="0" width="340" height="36" fill="#111122"/>
+                  <text x="12" y="22" font-family="monospace" font-size="11" fill="#7a7aaa">sketch.ino</text>
+                  <rect x="130" y="6" width="80" height="24" rx="4" fill="#00e5a0" opacity=".15"/>
+                  <text x="170" y="22" font-family="monospace" font-size="10" fill="#00e5a0" text-anchor="middle">▶ Start</text>
+                  <!-- Code lines -->
+                  <text x="16" y="60" font-family="monospace" font-size="10" fill="#636380">1</text>
+                  <text x="30" y="60" font-family="monospace" font-size="10" fill="#ff7a1a">void</text>
+                  <text x="60" y="60" font-family="monospace" font-size="10" fill="#00e5ff"> setup() {</text>
+                  <text x="16" y="76" font-family="monospace" font-size="10" fill="#636380">2</text>
+                  <text x="30" y="76" font-family="monospace" font-size="10" fill="#b36bff">  TCCR1A</text>
+                  <text x="104" y="76" font-family="monospace" font-size="10" fill="#ccc"> = 0;</text>
+                  <text x="16" y="92" font-family="monospace" font-size="10" fill="#636380">3</text>
+                  <text x="30" y="92" font-family="monospace" font-size="10" fill="#b36bff">  TCCR1B</text>
+                  <text x="104" y="92" font-family="monospace" font-size="10" fill="#ccc"> = 0;</text>
+                  <text x="16" y="108" font-family="monospace" font-size="10" fill="#636380">4</text>
+                  <text x="30" y="108" font-family="monospace" font-size="10" fill="#b36bff">  TCNT1</text>
+                  <text x="100" y="108" font-family="monospace" font-size="10" fill="#ccc">  = 0;</text>
+                  <text x="16" y="124" font-family="monospace" font-size="10" fill="#636380">5</text>
+                  <text x="30" y="124" font-family="monospace" font-size="10" fill="#b36bff">  TCCR1B</text>
+                  <text x="104" y="124" font-family="monospace" font-size="10" fill="#ccc"> |= (1 &lt;&lt; CS10);</text>
+                  <!-- Serial monitor area -->
+                  <rect x="0" y="220" width="340" height="60" fill="#0a0a14" stroke="#1e1e3e" stroke-width="1"/>
+                  <text x="12" y="236" font-family="monospace" font-size="9" fill="#636380">SERIAL MONITOR</text>
+                  <text x="12" y="255" font-family="monospace" font-size="10" fill="#00ff88">Lab 06 — Ciclos de Clock</text>
+                  <text x="12" y="270" font-family="monospace" font-size="10" fill="#00c967">ATmega328P @ 16 MHz</text>
+                  <!-- Circuit right -->
+                  <rect x="340" y="0" width="360" height="280" fill="#1a2a1a"/>
+                  <text x="520" y="20" font-family="monospace" font-size="10" fill="#3a6a3a" text-anchor="middle">ÁREA DO CIRCUITO</text>
+                  <!-- Arduino board SVG simplified -->
+                  <rect x="390" y="50" width="260" height="180" rx="6" fill="#006633" stroke="#00aa55" stroke-width="2"/>
+                  <rect x="395" y="55" width="250" height="170" rx="4" fill="#005522"/>
+                  <!-- USB port -->
+                  <rect x="388" y="110" width="16" height="40" rx="2" fill="#888" stroke="#666" stroke-width="1"/>
+                  <text x="396" y="135" font-family="sans-serif" font-size="6" fill="#ccc" text-anchor="middle">USB</text>
+                  <!-- Pin headers top -->
+                  <rect x="415" y="55" width="200" height="14" rx="2" fill="#1a1a1a"/>
+                  <text x="515" y="65" font-family="monospace" font-size="7" fill="#888" text-anchor="middle">DIGITAL PINS 0–13</text>
+                  <!-- Pin headers bottom -->
+                  <rect x="415" y="211" width="200" height="14" rx="2" fill="#1a1a1a"/>
+                  <text x="515" y="221" font-family="monospace" font-size="7" fill="#888" text-anchor="middle">ANALOG PINS A0–A5</text>
+                  <!-- Chip -->
+                  <rect x="460" y="100" width="80" height="60" rx="4" fill="#111" stroke="#333" stroke-width="1"/>
+                  <text x="500" y="128" font-family="monospace" font-size="8" fill="#666" text-anchor="middle">ATmega</text>
+                  <text x="500" y="140" font-family="monospace" font-size="8" fill="#666" text-anchor="middle">328P</text>
+                  <!-- Crystal -->
+                  <rect x="455" y="168" width="22" height="12" rx="3" fill="#c8a000" stroke="#a07800" stroke-width="1"/>
+                  <text x="466" y="177" font-family="monospace" font-size="6" fill="#fff" text-anchor="middle">16M</text>
+                  <!-- Labels -->
+                  <rect x="350" y="8" width="68" height="18" rx="4" fill="rgba(0,229,255,.12)" stroke="rgba(0,229,255,.3)" stroke-width="1"/>
+                  <text x="384" y="20" font-family="monospace" font-size="9" fill="#00e5ff" text-anchor="middle">Editor</text>
+                  <rect x="580" y="8" width="80" height="18" rx="4" fill="rgba(0,255,136,.1)" stroke="rgba(0,255,136,.3)" stroke-width="1"/>
+                  <text x="620" y="20" font-family="monospace" font-size="9" fill="#00ff88" text-anchor="middle">Simulador</text>
+                </svg>
+                <div class="substep-img-cap">Interface do Wokwi: editor de código (esquerda), simulador do Arduino (direita), Serial Monitor (abaixo)</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="substep">
+            <div class="substep-num">3</div>
+            <div class="substep-body">
+              <div class="substep-title">Cole o código e inicie a simulação</div>
+              <div class="substep-desc">Apague o código padrão no editor. Cole o código do Passo 1 (abaixo). Clique no botão <code>▶ Start Simulation</code> no topo. O Serial Monitor aparecerá automaticamente na parte inferior mostrando as medições em tempo real.</div>
+              <div class="ok-box"><strong>✓ Dica:</strong> No Wokwi você pode usar Ctrl+S para salvar e o projeto fica acessível por URL — fácil para enviar ao professor.</div>
+            </div>
+          </div>
+
+          <div class="substep">
+            <div class="substep-num">4</div>
+            <div class="substep-body">
+              <div class="substep-title">Leia a saída no Serial Monitor</div>
+              <div class="substep-desc">O painel inferior exibe o Serial Monitor. As medições aparecem a cada 2 segundos (por causa do <code>delay(2000)</code> no loop). Anote os valores de ciclos na sua planilha de registro.</div>
+              <div class="substep-img">
+                <svg viewBox="0 0 700 160" xmlns="http://www.w3.org/2000/svg" style="background:#0a0a14;">
+                  <rect width="700" height="160" fill="#0a0a14"/>
+                  <rect x="0" y="0" width="700" height="30" fill="#111122"/>
+                  <text x="14" y="19" font-family="monospace" font-size="10" fill="#636380" letter-spacing="1">SERIAL MONITOR — 9600 BAUD</text>
+                  <circle cx="676" cy="15" r="6" fill="#00ff88"/>
+                  <text x="658" y="19" font-family="monospace" font-size="8" fill="#00c967">ON</text>
+                  <!-- Output lines -->
+                  <text x="14" y="55" font-family="monospace" font-size="11" fill="#00ff88">=============================</text>
+                  <text x="14" y="72" font-family="monospace" font-size="11" fill="#00ff88">Lab 06 — Ciclos de Clock</text>
+                  <text x="14" y="89" font-family="monospace" font-size="11" fill="#00c967">ATmega328P @ 16 MHz</text>
+                  <text x="14" y="106" font-family="monospace" font-size="11" fill="#00c967">1 ciclo = 62.5 ns</text>
+                  <text x="14" y="123" font-family="monospace" font-size="11" fill="#00ff88">=============================</text>
+                  <text x="14" y="140" font-family="monospace" font-size="11" fill="#7a9488">Atribuicao (x=42): </text>
+                  <text x="220" y="140" font-family="monospace" font-size="11" fill="#ffe033">2 ciclos</text>
+                  <!-- Cursor blink -->
+                  <rect x="314" y="130" width="6" height="12" fill="#00ff88" opacity=".8">
+                    <animate attributeName="opacity" values="0.8;0;0.8" dur="1s" repeatCount="indefinite"/>
+                  </rect>
+                </svg>
+                <div class="substep-img-cap">Serial Monitor do Wokwi mostrando a saída do Lab 06 em tempo real</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="sim-caption">
+        <span>Simulador recomendado para este lab</span>
+        <a href="https://wokwi.com" target="_blank" class="sim-badge">🔗 Abrir wokwi.com</a>
+      </div>
+    </div>
+
+    <!-- TINKERCAD PANEL -->
+    <div class="sim-panel" id="tab-tinkercad">
+      <div style="margin-bottom:16px;">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--orange);letter-spacing:.15em;margin-bottom:10px;">PASSO A PASSO — TINKERCAD CIRCUITS</div>
+        <div class="substep-list">
+
+          <div class="substep">
+            <div class="substep-num">1</div>
+            <div class="substep-body">
+              <div class="substep-title">Acesse o Tinkercad e faça login</div>
+              <div class="substep-desc">Acesse <code>tinkercad.com</code>. Crie uma conta gratuita (pode usar login Google ou Autodesk). Após o login, clique em <code>Circuits</code> no menu lateral esquerdo.</div>
+              <div class="substep-img">
+                <svg viewBox="0 0 700 180" xmlns="http://www.w3.org/2000/svg" style="background:#1a1a1a;">
+                  <rect width="700" height="180" fill="#f5f5f5"/>
+                  <!-- Tinkercad header orange -->
+                  <rect x="0" y="0" width="700" height="48" fill="#f26322"/>
+                  <text x="20" y="30" font-family="sans-serif" font-size="16" font-weight="bold" fill="#fff">TINKERCAD</text>
+                  <rect x="580" y="12" width="100" height="24" rx="4" fill="#fff" opacity=".2"/>
+                  <text x="630" y="28" font-family="sans-serif" font-size="11" fill="#fff" text-anchor="middle">Log In / Sign Up</text>
+                  <!-- Sidebar -->
+                  <rect x="0" y="48" width="160" height="132" fill="#2c2c2c"/>
+                  <rect x="0" y="80" width="160" height="36" fill="#f26322" opacity=".3"/>
+                  <text x="20" y="72" font-family="sans-serif" font-size="11" fill="#888">3D Design</text>
+                  <text x="20" y="102" font-family="sans-serif" font-size="11" fill="#fff" font-weight="bold">● Circuits</text>
+                  <text x="20" y="122" font-family="sans-serif" font-size="11" fill="#888">Codeblocks</text>
+                  <!-- Main area -->
+                  <rect x="180" y="62" width="160" height="100" rx="6" fill="#fff" stroke="#ddd" stroke-width="1"/>
+                  <rect x="360" y="62" width="160" height="100" rx="6" fill="#fff" stroke="#ddd" stroke-width="1"/>
+                  <rect x="540" y="62" width="140" height="100" rx="6" fill="#fff" stroke="#f26322" stroke-width="2"/>
+                  <text x="540" y="102" font-family="sans-serif" font-size="24" text-anchor="middle">+</text>
+                  <text x="562" y="125" font-family="sans-serif" font-size="11" fill="#f26322" text-anchor="middle">Criar Novo</text>
+                  <text x="562" y="140" font-family="sans-serif" font-size="9" fill="#f26322" text-anchor="middle">Circuit</text>
+                  <polygon points="530,108 524,96 536,96" fill="#ffe033"/>
+                  <text x="510" y="92" font-family="sans-serif" font-size="9" fill="#333">2. Clique aqui</text>
+                </svg>
+                <div class="substep-img-cap">Tela inicial do Tinkercad — clique em "Circuits" no menu lateral e depois em "Criar Novo Circuit"</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="substep">
+            <div class="substep-num">2</div>
+            <div class="substep-body">
+              <div class="substep-title">Adicione o Arduino Uno ao circuito</div>
+              <div class="substep-desc">No editor de circuito, busque <code>Arduino Uno</code> na barra de componentes à direita. Clique e arraste o Arduino para a área de trabalho. O Tinkercad já inclui a placa com todos os pinos rotulados.</div>
+              <div class="substep-img">
+                <svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" style="background:#e8e8e8;">
+                  <rect width="700" height="220" fill="#e8e8e8"/>
+                  <!-- Top toolbar -->
+                  <rect x="0" y="0" width="700" height="36" fill="#f26322"/>
+                  <text x="14" y="22" font-family="sans-serif" font-size="11" fill="#fff">Tinkercad Circuits</text>
+                  <rect x="580" y="8" width="100" height="20" rx="4" fill="#fff" opacity=".3"/>
+                  <text x="630" y="21" font-family="sans-serif" font-size="9" fill="#fff" text-anchor="middle">▶ Iniciar Simulação</text>
+                  <!-- Canvas area -->
+                  <rect x="0" y="36" width="520" height="184" fill="#c8d4d4"/>
+                  <!-- Grid dots -->
+                  <pattern id="dot" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                    <circle cx="10" cy="10" r="1" fill="#b0bcbc" opacity=".5"/>
+                  </pattern>
+                  <rect x="0" y="36" width="520" height="184" fill="url(#dot)"/>
+                  <!-- Arduino board on canvas -->
+                  <rect x="80" y="65" width="300" height="140" rx="6" fill="#006633" stroke="#00aa55" stroke-width="2"/>
+                  <rect x="86" y="71" width="288" height="128" rx="4" fill="#005522"/>
+                  <!-- USB -->
+                  <rect x="76" y="105" width="16" height="38" rx="2" fill="#888"/>
+                  <text x="84" y="128" font-family="sans-serif" font-size="6" fill="#ccc" text-anchor="middle">USB</text>
+                  <!-- Digital pins -->
+                  <rect x="100" y="65" width="230" height="12" rx="2" fill="#1a1a1a"/>
+                  <text x="215" y="74" font-family="monospace" font-size="6" fill="#888" text-anchor="middle">DIGITAL 0–13</text>
+                  <!-- Analog pins -->
+                  <rect x="100" y="183" width="180" height="12" rx="2" fill="#1a1a1a"/>
+                  <text x="190" y="192" font-family="monospace" font-size="6" fill="#888" text-anchor="middle">ANALOG A0–A5</text>
+                  <!-- Chip -->
+                  <rect x="155" y="100" width="80" height="55" rx="4" fill="#111" stroke="#333"/>
+                  <text x="195" y="125" font-family="monospace" font-size="7" fill="#555" text-anchor="middle">ATmega328P</text>
+                  <!-- Crystal -->
+                  <rect x="150" y="160" width="20" height="10" rx="3" fill="#c8a000"/>
+                  <text x="160" y="168" font-family="monospace" font-size="5" fill="#fff" text-anchor="middle">16MHz</text>
+                  <!-- Component panel right -->
+                  <rect x="520" y="36" width="180" height="184" fill="#fff"/>
+                  <rect x="520" y="36" width="180" height="30" fill="#f0f0f0" stroke="#ddd" stroke-width="1"/>
+                  <text x="610" y="55" font-family="sans-serif" font-size="10" fill="#333" text-anchor="middle">🔍 Buscar componente</text>
+                  <rect x="534" y="76" width="152" height="24" rx="3" fill="#e8f4ff" stroke="#b0d0f0"/>
+                  <text x="610" y="92" font-family="sans-serif" font-size="10" fill="#2266aa" text-anchor="middle">Arduino Uno R3</text>
+                  <!-- Arrow from component to board -->
+                  <path d="M 534 88 L 400 110" stroke="#f26322" stroke-width="2" stroke-dasharray="4,3" fill="none" marker-end="url(#arr)"/>
+                  <text x="448" y="100" font-family="sans-serif" font-size="9" fill="#f26322">Arraste</text>
+                </svg>
+                <div class="substep-img-cap">Arraste o "Arduino Uno R3" da barra de componentes para a área de trabalho</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="substep">
+            <div class="substep-num">3</div>
+            <div class="substep-body">
+              <div class="substep-title">Abra o editor de código</div>
+              <div class="substep-desc">Clique no Arduino dentro do circuito para selecioná-lo. Depois clique no botão <code>Code</code> que aparece no topo (ou clique com o botão direito → <code>Edit Code</code>). Escolha o modo <code>Text</code> (não Blocks) para digitar código C++ diretamente.</div>
+              <div class="warn-box"><strong>⚠ Atenção:</strong> O Tinkercad tem um simulador menos preciso para medições de Timer do que o Wokwi. Os valores de ciclos podem ter pequenas diferenças, mas o comportamento relativo entre operações será o mesmo.</div>
+            </div>
+          </div>
+
+          <div class="substep">
+            <div class="substep-num">4</div>
+            <div class="substep-body">
+              <div class="substep-title">Inicie a simulação e abra o Serial Monitor</div>
+              <div class="substep-desc">Clique em <code>▶ Iniciar Simulação</code> no canto superior direito. Para ver a saída serial, clique no botão <code>Serial Monitor</code> que aparece no painel inferior após a simulação começar. A velocidade deve estar configurada em <code>9600 baud</code>.</div>
+              <div class="substep-img">
+                <svg viewBox="0 0 700 130" xmlns="http://www.w3.org/2000/svg" style="background:#1a1a1a;">
+                  <rect width="700" height="130" fill="#1a1a1a"/>
+                  <rect x="0" y="0" width="700" height="28" fill="#111"/>
+                  <rect x="550" y="5" width="136" height="20" rx="4" fill="#f26322"/>
+                  <text x="618" y="18" font-family="sans-serif" font-size="10" fill="#fff" text-anchor="middle">▶ Iniciar Simulação</text>
+                  <!-- Serial Monitor label -->
+                  <rect x="0" y="28" width="700" height="26" fill="#222"/>
+                  <rect x="8" y="34" width="110" height="16" rx="3" fill="#333" stroke="#555"/>
+                  <text x="63" y="45" font-family="monospace" font-size="9" fill="#aaa" text-anchor="middle">Serial Monitor</text>
+                  <text x="150" y="44" font-family="monospace" font-size="9" fill="#666">| 9600 Baud ▾</text>
+                  <!-- Monitor output -->
+                  <rect x="0" y="54" width="700" height="76" fill="#0a0a0a"/>
+                  <text x="14" y="75" font-family="monospace" font-size="11" fill="#00ff88">=============================</text>
+                  <text x="14" y="92" font-family="monospace" font-size="11" fill="#00ff88">Lab 06 — Ciclos de Clock</text>
+                  <text x="14" y="109" font-family="monospace" font-size="11" fill="#7a9488">Atribuicao (x=42): </text>
+                  <text x="216" y="109" font-family="monospace" font-size="11" fill="#ffe033">2 ciclos</text>
+                </svg>
+                <div class="substep-img-cap">Painel do Serial Monitor no Tinkercad após iniciar a simulação — verifique que o baud está em 9600</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="sim-caption">
+        <span>Alternativa ao hardware físico</span>
+        <a href="https://www.tinkercad.com/circuits" target="_blank" class="sim-badge">🔗 Abrir Tinkercad Circuits</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 · REFERÊNCIA RÁPIDA DO TIMER1 -->
+  <div class="section-label">04 · Referência Rápida — Timer1 do ATmega328P</div>
+  <div class="schematic-box">
+    <div class="schematic-title">⚙️ Registradores e Configuração do Timer1</div>
+    <div class="schematic-inner">
+      <div>
+        <table class="pin-table">
+          <thead><tr><th>Registrador</th><th>Função</th></tr></thead>
+          <tbody>
+            <tr><td>TCCR1A</td><td>Timer/Counter Control Register A — modo de operação</td></tr>
+            <tr><td>TCCR1B</td><td>Timer/Counter Control Register B — prescaler e modo</td></tr>
+            <tr><td>TCNT1</td><td>Valor atual do contador de 16 bits (0–65535)</td></tr>
+            <tr><td>TIMSK1</td><td>Máscara de interrupções do Timer1</td></tr>
+            <tr><td>CS10</td><td>Clock Select bit 0 — prescaler = 1 (sem divisão)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="schematic-note" style="padding-left:8px;">
+        <strong style="color:var(--orange)">Modo Normal (WGM = 0000):</strong><br>
+        O contador conta de 0 até 65535 e sobrescreve. Com prescaler = 1 e clock de 16 MHz, cada tick = 62,5 ns. O contador completa um ciclo completo em ≈ 4,096 ms.<br><br>
+        <strong style="color:var(--yellow)">Atenção ao overflow:</strong><br>
+        Se o trecho medido levar mais de 4,096 ms (65535 ciclos), o contador vai dar overflow. Para trechos mais longos, use prescaler = 8 (cada tick = 500 ns) ou verifique a flag TOV1.<br><br>
+        <strong style="color:var(--cyan)">Fórmula de cálculo:</strong><br>
+        <span class="formula">ciclos = t_fim − t_inicio</span><br>
+        <span class="formula">tempo_ns = ciclos × 62,5</span><br>
+        <span class="formula">tempo_µs = ciclos / 16</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Diagrama visual do Timer1 -->
+  <div style="margin-top:16px;">
+    <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:10px;">DIAGRAMA — FLUXO DE MEDIÇÃO COM TIMER1</div>
+    <div class="substep-img" style="max-width:100%;">
+      <svg viewBox="0 0 700 160" xmlns="http://www.w3.org/2000/svg" style="background:#0b0f0e;">
+        <defs>
+          <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#ff7a1a"/>
+          </marker>
+        </defs>
+        <rect width="700" height="160" fill="#0b0f0e"/>
+        <!-- Step boxes -->
+        <rect x="20" y="50" width="110" height="60" rx="6" fill="#111715" stroke="#1e2e28"/>
+        <text x="75" y="76" font-family="monospace" font-size="9" fill="#7a9488" text-anchor="middle">TCNT1 = 0</text>
+        <text x="75" y="90" font-family="monospace" font-size="9" fill="#ffe033" text-anchor="middle">t0 = TCNT1</text>
+        <text x="75" y="38" font-family="sans-serif" font-size="9" fill="#ff7a1a" text-anchor="middle">① Reset + Leitura inicial</text>
+
+        <line x1="130" y1="80" x2="175" y2="80" stroke="#ff7a1a" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+        <rect x="175" y="50" width="120" height="60" rx="6" fill="#111715" stroke="rgba(255,224,51,.25)"/>
+        <text x="235" y="76" font-family="monospace" font-size="9" fill="#ffe033" text-anchor="middle">r = a + b;</text>
+        <text x="235" y="90" font-family="monospace" font-size="9" fill="#ffe033" text-anchor="middle">// código medido</text>
+        <text x="235" y="38" font-family="sans-serif" font-size="9" fill="#ffe033" text-anchor="middle">② Execução da operação</text>
+
+        <line x1="295" y1="80" x2="340" y2="80" stroke="#ff7a1a" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+        <rect x="340" y="50" width="110" height="60" rx="6" fill="#111715" stroke="#1e2e28"/>
+        <text x="395" y="76" font-family="monospace" font-size="9" fill="#7a9488" text-anchor="middle">t1 = TCNT1</text>
+        <text x="395" y="90" font-family="monospace" font-size="9" fill="#ffe033" text-anchor="middle">// captura final</text>
+        <text x="395" y="38" font-family="sans-serif" font-size="9" fill="#ff7a1a" text-anchor="middle">③ Leitura final</text>
+
+        <line x1="450" y1="80" x2="495" y2="80" stroke="#ff7a1a" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+        <rect x="495" y="50" width="130" height="60" rx="6" fill="#111715" stroke="rgba(0,255,136,.2)"/>
+        <text x="560" y="72" font-family="monospace" font-size="9" fill="#00c967" text-anchor="middle">ciclos = t1 - t0</text>
+        <text x="560" y="86" font-family="monospace" font-size="9" fill="#00ff88" text-anchor="middle">ns = ciclos × 62.5</text>
+        <text x="560" y="38" font-family="sans-serif" font-size="9" fill="#00ff88" text-anchor="middle">④ Resultado final</text>
+
+        <!-- Clock ticks below -->
+        <text x="350" y="135" font-family="monospace" font-size="8" fill="#3a5248" text-anchor="middle">← cada tick do TCNT1 = 1 ciclo de clock = 62,5 ns @16MHz →</text>
+        <line x1="20" y1="125" x2="680" y2="125" stroke="#1e2e28" stroke-width="1"/>
+        <line x1="20" y1="121" x2="20" y2="129" stroke="#3a5248" stroke-width="1"/>
+        <line x1="680" y1="121" x2="680" y2="129" stroke="#3a5248" stroke-width="1"/>
+        <!-- Tick marks -->
+        <line x1="60" y1="123" x2="60" y2="127" stroke="#3a5248" stroke-width="1"/>
+        <line x1="100" y1="122" x2="100" y2="128" stroke="#ff7a1a" stroke-width="1.5"/>
+        <line x1="140" y1="123" x2="140" y2="127" stroke="#3a5248" stroke-width="1"/>
+        <line x1="180" y1="123" x2="180" y2="127" stroke="#3a5248" stroke-width="1"/>
+        <line x1="220" y1="123" x2="220" y2="127" stroke="#3a5248" stroke-width="1"/>
+        <line x1="260" y1="123" x2="260" y2="127" stroke="#3a5248" stroke-width="1"/>
+        <line x1="300" y1="122" x2="300" y2="128" stroke="#ff7a1a" stroke-width="1.5"/>
+        <text x="100" y="118" font-family="monospace" font-size="7" fill="#ff7a1a" text-anchor="middle">t0</text>
+        <text x="300" y="118" font-family="monospace" font-size="7" fill="#ff7a1a" text-anchor="middle">t1</text>
+      </svg>
+      <div class="substep-img-cap">Fluxo de medição com Timer1: reset → t0 → código → t1 → cálculo de ciclos</div>
+    </div>
+  </div>
+
+  <!-- 05 · ROTEIRO PASSO A PASSO -->
+  <div class="section-label">05 · Roteiro do Laboratório</div>
+
+  <div class="step-list">
+
+    <!-- PASSO 1 -->
+    <div class="step">
+      <div class="step-num-wrap"><div class="step-num">1</div></div>
+      <div class="step-body">
+        <div class="step-title">Configurar o Timer1 e criar a função de medição</div>
+        <div class="step-desc">
+          O primeiro sketch configura o Timer1 em modo normal com prescaler = 1 (sem divisão de clock). A macro <code style="color:var(--orange);font-family:var(--mono)">MEDIR(expr)</code> registra o contador antes e depois da expressão, retornando o número exato de ciclos gastos.
+        </div>
+
+        <!-- Sub-passo detalhado de como fazer -->
+        <div class="substep-list" style="margin-bottom:16px;">
+          <div class="substep">
+            <div class="substep-num">a</div>
+            <div class="substep-body">
+              <div class="substep-title">Abra o simulador e crie um novo sketch</div>
+              <div class="substep-desc">No <strong>Wokwi</strong>: acesse <code>wokwi.com/projects/new/arduino-uno</code>. No <strong>Tinkercad</strong>: crie um novo Circuit com Arduino Uno e clique em <code>Code → Text</code>. Apague o conteúdo padrão do editor.</div>
+            </div>
+          </div>
+          <div class="substep">
+            <div class="substep-num">b</div>
+            <div class="substep-body">
+              <div class="substep-title">Copie e cole o código abaixo no editor</div>
+              <div class="substep-desc">Selecione todo o código do bloco abaixo (Ctrl+A dentro do bloco de código) e cole no editor do simulador. O código inclui a configuração do Timer1, a macro MEDIR e um teste inicial.</div>
+            </div>
+          </div>
+          <div class="substep">
+            <div class="substep-num">c</div>
+            <div class="substep-body">
+              <div class="substep-title">Inicie a simulação</div>
+              <div class="substep-desc">Clique em <code>▶ Start</code> (Wokwi) ou <code>▶ Iniciar Simulação</code> (Tinkercad). Aguarde o Serial Monitor aparecer. Você deve ver as mensagens de inicialização e a primeira medição.</div>
+              <div class="ok-box"><strong>✓ Resultado esperado:</strong> "Atribuicao (x=42): 2 ciclos" aparecendo a cada 2 segundos no Serial Monitor.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-filename">lab06_timer1_base.ino</span>
+            <span class="code-lang">Arduino C++</span>
+          </div>
+          <div class="code-body"><pre><span class="cm">// ═══════════════════════════════════════════
+// LAB 06 — Medindo Ciclos de Clock com Timer1
+// ARQ-001 · FATEC · ADS 2026
+// ═══════════════════════════════════════════</span>
+
+<span class="cm">// ── Configuração do Timer1 ──────────────────</span>
+<span class="kw">void</span> <span class="fn">iniciarTimer1</span>() {
+  TCCR1A = <span class="nm">0</span>;          <span class="cm">// modo normal</span>
+  TCCR1B = <span class="nm">0</span>;          <span class="cm">// zera prescaler</span>
+  TCNT1  = <span class="nm">0</span>;          <span class="cm">// reseta contador</span>
+  TCCR1B |= (<span class="nm">1</span> &lt;&lt; CS10); <span class="cm">// prescaler = 1 → clock direto 16 MHz</span>
+}
+
+<span class="cm">// ── Lê o contador atual ─────────────────────</span>
+<span class="kw">inline</span> <span class="tp">uint16_t</span> <span class="fn">lerCiclos</span>() {
+  <span class="kw">return</span> TCNT1;
+}
+
+<span class="cm">// ── Macro de medição ────────────────────────</span>
+<span class="cm">// Uso: uint16_t c = MEDIR( codigo_aqui );</span>
+<span class="pp">#define</span> MEDIR(expr)                         \
+  ([&amp;]() -&gt; <span class="tp">uint16_t</span> {                      \
+    TCNT1 = <span class="nm">0</span>;                               \
+    <span class="tp">uint16_t</span> t0 = TCNT1;                    \
+    (expr);                                  \
+    <span class="tp">uint16_t</span> t1 = TCNT1;                    \
+    <span class="kw">return</span> (t1 &gt;= t0) ? (t1 - t0) : t1;    \
+  }())
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  Serial.<span class="fn">begin</span>(<span class="nm">9600</span>);
+  <span class="fn">iniciarTimer1</span>();
+  Serial.<span class="fn">println</span>(<span class="st">"============================="</span>);
+  Serial.<span class="fn">println</span>(<span class="st">"Lab 06 — Ciclos de Clock"</span>);
+  Serial.<span class="fn">println</span>(<span class="st">"ATmega328P @ 16 MHz"</span>);
+  Serial.<span class="fn">println</span>(<span class="st">"1 ciclo = 62.5 ns"</span>);
+  Serial.<span class="fn">println</span>(<span class="st">"============================="</span>);
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="cm">// Teste inicial: atribuição simples</span>
+  <span class="tp">volatile</span> <span class="tp">int</span> x;
+  <span class="tp">uint16_t</span> ciclos = MEDIR( x = <span class="nm">42</span> );
+
+  Serial.<span class="fn">print</span>(<span class="st">"Atribuicao (x=42): "</span>);
+  Serial.<span class="fn">print</span>(ciclos);
+  Serial.<span class="fn">println</span>(<span class="st">" ciclos"</span>);
+
+  <span class="fn">delay</span>(<span class="nm">2000</span>);
+}</pre></div>
+        </div>
+        <div class="dica-box" style="margin-top:12px;">
+          <div class="dica-title">💡 POR QUE volatile?</div>
+          <div class="dica-text">A palavra-chave <code style="color:var(--orange);font-family:var(--mono)">volatile</code> impede que o compilador <em>otimize e elimine</em> a atribuição, o que zeraria artificialmente os ciclos. Em medições de desempenho, sempre declare as variáveis como <code style="font-family:var(--mono);color:var(--orange)">volatile</code> para garantir que o código realmente seja executado no hardware.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASSO 2 -->
+    <div class="step">
+      <div class="step-num-wrap"><div class="step-num">2</div></div>
+      <div class="step-body">
+        <div class="step-title">Experimento 1 — Custo de operações aritméticas</div>
+        <div class="step-desc">
+          Meça e compare o número de ciclos de quatro operações aritméticas: soma, subtração, multiplicação e divisão. O resultado revela diretamente como o hardware do ATmega trata cada operação no nível de microcódigo.
+        </div>
+
+        <div class="substep-list" style="margin-bottom:16px;">
+          <div class="substep">
+            <div class="substep-num">a</div>
+            <div class="substep-body">
+              <div class="substep-title">Crie um novo sketch (ou substitua o loop do Passo 1)</div>
+              <div class="substep-desc">Mantenha todo o código de configuração do Timer1 do Passo 1 no topo do arquivo. Substitua a função <code>loop()</code> pela chamada ao experimento abaixo, e adicione a função <code>experimento1_aritmetica()</code>.</div>
+            </div>
+          </div>
+          <div class="substep">
+            <div class="substep-num">b</div>
+            <div class="substep-body">
+              <div class="substep-title">Execute e observe cada operação no Serial Monitor</div>
+              <div class="substep-desc">Após iniciar a simulação, o Serial Monitor exibirá 4 linhas. Anote cada valor na tabela de registro. Se dois valores forem iguais (ex: soma e subtração = 2 ciclos), está correto — o ATmega tem instruções <code>ADD</code> e <code>SUB</code> com o mesmo custo.</div>
+            </div>
+          </div>
+          <div class="substep">
+            <div class="substep-num">c</div>
+            <div class="substep-body">
+              <div class="substep-title">Calcule o tempo em nanosegundos para cada operação</div>
+              <div class="substep-desc">Use a fórmula: <code>T(ns) = ciclos × 62,5</code>. Por exemplo: divisão com 18 ciclos → <code>18 × 62,5 = 1.125 ns</code>. Anote na coluna T(ns) da tabela de registro.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-filename">lab06_exp1_aritmetica.ino</span>
+            <span class="code-lang">Arduino C++</span>
+          </div>
+          <div class="code-body"><pre><span class="cm">// (inclua a configuração do Timer1 do Passo 1)</span>
+
+<span class="kw">void</span> <span class="fn">experimento1_aritmetica</span>() {
+  <span class="tp">volatile</span> <span class="tp">int</span> a = <span class="nm">100</span>, b = <span class="nm">7</span>, r;
+  <span class="tp">uint16_t</span> c;
+
+  Serial.<span class="fn">println</span>(<span class="st">"\n--- EXP 1: Operacoes Aritmeticas ---"</span>);
+
+  c = MEDIR( r = a + b );
+  Serial.<span class="fn">print</span>(<span class="st">"Soma (a+b):          "</span>);
+  Serial.<span class="fn">print</span>(c); Serial.<span class="fn">println</span>(<span class="st">" ciclos"</span>);
+
+  c = MEDIR( r = a - b );
+  Serial.<span class="fn">print</span>(<span class="st">"Subtracao (a-b):     "</span>);
+  Serial.<span class="fn">print</span>(c); Serial.<span class="fn">println</span>(<span class="st">" ciclos"</span>);
+
+  c = MEDIR( r = a * b );
+  Serial.<span class="fn">print</span>(<span class="st">"Multiplicacao (a*b): "</span>);
+  Serial.<span class="fn">print</span>(c); Serial.<span class="fn">println</span>(<span class="st">" ciclos"</span>);
+
+  c = MEDIR( r = a / b );
+  Serial.<span class="fn">print</span>(<span class="st">"Divisao (a/b):       "</span>);
+  Serial.<span class="fn">print</span>(c); Serial.<span class="fn">println</span>(<span class="st">" ciclos"</span>);
+
+  <span class="cm">// Calcule o tempo em nanosegundos</span>
+  <span class="cm">// T(ns) = ciclos * 62.5</span>
+}</pre></div>
+        </div>
+        <div class="result-box">
+          <div class="result-title">📟 RESULTADO ESPERADO NO SERIAL MONITOR</div>
+          <div class="result-monitor">
+            <span class="rline-head">--- EXP 1: Operacoes Aritmeticas ---</span><br>
+            Soma (a+b): &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="rline-val">2</span> ciclos<br>
+            Subtracao (a-b): &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="rline-val">2</span> ciclos<br>
+            Multiplicacao (a*b): <span class="rline-val">9</span> ciclos<br>
+            Divisao (a/b): &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="rline-val">18</span> ciclos<br>
+            <span class="rline-dim">// valores podem variar ±1-2 ciclos pelo overhead de medição</span>
+          </div>
+          <div class="result-desc">
+            <strong style="color:var(--text)">Análise:</strong> Soma e subtração são operações de <strong style="color:var(--green)">1 ciclo real</strong> no AVR (instrução <code style="font-family:var(--mono);color:var(--orange)">ADD</code> / <code style="font-family:var(--mono);color:var(--orange)">SUB</code> = 1 ciclo cada). A multiplicação usa a instrução <code style="font-family:var(--mono);color:var(--orange)">MUL</code> de 2 ciclos do ATmega, mas o compilador pode gerar múltiplas instruções para inteiros de 16 bits. A divisão <strong style="color:var(--red)">não existe como instrução AVR</strong> — é implementada via software por uma rotina de subtração repetitiva, daí os ~18 ciclos. Isso é CPI diferenciado por tipo de instrução!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASSO 3 -->
+    <div class="step">
+      <div class="step-num-wrap"><div class="step-num">3</div></div>
+      <div class="step-body">
+        <div class="step-title">Experimento 2 — Custo de acesso à memória</div>
+        <div class="step-desc">
+          Compare o custo de acessar uma variável local (registrador/stack), um array na SRAM e a EEPROM. Este experimento demonstra empiricamente a hierarquia de memória do ATmega e como latência de acesso varia com o tipo de memória.
+        </div>
+
+        <div class="substep-list" style="margin-bottom:16px;">
+          <div class="substep">
+            <div class="substep-num">a</div>
+            <div class="substep-body">
+              <div class="substep-title">Adicione a biblioteca EEPROM</div>
+              <div class="substep-desc">O código usa <code>#include &lt;EEPROM.h&gt;</code> que já vem com a IDE e com o Wokwi/Tinkercad — não é necessário instalar nada extra. Apenas certifique-se de que o <code>#include</code> está no topo do arquivo.</div>
+            </div>
+          </div>
+          <div class="substep">
+            <div class="substep-num">b</div>
+            <div class="substep-body">
+              <div class="substep-title">Declare var_global e array_sram fora de qualquer função</div>
+              <div class="substep-desc">Essas variáveis devem ser declaradas no escopo global (fora do setup e loop) para que fiquem na SRAM com endereço fixo. Coloque-as logo após os <code>#include</code>s, antes do <code>void setup()</code>.</div>
+              <div class="warn-box"><strong>⚠ Atenção:</strong> Se você declarar <code>var_global</code> dentro de uma função, ela vira variável local e o experimento não funciona como esperado.</div>
+            </div>
+          </div>
+          <div class="substep">
+            <div class="substep-num">c</div>
+            <div class="substep-body">
+              <div class="substep-title">Execute e observe o overflow da EEPROM</div>
+              <div class="substep-desc">Ao rodar, você verá que <code>EEPROM.write()</code> causa overflow no Timer1. Isso é esperado e faz parte do experimento — demonstra que 3,3ms de escrita na EEPROM é 52.800× mais lento que uma soma!</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-filename">lab06_exp2_memoria.ino</span>
+            <span class="code-lang">Arduino C++</span>
+          </div>
+          <div class="code-body"><pre><span class="pp">#include</span> <span class="st">&lt;EEPROM.h&gt;</span>
+
+<span class="tp">volatile</span> <span class="tp">int</span> var_global = <span class="nm">0</span>;        <span class="cm">// SRAM — variável global</span>
+<span class="tp">int</span> array_sram[<span class="nm">16</span>];                   <span class="cm">// SRAM — array na heap</span>
+
+<span class="kw">void</span> <span class="fn">experimento2_memoria</span>() {
+  <span class="tp">volatile</span> <span class="tp">int</span> var_local = <span class="nm">0</span>;        <span class="cm">// Stack (mais próxima do CPU)</span>
+  <span class="tp">uint16_t</span> c;
+
+  Serial.<span class="fn">println</span>(<span class="st">"\n--- EXP 2: Acesso a Memoria ---"</span>);
+
+  <span class="cm">// Variável local (stack / possivelmente registrador)</span>
+  c = MEDIR( var_local++ );
+  Serial.<span class="fn">print</span>(<span class="st">"Var local (stack):   "</span>);
+  Serial.<span class="fn">print</span>(c); Serial.<span class="fn">println</span>(<span class="st">" ciclos"</span>);
+
+  <span class="cm">// Variável global (SRAM endereço fixo)</span>
+  c = MEDIR( var_global++ );
+  Serial.<span class="fn">print</span>(<span class="st">"Var global (SRAM):   "</span>);
+  Serial.<span class="fn">print</span>(c); Serial.<span class="fn">println</span>(<span class="st">" ciclos"</span>);
+
+  <span class="cm">// Acesso a array (endereço calculado)</span>
+  c = MEDIR( array_sram[<span class="nm">8</span>] = <span class="nm">42</span> );
+  Serial.<span class="fn">print</span>(<span class="st">"Array SRAM[8]:       "</span>);
+  Serial.<span class="fn">print</span>(c); Serial.<span class="fn">println</span>(<span class="st">" ciclos"</span>);
+
+  <span class="cm">// EEPROM — memória não-volátil (muito mais lenta!)</span>
+  c = MEDIR( EEPROM.<span class="fn">write</span>(<span class="nm">0</span>, <span class="nm">42</span>) );
+  Serial.<span class="fn">print</span>(<span class="st">"EEPROM.write():      "</span>);
+  Serial.<span class="fn">print</span>(c); Serial.<span class="fn">println</span>(<span class="st">" ciclos (overflow!)"</span>);
+
+  Serial.<span class="fn">println</span>(<span class="st">"  → EEPROM leva ~3.3ms = 52800 ciclos"</span>);
+  Serial.<span class="fn">println</span>(<span class="st">"  → Timer1 deu overflow (max 65535)"</span>);
+}</pre></div>
+        </div>
+        <div class="result-box">
+          <div class="result-title">📟 RESULTADO ESPERADO NO SERIAL MONITOR</div>
+          <div class="result-monitor">
+            <span class="rline-head">--- EXP 2: Acesso a Memoria ---</span><br>
+            Var local (stack): &nbsp;&nbsp;<span class="rline-val">2</span> ciclos<br>
+            Var global (SRAM): &nbsp;&nbsp;<span class="rline-val">3</span> ciclos<br>
+            Array SRAM[8]: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="rline-val">5</span> ciclos<br>
+            EEPROM.write(): &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="rline-val">overflow</span><br>
+            &nbsp;&nbsp;→ EEPROM leva ~3.3ms = 52800 ciclos<br>
+            <span class="rline-dim">// EEPROM excede o range do Timer1 de 16 bits</span>
+          </div>
+          <div class="result-desc">
+            <strong style="color:var(--text)">Análise:</strong> A hierarquia se manifesta em ciclos: stack local é mais rápida porque o compilador tende a usar registradores; variável global exige busca em endereço absoluto na SRAM; o array adiciona o cálculo do índice; a EEPROM usa um protocolo de escrita com temporização interna de <strong style="color:var(--red)">3,3 ms</strong> — equivalente a <strong style="color:var(--red)">52.800 ciclos</strong> — ilustrando de forma dramática o que é latência de memória não-volátil.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASSO 4 -->
+    <div class="step">
+      <div class="step-num-wrap"><div class="step-num">4</div></div>
+      <div class="step-body">
+        <div class="step-title">Experimento 3 — Loops e contagem de instruções</div>
+        <div class="step-desc">
+          Meça o overhead de um loop <code style="font-family:var(--mono);color:var(--orange)">for</code> e compare o custo por iteração. Isso permite estimar o CPI médio real do programa e contrastar com o CPI teórico do ATmega (≈ 1,3 CPI para código típico).
+        </div>
+
+        <div class="substep-list" style="margin-bottom:16px;">
+          <div class="substep">
+            <div class="substep-num">a</div>
+            <div class="substep-body">
+              <div class="substep-title">Entenda a diferença entre os dois loops</div>
+              <div class="substep-desc">O primeiro loop faz <code>soma += i</code> (1 adição por iteração). O segundo faz <code>soma += i * 3</code> (1 multiplicação + 1 adição por iteração). Com base no Exp. 1, você já sabe o custo individual — veja se os totais batem.</div>
+            </div>
+          </div>
+          <div class="substep">
+            <div class="substep-num">b</div>
+            <div class="substep-body">
+              <div class="substep-title">Execute os dois loops e anote os resultados</div>
+              <div class="substep-desc">O Serial Monitor mostrará o total de ciclos e os ciclos por iteração para cada loop. Divida o total por N=100 para obter o custo médio por iteração. Compare com o custo esperado do Exp. 1.</div>
+            </div>
+          </div>
+          <div class="substep">
+            <div class="substep-num">c</div>
+            <div class="substep-body">
+              <div class="substep-title">Tente o desafio de otimização</div>
+              <div class="substep-desc">Substitua <code>soma += i * 3</code> por <code>soma += i + i + i</code> e meça novamente. O compilador do Arduino sem otimização (-O0) pode tratar de forma diferente do que <code>-O2</code> (otimizado). Registre a diferença.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-filename">lab06_exp3_loops.ino</span>
+            <span class="code-lang">Arduino C++</span>
+          </div>
+          <div class="code-body"><pre><span class="kw">void</span> <span class="fn">experimento3_loops</span>() {
+  <span class="tp">volatile</span> <span class="tp">long</span> soma = <span class="nm">0</span>;
+  <span class="tp">uint16_t</span> c;
+  <span class="kw">const</span> <span class="tp">int</span> N = <span class="nm">100</span>;
+
+  Serial.<span class="fn">println</span>(<span class="st">"\n--- EXP 3: Custo de Loops ---"</span>);
+
+  <span class="cm">// Loop simples: soma acumulada</span>
+  soma = <span class="nm">0</span>;
+  TCNT1 = <span class="nm">0</span>;
+  <span class="tp">uint16_t</span> t0 = TCNT1;
+  <span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">0</span>; i &lt; N; i++) { soma += i; }
+  <span class="tp">uint16_t</span> t1 = TCNT1;
+  c = t1 - t0;
+
+  Serial.<span class="fn">print</span>(<span class="st">"Loop 100x (soma+=i): "</span>);
+  Serial.<span class="fn">print</span>(c); Serial.<span class="fn">print</span>(<span class="st">" ciclos totais | "</span>);
+  Serial.<span class="fn">print</span>(c / N); Serial.<span class="fn">println</span>(<span class="st">" ciclos/iteracao"</span>);
+
+  <span class="cm">// Loop com multiplicação interna</span>
+  soma = <span class="nm">0</span>;
+  TCNT1 = <span class="nm">0</span>;
+  t0 = TCNT1;
+  <span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">0</span>; i &lt; N; i++) { soma += i * <span class="nm">3</span>; }
+  t1 = TCNT1;
+  c = t1 - t0;
+
+  Serial.<span class="fn">print</span>(<span class="st">"Loop 100x (soma*=3): "</span>);
+  Serial.<span class="fn">print</span>(c); Serial.<span class="fn">print</span>(<span class="st">" ciclos totais | "</span>);
+  Serial.<span class="fn">print</span>(c / N); Serial.<span class="fn">println</span>(<span class="st">" ciclos/iteracao"</span>);
+
+  <span class="cm">// Calcular CPI médio estimado</span>
+  <span class="cm">// Assumindo ~5 instruções por iteração (contador, cmp, soma, store, branch)</span>
+  Serial.<span class="fn">print</span>(<span class="st">"CPI estimado (soma): "</span>);
+  Serial.<span class="fn">println</span>(((float)(c / N)) / <span class="nm">5</span>, <span class="nm">2</span>);
+}</pre></div>
+        </div>
+        <div class="dica-box">
+          <div class="dica-title">💡 DESAFIO — Otimização</div>
+          <div class="dica-text">
+            Tente substituir <code style="font-family:var(--mono);color:var(--orange)">soma += i * 3</code> por <code style="font-family:var(--mono);color:var(--orange)">soma += i + i + i</code> (3 somas em vez de 1 multiplicação). Meça os ciclos. O resultado foi mais rápido ou mais lento? Por quê? Discuta com a turma como o compilador (com <code style="font-family:var(--mono);color:var(--orange)">-O2</code>) lida com essa otimização de forma automática.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASSO 5 -->
+    <div class="step">
+      <div class="step-num-wrap"><div class="step-num">5</div></div>
+      <div class="step-body">
+        <div class="step-title">Análise e cálculo de CPI — Tabela de resultados</div>
+        <div class="step-desc">
+          Com os dados coletados, preencha a tabela abaixo e calcule o CPI de cada operação. Compare com os valores teóricos do datasheet do ATmega328P.
+        </div>
+        <div class="analysis-grid">
+          <div class="analysis-card">
+            <div class="analysis-card-title">📐 Fórmula de Tempo</div>
+            <div class="analysis-card-body">
+              <span class="formula">T = N_ciclos × (1/16MHz)</span><br>
+              <span class="formula">T(ns) = N_ciclos × 62,5</span><br>
+              <span class="formula">T(µs) = N_ciclos ÷ 16</span><br><br>
+              Exemplo: 18 ciclos na divisão<br>
+              → T = 18 × 62,5 = <strong>1.125 ns</strong>
+            </div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-card-title">📐 Cálculo do CPI</div>
+            <div class="analysis-card-body">
+              <span class="formula">CPI = ciclos / N_instruções</span><br><br>
+              Para estimar N_instruções de um trecho, compile com <code style="font-family:var(--mono);font-size:10px;">avr-objdump -d</code> e conte as instruções assembly geradas. Um compilador sem otimização gera ~3–5 instruções por linha C++.
+            </div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-card-title">📐 Desempenho Relativo</div>
+            <div class="analysis-card-body">
+              <span class="formula">Speedup = T_lento / T_rápido</span><br><br>
+              Calcule o speedup da soma em relação à divisão. Depois calcule quanto tempo um loop de 1 milhão de divisões levaria comparado a um loop de 1 milhão de somas.
+            </div>
+          </div>
+        </div>
+        <div class="result-box" style="margin-top:16px;">
+          <div class="result-title">📊 TABELA DE REGISTRO — preencher durante o lab</div>
+          <div class="result-monitor">
+            <span class="rline-head">Operação &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Ciclos | T(ns)  | CPI est.</span><br>
+            <span class="rline-dim">─────────────────────────────────────────────</span><br>
+            Soma (a+b) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| ______ | ______ | _______<br>
+            Subtração (a-b) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| ______ | ______ | _______<br>
+            Multiplicação (a*b) &nbsp;| ______ | ______ | _______<br>
+            Divisão (a/b) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| ______ | ______ | _______<br>
+            Var local (stack) &nbsp;&nbsp;&nbsp;| ______ | ______ | _______<br>
+            Var global (SRAM) &nbsp;&nbsp;&nbsp;| ______ | ______ | _______<br>
+            Array SRAM[8] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| ______ | ______ | _______<br>
+            Loop 100x (soma) &nbsp;&nbsp;&nbsp;&nbsp;| ______ | ___/it | ___/it<br>
+            <span class="rline-dim">─────────────────────────────────────────────</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /step-list -->
+
+  <!-- 06 · RUBRICA -->
+  <div class="section-label">06 · Rubrica de Avaliação</div>
+  <div class="rubric-wrap">
+    <table class="rubric">
+      <thead><tr>
+        <th>Critério</th>
+        <th class="c-ins">Insuficiente (0–5)</th>
+        <th class="c-bas">Básico (6–7)</th>
+        <th class="c-prof">Proficiente (8–9)</th>
+        <th class="c-exc">Excelente (10)</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Configuração do Timer1</td>
+          <td class="c-ins">Não configurou ou código não compila</td>
+          <td class="c-bas">Configurou com ajuda, prescaler correto</td>
+          <td class="c-prof">Configurou de forma autônoma e correta</td>
+          <td class="c-exc">Configurou e explicou cada registrador com o datasheet</td>
+        </tr>
+        <tr>
+          <td>Medições realizadas</td>
+          <td class="c-ins">Menos de 3 experimentos executados</td>
+          <td class="c-bas">Executou os 3 experimentos com erros menores</td>
+          <td class="c-prof">Todos os experimentos com dados consistentes</td>
+          <td class="c-exc">Todos os experimentos + medições extras com variação de parâmetros</td>
+        </tr>
+        <tr>
+          <td>Tabela de CPI</td>
+          <td class="c-ins">Tabela vazia ou com dados incorretos</td>
+          <td class="c-bas">Tabela preenchida, cálculos com pequenos erros</td>
+          <td class="c-prof">Tabela completa e cálculos corretos</td>
+          <td class="c-exc">Tabela completa com comparação ao datasheet e discussão das diferenças</td>
+        </tr>
+        <tr>
+          <td>Análise e Interpretação</td>
+          <td class="c-ins">Não interpreta os resultados</td>
+          <td class="c-bas">Identifica que operações têm custos diferentes</td>
+          <td class="c-prof">Explica a relação CPI/hardware para cada operação</td>
+          <td class="c-exc">Conecta os resultados ao pipeline, ISA AVR e arquitetura do ATmega</td>
+        </tr>
+        <tr>
+          <td>Desafio de Otimização</td>
+          <td class="c-ins">Não tentou o desafio</td>
+          <td class="c-bas">Tentou e mediu, sem conclusão clara</td>
+          <td class="c-prof">Mediu e concluiu corretamente sobre o speedup</td>
+          <td class="c-exc">Mediu, concluiu e discutiu o papel do compilador na otimização automática</td>
+        </tr>
+        <tr>
+          <td>Relatório Técnico</td>
+          <td class="c-ins">Ausente ou sem estrutura técnica</td>
+          <td class="c-bas">Tem estrutura básica, linguagem informal</td>
+          <td class="c-prof">Relatório completo com linguagem técnica adequada</td>
+          <td class="c-exc">Relatório profissional com gráficos, análise crítica e referência ao datasheet</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 07 · ENTREGA -->
+  <div class="section-label">07 · O que Entregar</div>
+  <div class="entrega-box">
+    <div class="entrega-title">📋 RELATÓRIO DO LAB 06 — entrega até a próxima aula</div>
+    <ul class="entrega-list">
+      <li><strong>Código-fonte</strong> dos 3 experimentos (.ino), comentado e funcional</li>
+      <li><strong>Tabela de CPI</strong> preenchida com os valores medidos e calculados</li>
+      <li><strong>Capturas do Serial Monitor</strong> (screenshot) mostrando os resultados reais de cada experimento</li>
+      <li><strong>Análise do Experimento 1:</strong> por que a divisão custa ~9× mais ciclos que a soma? Cite a ISA AVR</li>
+      <li><strong>Análise do Experimento 2:</strong> compare os custos de memória e relacione com a hierarquia de memória vista em aula</li>
+      <li><strong>Análise do Experimento 3:</strong> calcule o CPI médio do loop e compare com o CPI teórico do ATmega (≈1,3)</li>
+      <li><strong>Resposta ao Desafio:</strong> soma vs multiplicação — qual foi mais rápido e por quê?</li>
+      <li><strong>Conclusão:</strong> como este lab conecta clock, CPI e desempenho do processador ao conteúdo teórico da aula?</li>
+    </ul>
+  </div>
+
+  <!-- DICA FINAL -->
+  <div class="dica-box" style="margin-top:24px;">
+    <div class="dica-title">💡 DICA — Para ir além</div>
+    <div class="dica-text">
+      <strong style="color:var(--text)">Referências para aprofundamento:</strong><br>
+      • Datasheet ATmega328P — Seção 15 (Timer/Counter1) e Apêndice A (Instruction Set Summary com contagem de ciclos por instrução)<br>
+      • Stallings, W. — <em>Organização e Arquitetura de Computadores</em> · Cap. 3 (Desempenho do Sistema)<br>
+      • Tanenbaum — <em>Organização Estruturada de Computadores</em> · Cap. 2 (Nível de lógica digital)<br><br>
+      <strong style="color:var(--yellow)">Extensão opcional:</strong>
+      Se terminar cedo, meça o custo de operações com ponto flutuante (<code style="font-family:var(--mono);color:var(--orange)">float</code> vs <code style="font-family:var(--mono);color:var(--orange)">int</code>). O ATmega não tem FPU — tudo em <code style="font-family:var(--mono)">float</code> é emulado por software. O resultado vai surpreender!
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<div class="nav-bar">
+  <a href="index.html" class="nav-btn nav-btn-sec">⬅ Índice</a>
+  <a href="arquitetura_semana08_aula.html" class="nav-btn nav-btn-aula">📖 Aula S08</a>
+  <a href="arquitetura_semana08_guia.html" class="nav-btn nav-btn-guia">✏️ Guia S08</a>
+  <a href="arquitetura_semana09_lab.html" class="nav-btn nav-btn-lab">Lab 07 →</a>
+</div>
+
+<footer>
+  <div class="footer-left">
+    <span class="footer-sig">ARQUITETURA E ORGANIZAÇÃO DE COMPUTADORES</span><br>
+    Lab 06 · Medindo Ciclos de Clock com Timer1 · Semana 08<br>
+    Centro Paula Souza · FATEC · ADS 2026
+  </div>
+  <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-align:right;">
+    ARQ-001 · LAB-06<br>
+    <span style="color:#ff7a1a">LAB PRÁTICO · Arduino Uno</span>
+  </div>
+</footer>
+
+<script>
+function showTab(name) {
+  document.querySelectorAll('.sim-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sim-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+
+</body>
+</html>

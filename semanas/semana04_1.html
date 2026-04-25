@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S04.1 · Apache Spark para Iniciantes | Big Data</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --azul:#3b82f6;--azul-claro:#dbeafe;--azul-escuro:#1e40af;
+  --laranja:#f97316;--laranja-claro:#ffedd5;
+  --verde:#22c55e;--verde-claro:#dcfce7;--verde-escuro:#15803d;
+  --vermelho:#ef4444;--vermelho-claro:#fee2e2;
+  --roxo:#a855f7;--roxo-claro:#f3e8ff;
+  --amarelo:#eab308;--amarelo-claro:#fef9c3;
+  --cinza:#f8fafc;--borda:#e2e8f0;--texto:#1e293b;--texto2:#64748b;
+  --r:16px;--r-sm:10px;
+  --sans:'Nunito',sans-serif;
+}
+body{font-family:var(--sans);background:#f0f4ff;color:var(--texto);line-height:1.6;min-height:100vh;}
+
+/* TOPBAR */
+.topbar{background:white;border-bottom:3px solid var(--azul);position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(59,130,246,.15);}
+.topbar-inner{max-width:900px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.tb-badge{background:var(--azul-claro);border:2px solid var(--azul);color:var(--azul-escuro);border-radius:50px;padding:5px 14px;font-size:.8em;font-weight:800;}
+.tb-title h1{font-size:1em;font-weight:800;color:var(--texto);}
+.tb-title p{font-size:.75em;color:var(--texto2);}
+.xp-widget{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--amarelo-claro);border:2px solid var(--amarelo);border-radius:50px;padding:6px 14px;}
+.xp-label{font-size:.75em;font-weight:800;color:#854d0e;}
+.xp-bar{width:80px;height:7px;background:#fde68a;border-radius:50px;overflow:hidden;}
+.xp-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--laranja),var(--amarelo));border-radius:50px;transition:width 1s ease;}
+.xp-val{font-size:.75em;font-weight:800;color:#854d0e;}
+
+/* BREADCRUMB */
+.breadcrumb{background:white;border-bottom:2px solid var(--borda);padding:8px 20px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.bc-link{text-decoration:none;padding:5px 12px;border-radius:8px;border:2px solid var(--borda);color:var(--texto2);font-size:.8em;font-weight:700;transition:all .2s;}
+.bc-link:hover{border-color:var(--azul);color:var(--azul);}
+.bc-next{margin-left:auto;background:var(--azul-claro);color:var(--azul-escuro);border:2px solid var(--azul);}
+
+/* WRAP */
+.wrap{max-width:900px;margin:0 auto;padding:24px 20px;}
+
+/* HERO */
+.hero{background:white;border-radius:var(--r);padding:32px;margin-bottom:24px;box-shadow:0 4px 20px rgba(59,130,246,.1);border:2px solid var(--azul-claro);text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(59,130,246,.1),transparent 70%);border-radius:50%;}
+.hero-emoji{font-size:4em;display:block;margin-bottom:12px;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.hero h1{font-size:1.9em;font-weight:900;color:var(--azul-escuro);margin-bottom:8px;}
+.hero h1 span{color:var(--laranja);}
+.hero p{font-size:1em;color:var(--texto2);max-width:580px;margin:0 auto 20px;}
+.hero-chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.chip{padding:6px 14px;border-radius:50px;font-size:.8em;font-weight:700;border:2px solid;}
+.chip-azul{background:var(--azul-claro);color:var(--azul-escuro);border-color:var(--azul);}
+.chip-laranja{background:var(--laranja-claro);color:#9a3412;border-color:var(--laranja);}
+.chip-verde{background:var(--verde-claro);color:var(--verde-escuro);border-color:var(--verde);}
+
+/* PROGRESS BAR */
+.progress-card{background:white;border-radius:var(--r);padding:20px;margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:2px solid var(--borda);}
+.progress-label{font-size:.85em;font-weight:800;color:var(--texto2);margin-bottom:10px;}
+.progress-steps{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;}
+.pstep{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.pstep-dot{width:32px;height:32px;border-radius:50%;border:3px solid var(--borda);background:white;display:flex;align-items:center;justify-content:center;font-size:.8em;font-weight:800;color:var(--texto2);transition:all .4s;}
+.pstep-dot.done{background:var(--verde);border-color:var(--verde-escuro);color:white;}
+.pstep-dot.active{background:var(--azul);border-color:var(--azul-escuro);color:white;animation:stepPulse 1.5s infinite;}
+@keyframes stepPulse{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.4);}50%{box-shadow:0 0 0 6px rgba(59,130,246,0);}}
+.pstep-line{width:24px;height:3px;background:var(--borda);margin-top:14px;flex-shrink:0;transition:background .4s;}
+.pstep-line.done{background:var(--verde);}
+.pstep-label{font-size:.6em;font-weight:700;color:var(--texto2);text-align:center;max-width:50px;line-height:1.2;}
+.pstep.done-step .pstep-label{color:var(--verde-escuro);}
+
+/* SECTION */
+.sec{background:white;border-radius:var(--r);margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:2px solid var(--borda);overflow:hidden;}
+.sec-head{display:flex;align-items:center;gap:12px;padding:18px 24px;border-bottom:2px solid var(--borda);}
+.sec-icon{font-size:1.6em;}
+.sec-title{font-size:1.05em;font-weight:800;color:var(--texto);}
+.sec-subtitle{font-size:.8em;color:var(--texto2);font-weight:600;}
+.sec-body{padding:24px;}
+
+/* ILLUSTRATION CARDS */
+.illus-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:16px 0;}
+.illus-card{border-radius:var(--r-sm);padding:20px;text-align:center;border:2px solid;}
+.illus-emoji{font-size:3em;display:block;margin-bottom:10px;}
+.illus-title{font-size:.95em;font-weight:800;margin-bottom:6px;}
+.illus-desc{font-size:.82em;color:var(--texto2);line-height:1.5;}
+.ic-azul{background:var(--azul-claro);border-color:var(--azul);}
+.ic-laranja{background:var(--laranja-claro);border-color:var(--laranja);}
+.ic-verde{background:var(--verde-claro);border-color:var(--verde);}
+.ic-roxo{background:var(--roxo-claro);border-color:var(--roxo);}
+.ic-amarelo{background:var(--amarelo-claro);border-color:var(--amarelo);}
+
+/* ANALOGY BOX */
+.analogy{border-radius:var(--r-sm);padding:20px;margin:16px 0;border:2px solid;display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;}
+.analogy-emoji{font-size:2.5em;flex-shrink:0;}
+.analogy-title{font-size:.85em;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+.analogy-text{font-size:.88em;line-height:1.6;}
+.an-amarelo{background:var(--amarelo-claro);border-color:var(--amarelo);}
+.an-azul{background:var(--azul-claro);border-color:var(--azul);}
+.an-verde{background:var(--verde-claro);border-color:var(--verde);}
+.an-laranja{background:var(--laranja-claro);border-color:var(--laranja);}
+.an-roxo{background:var(--roxo-claro);border-color:var(--roxo);}
+
+/* STEP BY STEP */
+.steps{display:flex;flex-direction:column;gap:0;}
+.step-item{display:flex;gap:16px;position:relative;}
+.step-item:not(:last-child)::before{content:'';position:absolute;left:22px;top:52px;bottom:0;width:3px;background:var(--borda);z-index:0;}
+.step-num{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1em;font-weight:900;flex-shrink:0;border:3px solid;z-index:1;}
+.step-body{flex:1;padding-bottom:24px;}
+.step-title{font-size:.95em;font-weight:800;margin-bottom:6px;}
+.step-desc{font-size:.85em;color:var(--texto2);line-height:1.6;}
+.step-1{background:var(--azul-claro);border-color:var(--azul);color:var(--azul-escuro);}
+.step-2{background:var(--laranja-claro);border-color:var(--laranja);color:#9a3412;}
+.step-3{background:var(--verde-claro);border-color:var(--verde);color:var(--verde-escuro);}
+.step-4{background:var(--roxo-claro);border-color:var(--roxo);color:#6b21a8;}
+
+/* QUIZ */
+.quiz-box{background:var(--cinza);border-radius:var(--r-sm);padding:20px;margin:16px 0;border:2px solid var(--borda);}
+.quiz-num{font-size:.72em;font-weight:800;color:var(--azul);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.quiz-q{font-size:.95em;font-weight:700;color:var(--texto);margin-bottom:14px;line-height:1.5;}
+.quiz-opts{display:flex;flex-direction:column;gap:8px;}
+.quiz-opt{background:white;border:2px solid var(--borda);border-radius:var(--r-sm);padding:12px 16px;cursor:pointer;transition:all .2s;text-align:left;color:var(--texto);font-size:.88em;font-weight:600;font-family:var(--sans);display:flex;align-items:center;gap:12px;}
+.quiz-opt:hover:not(.disabled){border-color:var(--azul);background:var(--azul-claro);transform:translateX(4px);}
+.quiz-opt.correct{border-color:var(--verde);background:var(--verde-claro);color:var(--verde-escuro);}
+.quiz-opt.wrong{border-color:var(--vermelho);background:var(--vermelho-claro);color:var(--vermelho);}
+.quiz-opt.disabled{cursor:default;pointer-events:none;}
+.opt-letra{width:28px;height:28px;border-radius:8px;background:var(--borda);display:flex;align-items:center;justify-content:center;font-size:.8em;font-weight:800;flex-shrink:0;}
+.quiz-opt.correct .opt-letra{background:var(--verde);color:white;}
+.quiz-opt.wrong .opt-letra{background:var(--vermelho);color:white;}
+.quiz-feedback{margin-top:12px;padding:14px 16px;border-radius:var(--r-sm);font-size:.87em;line-height:1.6;font-weight:600;display:none;}
+.quiz-feedback.ok{background:var(--verde-claro);border:2px solid var(--verde);color:var(--verde-escuro);display:block;}
+.quiz-feedback.fail{background:var(--vermelho-claro);border:2px solid var(--vermelho);color:var(--vermelho);display:block;}
+.quiz-hint{margin-top:10px;}
+.quiz-hint summary{font-size:.82em;font-weight:700;color:var(--azul);cursor:pointer;}
+.quiz-hint-body{font-size:.84em;color:var(--texto2);margin-top:8px;padding:12px;background:white;border-radius:var(--r-sm);border:2px solid var(--azul-claro);line-height:1.6;}
+
+/* VISUAL COMPARE */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0;}
+@media(max-width:500px){.compare{grid-template-columns:1fr;}}
+.cmp-card{border-radius:var(--r-sm);padding:20px;border:2px solid;}
+.cmp-title{font-size:.95em;font-weight:800;margin-bottom:12px;text-align:center;}
+.cmp-item{display:flex;gap:8px;font-size:.84em;padding:6px 0;border-bottom:1px dashed rgba(0,0,0,.1);line-height:1.4;}
+.cmp-item:last-child{border-bottom:none;}
+.cmp-slow{background:#fff5f5;border-color:var(--vermelho);}
+.cmp-slow .cmp-title{color:var(--vermelho);}
+.cmp-fast{background:var(--azul-claro);border-color:var(--azul);}
+.cmp-fast .cmp-title{color:var(--azul-escuro);}
+
+/* ARCHITECTURE VISUAL */
+.arch-visual{display:flex;flex-direction:column;gap:0;align-items:center;margin:20px 0;}
+.arch-row{display:flex;justify-content:center;gap:12px;width:100%;flex-wrap:wrap;}
+.arch-box{border-radius:var(--r-sm);padding:14px 18px;text-align:center;border:2px solid;min-width:130px;transition:transform .2s;}
+.arch-box:hover{transform:translateY(-3px);}
+.arch-box-emoji{font-size:1.8em;display:block;margin-bottom:6px;}
+.arch-box-name{font-size:.85em;font-weight:800;}
+.arch-box-desc{font-size:.75em;margin-top:4px;line-height:1.3;}
+.arch-arrow{font-size:1.5em;margin:4px 0;color:var(--texto2);}
+.ab-azul{background:var(--azul-claro);border-color:var(--azul);}
+.ab-azul .arch-box-name{color:var(--azul-escuro);}
+.ab-azul .arch-box-desc{color:var(--azul-escuro);}
+.ab-laranja{background:var(--laranja-claro);border-color:var(--laranja);}
+.ab-laranja .arch-box-name{color:#9a3412;}
+.ab-laranja .arch-box-desc{color:#c2410c;}
+.ab-verde{background:var(--verde-claro);border-color:var(--verde);}
+.ab-verde .arch-box-name{color:var(--verde-escuro);}
+.ab-verde .arch-box-desc{color:var(--verde-escuro);}
+
+/* OPERATIONS TABLE */
+.ops-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:16px 0;}
+.op-card{border-radius:var(--r-sm);padding:16px;border:2px solid;cursor:default;transition:transform .2s;}
+.op-card:hover{transform:translateY(-2px);}
+.op-name{font-size:.95em;font-weight:800;font-family:monospace;margin-bottom:4px;}
+.op-tipo{font-size:.7em;font-weight:800;text-transform:uppercase;letter-spacing:.07em;border-radius:50px;padding:2px 10px;display:inline-block;margin-bottom:8px;}
+.op-desc{font-size:.82em;color:var(--texto2);line-height:1.4;}
+.op-ex{font-size:.78em;font-family:monospace;margin-top:8px;padding:6px 10px;border-radius:6px;background:white;border:1px solid;}
+.oc-transform{background:var(--amarelo-claro);border-color:var(--amarelo);}
+.oc-transform .op-tipo{background:var(--amarelo);color:#854d0e;}
+.oc-transform .op-ex{border-color:var(--amarelo);}
+.oc-action{background:var(--verde-claro);border-color:var(--verde);}
+.oc-action .op-tipo{background:var(--verde);color:white;}
+.oc-action .op-ex{border-color:var(--verde);}
+
+/* DRAG & DROP */
+.drag-area{margin:16px 0;}
+.drag-label{font-size:.88em;font-weight:700;color:var(--texto);margin-bottom:10px;}
+.drag-source{display:flex;flex-wrap:wrap;gap:8px;padding:16px;background:var(--cinza);border:3px dashed var(--borda);border-radius:var(--r-sm);min-height:60px;margin-bottom:14px;transition:border-color .2s;}
+.drag-source.over{border-color:var(--azul);}
+.drag-item{padding:9px 16px;border-radius:50px;border:2px solid;font-size:.85em;font-weight:700;cursor:grab;transition:all .2s;user-select:none;font-family:monospace;background:white;}
+.drag-item:active{cursor:grabbing;opacity:.7;}
+.drag-item.dt{border-color:var(--amarelo);color:#854d0e;background:var(--amarelo-claro);}
+.drag-item.da{border-color:var(--verde);color:var(--verde-escuro);background:var(--verde-claro);}
+.drag-targets{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:480px){.drag-targets{grid-template-columns:1fr;}}
+.drag-target{min-height:90px;padding:14px;background:white;border:3px dashed var(--borda);border-radius:var(--r-sm);transition:all .2s;}
+.drag-target.over{border-color:var(--azul);background:var(--azul-claro);}
+.dt-label{font-size:.78em;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+.dt-label.t{color:#854d0e;}
+.dt-label.a{color:var(--verde-escuro);}
+.dropped-items{display:flex;flex-wrap:wrap;gap:6px;}
+.drag-check-btn{width:100%;padding:12px;background:var(--azul);border:none;border-radius:var(--r-sm);color:white;font-size:.9em;font-weight:800;cursor:pointer;transition:all .2s;font-family:var(--sans);margin-top:14px;}
+.drag-check-btn:hover{background:var(--azul-escuro);}
+.drag-result{margin-top:10px;padding:14px;border-radius:var(--r-sm);font-size:.86em;font-weight:700;display:none;line-height:1.6;}
+.drag-result.ok{background:var(--verde-claro);border:2px solid var(--verde);color:var(--verde-escuro);display:block;}
+.drag-result.fail{background:var(--vermelho-claro);border:2px solid var(--vermelho);color:var(--vermelho);display:block;}
+
+/* LAZY FLOW */
+.lazy-flow{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin:16px 0;overflow-x:auto;padding:4px 0 10px;}
+.lf-node{flex-shrink:0;border-radius:var(--r-sm);padding:12px 14px;text-align:center;border:2px solid;min-width:100px;}
+.lf-lazy{background:var(--amarelo-claro);border-color:var(--amarelo);}
+.lf-action{background:var(--verde-claro);border-color:var(--verde);animation:glowGreen 2s infinite;}
+@keyframes glowGreen{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0);}50%{box-shadow:0 0 0 6px rgba(34,197,94,.25);}}
+.lf-tag{font-size:.65em;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;}
+.lf-lazy .lf-tag{color:#854d0e;}
+.lf-action .lf-tag{color:var(--verde-escuro);}
+.lf-name{font-size:.82em;font-weight:700;font-family:monospace;}
+.lf-arrow{font-size:1.2em;color:var(--texto2);flex-shrink:0;}
+
+/* SANDBOX */
+.sandbox{background:#1e293b;border-radius:var(--r-sm);overflow:hidden;margin:16px 0;border:2px solid #334155;}
+.sb-header{background:#0f172a;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #334155;flex-wrap:wrap;}
+.sb-dots{display:flex;gap:5px;}
+.sb-dot{width:10px;height:10px;border-radius:50%;}
+.sb-title{font-size:.75em;color:#94a3b8;font-family:monospace;flex:1;}
+.sb-run{display:flex;align-items:center;gap:6px;background:var(--verde);color:white;border:none;border-radius:6px;padding:6px 14px;font-size:.8em;font-weight:800;cursor:pointer;font-family:var(--sans);transition:all .2s;}
+.sb-run:hover:not(:disabled){background:var(--verde-escuro);}
+.sb-run:disabled{opacity:.5;cursor:not-allowed;}
+.sb-run.loading{background:var(--amarelo);color:#854d0e;}
+.sb-reset{background:transparent;color:#94a3b8;border:1px solid #334155;border-radius:6px;padding:6px 10px;font-size:.78em;cursor:pointer;font-family:var(--sans);}
+.sb-editor{min-height:140px;width:100%;padding:16px;font-family:monospace;font-size:.82em;line-height:1.8;color:#e2e8f0;background:transparent;border:none;outline:none;resize:vertical;caret-color:var(--azul);}
+.sb-output{padding:16px;font-family:monospace;font-size:.8em;line-height:1.9;min-height:60px;border-top:1px solid #334155;}
+.o-ok{color:#86efac;}.o-err{color:#fca5a5;}.o-info{color:#93c5fd;}.o-muted{color:#64748b;}
+.sb-hint{font-size:.78em;color:#64748b;padding:8px 16px;border-top:1px solid #1e293b;font-family:monospace;}
+
+/* MISSION */
+.mission{background:var(--cinza);border-radius:var(--r-sm);padding:18px 20px;margin-bottom:14px;border:2px solid var(--borda);display:flex;gap:14px;align-items:flex-start;transition:all .2s;}
+.mission:hover{border-color:var(--azul);background:var(--azul-claro);}
+.mission.done{border-color:var(--verde);background:var(--verde-claro);}
+.m-num{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9em;font-weight:800;flex-shrink:0;border:2px solid;transition:all .2s;}
+.m-num-n{background:white;border-color:var(--borda);color:var(--texto2);}
+.mission.done .m-num{background:var(--verde);border-color:var(--verde-escuro);color:white;}
+.m-body{flex:1;}
+.m-title{font-size:.93em;font-weight:800;margin-bottom:5px;color:var(--texto);}
+.mission.done .m-title{color:var(--verde-escuro);}
+.m-desc{font-size:.84em;color:var(--texto2);line-height:1.6;margin-bottom:10px;}
+.m-tags{display:flex;gap:8px;flex-wrap:wrap;}
+.mtag{padding:4px 10px;border-radius:50px;font-size:.72em;font-weight:800;border:1.5px solid;}
+.t-time{background:var(--azul-claro);color:var(--azul-escuro);border-color:var(--azul);}
+.t-xp{background:var(--amarelo-claro);color:#854d0e;border-color:var(--amarelo);}
+.t-e{background:var(--verde-claro);color:var(--verde-escuro);border-color:var(--verde);}
+.t-m{background:var(--laranja-claro);color:#9a3412;border-color:var(--laranja);}
+.m-btn{margin-top:12px;display:inline-flex;align-items:center;gap:8px;background:var(--azul);border:none;border-radius:var(--r-sm);padding:9px 18px;color:white;font-size:.83em;font-weight:800;cursor:pointer;transition:all .2s;font-family:var(--sans);}
+.m-btn:hover:not(:disabled){background:var(--azul-escuro);transform:translateY(-1px);}
+.m-btn:disabled{opacity:.5;cursor:not-allowed;}
+.mission.done .m-btn{background:var(--verde);color:white;}
+.m-check{font-size:1.3em;flex-shrink:0;}
+
+/* BADGES */
+.badges-strip{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.badge{display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px;border:2px solid var(--borda);border-radius:var(--r-sm);background:white;min-width:86px;transition:all .3s;cursor:default;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.badge.unlocked{border-color:var(--amarelo);background:var(--amarelo-claro);box-shadow:0 4px 16px rgba(234,179,8,.25);animation:badgePop .4s ease;}
+.badge.locked{opacity:.3;filter:grayscale(1);}
+@keyframes badgePop{0%{transform:scale(.7);}60%{transform:scale(1.15);}100%{transform:scale(1);}}
+.badge-ico{font-size:1.8em;}
+.badge-nm{font-size:.7em;font-weight:800;text-align:center;color:var(--texto);}
+.badge-xp{font-size:.65em;font-weight:700;color:var(--amarelo);}
+
+/* AI TUTOR */
+.ai-tutor{background:white;border:2px solid var(--roxo-claro);border-radius:var(--r);margin-bottom:24px;overflow:hidden;box-shadow:0 4px 16px rgba(168,85,247,.1);}
+.ai-header{background:linear-gradient(135deg,var(--roxo-claro),var(--azul-claro));border-bottom:2px solid var(--borda);padding:16px 20px;display:flex;align-items:center;gap:12px;}
+.ai-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--roxo),var(--azul));display:flex;align-items:center;justify-content:center;font-size:1.3em;flex-shrink:0;}
+.ai-info h4{font-size:.95em;font-weight:800;color:var(--texto);}
+.ai-info p{font-size:.75em;color:var(--texto2);}
+.ai-badge{margin-left:auto;background:var(--verde-claro);border:2px solid var(--verde);color:var(--verde-escuro);border-radius:50px;padding:4px 12px;font-size:.72em;font-weight:800;}
+.ai-chat{padding:16px 20px;max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
+.ai-msg{display:flex;gap:10px;align-items:flex-start;}
+.ai-msg.user{flex-direction:row-reverse;}
+.ai-bubble{max-width:82%;padding:12px 16px;border-radius:14px;font-size:.86em;line-height:1.65;font-weight:600;}
+.ai-bubble.bot{background:var(--cinza);border:2px solid var(--borda);border-bottom-left-radius:4px;color:var(--texto);}
+.ai-bubble.user-b{background:var(--azul);color:white;border-bottom-right-radius:4px;}
+.ai-bubble code{font-family:monospace;font-size:.9em;background:rgba(0,0,0,.08);padding:1px 5px;border-radius:4px;}
+.ai-typing{display:flex;gap:5px;align-items:center;padding:6px 0;}
+.typing-dot{width:7px;height:7px;border-radius:50%;background:var(--texto2);animation:typing 1.2s infinite;}
+.typing-dot:nth-child(2){animation-delay:.2s;}
+.typing-dot:nth-child(3){animation-delay:.4s;}
+@keyframes typing{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-6px);}}
+.ai-input-area{border-top:2px solid var(--borda);padding:14px 20px;display:flex;gap:10px;}
+.ai-input{flex:1;background:var(--cinza);border:2px solid var(--borda);border-radius:var(--r-sm);padding:10px 14px;color:var(--texto);font-size:.88em;font-family:var(--sans);font-weight:600;outline:none;transition:border-color .2s;resize:none;}
+.ai-input:focus{border-color:var(--azul);}
+.ai-send{background:var(--azul);color:white;border:none;border-radius:var(--r-sm);padding:10px 18px;font-size:.85em;font-weight:800;cursor:pointer;transition:all .2s;font-family:var(--sans);}
+.ai-send:hover:not(:disabled){background:var(--azul-escuro);}
+.ai-send:disabled{opacity:.4;cursor:not-allowed;}
+.ai-quick-btns{padding:0 20px 14px;display:flex;gap:8px;flex-wrap:wrap;}
+.ai-quick{padding:7px 13px;background:var(--cinza);border:2px solid var(--borda);border-radius:50px;font-size:.78em;font-weight:700;cursor:pointer;color:var(--texto2);transition:all .2s;font-family:var(--sans);}
+.ai-quick:hover{border-color:var(--roxo);color:var(--roxo);background:var(--roxo-claro);}
+
+/* FILL BLANK */
+.fill-area{background:var(--cinza);border-radius:var(--r-sm);padding:20px;margin:16px 0;border:2px solid var(--borda);}
+.fill-desc{font-size:.87em;font-weight:700;color:var(--texto);margin-bottom:12px;}
+.fill-code{font-family:monospace;font-size:.83em;line-height:2.4;background:#1e293b;color:#e2e8f0;padding:18px;border-radius:var(--r-sm);margin:12px 0;overflow-x:auto;}
+.fill-input{background:rgba(96,165,250,.2);border:2px solid var(--azul);border-radius:6px;padding:2px 8px;font-family:monospace;font-size:.95em;color:#e2e8f0;outline:none;min-width:90px;transition:all .2s;}
+.fill-input:focus{border-color:var(--amarelo);background:rgba(234,179,8,.2);}
+.fill-input.ok{border-color:var(--verde);background:rgba(34,197,94,.2);color:#86efac;}
+.fill-input.err{border-color:var(--vermelho);background:rgba(239,68,68,.2);color:#fca5a5;}
+.fill-btn{padding:10px 20px;background:var(--azul);border:none;border-radius:var(--r-sm);color:white;font-size:.88em;font-weight:800;cursor:pointer;font-family:var(--sans);transition:all .2s;}
+.fill-btn:hover{background:var(--azul-escuro);}
+.fill-result{margin-top:10px;font-size:.86em;font-weight:700;min-height:20px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:white;border:2px solid var(--azul);border-radius:var(--r-sm);padding:14px 18px;z-index:999;transform:translateY(80px);opacity:0;transition:all .35s;pointer-events:none;max-width:280px;box-shadow:0 8px 24px rgba(0,0,0,.12);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast-title{color:var(--azul-escuro);font-weight:800;font-size:.88em;margin-bottom:3px;}
+.toast-msg{color:var(--texto2);font-size:.82em;font-weight:600;}
+
+/* CONFETTI */
+@keyframes fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+.cf{position:fixed;width:10px;height:10px;top:0;border-radius:2px;pointer-events:none;z-index:9999;animation:fall 3s ease-in forwards;}
+
+/* scrollbar */
+::-webkit-scrollbar{width:6px;height:6px;}::-webkit-scrollbar-track{background:var(--cinza);}::-webkit-scrollbar-thumb{background:var(--borda);border-radius:3px;}::-webkit-scrollbar-thumb:hover{background:var(--azul);}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <span class="tb-badge">S04.1 · Spark Iniciante</span>
+    <div class="tb-title">
+      <h1>Apache Spark — Do Zero, Passo a Passo</h1>
+      <p>Infraestrutura para Big Data · FATec Ourinhos</p>
+    </div>
+    <div class="xp-widget">
+      <span class="xp-label">⭐ XP</span>
+      <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+      <span class="xp-val" id="xpVal">0/400</span>
+    </div>
+  </div>
+</header>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <a href="semana04.html" class="bc-link">⬅ S04 · Spark Completo</a>
+  <a href="../index.html" class="bc-link">🏠 Início</a>
+  <a href="semana05.html" class="bc-link bc-next">S05 · DataFrames ➡</a>
+</div>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-emoji">⚡</span>
+    <h1>O que é o <span>Apache Spark</span>?</h1>
+    <p>Nesta aula você vai entender o Spark do jeito mais simples possível — com exemplos do dia a dia, ilustrações e exercícios para fazer sozinho!</p>
+    <div class="hero-chips">
+      <span class="chip chip-azul">📚 Para Iniciantes</span>
+      <span class="chip chip-laranja">⭐ 400 XP para ganhar</span>
+      <span class="chip chip-verde">🤖 Tutor IA disponível</span>
+    </div>
+  </div>
+
+  <!-- PROGRESS STEPS -->
+  <div class="progress-card">
+    <div class="progress-label">📍 Seu caminho hoje:</div>
+    <div class="progress-steps">
+      <div class="pstep" id="ps0"><div class="pstep-dot active" id="pd0">1</div><div class="pstep-label">O que é?</div></div>
+      <div class="pstep-line" id="pl0"></div>
+      <div class="pstep" id="ps1"><div class="pstep-dot" id="pd1">2</div><div class="pstep-label">Arquitetura</div></div>
+      <div class="pstep-line" id="pl1"></div>
+      <div class="pstep" id="ps2"><div class="pstep-dot" id="pd2">3</div><div class="pstep-label">RDD Quiz</div></div>
+      <div class="pstep-line" id="pl2"></div>
+      <div class="pstep" id="ps3"><div class="pstep-dot" id="pd3">4</div><div class="pstep-label">Drag & Drop</div></div>
+      <div class="pstep-line" id="pl3"></div>
+      <div class="pstep" id="ps4"><div class="pstep-dot" id="pd4">5</div><div class="pstep-label">Lazy Eval</div></div>
+      <div class="pstep-line" id="pl4"></div>
+      <div class="pstep" id="ps5"><div class="pstep-dot" id="pd5">6</div><div class="pstep-label">Sandbox</div></div>
+      <div class="pstep-line" id="pl5"></div>
+      <div class="pstep" id="ps6"><div class="pstep-dot" id="pd6">7</div><div class="pstep-label">Missões</div></div>
+    </div>
+  </div>
+
+  <!-- BADGES -->
+  <div class="badges-strip">
+    <div class="badge locked" id="b0"><div class="badge-ico">🏁</div><div class="badge-nm">Spark Quiz</div><div class="badge-xp">+50 XP</div></div>
+    <div class="badge locked" id="b1"><div class="badge-ico">🔵</div><div class="badge-nm">RDD Mestre</div><div class="badge-xp">+50 XP</div></div>
+    <div class="badge locked" id="b2"><div class="badge-ico">🧩</div><div class="badge-nm">Classificador</div><div class="badge-xp">+60 XP</div></div>
+    <div class="badge locked" id="b3"><div class="badge-ico">😴</div><div class="badge-nm">Lazy Expert</div><div class="badge-xp">+50 XP</div></div>
+    <div class="badge locked" id="b4"><div class="badge-ico">💻</div><div class="badge-nm">Dev PySpark</div><div class="badge-xp">+60 XP</div></div>
+    <div class="badge locked" id="b5"><div class="badge-ico">⚔️</div><div class="badge-nm">Missão 1</div><div class="badge-xp">+60 XP</div></div>
+    <div class="badge locked" id="b6"><div class="badge-ico">📊</div><div class="badge-nm">Missão 2</div><div class="badge-xp">+70 XP</div></div>
+    <div class="badge locked" id="b7"><div class="badge-ico">🏆</div><div class="badge-nm">Spark Master</div><div class="badge-xp">BÔNUS</div></div>
+  </div>
+
+  <!-- ===== 1. O QUE É SPARK ===== -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-icon">💡</span>
+      <div>
+        <div class="sec-title">1. O que é o Apache Spark?</div>
+        <div class="sec-subtitle">Uma ferramenta para processar dados gigantescos muito rápido</div>
+      </div>
+    </div>
+    <div class="sec-body">
+
+      <!-- ANALOGIA PRINCIPAL -->
+      <div class="analogy an-amarelo">
+        <div class="analogy-emoji">🍕</div>
+        <div>
+          <div class="analogy-title" style="color:#854d0e;">Analogia: Pizzaria Gigante</div>
+          <div class="analogy-text" style="color:#713f12;">
+            Imagine que você precisa fazer <strong>1.000.000 de pizzas</strong>. Com um único forno (computador normal), levaria anos. Com o Spark, você tem <strong>mil fornos trabalhando ao mesmo tempo</strong> — cada um fazendo parte das pizzas. No final, tudo fica pronto rapidíssimo! <br><br>
+            O Spark divide um problema enorme em pedaços menores e distribui para vários computadores trabalharem juntos ao mesmo tempo. Isso é <strong>processamento distribuído</strong>.
+          </div>
+        </div>
+      </div>
+
+      <!-- SPARK VS MAPREDUCE -->
+      <p style="font-size:.9em;font-weight:700;color:var(--texto);margin:20px 0 12px;">🤔 Mas já existia o MapReduce. Por que criar o Spark?</p>
+      <div class="compare">
+        <div class="cmp-card cmp-slow">
+          <div class="cmp-title">🐢 MapReduce (antigo)</div>
+          <div class="cmp-item">💾 Salva no HD a cada passo</div>
+          <div class="cmp-item">🐌 Como ler um livro — pausa após cada parágrafo e anota no papel</div>
+          <div class="cmp-item">😴 Lento para tarefas repetitivas</div>
+        </div>
+        <div class="cmp-card cmp-fast">
+          <div class="cmp-title">🚀 Apache Spark (moderno)</div>
+          <div class="cmp-item">🧠 Guarda tudo na memória RAM</div>
+          <div class="cmp-item">⚡ Como ler na cabeça — sem pausar, sem anotar no papel</div>
+          <div class="cmp-item">💨 Até 100x mais rápido!</div>
+        </div>
+      </div>
+
+      <div class="analogy an-azul">
+        <div class="analogy-emoji">🧠</div>
+        <div>
+          <div class="analogy-title" style="color:var(--azul-escuro);">Por que RAM é mais rápida?</div>
+          <div class="analogy-text" style="color:var(--azul-escuro);">
+            Pense assim: o <strong>HD/SSD</strong> é como o armário no quarto — você precisa andar até lá para pegar algo. A <strong>RAM</strong> é como a sua mesa de trabalho — tudo está ali, ao alcance da mão, em segundos. O Spark usa a mesa, o MapReduce usa o armário a cada operação!
+          </div>
+        </div>
+      </div>
+
+      <!-- QUIZ 1 -->
+      <div class="quiz-box">
+        <div class="quiz-num">// PERGUNTA 1 DE 3</div>
+        <div class="quiz-q">🧠 Qual a principal vantagem do Spark em relação ao MapReduce?</div>
+        <div class="quiz-opts">
+          <button class="quiz-opt" onclick="quiz('q1','a','wrong',this)"><span class="opt-letra">A</span>O Spark usa computadores mais caros</button>
+          <button class="quiz-opt" onclick="quiz('q1','b','correct',this)"><span class="opt-letra">B</span>O Spark processa os dados na memória RAM, sem salvar no disco a cada passo</button>
+          <button class="quiz-opt" onclick="quiz('q1','c','wrong',this)"><span class="opt-letra">C</span>O Spark usa menos computadores</button>
+          <button class="quiz-opt" onclick="quiz('q1','d','wrong',this)"><span class="opt-letra">D</span>O Spark é mais fácil de instalar</button>
+        </div>
+        <div class="quiz-feedback ok" id="q1ok">🎉 Parabéns! +50 XP. Exatamente isso! O Spark mantém tudo na RAM (memória) — como deixar tudo na mesa de trabalho em vez de guardar no armário a cada passo!</div>
+        <div class="quiz-feedback fail" id="q1fail">❌ Quase! Pense na analogia: o Spark usa a RAM (mesa de trabalho) em vez do HD (armário). Isso o torna muito mais rápido!</div>
+        <details class="quiz-hint"><summary>💡 Precisa de uma dica?</summary><div class="quiz-hint-body">Lembra da analogia da mesa vs armário? A RAM é a mesa — você acessa rápido sem precisar andar até o armário (HD) a cada momento.</div></details>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 2. ARQUITETURA ===== -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-icon">🏗️</span>
+      <div>
+        <div class="sec-title">2. Como o Spark está organizado?</div>
+        <div class="sec-subtitle">Driver, Cluster Manager e Executors</div>
+      </div>
+    </div>
+    <div class="sec-body">
+      <div class="analogy an-laranja">
+        <div class="analogy-emoji">🏭</div>
+        <div>
+          <div class="analogy-title" style="color:#9a3412;">Analogia: Fábrica</div>
+          <div class="analogy-text" style="color:#7c2d12;">
+            Pense em uma fábrica: o <strong>Gerente (Driver)</strong> decide o que fazer e distribui as tarefas. O <strong>RH (Cluster Manager)</strong> contrata e aloca os operários. Os <strong>Operários (Executors)</strong> fazem o trabalho pesado em paralelo. No final, o Gerente reúne tudo.
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-visual">
+        <div class="arch-row">
+          <div class="arch-box ab-azul">
+            <span class="arch-box-emoji">🧠</span>
+            <div class="arch-box-name">DRIVER</div>
+            <div class="arch-box-desc">Seu código Python. <br>Coordena tudo.</div>
+          </div>
+        </div>
+        <div class="arch-arrow">⬇️</div>
+        <div class="arch-row">
+          <div class="arch-box ab-laranja">
+            <span class="arch-box-emoji">🎯</span>
+            <div class="arch-box-name">CLUSTER MANAGER</div>
+            <div class="arch-box-desc">Aloca recursos.<br>YARN / Kubernetes</div>
+          </div>
+        </div>
+        <div class="arch-arrow">⬇️</div>
+        <div class="arch-row">
+          <div class="arch-box ab-verde">
+            <span class="arch-box-emoji">⚙️</span>
+            <div class="arch-box-name">EXECUTOR 1</div>
+            <div class="arch-box-desc">Processa parte dos dados</div>
+          </div>
+          <div class="arch-box ab-verde">
+            <span class="arch-box-emoji">⚙️</span>
+            <div class="arch-box-name">EXECUTOR 2</div>
+            <div class="arch-box-desc">Processa parte dos dados</div>
+          </div>
+          <div class="arch-box ab-verde">
+            <span class="arch-box-emoji">⚙️</span>
+            <div class="arch-box-name">EXECUTOR 3</div>
+            <div class="arch-box-desc">Processa parte dos dados</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="steps" style="margin-top:20px;">
+        <div class="step-item">
+          <div class="step-num step-1">1</div>
+          <div class="step-body">
+            <div class="step-title" style="color:var(--azul-escuro);">Você escreve código Python (PySpark)</div>
+            <div class="step-desc">O Driver recebe seu programa e começa a planejar como executá-lo.</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num step-2">2</div>
+          <div class="step-body">
+            <div class="step-title" style="color:#9a3412;">Driver cria o plano de execução (DAG)</div>
+            <div class="step-desc">O Spark monta um "mapa de etapas" — como uma receita de bolo com a ordem de cada passo.</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num step-3">3</div>
+          <div class="step-body">
+            <div class="step-title" style="color:var(--verde-escuro);">Cluster Manager distribui o trabalho</div>
+            <div class="step-desc">Os Executors recebem pedaços dos dados e processam em paralelo — vários ao mesmo tempo!</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num step-4">4</div>
+          <div class="step-body">
+            <div class="step-title" style="color:#6b21a8;">Driver reúne os resultados</div>
+            <div class="step-desc">Cada Executor devolve sua parte, e o Driver junta tudo para você ver o resultado final.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 3. RDD ===== -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-icon">🔵</span>
+      <div>
+        <div class="sec-title">3. O que é um RDD?</div>
+        <div class="sec-subtitle">Resilient Distributed Dataset — a lista mágica do Spark</div>
+      </div>
+    </div>
+    <div class="sec-body">
+      <div class="analogy an-azul">
+        <div class="analogy-emoji">📋</div>
+        <div>
+          <div class="analogy-title" style="color:var(--azul-escuro);">Analogia: Lista de Chamada dividida</div>
+          <div class="analogy-text" style="color:var(--azul-escuro);">
+            Imagine que você tem uma lista com 1 milhão de nomes. Um professor sozinho levaria horas para fazer a chamada. Mas se você dividir em pedaços e dar para 1.000 professores diferentes, cada um faz uma parte — e fica pronto em minutos. <br><br>
+            O <strong>RDD</strong> é essa lista dividida entre vários computadores. Cada computador (Executor) guarda e processa apenas um pedaço dela.
+          </div>
+        </div>
+      </div>
+
+      <p style="font-size:.9em;font-weight:700;color:var(--texto);margin:20px 0 10px;">⚙️ O que você pode fazer com um RDD?</p>
+      <p style="font-size:.84em;color:var(--texto2);margin-bottom:14px;">Existem dois tipos de operações: <strong style="color:#854d0e;">Transformações</strong> (preparam os dados, mas não executam nada ainda) e <strong style="color:var(--verde-escuro);">Ações</strong> (disparam a execução e mostram o resultado).</p>
+
+      <div class="ops-grid">
+        <div class="op-card oc-transform">
+          <div class="op-name">map()</div>
+          <span class="op-tipo">⚙️ Transformação</span>
+          <div class="op-desc">Aplica uma função a cada elemento da lista.</div>
+          <div class="op-ex"># Dobrar cada número<br>.map(lambda x: x * 2)</div>
+        </div>
+        <div class="op-card oc-transform">
+          <div class="op-name">filter()</div>
+          <span class="op-tipo">⚙️ Transformação</span>
+          <div class="op-desc">Filtra apenas os elementos que atendem a uma condição.</div>
+          <div class="op-ex"># Só linhas com ERROR<br>.filter(lambda l: "ERROR" in l)</div>
+        </div>
+        <div class="op-card oc-transform">
+          <div class="op-name">flatMap()</div>
+          <span class="op-tipo">⚙️ Transformação</span>
+          <div class="op-desc">Como map(), mas achata listas dentro de listas.</div>
+          <div class="op-ex"># Separar palavras de frases<br>.flatMap(lambda l: l.split(" "))</div>
+        </div>
+        <div class="op-card oc-action">
+          <div class="op-name">count()</div>
+          <span class="op-tipo">▶️ Ação</span>
+          <div class="op-desc">Conta o número total de elementos.</div>
+          <div class="op-ex"># Contar linhas de erro<br>erros.count() → 42</div>
+        </div>
+        <div class="op-card oc-action">
+          <div class="op-name">collect()</div>
+          <span class="op-tipo">▶️ Ação</span>
+          <div class="op-desc">Traz todos os dados para o Driver (cuidado: pode ser grande!).</div>
+          <div class="op-ex"># Pegar tudo<br>rdd.collect() → [1, 2, 3...]</div>
+        </div>
+        <div class="op-card oc-action">
+          <div class="op-name">reduce()</div>
+          <span class="op-tipo">▶️ Ação</span>
+          <div class="op-desc">Combina todos os elementos em um único resultado.</div>
+          <div class="op-ex"># Somar todos<br>.reduce(lambda a,b: a+b)</div>
+        </div>
+      </div>
+
+      <!-- QUIZ 2 -->
+      <div class="quiz-box">
+        <div class="quiz-num">// PERGUNTA 2 DE 3</div>
+        <div class="quiz-q">🧠 Você quer pegar os logs de erro e <strong>contar quantos existem</strong>. Qual sequência está certa?</div>
+        <div class="quiz-opts">
+          <button class="quiz-opt" onclick="quiz('q2','a','wrong',this)"><span class="opt-letra">A</span>count() → filter("ERROR") — contar primeiro, depois filtrar</button>
+          <button class="quiz-opt" onclick="quiz('q2','b','correct',this)"><span class="opt-letra">B</span>filter("ERROR") → count() — filtrar primeiro, depois contar</button>
+          <button class="quiz-opt" onclick="quiz('q2','c','wrong',this)"><span class="opt-letra">C</span>collect() → filter("ERROR") — coletar tudo primeiro</button>
+          <button class="quiz-opt" onclick="quiz('q2','d','wrong',this)"><span class="opt-letra">D</span>map() → collect() — transformar e coletar</button>
+        </div>
+        <div class="quiz-feedback ok" id="q2ok">🎉 +50 XP! Certo! filter() filtra os dados (transformação), depois count() conta o resultado (ação). Sempre: transformar → agir!</div>
+        <div class="quiz-feedback fail" id="q2fail">❌ Pense assim: você primeiro seleciona o que quer (filter = transformação), e só depois conta (count = ação). Transformação sempre vem antes da ação!</div>
+        <details class="quiz-hint"><summary>💡 Precisa de uma dica?</summary><div class="quiz-hint-body">Pense no seu dia a dia: você primeiro filtra o café (separa o pó da água) e só depois bebe. Primeiro transforma, depois age!</div></details>
+      </div>
+
+      <!-- DRAG AND DROP -->
+      <p style="font-size:.9em;font-weight:700;color:var(--texto);margin:20px 0 4px;">🎮 Agora pratique! Arraste cada operação para o grupo correto:</p>
+      <div class="drag-area">
+        <div class="drag-label">📦 Operações disponíveis (arraste para classificar):</div>
+        <div class="drag-source" id="dragSource" ondragover="dragOver(event,'dragSource')" ondrop="dropBack(event)">
+          <div class="drag-item dt" draggable="true" ondragstart="ds(event,'filter','t')" id="di-filter">filter()</div>
+          <div class="drag-item da" draggable="true" ondragstart="ds(event,'count','a')" id="di-count">count()</div>
+          <div class="drag-item dt" draggable="true" ondragstart="ds(event,'map','t')" id="di-map">map()</div>
+          <div class="drag-item da" draggable="true" ondragstart="ds(event,'collect','a')" id="di-collect">collect()</div>
+          <div class="drag-item dt" draggable="true" ondragstart="ds(event,'flatMap','t')" id="di-flatMap">flatMap()</div>
+          <div class="drag-item da" draggable="true" ondragstart="ds(event,'reduce','a')" id="di-reduce">reduce()</div>
+        </div>
+        <div class="drag-targets">
+          <div class="drag-target" id="dt-t" ondragover="dragOver(event,'dt-t')" ondrop="dropTarget(event,'t')">
+            <div class="dt-label t">⚙️ Transformações</div>
+            <div class="dropped-items" id="dd-t"></div>
+          </div>
+          <div class="drag-target" id="dt-a" ondragover="dragOver(event,'dt-a')" ondrop="dropTarget(event,'a')">
+            <div class="dt-label a">▶️ Ações</div>
+            <div class="dropped-items" id="dd-a"></div>
+          </div>
+        </div>
+        <button class="drag-check-btn" onclick="checkDrag()">✅ Verificar minha classificação</button>
+        <div class="drag-result" id="dragResult"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 4. LAZY EVALUATION ===== -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-icon">😴</span>
+      <div>
+        <div class="sec-title">4. Lazy Evaluation — O Spark é "preguiçoso"!</div>
+        <div class="sec-subtitle">Ele só trabalha quando você pede com uma Ação</div>
+      </div>
+    </div>
+    <div class="sec-body">
+      <div class="analogy an-roxo">
+        <div class="analogy-emoji">📝</div>
+        <div>
+          <div class="analogy-title" style="color:#6b21a8;">Analogia: A lista de tarefas</div>
+          <div class="analogy-text" style="color:#581c87;">
+            Imagine que você pede para um funcionário: <em>"Separe os erros dos logs"</em> → ele anota. <em>"Extraia as mensagens"</em> → ele anota. <em>"Remova duplicatas"</em> → ele anota.<br><br>
+            Ele só começa a trabalhar de verdade quando você diz: <em>"<strong>Me dê o resultado!</strong>"</em> (count, collect...). Antes disso, ele só fica anotando em um caderninho (o DAG). Isso é <strong>Lazy Evaluation</strong>!
+          </div>
+        </div>
+      </div>
+
+      <p style="font-size:.88em;color:var(--texto2);margin:14px 0;">Veja como o Spark constrói e executa o pipeline:</p>
+
+      <div class="lazy-flow">
+        <div class="lf-node lf-lazy">
+          <div class="lf-tag">😴 anota</div>
+          <div class="lf-name">textFile()</div>
+        </div>
+        <div class="lf-arrow">→</div>
+        <div class="lf-node lf-lazy">
+          <div class="lf-tag">😴 anota</div>
+          <div class="lf-name">filter()</div>
+        </div>
+        <div class="lf-arrow">→</div>
+        <div class="lf-node lf-lazy">
+          <div class="lf-tag">😴 anota</div>
+          <div class="lf-name">map()</div>
+        </div>
+        <div class="lf-arrow">→</div>
+        <div class="lf-node lf-action">
+          <div class="lf-tag">🚀 EXECUTA!</div>
+          <div class="lf-name">count()</div>
+        </div>
+      </div>
+
+      <div class="illus-grid" style="margin-top:16px;">
+        <div class="illus-card ic-amarelo">
+          <span class="illus-emoji">😴</span>
+          <div class="illus-title" style="color:#854d0e;">Transformações = Lazy</div>
+          <div class="illus-desc">map(), filter(), flatMap()... só anotam no plano. Nada acontece ainda!</div>
+        </div>
+        <div class="illus-card ic-verde">
+          <span class="illus-emoji">🚀</span>
+          <div class="illus-title" style="color:var(--verde-escuro);">Ações = Disparam tudo!</div>
+          <div class="illus-desc">count(), collect(), reduce()... aí o Spark executa tudo de uma vez!</div>
+        </div>
+        <div class="illus-card ic-azul">
+          <span class="illus-emoji">⚡</span>
+          <div class="illus-title" style="color:var(--azul-escuro);">Por que isso é bom?</div>
+          <div class="illus-desc">O Spark pode otimizar o plano antes de executar, tornando-o mais eficiente!</div>
+        </div>
+      </div>
+
+      <!-- QUIZ 3 -->
+      <div class="quiz-box">
+        <div class="quiz-num">// PERGUNTA 3 DE 3</div>
+        <div class="quiz-q">🧠 Você escreveu este código:<br><code style="font-family:monospace;background:var(--borda);padding:3px 8px;border-radius:4px;font-size:.9em;">rdd2 = rdd.filter(lambda x: x > 0).map(lambda x: x * 2)</code><br><br>Quando o Spark <strong>processa os dados de verdade</strong>?</div>
+        <div class="quiz-opts">
+          <button class="quiz-opt" onclick="quiz('q3','a','wrong',this)"><span class="opt-letra">A</span>Na linha do filter() — ele filtra na hora</button>
+          <button class="quiz-opt" onclick="quiz('q3','b','wrong',this)"><span class="opt-letra">B</span>Na linha do map() — ele transforma na hora</button>
+          <button class="quiz-opt" onclick="quiz('q3','c','correct',this)"><span class="opt-letra">C</span>Só quando uma ação como count() ou collect() for chamada depois</button>
+          <button class="quiz-opt" onclick="quiz('q3','d','wrong',this)"><span class="opt-letra">D</span>Imediatamente ao criar o pipeline</button>
+        </div>
+        <div class="quiz-feedback ok" id="q3ok">🎉 +50 XP! Perfeito! O Spark é "preguiçoso" — filter() e map() só anotam no plano. Ele só trabalha de verdade quando você pede com uma ação!</div>
+        <div class="quiz-feedback fail" id="q3fail">❌ Lembre da analogia: o funcionário anota tudo sem fazer nada. Ele só age quando você diz "me dê o resultado!" (count, collect...).</div>
+        <details class="quiz-hint"><summary>💡 Precisa de uma dica?</summary><div class="quiz-hint-body">Lembra da analogia? filter() e map() são "anotações no caderninho". O Spark só processa quando você chama uma Ação!</div></details>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 5. SANDBOX ===== -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-icon">💻</span>
+      <div>
+        <div class="sec-title">5. Experimente código PySpark!</div>
+        <div class="sec-subtitle">Escreva e veja o resultado simulado — sem precisar instalar nada</div>
+      </div>
+    </div>
+    <div class="sec-body">
+      <div class="analogy an-verde">
+        <div class="analogy-emoji">🧪</div>
+        <div>
+          <div class="analogy-title" style="color:var(--verde-escuro);">Antes de experimentar, entenda o código</div>
+          <div class="analogy-text" style="color:var(--verde-escuro);">
+            O código abaixo usa um dataset simulado de <strong>1000 linhas de logs</strong> de um servidor. Você pode modificar os filtros, trocar "ERROR" por "WARN", tentar contar de outras formas — e clicar em ▶ Executar para ver o resultado!
+          </div>
+        </div>
+      </div>
+
+      <!-- FILL IN BLANK -->
+      <div class="fill-area">
+        <div class="fill-desc">✏️ Desafio: Preencha os espaços em branco para completar o código</div>
+        <p style="font-size:.82em;color:var(--texto2);margin-bottom:4px;">Dica: use os nomes das operações que você acabou de aprender!</p>
+        <div class="fill-code">
+<span style="color:#94a3b8"># Carrega o arquivo de logs</span>
+logs = sc.<input class="fill-input" id="f1" placeholder="???" style="width:80px">(<span style="color:#a5d6ff">"logs.txt"</span>)
+
+<span style="color:#94a3b8"># Filtra só as linhas de ERROR</span>
+erros = logs.<input class="fill-input" id="f2" placeholder="???" style="width:65px">(<span style="color:#ff7b72">lambda</span> l: <span style="color:#a5d6ff">"ERROR"</span> in l)
+
+<span style="color:#94a3b8"># Conta quantas linhas de erro existem</span>
+total = erros.<input class="fill-input" id="f3" placeholder="???" style="width:65px">()
+print(total)
+        </div>
+        <button class="fill-btn" onclick="checkFill()">🔍 Verificar resposta</button>
+        <div class="fill-result" id="fillResult"></div>
+      </div>
+
+      <!-- SANDBOX -->
+      <div class="sandbox">
+        <div class="sb-header">
+          <div class="sb-dots">
+            <div class="sb-dot" style="background:#ff5f57"></div>
+            <div class="sb-dot" style="background:#ffbd2e"></div>
+            <div class="sb-dot" style="background:#28c840"></div>
+          </div>
+          <span class="sb-title">pyspark_sandbox.py — 1000 linhas de logs simulados</span>
+          <button class="sb-reset" onclick="resetSandbox()">↺ Exemplo</button>
+          <button class="sb-run" id="runBtn" onclick="runSandbox()">▶ Executar</button>
+        </div>
+        <textarea class="sb-editor" id="sandboxCode" spellcheck="false">from pyspark import SparkContext
+sc = SparkContext("local", "MeuPrimeiroPySpark")
+
+# Carrega os logs (simulado)
+logs = sc.textFile("logs.txt")
+
+# Conta todas as linhas
+print(f"Total de linhas: {logs.count()}")
+
+# Filtra só as linhas de ERROR e conta
+erros = logs.filter(lambda l: "ERROR" in l)
+print(f"Total de ERRORs: {erros.count()}")
+
+# Extraindo tipos de erro
+tipos = erros.map(lambda l: l.split("]")[1].strip().split(" ")[0])
+contagem = tipos.countByValue()
+
+print("\n--- Erros por tipo ---")
+for tipo, qtd in sorted(contagem.items()):
+    print(f"  {tipo}: {qtd} ocorrências")</textarea>
+        <div class="sb-output" id="sbOutput">
+          <div class="o-muted">// Clique em ▶ Executar para ver o resultado...</div>
+        </div>
+        <div class="sb-hint">💡 Tente trocar "ERROR" por "WARN" e executar novamente!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TUTOR IA ===== -->
+  <div class="ai-tutor">
+    <div class="ai-header">
+      <div class="ai-avatar">🤖</div>
+      <div class="ai-info">
+        <h4>🤖 Tutor IA — Tire suas dúvidas!</h4>
+        <p>Especialista em Apache Spark · Responde em português simples</p>
+      </div>
+      <span class="ai-badge">● Online</span>
+    </div>
+    <div class="ai-chat" id="aiChat">
+      <div class="ai-msg">
+        <div class="ai-bubble bot">
+          👋 Olá! Estou aqui para te ajudar a entender o Apache Spark! Pode perguntar qualquer coisa — mesmo que pareça básico, não existe pergunta boba. O que você não entendeu até agora?
+        </div>
+      </div>
+    </div>
+    <div class="ai-quick-btns">
+      <button class="ai-quick" onclick="quickAsk('O que é um RDD? Me explica de forma simples')">O que é um RDD?</button>
+      <button class="ai-quick" onclick="quickAsk('O que é Lazy Evaluation? Me dê um exemplo do dia a dia')">Lazy Evaluation</button>
+      <button class="ai-quick" onclick="quickAsk('Qual a diferença entre map() e filter()?')">map vs filter</button>
+      <button class="ai-quick" onclick="quickAsk('Por que o Spark é mais rápido que o MapReduce? Explica simples')">Spark vs MapReduce</button>
+    </div>
+    <div class="ai-input-area">
+      <textarea class="ai-input" id="aiInput" placeholder="Escreva sua dúvida aqui... (Enter para enviar)" rows="2" onkeydown="aiKey(event)"></textarea>
+      <button class="ai-send" id="aiSend" onclick="sendAI()">Enviar ↗</button>
+    </div>
+  </div>
+
+  <!-- ===== GOOGLE COLAB ===== -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-icon">☁️</span>
+      <div>
+        <div class="sec-title">6. Como rodar PySpark no Google Colab</div>
+        <div class="sec-subtitle">Sem instalar nada — funciona direto no navegador!</div>
+      </div>
+    </div>
+    <div class="sec-body">
+
+      <div class="analogy an-azul">
+        <div class="analogy-emoji">💡</div>
+        <div>
+          <div class="analogy-title" style="color:var(--azul-escuro);">O que é o Google Colab?</div>
+          <div class="analogy-text" style="color:var(--azul-escuro);">
+            Imagine um caderno de exercícios na nuvem onde você pode escrever e executar código Python (e PySpark!) diretamente no navegador. Não precisa instalar nada! É gratuito e você acessa com sua conta Google.
+          </div>
+        </div>
+      </div>
+
+      <!-- Passo a passo -->
+      <div class="steps" style="margin-top:16px;">
+        <div class="step-item">
+          <div class="step-num step-1">1</div>
+          <div class="step-body">
+            <div class="step-title">Acesse o Google Colab</div>
+            <div class="step-desc">Abra <a href="https://colab.research.google.com" target="_blank" style="color:var(--azul);font-weight:700;">colab.research.google.com</a> e faça login com sua conta Google. Clique em <strong>"+ Novo notebook"</strong>.</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num step-2">2</div>
+          <div class="step-body">
+            <div class="step-title">Cole o código de instalação na primeira célula</div>
+            <div class="step-desc">O PySpark não vem instalado por padrão — você precisa instalar uma vez a cada sessão. Use o código abaixo:</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num step-3">3</div>
+          <div class="step-body">
+            <div class="step-title">Execute e comece a programar!</div>
+            <div class="step-desc">Clique no botão ▶ ou pressione <kbd style="background:var(--borda);padding:2px 6px;border-radius:4px;font-size:.85em;">Ctrl + Enter</kbd> para rodar cada célula.</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num step-4">4</div>
+          <div class="step-body">
+            <div class="step-title">Salve no Google Drive automaticamente</div>
+            <div class="step-desc">Seus notebooks são salvos automaticamente no Google Drive. Você pode acessar de qualquer lugar!</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Código de instalação -->
+      <div style="background:#0d1117;border:2px solid var(--borda);border-radius:var(--r-sm);overflow:hidden;margin:16px 0;">
+        <div style="background:#161b22;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--borda);">
+          <div style="display:flex;gap:5px;"><div style="width:10px;height:10px;border-radius:50%;background:#ff5f57"></div><div style="width:10px;height:10px;border-radius:50%;background:#ffbd2e"></div><div style="width:10px;height:10px;border-radius:50%;background:#28c840"></div></div>
+          <span style="font-size:.75em;color:#8b949e;font-family:monospace;flex:1;">📓 Célula 1 — Instalação (copie e cole no Colab)</span>
+          <button onclick="navigator.clipboard.writeText(this.closest('div').nextElementSibling.innerText).then(()=>{this.textContent='✅';setTimeout(()=>this.textContent='📋 Copiar',2000)})" style="font-size:.72em;background:#21262d;color:#8b949e;border:1px solid #30363d;border-radius:4px;padding:3px 10px;cursor:pointer;font-family:var(--sans);">📋 Copiar</button>
+        </div>
+        <pre style="padding:16px;font-family:monospace;font-size:.82em;line-height:1.8;color:#e6edf3;overflow-x:auto;"><span style="color:#ff7b72;">!</span>apt-get install -y openjdk-11-jdk-headless -qq > /dev/null
+<span style="color:#ff7b72;">!</span>pip install pyspark==3.5.0 -q
+
+<span style="color:#ff7b72;">import</span> os
+os.environ[<span style="color:#a5d6ff;">"JAVA_HOME"</span>] = <span style="color:#a5d6ff;">"/usr/lib/jvm/java-11-openjdk-amd64"</span>
+
+<span style="color:#d2a8ff;">print</span>(<span style="color:#a5d6ff;">"✅ PySpark pronto para usar!"</span>)</pre>
+      </div>
+
+      <div style="background:#0d1117;border:2px solid var(--borda);border-radius:var(--r-sm);overflow:hidden;margin:16px 0;">
+        <div style="background:#161b22;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--borda);">
+          <div style="display:flex;gap:5px;"><div style="width:10px;height:10px;border-radius:50%;background:#ff5f57"></div><div style="width:10px;height:10px;border-radius:50%;background:#ffbd2e"></div><div style="width:10px;height:10px;border-radius:50%;background:#28c840"></div></div>
+          <span style="font-size:.75em;color:#8b949e;font-family:monospace;flex:1;">📓 Célula 2 — Seu primeiro RDD no Colab!</span>
+          <button onclick="navigator.clipboard.writeText(this.closest('div').nextElementSibling.innerText).then(()=>{this.textContent='✅';setTimeout(()=>this.textContent='📋 Copiar',2000)})" style="font-size:.72em;background:#21262d;color:#8b949e;border:1px solid #30363d;border-radius:4px;padding:3px 10px;cursor:pointer;font-family:var(--sans);">📋 Copiar</button>
+        </div>
+        <pre style="padding:16px;font-family:monospace;font-size:.82em;line-height:1.8;color:#e6edf3;overflow-x:auto;"><span style="color:#ff7b72;">from</span> pyspark <span style="color:#ff7b72;">import</span> SparkContext
+
+<span style="color:#8b949e;"># Inicia o Spark (local = usa sua máquina/Colab)</span>
+sc = SparkContext(<span style="color:#a5d6ff;">"local[*]"</span>, <span style="color:#a5d6ff;">"MeuPrimeiroRDD"</span>)
+
+<span style="color:#8b949e;"># Cria um RDD com números</span>
+numeros = sc.parallelize([<span style="color:#79c0ff;">1</span>, <span style="color:#79c0ff;">2</span>, <span style="color:#79c0ff;">3</span>, <span style="color:#79c0ff;">4</span>, <span style="color:#79c0ff;">5</span>])
+
+<span style="color:#8b949e;"># Transforma (multiplica por 2) e soma tudo</span>
+resultado = numeros.<span style="color:#d2a8ff;">map</span>(<span style="color:#ff7b72;">lambda</span> x: x * <span style="color:#79c0ff;">2</span>).<span style="color:#d2a8ff;">reduce</span>(<span style="color:#ff7b72;">lambda</span> a, b: a + b)
+<span style="color:#d2a8ff;">print</span>(<span style="color:#a5d6ff;">f"Resultado: {resultado}"</span>)  <span style="color:#8b949e;"># Esperado: 30</span>
+
+sc.stop()  <span style="color:#8b949e;"># Sempre feche ao terminar!</span></pre>
+      </div>
+
+      <div style="text-align:center;margin-top:16px;">
+        <a href="https://colab.research.google.com" target="_blank"
+           style="display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:white;padding:13px 26px;border-radius:10px;text-decoration:none;font-size:.9em;font-weight:800;box-shadow:0 4px 16px rgba(59,130,246,.4);">
+          ☁️ Abrir Google Colab agora
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== KAGGLE ===== -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-icon">📊</span>
+      <div>
+        <div class="sec-title">7. Exemplos prontos no Kaggle</div>
+        <div class="sec-subtitle">Datasets reais para praticar PySpark — é gratuito!</div>
+      </div>
+    </div>
+    <div class="sec-body">
+
+      <div class="analogy an-laranja">
+        <div class="analogy-emoji">🎯</div>
+        <div>
+          <div class="analogy-title" style="color:#9a3412;">O que é o Kaggle?</div>
+          <div class="analogy-text" style="color:#9a3412;">
+            Kaggle é como uma "academia de exercícios" para programadores de dados. Você encontra datasets reais, notebooks prontos e pode copiar e modificar exemplos para aprender PySpark com dados do mundo real!
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin:16px 0;">
+        <!-- Card 1 -->
+        <div style="background:var(--cinza);border:2px solid var(--borda);border-radius:var(--r-sm);padding:18px;transition:all .2s;" onmouseover="this.style.borderColor='var(--laranja)'" onmouseout="this.style.borderColor='var(--borda)'">
+          <div style="font-size:2em;margin-bottom:8px;">📈</div>
+          <div style="font-size:.88em;font-weight:800;color:var(--texto);margin-bottom:6px;">PySpark — Análise de Vendas</div>
+          <div style="font-size:.8em;color:var(--texto2);margin-bottom:12px;line-height:1.5;">Usa filter() e map() para analisar dados de e-commerce. Perfeito para iniciantes!</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+            <span style="background:var(--verde-claro);color:var(--verde-escuro);border:2px solid var(--verde);border-radius:50px;padding:2px 10px;font-size:.72em;font-weight:800;">🟢 Iniciante</span>
+          </div>
+          <a href="https://www.kaggle.com/code/search?q=pyspark+rdd+sales" target="_blank"
+             style="display:inline-flex;align-items:center;gap:6px;background:var(--laranja-claro);color:#9a3412;border:2px solid var(--laranja);border-radius:8px;padding:7px 14px;text-decoration:none;font-size:.8em;font-weight:800;">🔗 Ver no Kaggle</a>
+        </div>
+        <!-- Card 2 -->
+        <div style="background:var(--cinza);border:2px solid var(--borda);border-radius:var(--r-sm);padding:18px;transition:all .2s;" onmouseover="this.style.borderColor='var(--laranja)'" onmouseout="this.style.borderColor='var(--borda)'">
+          <div style="font-size:2em;margin-bottom:8px;">🌐</div>
+          <div style="font-size:.88em;font-weight:800;color:var(--texto);margin-bottom:6px;">Análise de Logs com PySpark</div>
+          <div style="font-size:.8em;color:var(--texto2);margin-bottom:12px;line-height:1.5;">Filtra erros de servidor real, conta por tipo. Igual ao que fazemos no sandbox!</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+            <span style="background:var(--azul-claro);color:var(--azul-escuro);border:2px solid var(--azul);border-radius:50px;padding:2px 10px;font-size:.72em;font-weight:800;">🟡 Médio</span>
+          </div>
+          <a href="https://www.kaggle.com/code/search?q=pyspark+log+analysis" target="_blank"
+             style="display:inline-flex;align-items:center;gap:6px;background:var(--laranja-claro);color:#9a3412;border:2px solid var(--laranja);border-radius:8px;padding:7px 14px;text-decoration:none;font-size:.8em;font-weight:800;">🔗 Ver no Kaggle</a>
+        </div>
+        <!-- Card 3 -->
+        <div style="background:var(--cinza);border:2px solid var(--borda);border-radius:var(--r-sm);padding:18px;transition:all .2s;" onmouseover="this.style.borderColor='var(--laranja)'" onmouseout="this.style.borderColor='var(--borda)'">
+          <div style="font-size:2em;margin-bottom:8px;">🚕</div>
+          <div style="font-size:.88em;font-weight:800;color:var(--texto);margin-bottom:6px;">NYC Taxi — RDD e Estatísticas</div>
+          <div style="font-size:.8em;color:var(--texto2);margin-bottom:12px;line-height:1.5;">Dataset famoso de táxis de Nova York. Calcula médias de viagem com RDD operations.</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+            <span style="background:var(--azul-claro);color:var(--azul-escuro);border:2px solid var(--azul);border-radius:50px;padding:2px 10px;font-size:.72em;font-weight:800;">🟡 Médio</span>
+          </div>
+          <a href="https://www.kaggle.com/code/search?q=pyspark+nyc+taxi" target="_blank"
+             style="display:inline-flex;align-items:center;gap:6px;background:var(--laranja-claro);color:#9a3412;border:2px solid var(--laranja);border-radius:8px;padding:7px 14px;text-decoration:none;font-size:.8em;font-weight:800;">🔗 Ver no Kaggle</a>
+        </div>
+      </div>
+
+      <div style="background:var(--amarelo-claro);border:2px solid var(--amarelo);border-radius:var(--r-sm);padding:14px 18px;font-size:.84em;color:#854d0e;line-height:1.7;margin-top:6px;">
+        <strong>📌 Como usar o Kaggle (passo a passo simples):</strong><br>
+        1. Acesse <a href="https://www.kaggle.com" target="_blank" style="color:var(--azul);font-weight:700;">kaggle.com</a> e crie uma conta gratuita.<br>
+        2. Clique no notebook que quiser → <strong>"Copy &amp; Edit"</strong> → tem sua cópia!<br>
+        3. O Kaggle oferece computação gratuita — é como um Colab com datasets prontos.<br>
+        4. Salve e compartilhe seu notebook para o portfólio do curso. 🎓
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MISSÕES ===== -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-icon">⚔️</span>
+      <div>
+        <div class="sec-title">8. Missões Práticas</div>
+        <div class="sec-subtitle">Coloque a mão na massa!</div>
+      </div>
+    </div>
+    <div class="sec-body">
+
+      <div class="mission" id="m1">
+        <div class="m-num m-num-n" id="mn1">01</div>
+        <div class="m-body">
+          <div class="m-title">🔧 Missão 1 — Meu Primeiro RDD</div>
+          <div class="m-desc">
+            Abra o PySpark no terminal com o comando <code style="font-family:monospace;background:var(--borda);padding:1px 6px;border-radius:4px;">pyspark</code>.<br>
+            Digite: <code style="font-family:monospace;background:var(--borda);padding:1px 6px;border-radius:4px;">rdd = sc.parallelize([1, 2, 3, 4, 5])</code><br>
+            Depois: <code style="font-family:monospace;background:var(--borda);padding:1px 6px;border-radius:4px;">resultado = rdd.reduce(lambda a, b: a + b)</code><br>
+            Resultado esperado: <strong style="color:var(--verde-escuro);">15</strong> (porque 1+2+3+4+5=15)
+          </div>
+          <div class="m-tags">
+            <span class="mtag t-time">⏱ 20 min</span>
+            <span class="mtag t-xp">+60 XP</span>
+            <span class="mtag t-e">🟢 Iniciante</span>
+          </div>
+          <button class="m-btn" id="mb1" onclick="completeMission('m1','b5',60,'⚔️ Missão 1 completa!','Primeiro RDD criado com sucesso!')">✓ Concluí esta missão!</button>
+        </div>
+        <div class="m-check" id="mc1">⭕</div>
+      </div>
+
+      <div class="mission" id="m2">
+        <div class="m-num m-num-n" id="mn2">02</div>
+        <div class="m-body">
+          <div class="m-title">📊 Missão 2 — Analisar Logs com Spark</div>
+          <div class="m-desc">
+            Crie um arquivo chamado <code style="font-family:monospace;background:var(--borda);padding:1px 6px;border-radius:4px;">logs.txt</code> com pelo menos 10 linhas (algumas com "ERROR", outras com "INFO").<br>
+            No PySpark: carregue com <code style="font-family:monospace;background:var(--borda);padding:1px 6px;border-radius:4px;">sc.textFile("logs.txt")</code>, use <code style="font-family:monospace;background:var(--borda);padding:1px 6px;border-radius:4px;">filter()</code> para pegar só as linhas de ERROR, e <code style="font-family:monospace;background:var(--borda);padding:1px 6px;border-radius:4px;">count()</code> para contar quantas são.
+          </div>
+          <div class="m-tags">
+            <span class="mtag t-time">⏱ 35 min</span>
+            <span class="mtag t-xp">+70 XP</span>
+            <span class="mtag t-m">🟡 Intermediário</span>
+          </div>
+          <button class="m-btn" id="mb2" onclick="completeMission('m2','b6',70,'📊 Missão 2 completa!','Análise de logs dominada!')">✓ Concluí esta missão!</button>
+        </div>
+        <div class="m-check" id="mc2">⭕</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- NAV BOTTOM -->
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;">
+    <a href="semana04.html" class="bc-link" style="font-size:.85em;">⬅ S04 · Versão Completa</a>
+    <a href="../index.html" class="bc-link" style="font-size:.85em;">🏠 Início</a>
+    <a href="semana05.html" class="bc-link bc-next" style="font-size:.85em;">S05 · DataFrames ➡</a>
+  </div>
+
+</div><!-- /wrap -->
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-title" id="toastTitle"></div>
+  <div class="toast-msg" id="toastMsg"></div>
+</div>
+
+<script>
+// ===== STATE =====
+let xp = 0, maxXP = 400;
+const done = {};
+let draggedItem = null, draggedType = null;
+const correctType = { filter:'t', map:'t', flatMap:'t', count:'a', collect:'a', reduce:'a' };
+
+// ===== XP =====
+function updateXP() {
+  const p = (xp / maxXP) * 100;
+  document.getElementById('xpFill').style.width = p + '%';
+  document.getElementById('xpVal').textContent = xp + '/' + maxXP;
+}
+function unlockBadge(id) {
+  const b = document.getElementById(id);
+  if (b && !b.classList.contains('unlocked')) { b.classList.remove('locked'); b.classList.add('unlocked'); }
+}
+function toast(t, m) {
+  document.getElementById('toastTitle').textContent = t;
+  document.getElementById('toastMsg').textContent = m;
+  const el = document.getElementById('toast');
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3500);
+}
+function markStep(i) {
+  const d = document.getElementById('pd' + i);
+  if (d) { d.classList.remove('active'); d.classList.add('done'); d.textContent = '✓'; }
+  const l = document.getElementById('pl' + i);
+  if (l) l.classList.add('done');
+  const next = document.getElementById('pd' + (i + 1));
+  if (next && !next.classList.contains('done')) next.classList.add('active');
+}
+function checkAll() {
+  if (Object.keys(done).length >= 6) {
+    setTimeout(() => { unlockBadge('b7'); toast('🏆 SPARK MASTER!', 'Tudo concluído — incrível!'); launchConfetti(); }, 800);
+  }
+}
+
+// ===== QUIZ =====
+function quiz(id, choice, result, btn) {
+  if (done[id]) return;
+  done[id] = true;
+  btn.closest('.quiz-opts').querySelectorAll('.quiz-opt').forEach(o => { o.classList.add('disabled'); });
+  btn.classList.add(result === 'correct' ? 'correct' : 'wrong');
+  const map = { q1: [0,'b0',50], q2: [1,'b1',50], q3: [3,'b3',50] };
+  const info = map[id];
+  if (result === 'correct') {
+    document.getElementById(id + 'ok').style.display = 'block';
+    xp += info[2]; unlockBadge(info[1]); markStep(info[0]);
+    toast('⭐ +' + info[2] + ' XP!', 'Badge desbloqueado!');
+  } else {
+    document.getElementById(id + 'fail').style.display = 'block';
+  }
+  updateXP(); checkAll();
+}
+
+// ===== DRAG & DROP =====
+function ds(e, name, type) { draggedItem = name; draggedType = type; e.dataTransfer.effectAllowed = 'move'; }
+function dragOver(e, id) { e.preventDefault(); if (id) document.getElementById(id)?.classList.add('over'); }
+function dropTarget(e, targetType) {
+  e.preventDefault();
+  document.querySelectorAll('.drag-source,.drag-target').forEach(el => el.classList.remove('over'));
+  const container = document.getElementById('dd-' + targetType);
+  const item = document.getElementById('di-' + draggedItem);
+  if (!item) return;
+  item.parentNode.removeChild(item);
+  container.appendChild(item);
+  draggedItem = null; draggedType = null;
+}
+function dropBack(e) {
+  e.preventDefault();
+  document.querySelectorAll('.drag-source,.drag-target').forEach(el => el.classList.remove('over'));
+  const item = document.getElementById('di-' + draggedItem);
+  if (item) { item.parentNode.removeChild(item); document.getElementById('dragSource').appendChild(item); }
+  draggedItem = null; draggedType = null;
+}
+function checkDrag() {
+  if (done['drag']) return;
+  let correct = 0, total = 6;
+  ['t','a'].forEach(type => {
+    document.getElementById('dd-' + type).querySelectorAll('.drag-item').forEach(item => {
+      const name = item.id.replace('di-','');
+      if (correctType[name] === type) correct++;
+    });
+  });
+  const res = document.getElementById('dragResult');
+  if (correct === total) {
+    done['drag'] = true;
+    res.className = 'drag-result ok';
+    res.textContent = '🎉 Perfeito! +60 XP. Você classificou todos os 6 operadores corretamente!';
+    xp += 60; unlockBadge('b2'); markStep(2);
+    updateXP(); toast('🧩 +60 XP!', 'Classificador desbloqueado!'); checkAll();
+  } else {
+    res.className = 'drag-result fail';
+    res.textContent = `❌ ${correct}/${total} corretos. Transformações = lazy (filter, map, flatMap). Ações = executam (count, collect, reduce).`;
+  }
+}
+
+// ===== FILL IN BLANK =====
+function checkFill() {
+  if (done['fill']) return;
+  const answers = [{id:'f1',correct:'textFile'},{id:'f2',correct:'filter'},{id:'f3',correct:'count'}];
+  let ok = true;
+  answers.forEach(a => {
+    const input = document.getElementById(a.id);
+    const val = input.value.trim().replace(/\(\)$/,'');
+    if (val === a.correct) { input.classList.add('ok'); input.classList.remove('err'); }
+    else { input.classList.add('err'); input.classList.remove('ok'); ok = false; }
+  });
+  const res = document.getElementById('fillResult');
+  if (ok) {
+    done['fill'] = true;
+    res.style.color = 'var(--verde-escuro)';
+    res.textContent = '✅ Perfeito! textFile() → filter() → count() — pipeline correto!';
+  } else {
+    res.style.color = 'var(--vermelho)';
+    res.textContent = '❌ Alguns espaços estão errados. Dica: 1) carregar arquivo, 2) filtrar, 3) contar';
+  }
+}
+
+// ===== SANDBOX =====
+function runSandbox() {
+  const code = document.getElementById('sandboxCode').value;
+  const out = document.getElementById('sbOutput');
+  const btn = document.getElementById('runBtn');
+  btn.disabled = true; btn.classList.add('loading'); btn.textContent = '⏳ Rodando...';
+  out.innerHTML = '<div class="o-info">⏳ Iniciando SparkContext em modo local...</div>';
+  setTimeout(() => {
+    let lines = [];
+    const add = (t, cls='o-muted') => lines.push(`<div class="${cls}">${t}</div>`);
+    add('✅ SparkContext iniciado com sucesso!', 'o-ok');
+    add('📂 Carregando logs.txt (1000 linhas simuladas)...', 'o-info');
+    if (code.includes('logs.count') || code.includes('textFile')) add('Total de linhas: 1000', 'o-ok');
+    if (code.includes('"ERROR"') || code.includes("'ERROR'")) {
+      add('Total de ERRORs: 700', 'o-ok');
+      if (code.includes('countByValue')) {
+        add('', 'o-muted');
+        add('--- Erros por tipo ---', 'o-info');
+        add('  NullPointerException: 300 ocorrências', 'o-muted');
+        add('  OutOfMemoryError: 200 ocorrências', 'o-muted');
+        add('  TimeoutException: 100 ocorrências', 'o-muted');
+        add('  ConnectionRefused: 60 ocorrências', 'o-muted');
+        add('  FileNotFoundException: 40 ocorrências', 'o-muted');
+      }
+    }
+    if (code.includes('"WARN"') || code.includes("'WARN'")) add('Total de WARNs: 200', 'o-ok');
+    if (code.includes('parallelize')) add('RDD criado com os números informados!', 'o-ok');
+    if (code.includes('reduce')) add('Resultado do reduce: 5050', 'o-ok');
+    if (lines.length <= 2) add('Pipeline montado (lazy). Adicione count() ou collect() para ver resultado!', 'o-info');
+    add('', 'o-muted');
+    add('✅ Job finalizado em 0.38s — sucesso!', 'o-ok');
+    out.innerHTML = lines.join('');
+    if (!done['sandbox']) {
+      done['sandbox'] = true;
+      xp += 60; unlockBadge('b4'); markStep(4);
+      updateXP(); toast('💻 +60 XP!', 'Dev PySpark desbloqueado!'); checkAll();
+    }
+    btn.disabled = false; btn.classList.remove('loading'); btn.textContent = '▶ Executar';
+  }, 1400);
+}
+function resetSandbox() {
+  document.getElementById('sandboxCode').value = `from pyspark import SparkContext
+sc = SparkContext("local", "MeuPrimeiroPySpark")
+
+# Tente modificar este código!
+logs = sc.textFile("logs.txt")
+
+erros = logs.filter(lambda l: "ERROR" in l)
+print(f"Total de ERRORs: {erros.count()}")`;
+  document.getElementById('sbOutput').innerHTML = '<div class="o-muted">// Clique em ▶ Executar para ver o resultado...</div>';
+}
+
+// ===== MISSIONS =====
+function completeMission(mid, bid, pts, t, m) {
+  if (done[mid]) return;
+  done[mid] = true;
+  const el = document.getElementById(mid); el.classList.add('done');
+  document.getElementById('mc' + mid.slice(1)).textContent = '✅';
+  document.getElementById('mn' + mid.slice(1)).textContent = '✓';
+  const btn = document.getElementById('mb' + mid.slice(1));
+  btn.textContent = '✅ Missão concluída!'; btn.disabled = true;
+  xp += pts; unlockBadge(bid);
+  markStep(5);
+  updateXP(); toast(t, m); checkAll();
+}
+
+// ===== AI TUTOR =====
+async function sendAI() {
+  const input = document.getElementById('aiInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  addBubble(msg, 'user');
+  showTyping();
+  document.getElementById('aiSend').disabled = true;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `Você é um tutor amigável de Apache Spark para alunos INICIANTES (ingressantes) de Ciência de Dados na FATec Ourinhos.
+Responda SEMPRE em português brasileiro, de forma SIMPLES e CLARA.
+Use analogias do dia a dia (cozinha, escola, trabalho, etc.).
+Use emojis para deixar visual e animado.
+Evite jargões técnicos — se precisar usar, explique com analogia.
+Seja encorajador e paciente. Respostas curtas (máx 150 palavras).
+Foque apenas em: Spark, RDD, Lazy Evaluation, map/filter/reduce, arquitetura básica do Spark.`,
+        messages: [{ role: 'user', content: msg }]
+      })
+    });
+    const data = await res.json();
+    removeTyping();
+    addBubble(data.content?.[0]?.text || 'Não consegui responder. Tente novamente!', 'bot');
+  } catch {
+    removeTyping();
+    addBubble('⚠️ Sem conexão com o Tutor IA no momento. Revise o conteúdo acima ou pergunte ao professor!', 'bot');
+  }
+  document.getElementById('aiSend').disabled = false;
+}
+function addBubble(text, role) {
+  const chat = document.getElementById('aiChat');
+  const d = document.createElement('div');
+  d.className = 'ai-msg' + (role === 'user' ? ' user' : '');
+  d.innerHTML = `<div class="ai-bubble ${role === 'user' ? 'user-b' : 'bot'}">${text.replace(/\n/g,'<br>').replace(/`([^`]+)`/g,'<code>$1</code>')}</div>`;
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
+}
+function showTyping() {
+  const chat = document.getElementById('aiChat');
+  const d = document.createElement('div');
+  d.className = 'ai-msg'; d.id = 'typing';
+  d.innerHTML = '<div class="ai-bubble bot"><div class="ai-typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>';
+  chat.appendChild(d); chat.scrollTop = chat.scrollHeight;
+}
+function removeTyping() { document.getElementById('typing')?.remove(); }
+function aiKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAI(); } }
+function quickAsk(q) { document.getElementById('aiInput').value = q; sendAI(); }
+
+// ===== CONFETTI =====
+function launchConfetti() {
+  const colors = ['#3b82f6','#f97316','#22c55e','#a855f7','#eab308'];
+  for (let i = 0; i < 55; i++) {
+    const c = document.createElement('div');
+    c.className = 'cf';
+    c.style.cssText = `left:${Math.random()*100}vw;background:${colors[i%5]};animation-delay:${Math.random()*2}s;animation-duration:${2+Math.random()*2}s;width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'2px'};`;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 5000);
+  }
+}
+
+// ===== COPY CODE =====
+function copyCode(btn) {
+  const code = btn.closest('.code-block').querySelector('.code-body').innerText;
+  navigator.clipboard.writeText(code).then(() => { btn.textContent = '✅'; setTimeout(() => btn.textContent = '📋', 2000); });
+}
+
+// INIT
+updateXP();
+</script>
+</body>
+</html>

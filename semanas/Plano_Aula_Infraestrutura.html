@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+<html lang='pt-br'>
+<head>
+    <meta charset='UTF-8'>
+    <style>
+        @page {
+            size: A4;
+            margin: 15mm;
+            background-color: #f4f7f9;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #0056b3;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        h1 { margin: 0; font-size: 18pt; }
+        h2 { color: #0056b3; border-left: 5px solid #0056b3; padding-left: 10px; font-size: 14pt; margin-top: 20px; }
+        h3 { color: #444; font-size: 12pt; margin-bottom: 5px; }
+        
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .spec-box {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th {
+            background-color: #dee2e6;
+            text-align: left;
+            padding: 10px;
+            font-size: 10pt;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 10pt;
+        }
+        
+        .highlight {
+            font-weight: bold;
+            color: #0056b3;
+        }
+        
+        .practical-tip {
+            background-color: #d1ecf1;
+            border-left: 5px solid #0c5460;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 10pt;
+        }
+        
+        .footer {
+            text-align: center;
+            font-size: 8pt;
+            color: #777;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class='header'>
+        <h1>Plano de Aula Prática: Infraestrutura para Big Data</h1>
+        <p>Fatec Ourinhos - Tecnologia em Ciência de Dados</p>
+    </div>
+    
+    <div class='container'>
+        <h2>1. Equipamento de Estudo: Dell PowerEdge T110 II</h2>
+        <p>Este servidor torre é o objeto central para o estudo da camada física e tolerância a falhas.</p>
+        
+        <div class='spec-box'>
+            <h3>Especificações Técnicas do Nó:</h3>
+            <ul>
+                <li><span class='highlight'>Processador:</span> Intel Xeon E3-1200 (Foco em processamento paralelo)</li>
+                <li><span class='highlight'>Memória:</span> 8GB DDR3 ECC (Correção de erros em tempo real)</li>
+                <li><span class='highlight'>Armazenamento:</span> 2TB com Controladora RAID PERC H200</li>
+                <li><span class='highlight'>Conectividade:</span> Dual Gigabit Ethernet (1GbE)</li>
+            </ul>
+        </div>
+
+        <h2>2. Atividades Práticas Sugeridas</h2>
+        
+        <h3>Módulo I: Camada Física e Redes</h3>
+        <table>
+            <tr>
+                <th>Atividade</th>
+                <th>Objetivo Pedagógico</th>
+            </tr>
+            <tr>
+                <td>Crimpagem de Cabos CAT6</td>
+                <td>Entender a integridade do sinal e diagnóstico de perdas de pacotes.</td>
+            </tr>
+            <tr>
+                <td>Desmontagem do Servidor</td>
+                <td>Identificar componentes críticos: Memória ECC e Controladora RAID.</td>
+            </tr>
+            <tr>
+                <td>Teste com iperf3</td>
+                <td>Validar a largura de banda real entre o servidor e os desktops do laboratório.</td>
+            </tr>
+        </table>
+
+        <div class='practical-tip'>
+            <strong>Dica de Aula:</strong> Use o iperf3 para demonstrar como um cabo mal crimpado reduz a rede de 1000Mbps para 100Mbps, atrasando o processamento de grandes datasets.
+        </div>
+
+        <h2>3. Conceitos de Big Data Aplicados ao Hardware</h2>
+        <ul>
+            <li><strong>Escalabilidade Vertical:</strong> Demonstrar como a torre permite adicionar mais RAM (até 32GB) e discos.</li>
+            <li><strong>Tolerância a Falhas:</strong> Configurar RAID 1 na controladora PERC para simular a queima de um disco sem perda de dados.</li>
+            <li><strong>Data Locality:</strong> Discutir por que o processamento deve ocorrer o mais próximo possível do armazenamento SAS/SATA.</li>
+        </ul>
+
+        <h2>4. Cronograma de Execução (Módulo I)</h2>
+        <table>
+            <tr>
+                <td>Semana 1-2</td>
+                <td>Fundamentos de Hardware e Redes (Crimpagem e Teoria)</td>
+            </tr>
+            <tr>
+                <td>Semana 3-4</td>
+                <td>Sistemas Operacionais e Virtualização (Docker no Dell T110)</td>
+            </tr>
+            <tr>
+                <td>Semana 5</td>
+                <td>Benchmarking e Stress Test (iperf3 e monitoramento de I/O)</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class='footer'>
+        Documento gerado para a disciplina de Infraestrutura para Big Data - Prof. Isaque Katahira
+    </div>
+</body>
+</html>

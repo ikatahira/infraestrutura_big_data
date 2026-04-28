@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html lang='pt-br'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <style>
+        body { font-family: sans-serif; background-color: #f0f2f5; color: #1c1e21; line-height: 1.5; padding: 20px; }
+        .card { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 900px; margin: auto; overflow: hidden; }
+        .header { background: #1a73e8; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; }
+        .time-box { display: flex; align-items: center; margin-bottom: 10px; background: #e8f0fe; padding: 10px; border-radius: 5px; border-left: 4px solid #1a73e8; }
+        .time { font-weight: bold; min-width: 80px; color: #1a73e8; }
+        .station-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
+        .station { border: 1px solid #dadce0; padding: 15px; border-radius: 8px; background: #fafafa; }
+        .station h3 { margin-top: 0; color: #d93025; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .tip { background: #fff4e5; border-left: 4px solid #ffa000; padding: 10px; margin-top: 15px; font-size: 0.9em; }
+        .badge { background: #34a853; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8em; }
+    </style>
+</head>
+<body>
+    <div class='card'>
+        <div class='header'>
+            <h2>Aula Prática Express: 90 Minutos</h2>
+            <p>Infraestrutura para Big Data | 15 Alunos (3 Grupos de 5)</p>
+        </div>
+        <div class='content'>
+            
+            <div class='time-box'>
+                <span class='time'>00-15 min</span>
+                <span><strong>Briefing Geral:</strong> Explicação do fluxo do dado e demonstração do padrão T568B.</span>
+            </div>
+
+            <div class='station-grid'>
+                <div class='station'>
+                    <h3>Estação 1: Hardware</h3>
+                    <p><span class='badge'>20 min</span></p>
+                    <ul>
+                        <li>Identificar <strong>Xeon E3</strong>.</li>
+                        <li>Localizar <strong>Placa RAID PERC</strong>.</li>
+                        <li>Verificar <strong>Memória ECC</strong>.</li>
+                    </ul>
+                </div>
+                <div class='station'>
+                    <h3>Estação 2: Conectividade</h3>
+                    <p><span class='badge'>20 min</span></p>
+                    <ul>
+                        <li>Crimpagem de cabos <strong>CAT6</strong>.</li>
+                        <li>Organização dos fios (T568B).</li>
+                        <li>Uso do alicate e testador.</li>
+                    </ul>
+                </div>
+                <div class='station'>
+                    <h3>Estação 3: Software/Rede</h3>
+                    <p><span class='badge'>20 min</span></p>
+                    <ul>
+                        <li>Instalação e uso do <strong>iperf3</strong>.</li>
+                        <li>Medição de largura de banda.</li>
+                        <li>Stress test da rede local.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class='time-box' style="margin-top: 20px;">
+                <span class='time'>75-90 min</span>
+                <span><strong>Grande Final:</strong> Conectar o servidor Dell com os cabos dos alunos e validar o link.</span>
+            </div>
+
+            <div class='tip'>
+                <strong>Dica de Gestão:</strong> Cronometre os 20 minutos de cada estação. Quando o alarme tocar, os grupos giram no sentido horário.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

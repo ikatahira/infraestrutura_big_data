@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infraestrutura para Big Data | Fatec Ourinhos</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05080f;
+  --bg2: #090d18;
+  --bg3: #0d1220;
+  --surface: #111827;
+  --surface2: #1a2235;
+  --border: #1e2d47;
+  --border2: #243550;
+  --blue: #3b82f6;
+  --blue2: #60a5fa;
+  --cyan: #06b6d4;
+  --cyan2: #22d3ee;
+  --green: #10b981;
+  --green2: #34d399;
+  --yellow: #f59e0b;
+  --yellow2: #fbbf24;
+  --red: #ef4444;
+  --orange: #f97316;
+  --purple: #8b5cf6;
+  --text: #f0f4ff;
+  --text2: #94a3b8;
+  --text3: #475569;
+  --mono: 'IBM Plex Mono', monospace;
+  --display: 'Bebas Neue', sans-serif;
+  --body: 'Manrope', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--body);
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 2px; }
+
+/* PROGRESS BAR */
+#progress-bar {
+  position: fixed; top: 0; left: 0; z-index: 9999;
+  height: 3px; width: 0%;
+  background: linear-gradient(90deg, var(--cyan), var(--blue), var(--purple));
+  transition: width .1s;
+}
+
+/* NAV */
+nav {
+  position: fixed; top: 3px; left: 0; right: 0; z-index: 999;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 32px;
+  background: rgba(5,8,15,.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: var(--mono); font-size: 12px; color: var(--cyan);
+  letter-spacing: .1em; text-transform: uppercase;
+}
+.nav-links { display: flex; gap: 6px; flex-wrap: wrap; }
+.nav-link {
+  font-family: var(--mono); font-size: 10px; color: var(--text3);
+  text-decoration: none; padding: 5px 10px; border-radius: 4px;
+  border: 1px solid transparent; letter-spacing: .08em;
+  transition: all .2s;
+}
+.nav-link:hover { color: var(--cyan); border-color: rgba(6,182,212,.3); background: rgba(6,182,212,.06); }
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 100px 32px 60px;
+  position: relative; overflow: hidden;
+}
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(59,130,246,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+}
+.hero-glow {
+  position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 400px;
+  background: radial-gradient(ellipse, rgba(6,182,212,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-glow2 {
+  position: absolute; bottom: 10%; left: 20%;
+  width: 300px; height: 200px;
+  background: radial-gradient(ellipse, rgba(59,130,246,.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-tag {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .3em;
+  color: var(--cyan); text-transform: uppercase; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 12px; justify-content: center;
+}
+.hero-tag::before, .hero-tag::after {
+  content: ''; width: 40px; height: 1px; background: var(--cyan); opacity: .5;
+}
+.hero-title {
+  font-family: var(--display);
+  font-size: clamp(56px, 9vw, 120px);
+  line-height: .95; letter-spacing: .02em;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.hero-title .accent { color: var(--cyan); }
+.hero-sub {
+  font-size: 15px; color: var(--text2); max-width: 580px;
+  margin: 16px auto 40px; line-height: 1.8; font-weight: 300;
+}
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 48px; }
+.hbadge {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .12em;
+  padding: 7px 16px; border-radius: 30px; border: 1px solid;
+  text-transform: uppercase;
+}
+.hb-blue { color: var(--blue2); border-color: rgba(96,165,250,.35); background: rgba(59,130,246,.07); }
+.hb-cyan { color: var(--cyan2); border-color: rgba(34,211,238,.35); background: rgba(6,182,212,.07); }
+.hb-green { color: var(--green2); border-color: rgba(52,211,153,.35); background: rgba(16,185,129,.07); }
+.hb-yellow { color: var(--yellow2); border-color: rgba(251,191,36,.35); background: rgba(245,158,11,.07); }
+
+/* TIMELINE HERO */
+.hero-timeline {
+  display: flex; align-items: center; gap: 0; margin-top: 0;
+}
+.ht-step {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 10px; color: var(--text3);
+  letter-spacing: .08em; text-transform: uppercase; min-width: 100px;
+}
+.ht-dot {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-family: var(--display);
+  border: 2px solid; font-weight: 900;
+}
+.ht-dot-1 { color: var(--cyan); border-color: var(--cyan); background: rgba(6,182,212,.1); }
+.ht-dot-2 { color: var(--blue); border-color: var(--blue); background: rgba(59,130,246,.1); }
+.ht-dot-3 { color: var(--purple); border-color: var(--purple); background: rgba(139,92,246,.1); }
+.ht-line {
+  width: 60px; height: 1px;
+  background: linear-gradient(90deg, rgba(96,165,250,.4), rgba(34,211,238,.4));
+  margin-bottom: 28px;
+}
+
+/* SECTION */
+.section { padding: 80px 0; }
+.container { max-width: 1160px; margin: 0 auto; padding: 0 32px; }
+.sec-label {
+  font-family: var(--mono); font-size: 10px; color: var(--text3);
+  letter-spacing: .3em; text-transform: uppercase; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 12px;
+}
+.sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.sec-num { color: var(--cyan); }
+.sec-title {
+  font-family: var(--display);
+  font-size: clamp(36px, 5vw, 64px);
+  line-height: .95; letter-spacing: .03em; margin-bottom: 20px;
+}
+.sec-desc { font-size: 14px; color: var(--text2); max-width: 680px; line-height: 1.8; font-weight: 300; }
+
+/* SPEC BOX — Dell Server */
+.server-panel {
+  margin-top: 48px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+  border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+}
+.server-col {
+  background: var(--surface); padding: 32px;
+}
+.server-col:first-child { border-right: 1px solid var(--border); }
+.server-col-title {
+  font-family: var(--mono); font-size: 10px; color: var(--cyan);
+  letter-spacing: .25em; text-transform: uppercase; margin-bottom: 20px;
+}
+.spec-item {
+  display: flex; gap: 16px; padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.spec-item:last-child { border-bottom: none; }
+.spec-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+.spec-key { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 4px; }
+.spec-val { font-size: 14px; font-weight: 600; color: var(--text); }
+.spec-note { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.spec-badge {
+  display: inline-block; font-family: var(--mono); font-size: 9px;
+  letter-spacing: .1em; padding: 2px 8px; border-radius: 3px;
+  margin-left: 6px; vertical-align: middle;
+}
+.sb-ecc { color: var(--green2); background: rgba(52,211,153,.12); border: 1px solid rgba(52,211,153,.3); }
+.sb-raid { color: var(--orange); background: rgba(249,115,22,.12); border: 1px solid rgba(249,115,22,.3); }
+.sb-dual { color: var(--blue2); background: rgba(96,165,250,.12); border: 1px solid rgba(96,165,250,.3); }
+
+.price-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, var(--green), var(--cyan));
+  color: white; font-family: var(--display); font-size: 28px;
+  padding: 10px 24px; border-radius: 8px; margin: 20px 0 12px;
+  letter-spacing: .05em;
+}
+.opportunity-box {
+  background: rgba(16,185,129,.07); border: 1px solid rgba(16,185,129,.25);
+  border-radius: 8px; padding: 16px; margin-top: 16px; font-size: 13px; color: var(--text2);
+}
+.opportunity-box strong { color: var(--green2); }
+
+.feature-chips { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+.fchip {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; color: var(--text2);
+}
+.fchip-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); flex-shrink: 0; }
+
+/* CRONÔMETRO / PLANO DE AULA */
+.plan-header {
+  background: linear-gradient(135deg, rgba(59,130,246,.12), rgba(6,182,212,.08));
+  border: 1px solid rgba(59,130,246,.3);
+  border-radius: 12px; padding: 28px 32px; margin-top: 48px;
+  position: relative; overflow: hidden;
+}
+.plan-header::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--blue), var(--cyan), var(--blue));
+}
+.plan-header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+.plan-title { font-family: var(--display); font-size: 32px; letter-spacing: .05em; color: var(--text); }
+.plan-meta { font-family: var(--mono); font-size: 11px; color: var(--text2); line-height: 1.8; text-align: right; }
+
+.timeline-bar {
+  margin-top: 28px; position: relative;
+  background: var(--surface2); border-radius: 8px; overflow: hidden; height: 48px;
+  border: 1px solid var(--border2);
+}
+.tbar-seg {
+  position: absolute; top: 0; bottom: 0;
+  display: flex; align-items: center; padding: 0 12px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .08em;
+  white-space: nowrap; overflow: hidden;
+}
+.tbar-briefing { left: 0; width: 16.7%; background: rgba(6,182,212,.18); border-right: 1px solid rgba(6,182,212,.3); color: var(--cyan2); }
+.tbar-s1 { left: 16.7%; width: 22.2%; background: rgba(59,130,246,.15); border-right: 1px solid rgba(59,130,246,.3); color: var(--blue2); }
+.tbar-s2 { left: 38.9%; width: 22.2%; background: rgba(245,158,11,.12); border-right: 1px solid rgba(245,158,11,.3); color: var(--yellow2); }
+.tbar-s3 { left: 61.1%; width: 22.2%; background: rgba(139,92,246,.12); border-right: 1px solid rgba(139,92,246,.3); color: var(--purple); }
+.tbar-final { left: 83.3%; width: 16.7%; background: rgba(16,185,129,.15); color: var(--green2); }
+
+/* ESTAÇÕES */
+.stations-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
+.station-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden;
+  transition: all .25s; position: relative;
+}
+.station-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.5); }
+.station-header {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.station-header::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.st1 .station-header::before { background: linear-gradient(90deg, var(--blue), var(--cyan)); }
+.st2 .station-header::before { background: linear-gradient(90deg, var(--yellow), var(--orange)); }
+.st3 .station-header::before { background: linear-gradient(90deg, var(--purple), var(--blue)); }
+.station-num {
+  font-family: var(--display); font-size: 64px; line-height: .9;
+  opacity: .07; position: absolute; top: 8px; right: 16px; pointer-events: none;
+}
+.st1 .station-num { color: var(--blue); }
+.st2 .station-num { color: var(--yellow); }
+.st3 .station-num { color: var(--purple); }
+.station-tag {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .2em;
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.st1 .station-tag { color: var(--blue2); }
+.st2 .station-tag { color: var(--yellow2); }
+.st3 .station-tag { color: var(--purple); }
+.station-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.station-time {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 11px;
+  padding: 4px 10px; border-radius: 20px; margin-top: 8px;
+}
+.st1 .station-time { color: var(--blue2); background: rgba(59,130,246,.1); border: 1px solid rgba(59,130,246,.25); }
+.st2 .station-time { color: var(--yellow2); background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.25); }
+.st3 .station-time { color: var(--purple); background: rgba(139,92,246,.1); border: 1px solid rgba(139,92,246,.25); }
+.station-body { padding: 20px; }
+.station-tasks { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.station-tasks li {
+  display: flex; gap: 10px; font-size: 13px; color: var(--text2); align-items: flex-start;
+}
+.task-icon { flex-shrink: 0; font-size: 14px; margin-top: 1px; }
+.task-text strong { color: var(--text); display: block; margin-bottom: 2px; font-size: 13px; }
+.task-text span { font-size: 12px; color: var(--text3); }
+
+.station-tip {
+  margin: 16px 20px 20px;
+  background: rgba(6,182,212,.05); border: 1px solid rgba(6,182,212,.15);
+  border-left: 3px solid var(--cyan); border-radius: 6px;
+  padding: 12px 14px; font-size: 12px; color: var(--text2); line-height: 1.7;
+}
+.station-tip strong { color: var(--cyan2); }
+
+/* GRAND FINAL */
+.grand-final {
+  margin-top: 24px;
+  background: linear-gradient(135deg, rgba(16,185,129,.08), rgba(6,182,212,.05));
+  border: 1px solid rgba(16,185,129,.3); border-radius: 12px;
+  padding: 24px 28px; position: relative; overflow: hidden;
+}
+.grand-final::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--green), var(--cyan), var(--green));
+}
+.gf-label { font-family: var(--mono); font-size: 10px; color: var(--green2); letter-spacing: .25em; text-transform: uppercase; margin-bottom: 8px; }
+.gf-title { font-family: var(--display); font-size: 28px; color: var(--text); margin-bottom: 8px; }
+.gf-desc { font-size: 13px; color: var(--text2); line-height: 1.7; }
+
+/* CRONÔMETRO INTERATIVO */
+.timer-section {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 32px; margin-top: 32px; text-align: center;
+}
+.timer-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: .25em; text-transform: uppercase; margin-bottom: 20px; }
+.timer-display {
+  font-family: var(--mono); font-size: clamp(48px, 8vw, 80px);
+  font-weight: 700; color: var(--cyan); letter-spacing: .05em;
+  margin: 0; line-height: 1;
+  text-shadow: 0 0 40px rgba(6,182,212,.4);
+}
+.timer-phase {
+  font-family: var(--display); font-size: 20px; color: var(--text2);
+  letter-spacing: .1em; margin-top: 8px; text-transform: uppercase;
+}
+.timer-controls { display: flex; gap: 10px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
+.timer-btn {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
+  padding: 10px 24px; border-radius: 6px; border: 1px solid; cursor: pointer;
+  text-transform: uppercase; transition: all .2s; background: transparent;
+}
+.tbtn-start { color: var(--green2); border-color: rgba(52,211,153,.4); }
+.tbtn-start:hover { background: rgba(16,185,129,.12); }
+.tbtn-pause { color: var(--yellow2); border-color: rgba(251,191,36,.4); }
+.tbtn-pause:hover { background: rgba(245,158,11,.12); }
+.tbtn-reset { color: var(--text3); border-color: var(--border2); }
+.tbtn-reset:hover { background: var(--surface2); }
+.tbtn-next { color: var(--blue2); border-color: rgba(96,165,250,.4); }
+.tbtn-next:hover { background: rgba(59,130,246,.12); }
+.phase-dots { display: flex; gap: 8px; justify-content: center; margin-top: 20px; }
+.pdot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--border2); transition: all .3s;
+}
+.pdot.active { background: var(--cyan); box-shadow: 0 0 12px rgba(6,182,212,.5); }
+.pdot.done { background: var(--green); }
+
+/* CONCEITOS */
+.concepts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-top: 32px; }
+.concept-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 24px; transition: all .2s;
+  position: relative; overflow: hidden; cursor: pointer;
+}
+.concept-card:hover { border-color: var(--border2); background: var(--surface2); }
+.concept-card::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: var(--ca, var(--blue)); transform: scaleX(0);
+  transform-origin: left; transition: transform .3s;
+}
+.concept-card:hover::after { transform: scaleX(1); }
+.concept-icon { font-size: 28px; margin-bottom: 14px; display: block; }
+.concept-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.concept-body { font-size: 13px; color: var(--text2); line-height: 1.7; }
+.concept-tag {
+  display: inline-block; margin-top: 12px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .15em;
+  padding: 3px 10px; border-radius: 20px; border: 1px solid; text-transform: uppercase;
+}
+
+/* RAID TABLE */
+.raid-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 32px;
+}
+.raid-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 20px; position: relative; overflow: hidden;
+  transition: all .2s;
+}
+.raid-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,.4); }
+.raid-num {
+  font-family: var(--display); font-size: 52px; color: var(--border2);
+  position: absolute; top: 8px; right: 14px; line-height: 1;
+}
+.raid-tag {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .2em;
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.raid-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.raid-desc { font-size: 12px; color: var(--text2); line-height: 1.65; }
+.raid-bar { height: 4px; border-radius: 2px; margin-top: 14px; }
+.rc-0 { --rc: var(--red); }
+.rc-1 { --rc: var(--green); }
+.rc-5 { --rc: var(--blue); }
+.rc-10 { --rc: var(--purple); }
+.raid-tag, .raid-bar { color: var(--rc, var(--blue)); background: var(--rc, var(--blue)); opacity: 1; }
+.raid-tag { background: none; }
+
+/* SSH / REDE */
+.ssh-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; }
+.ssh-panel {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+}
+.ssh-panel-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); }
+.ssh-panel-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.ssh-panel-sub { font-size: 12px; color: var(--text2); }
+.ssh-panel-body { padding: 20px 24px; }
+.code-block {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px 18px;
+  font-family: var(--mono); font-size: 12px; line-height: 1.8;
+  position: relative; margin-top: 12px; overflow-x: auto;
+}
+.code-block::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--cyan), transparent);
+}
+.cmd { color: var(--cyan2); }
+.arg { color: var(--text2); }
+.comment { color: var(--text3); font-style: italic; }
+.out { color: var(--green2); }
+.net-diagram {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; padding: 20px 0; flex-wrap: wrap;
+}
+.nd-node {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 9px; color: var(--text3); text-align: center;
+  letter-spacing: .08em; text-transform: uppercase;
+}
+.nd-box {
+  width: 56px; height: 44px; border-radius: 6px; border: 1px solid;
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+}
+.nd-arrow { font-size: 18px; color: var(--border2); margin-bottom: 14px; }
+
+/* IPERF3 */
+.iperf-demo {
+  background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+  padding: 20px; margin-top: 16px;
+}
+.iperf-demo-title { font-family: var(--mono); font-size: 10px; color: var(--cyan); letter-spacing: .2em; text-transform: uppercase; margin-bottom: 14px; }
+.bw-bars { display: flex; flex-direction: column; gap: 10px; }
+.bw-row { display: flex; align-items: center; gap: 10px; }
+.bw-label { font-family: var(--mono); font-size: 10px; color: var(--text3); width: 130px; flex-shrink: 0; }
+.bw-bar-wrap { flex: 1; background: var(--surface2); border-radius: 3px; height: 20px; overflow: hidden; }
+.bw-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-family: var(--mono); font-size: 10px; transition: width 1.5s ease; }
+.bw-perfect { background: linear-gradient(90deg, var(--green), var(--cyan)); color: white; width: 98%; }
+.bw-bad { background: linear-gradient(90deg, var(--red), var(--orange)); color: white; width: 10%; }
+.bw-partial { background: linear-gradient(90deg, var(--yellow), var(--orange)); color: white; width: 45%; }
+
+/* CRONOGRAMA */
+.schedule-table { width: 100%; border-collapse: collapse; margin-top: 32px; }
+.schedule-table th {
+  background: var(--surface2); padding: 12px 16px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .15em;
+  text-transform: uppercase; color: var(--text3); text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.schedule-table td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text2); vertical-align: top; }
+.schedule-table tr:hover td { background: var(--surface); }
+.wk-badge {
+  font-family: var(--mono); font-size: 10px; padding: 3px 10px; border-radius: 4px;
+  border: 1px solid; white-space: nowrap; display: inline-block;
+}
+.wk1 { color: var(--cyan2); border-color: rgba(34,211,238,.3); background: rgba(6,182,212,.07); }
+.wk2 { color: var(--blue2); border-color: rgba(96,165,250,.3); background: rgba(59,130,246,.07); }
+.wk3 { color: var(--purple); border-color: rgba(139,92,246,.3); background: rgba(139,92,246,.07); }
+.wk4 { color: var(--yellow2); border-color: rgba(251,191,36,.3); background: rgba(245,158,11,.07); }
+.wk5 { color: var(--green2); border-color: rgba(52,211,153,.3); background: rgba(16,185,129,.07); }
+.sched-title { font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.sched-sub { font-size: 12px; color: var(--text3); }
+
+/* CABAGEM INTERATIVA */
+.cable-guide {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 28px; margin-top: 32px;
+}
+.cable-guide-title { font-family: var(--display); font-size: 28px; margin-bottom: 20px; }
+.t568b {
+  display: flex; gap: 4px; align-items: flex-end;
+  background: var(--bg); padding: 20px; border-radius: 8px;
+  border: 1px solid var(--border); justify-content: center; flex-wrap: wrap;
+}
+.wire {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 9px; color: var(--text3;)
+}
+.wire-num { font-size: 11px; font-weight: 700; color: var(--text); }
+.wire-bar { width: 16px; height: 120px; border-radius: 3px; }
+.w1 { background: linear-gradient(180deg, white 50%, #f97316 50%); }
+.w2 { background: #f97316; }
+.w3 { background: linear-gradient(180deg, white 50%, #10b981 50%); }
+.w4 { background: #3b82f6; }
+.w5 { background: linear-gradient(180deg, white 50%, #3b82f6 50%); }
+.w6 { background: #10b981; }
+.w7 { background: linear-gradient(180deg, white 50%, #92400e 50%); }
+.w8 { background: #92400e; }
+.wire-label { font-size: 9px; text-align: center; max-width: 40px; line-height: 1.3; }
+.wire-sep { width: 2px; height: 100px; margin-bottom: 30px; }
+.cable-steps {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px; margin-top: 20px;
+}
+.cable-step {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+  padding: 16px; display: flex; gap: 12px; align-items: flex-start;
+}
+.cs-num {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  background: rgba(6,182,212,.15); border: 1px solid rgba(6,182,212,.3);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 11px; color: var(--cyan2); font-weight: 700;
+}
+.cs-text { font-size: 12px; color: var(--text2); line-height: 1.6; }
+.cs-text strong { color: var(--text); display: block; margin-bottom: 2px; }
+
+/* GPU / ACELERAÇÃO */
+.gpu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
+.gpu-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 24px; text-align: center; transition: all .2s;
+}
+.gpu-card:hover { border-color: var(--border2); background: var(--surface2); transform: translateY(-2px); }
+.gpu-icon { font-size: 36px; margin-bottom: 14px; display: block; }
+.gpu-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.gpu-body { font-size: 12px; color: var(--text2); line-height: 1.65; }
+
+/* CHECKLIST */
+.checklist-panel {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 28px; margin-top: 32px;
+}
+.checklist-title { font-family: var(--display); font-size: 28px; margin-bottom: 8px; }
+.checklist-sub { font-size: 13px; color: var(--text2); margin-bottom: 24px; }
+.checklist { display: flex; flex-direction: column; gap: 8px; }
+.check-item {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 16px; cursor: pointer;
+  transition: all .2s; user-select: none;
+}
+.check-item:hover { border-color: var(--border2); background: var(--surface2); }
+.check-item.checked { border-color: rgba(16,185,129,.3); background: rgba(16,185,129,.05); }
+.check-box {
+  width: 22px; height: 22px; border-radius: 5px;
+  border: 2px solid var(--border2); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s; font-size: 13px;
+}
+.check-item.checked .check-box { border-color: var(--green); background: var(--green); }
+.check-text { font-size: 13px; color: var(--text2); }
+.check-item.checked .check-text { color: var(--text3); text-decoration: line-through; }
+.check-tag { margin-left: auto; font-family: var(--mono); font-size: 9px; }
+.progress-summary {
+  margin-top: 20px; background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px 20px;
+  display: flex; align-items: center; gap: 16px;
+}
+.prog-text { font-family: var(--mono); font-size: 12px; color: var(--text2); }
+.prog-bar-wrap { flex: 1; background: var(--border); border-radius: 3px; height: 6px; overflow: hidden; }
+.prog-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--green), var(--cyan)); transition: width .4s; }
+.prog-pct { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--green2); min-width: 36px; text-align: right; }
+
+/* NOTA PEDAGÓGICA */
+.ped-note {
+  margin-top: 48px;
+  background: linear-gradient(135deg, rgba(6,182,212,.05), rgba(59,130,246,.04));
+  border: 1px solid rgba(6,182,212,.2); border-radius: 12px; padding: 28px 32px;
+  position: relative; overflow: hidden;
+}
+.ped-note::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+}
+.ped-note-label { font-family: var(--mono); font-size: 10px; color: var(--cyan2); letter-spacing: .25em; text-transform: uppercase; margin-bottom: 16px; }
+.ped-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.ped-col-title { font-family: var(--mono); font-size: 11px; margin-bottom: 8px; font-weight: 700; }
+.ped-col-body { font-size: 12px; color: var(--text2); line-height: 1.75; }
+
+/* FOOTER */
+footer {
+  border-top: 1px solid var(--border); padding: 32px 40px;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+}
+.ft-l { font-family: var(--mono); font-size: 10px; color: var(--text3); line-height: 1.8; }
+.ft-r { text-align: right; }
+.ft-sig { color: var(--cyan2); }
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero > * { animation: fadeUp .6s ease both; }
+.hero > *:nth-child(1) { animation-delay: .1s; }
+.hero > *:nth-child(2) { animation-delay: .2s; }
+.hero > *:nth-child(3) { animation-delay: .3s; }
+.hero > *:nth-child(4) { animation-delay: .4s; }
+.hero > *:nth-child(5) { animation-delay: .5s; }
+.hero > *:nth-child(6) { animation-delay: .6s; }
+.hero > *:nth-child(7) { animation-delay: .7s; }
+
+.reveal { opacity: 0; transform: translateY(16px); transition: all .5s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  nav { padding: 10px 16px; }
+  .nav-links { display: none; }
+  .container { padding: 0 16px; }
+  .server-panel { grid-template-columns: 1fr; }
+  .server-col:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+  .stations-grid { grid-template-columns: 1fr; }
+  .raid-grid { grid-template-columns: 1fr 1fr; }
+  .ssh-grid { grid-template-columns: 1fr; }
+  .gpu-grid { grid-template-columns: 1fr; }
+  .hero-timeline { flex-wrap: wrap; justify-content: center; }
+  .ht-line { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">📡 Infra Big Data · Fatec Ourinhos</div>
+  <div class="nav-links">
+    <a href="#servidor" class="nav-link">01 Servidor</a>
+    <a href="#plano" class="nav-link">02 Plano</a>
+    <a href="#estacoes" class="nav-link">03 Estações</a>
+    <a href="#conceitos" class="nav-link">04 Conceitos</a>
+    <a href="#raid" class="nav-link">05 RAID</a>
+    <a href="#rede" class="nav-link">06 Rede</a>
+    <a href="#cabeamento" class="nav-link">07 Cabeamento</a>
+    <a href="#cronograma" class="nav-link">08 Cronograma</a>
+    <a href="#checklist" class="nav-link">09 Checklist</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+
+  <div class="hero-tag">Fatec Ourinhos · Ciência de Dados · Prof. Isaque Katahira</div>
+
+  <h1 class="hero-title">
+    INFRAESTRUTURA<br>
+    PARA <span class="accent">BIG DATA</span>
+  </h1>
+
+  <p class="hero-sub">
+    Análise técnica de hardware, redes e acesso remoto para processamento de dados em larga escala. Aula prática com servidor Dell PowerEdge T110 II.
+  </p>
+
+  <div class="hero-badges">
+    <span class="hbadge hb-cyan">🖥️ Dell PowerEdge T110 II</span>
+    <span class="hbadge hb-blue">⚡ Xeon E3 · 8GB ECC</span>
+    <span class="hbadge hb-yellow">🔧 Crimpagem CAT6</span>
+    <span class="hbadge hb-green">📡 iperf3 · SSH</span>
+  </div>
+
+  <div class="hero-timeline">
+    <div class="ht-step">
+      <div class="ht-dot ht-dot-1">01</div>
+      Briefing<br>15 min
+    </div>
+    <div class="ht-line"></div>
+    <div class="ht-step">
+      <div class="ht-dot ht-dot-2">02</div>
+      3 Estações<br>60 min
+    </div>
+    <div class="ht-line"></div>
+    <div class="ht-step">
+      <div class="ht-dot ht-dot-3">03</div>
+      Grand Final<br>15 min
+    </div>
+  </div>
+</section>
+
+<!-- SERVIDOR -->
+<section class="section" id="servidor">
+  <div class="container">
+    <div class="sec-label reveal"><span class="sec-num">01</span> Equipamento Central</div>
+    <h2 class="sec-title reveal">Dell PowerEdge<br><span style="color:var(--cyan)">T110 II</span></h2>
+    <p class="sec-desc reveal">Servidor torre de entrada, ideal para laboratórios e processamento local distribuído. Objeto central para o estudo da camada física e tolerância a falhas.</p>
+
+    <div class="server-panel reveal">
+      <div class="server-col">
+        <div class="server-col-title">⚙️ Especificações Técnicas do Nó</div>
+
+        <div class="spec-item">
+          <div class="spec-icon">🧠</div>
+          <div>
+            <div class="spec-key">Processador</div>
+            <div class="spec-val">Intel Xeon E3-1200 Series</div>
+            <div class="spec-note">Otimizado para multitarefa e estabilidade térmica em cargas longas</div>
+          </div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-icon">💾</div>
+          <div>
+            <div class="spec-key">Memória RAM</div>
+            <div class="spec-val">8 GB DDR3 ECC <span class="spec-badge sb-ecc">ECC</span></div>
+            <div class="spec-note">Detecta e corrige erros de bit único em tempo real. Suporta até 32GB</div>
+          </div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-icon">🗄️</div>
+          <div>
+            <div class="spec-key">Armazenamento</div>
+            <div class="spec-val">2 TB SAS/SATA <span class="spec-badge sb-raid">PERC H200</span></div>
+            <div class="spec-note">Alta capacidade para datasets brutos (Raw Data). Hardware RAID real</div>
+          </div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-icon">🌐</div>
+          <div>
+            <div class="spec-key">Conectividade</div>
+            <div class="spec-val">Dual Gigabit Ethernet <span class="spec-badge sb-dual">1GbE × 2</span></div>
+            <div class="spec-note">Broadcom BCM5722 — suporte a agregação de link (Bonding)</div>
+          </div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-icon">🔌</div>
+          <div>
+            <div class="spec-key">Slots de Expansão</div>
+            <div class="spec-val">4× PCIe 2.0 (2x8, 1x4, 1x1)</div>
+            <div class="spec-note">Suporte a placas 10GbE, RAID adicional, GPU Quadro/Tesla</div>
+          </div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-icon">🖥️</div>
+          <div>
+            <div class="spec-key">Chipset / Gráfico</div>
+            <div class="spec-val">Intel C202 · Matrox G200eW</div>
+            <div class="spec-note">Gerenciamento térmico e I/O empresarial. Saída VGA para console básico</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="server-col">
+        <div class="server-col-title">💡 Por que esse servidor?</div>
+
+        <div class="price-tag">R$ 1.399,00</div>
+
+        <div class="opportunity-box">
+          <strong>Oportunidade pedagógica:</strong> Equipamento robusto com suporte a memórias ECC, essencial para evitar corrupção de dados em processamentos longos. Ideal para pseudo-clusters de laboratório.
+        </div>
+
+        <div class="feature-chips">
+          <div class="fchip"><div class="fchip-dot"></div>Chassis Torre Silencioso — ideal para sala de aula</div>
+          <div class="fchip"><div class="fchip-dot"></div>Fácil manutenção e upgrade — ótimo para desmontagem didática</div>
+          <div class="fchip"><div class="fchip-dot"></div>Ideal para Pseudo-Clusters com múltiplos nós</div>
+          <div class="fchip"><div class="fchip-dot"></div>FreeIPMI/iDRAC para gerenciamento headless</div>
+          <div class="fchip"><div class="fchip-dot"></div>Suporte a Docker, Hadoop, Spark sem modificações</div>
+          <div class="fchip"><div class="fchip-dot"></div>Consumo energético moderado (~250W) para laboratório</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANO DE AULA -->
+<section class="section" id="plano" style="background: rgba(13,18,32,.4);">
+  <div class="container">
+    <div class="sec-label reveal"><span class="sec-num">02</span> Dinâmica da Aula</div>
+    <h2 class="sec-title reveal">Plano de <span style="color:var(--blue2)">90 Minutos</span></h2>
+    <p class="sec-desc reveal">Formato de rotação por estações — 15 alunos em 3 grupos de 5. Cada grupo passa por todas as estações em sequência, com rodízio cronometrado no sentido horário.</p>
+
+    <div class="plan-header reveal">
+      <div class="plan-header-top">
+        <div class="plan-title">AULA PRÁTICA EXPRESS</div>
+        <div class="plan-meta">
+          👥 15 alunos · 3 grupos de 5<br>
+          ⏱ 90 minutos totais<br>
+          🔄 Rotação sentido horário
+        </div>
+      </div>
+      <div class="timeline-bar">
+        <div class="tbar-seg tbar-briefing">00–15 min · Briefing</div>
+        <div class="tbar-seg tbar-s1">15–35 min · Estação 1</div>
+        <div class="tbar-seg tbar-s2">35–55 min · Estação 2</div>
+        <div class="tbar-seg tbar-s3">55–75 min · Estação 3</div>
+        <div class="tbar-seg tbar-final">75–90 · Final</div>
+      </div>
+    </div>
+
+    <!-- CRONÔMETRO INTERATIVO -->
+    <div class="timer-section reveal">
+      <div class="timer-label">⏱ Cronômetro Interativo de Estações</div>
+      <div class="timer-display" id="timerDisplay">20:00</div>
+      <div class="timer-phase" id="timerPhase">Briefing — 15 min</div>
+      <div class="timer-controls">
+        <button class="timer-btn tbtn-start" id="btnStart" onclick="startTimer()">▶ Iniciar</button>
+        <button class="timer-btn tbtn-pause" id="btnPause" onclick="pauseTimer()">⏸ Pausar</button>
+        <button class="timer-btn tbtn-reset" onclick="resetTimer()">↩ Resetar</button>
+        <button class="timer-btn tbtn-next" onclick="nextPhase()">⏭ Próxima Fase</button>
+      </div>
+      <div class="phase-dots">
+        <div class="pdot active" id="pdot0"></div>
+        <div class="pdot" id="pdot1"></div>
+        <div class="pdot" id="pdot2"></div>
+        <div class="pdot" id="pdot3"></div>
+        <div class="pdot" id="pdot4"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ESTAÇÕES -->
+<section class="section" id="estacoes">
+  <div class="container">
+    <div class="sec-label reveal"><span class="sec-num">03</span> Rotação por Estações</div>
+    <h2 class="sec-title reveal">As <span style="color:var(--yellow2)">3 Estações</span></h2>
+    <p class="sec-desc reveal">Cada estação tem um foco diferente — hardware, conectividade e software. Os grupos giram a cada 20 minutos garantindo que todos vivenciem as 3 experiências.</p>
+
+    <div class="stations-grid reveal">
+
+      <!-- ESTAÇÃO 1 -->
+      <div class="station-card st1">
+        <div class="station-header">
+          <div class="station-num">1</div>
+          <div class="station-tag">🖥️ Estação 1 · Hardware</div>
+          <div class="station-title">Anatomia do Servidor</div>
+          <div class="station-time">⏱ 20 minutos</div>
+        </div>
+        <div class="station-body">
+          <ul class="station-tasks">
+            <li>
+              <span class="task-icon">🧠</span>
+              <div class="task-text">
+                <strong>Identificar o Processador Xeon E3</strong>
+                <span>Localizar o socket LGA1155, checar número de cores e frequência na etiqueta do servidor</span>
+              </div>
+            </li>
+            <li>
+              <span class="task-icon">💾</span>
+              <div class="task-text">
+                <strong>Verificar Memória ECC</strong>
+                <span>Distinguir visualmente pentes ECC (chip extra) vs RAM comum. Testar slots disponíveis</span>
+              </div>
+            </li>
+            <li>
+              <span class="task-icon">🗄️</span>
+              <div class="task-text">
+                <strong>Localizar Placa RAID PERC H200</strong>
+                <span>Identificar o conector SFF-8087, os slots de disco SAS e o chip LSI</span>
+              </div>
+            </li>
+            <li>
+              <span class="task-icon">🔌</span>
+              <div class="task-text">
+                <strong>Mapear PCIe e Barramentos</strong>
+                <span>Identificar os 4 slots PCIe 2.0 e entender qual aceita GPU para GPGPU</span>
+              </div>
+            </li>
+            <li>
+              <span class="task-icon">📋</span>
+              <div class="task-text">
+                <strong>Preencher Ficha Técnica</strong>
+                <span>Registrar todos os componentes encontrados na folha de atividade</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="station-tip">
+          <strong>💡 Pergunta para o grupo:</strong> Por que a Memória ECC é obrigatória em servidores de Big Data? O que acontece sem ela num processamento de 6 horas?
+        </div>
+      </div>
+
+      <!-- ESTAÇÃO 2 -->
+      <div class="station-card st2">
+        <div class="station-header">
+          <div class="station-num">2</div>
+          <div class="station-tag">🔧 Estação 2 · Conectividade</div>
+          <div class="station-title">Crimpagem de Cabos CAT6</div>
+          <div class="station-time">⏱ 20 minutos</div>
+        </div>
+        <div class="station-body">
+          <ul class="station-tasks">
+            <li>
+              <span class="task-icon">✂️</span>
+              <div class="task-text">
+                <strong>Descascar o cabo CAT6</strong>
+                <span>Usar o alicate decapador para remover 2cm do revestimento externo sem cortar os pares internos</span>
+              </div>
+            </li>
+            <li>
+              <span class="task-icon">🎨</span>
+              <div class="task-text">
+                <strong>Organizar pares no padrão T568B</strong>
+                <span>Ordem: Br/Laranja · Laranja · Br/Verde · Azul · Br/Azul · Verde · Br/Marrom · Marrom</span>
+              </div>
+            </li>
+            <li>
+              <span class="task-icon">🔩</span>
+              <div class="task-text">
+                <strong>Inserir no conector RJ-45</strong>
+                <span>Empurrar os 8 fios até o fundo do conector. Verificar alinhamento visual antes de crimpar</span>
+              </div>
+            </li>
+            <li>
+              <span class="task-icon">⚡</span>
+              <div class="task-text">
+                <strong>Crimpar com alicate</strong>
+                <span>Pressionar firmemente. Fazer os dois lados do cabo com padrão T568B → T568B</span>
+              </div>
+            </li>
+            <li>
+              <span class="task-icon">✅</span>
+              <div class="task-text">
+                <strong>Testar com o testador</strong>
+                <span>Verificar que todos os 8 LEDs acendem na sequência correta 1-2-3-4-5-6-7-8</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="station-tip">
+          <strong>💡 Experimento:</strong> Crimpe um cabo deliberadamente errado (apenas 4 fios) e teste. Depois use o iperf3 na Estação 3 com esse cabo — veja a queda de 1Gbps para ~100Mbps.
+        </div>
+      </div>
+
+      <!-- ESTAÇÃO 3 -->
+      <div class="station-card st3">
+        <div class="station-header">
+          <div class="station-num">3</div>
+          <div class="station-tag">📡 Estação 3 · Software/Rede</div>
+          <div class="station-title">Benchmark com iperf3</div>
+          <div class="station-time">⏱ 20 minutos</div>
+        </div>
+        <div class="station-body">
+          <ul class="station-tasks">
+            <li>
+              <span class="task-icon">📦</span>
+              <div class="task-text">
+                <strong>Instalar o iperf3</strong>
+                <span>No servidor: <code style="color:var(--cyan);background:var(--bg);padding:2px 6px;border-radius:3px;font-size:11px;">sudo apt install iperf3</code></span>
+              </div>
+            </li>
+            <li>
+              <span class="task-icon">🖥️</span>
+              <div class="task-text">
+                <strong>Iniciar modo servidor</strong>
+                <span>No Dell T110: <code style="color:var(--cyan);background:var(--bg);padding:2px 6px;border-radius:3px;font-size:11px;">iperf3 -s</code> — aguardar conexões</span>
+              </div>
+            </li>
+            <li>
+              <span class="task-icon">💻</span>
+              <div class="task-text">
+                <strong>Disparar teste do cliente</strong>
+                <span><code style="color:var(--cyan);background:var(--bg);padding:2px 6px;border-radius:3px;font-size:11px;">iperf3 -c &lt;IP&gt; -t 30 -P 4</code> — 30s, 4 threads paralelas</span>
+              </div>
+            </li>
+            <li>
+              <span class="task-icon">📊</span>
+              <div class="task-text">
+                <strong>Registrar largura de banda</strong>
+                <span>Comparar cabo bem crimpado vs mal crimpado. Registrar Mbps obtidos</span>
+              </div>
+            </li>
+            <li>
+              <span class="task-icon">🔁</span>
+              <div class="task-text">
+                <strong>Stress test bidirecional</strong>
+                <span><code style="color:var(--cyan);background:var(--bg);padding:2px 6px;border-radius:3px;font-size:11px;">iperf3 -c &lt;IP&gt; --bidir</code> — saturar os dois pares Tx/Rx</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="station-tip">
+          <strong>💡 Conexão Big Data:</strong> Se o iperf3 marca 100Mbps com um cabo ruim, transferir 1TB de dataset levaria 22 horas em vez de 2,2 horas. Qualidade de cabeamento impacta diretamente no throughput de dados.
+        </div>
+      </div>
+
+    </div><!-- /stations-grid -->
+
+    <!-- GRAND FINAL -->
+    <div class="grand-final reveal">
+      <div class="gf-label">⏱ 75–90 min · Grand Final</div>
+      <div class="gf-title">CONECTAR E VALIDAR</div>
+      <div class="gf-desc">
+        Cada grupo conecta os cabos que crimpou na Estação 2 ao servidor Dell T110 II. O professor valida o link fisicamente (LED verde = 1GbE, âmbar = 100MbE ou erro).
+        Na sequência, todos os grupos executam o iperf3 simultaneamente para simular a carga de um cluster real transferindo dados em paralelo.
+        <strong style="color:var(--green2)"> Resultado esperado: link de 940+ Mbps com cabo correto, queda visível com cabo defeituoso.</strong>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONCEITOS -->
+<section class="section" id="conceitos" style="background: rgba(13,18,32,.4);">
+  <div class="container">
+    <div class="sec-label reveal"><span class="sec-num">04</span> Conceitos de Big Data</div>
+    <h2 class="sec-title reveal">Hardware ↔ <span style="color:var(--cyan)">Big Data</span></h2>
+    <p class="sec-desc reveal">Cada componente do servidor tem uma relação direta com os desafios dos 5 Vs do Big Data. Aqui mapeamos conceito a hardware real.</p>
+
+    <div class="concepts-grid">
+      <div class="concept-card reveal" style="--ca:var(--blue)">
+        <span class="concept-icon">📈</span>
+        <div class="concept-title">Escalabilidade Vertical</div>
+        <div class="concept-body">O T110 II permite adicionar mais RAM (até 32GB) e discos SAS/SATA sem trocar o servidor. Demonstrar adicionando um pente de 8GB em sala e comparando o throughput do Spark antes e depois.</div>
+        <span class="concept-tag" style="color:var(--blue2);border-color:rgba(96,165,250,.3);background:rgba(59,130,246,.07);">Scale-Up</span>
+      </div>
+
+      <div class="concept-card reveal" style="--ca:var(--green)">
+        <span class="concept-icon">🛡️</span>
+        <div class="concept-title">Tolerância a Falhas</div>
+        <div class="concept-body">Configurar RAID 1 na controladora PERC para simular a queima de um disco sem perda de dados. O aluno remove o HD com o sistema ligado (hot-swap SAS) e observa o array se reconstruindo.</div>
+        <span class="concept-tag" style="color:var(--green2);border-color:rgba(52,211,153,.3);background:rgba(16,185,129,.07);">Fault Tolerance</span>
+      </div>
+
+      <div class="concept-card reveal" style="--ca:var(--yellow)">
+        <span class="concept-icon">📍</span>
+        <div class="concept-title">Data Locality</div>
+        <div class="concept-body">Em Hadoop, o processamento ocorre no nó onde o dado reside. Discutir por que mover dados pela rede é 10× mais lento que processar localmente no SAS — e como o T110 exemplifica um nó de Data Node.</div>
+        <span class="concept-tag" style="color:var(--yellow2);border-color:rgba(251,191,36,.3);background:rgba(245,158,11,.07);">Hadoop HDFS</span>
+      </div>
+
+      <div class="concept-card reveal" style="--ca:var(--purple)">
+        <span class="concept-icon">⚡</span>
+        <div class="concept-title">Memória ECC e Integridade</div>
+        <div class="concept-body">Um flip de bit em RAM comum pode corromper silenciosamente um modelo de ML. ECC detecta e corrige erros de 1 bit automaticamente. Essencial para jobs Spark que rodam por horas — sem ECC, o resultado pode estar errado sem nenhum erro visível.</div>
+        <span class="concept-tag" style="color:var(--purple);border-color:rgba(139,92,246,.3);background:rgba(139,92,246,.07);">Data Integrity</span>
+      </div>
+
+      <div class="concept-card reveal" style="--ca:var(--cyan)">
+        <span class="concept-icon">🔗</span>
+        <div class="concept-title">Network Bonding (LACP)</div>
+        <div class="concept-body">Com as 2 interfaces Gigabit do T110 configuradas em modo bonding (LACP), o throughput sobe para ~2Gbps. Demonstrar com o iperf3 antes e depois da configuração do bond0 no Linux.</div>
+        <span class="concept-tag" style="color:var(--cyan2);border-color:rgba(34,211,238,.3);background:rgba(6,182,212,.07);">Link Aggregation</span>
+      </div>
+
+      <div class="concept-card reveal" style="--ca:var(--orange)">
+        <span class="concept-icon">🐳</span>
+        <div class="concept-title">Virtualização com Docker</div>
+        <div class="concept-body">Instalar Docker no T110 e criar containers de Jupyter + Spark. Os alunos acessam via SSH e rodam análises em dados reais. O servidor atua como host de multi-tenant para toda a turma simultaneamente.</div>
+        <span class="concept-tag" style="color:var(--orange);border-color:rgba(249,115,22,.3);background:rgba(249,115,22,.07);">Container Infra</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RAID -->
+<section class="section" id="raid">
+  <div class="container">
+    <div class="sec-label reveal"><span class="sec-num">05</span> Armazenamento</div>
+    <h2 class="sec-title reveal">RAID & Controladora <span style="color:var(--orange)">PERC H200</span></h2>
+    <p class="sec-desc reveal">A redundância é vital quando o volume de dados ultrapassa a segurança de um disco único. O PERC H200 é uma controladora hardware que libera a CPU do gerenciamento de paridade.</p>
+
+    <div class="raid-grid reveal">
+      <div class="raid-card rc-0">
+        <div class="raid-num">0</div>
+        <div class="raid-tag">⚡ RAID 0 — Striping</div>
+        <div class="raid-title">Máxima Performance</div>
+        <div class="raid-desc">Dados distribuídos entre 2+ discos. Leitura/escrita paralela. <strong style="color:var(--text)">Nenhuma tolerância a falhas</strong> — se um disco falha, tudo é perdido. Usar apenas para scratch storage ou dados reproduzíveis.</div>
+        <div class="raid-bar" style="width:100%"></div>
+      </div>
+
+      <div class="raid-card rc-1">
+        <div class="raid-num">1</div>
+        <div class="raid-tag">🛡️ RAID 1 — Mirror</div>
+        <div class="raid-title">Segurança Total</div>
+        <div class="raid-desc">Cópia espelhada entre 2 discos. Capacidade = 50% do total. <strong style="color:var(--text)">Proteção máxima contra falha</strong>. Ideal para dados críticos onde velocidade não é o foco. O T110 suporta nativo.</div>
+        <div class="raid-bar" style="width:50%"></div>
+      </div>
+
+      <div class="raid-card rc-5">
+        <div class="raid-num">5</div>
+        <div class="raid-tag">⚖️ RAID 5 — Paridade</div>
+        <div class="raid-title">Equilíbrio Ideal</div>
+        <div class="raid-desc">Paridade distribuída entre 3+ discos. Capacidade = N-1 discos. Sobrevive à falha de 1 disco. <strong style="color:var(--text)">Melhor custo-benefício</strong> para servidores de Big Data em laboratório.</div>
+        <div class="raid-bar" style="width:66%"></div>
+      </div>
+
+      <div class="raid-card rc-10">
+        <div class="raid-num">10</div>
+        <div class="raid-tag">🚀 RAID 10 — Mirror+Stripe</div>
+        <div class="raid-title">Performance + Segurança</div>
+        <div class="raid-desc">Combinação de RAID 1 + RAID 0. Requer 4+ discos. Capacidade = 50%. Alta leitura, boa escrita, tolera falhas múltiplas. Usado em produção real quando ambos os requisitos são críticos.</div>
+        <div class="raid-bar" style="width:80%"></div>
+      </div>
+
+      <div class="raid-card" style="--rc:var(--cyan)">
+        <div class="raid-num" style="color:var(--border2)">H2</div>
+        <div class="raid-tag" style="color:var(--cyan)">🔧 PERC H200 — Hardware RAID</div>
+        <div class="raid-title">Controladora Dedicada</div>
+        <div class="raid-desc">Processador LSI dedicado ao cálculo de paridade. <strong style="color:var(--text)">Libera 100% da CPU</strong> para o Spark/Hadoop. Tem BBU (Battery Backup Unit) para não perder cache em caso de queda de energia.</div>
+        <div class="raid-bar" style="width:90%;background:var(--cyan)"></div>
+      </div>
+
+      <div class="raid-card" style="--rc:var(--purple)">
+        <div class="raid-num" style="color:var(--border2)">SAS</div>
+        <div class="raid-tag" style="color:var(--purple)">💿 SAS vs SATA</div>
+        <div class="raid-title">Interface de Disco</div>
+        <div class="raid-desc">SAS: 12Gbps, dual-port, MTBF superior, hot-swap nativo. SATA: 6Gbps, single-port, menor custo. O T110 suporta ambos via PERC H200. <strong style="color:var(--text)">Para datasets brutos: SATA. Para banco de metadados: SAS.</strong></div>
+        <div class="raid-bar" style="width:70%;background:var(--purple)"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REDE / SSH -->
+<section class="section" id="rede" style="background: rgba(13,18,32,.4);">
+  <div class="container">
+    <div class="sec-label reveal"><span class="sec-num">06</span> Redes e Acesso Remoto</div>
+    <h2 class="sec-title reveal">SSH, Switch &<br><span style="color:var(--cyan)">Infraestrutura</span></h2>
+    <p class="sec-desc reveal">Em Big Data, servidores raramente possuem monitor. O acesso é feito via Secure Shell (SSH). O switch gerenciável controla o tráfego entre os nós do cluster.</p>
+
+    <div class="ssh-grid reveal">
+      <!-- SSH -->
+      <div class="ssh-panel">
+        <div class="ssh-panel-header">
+          <div class="ssh-panel-title">🔐 Acesso via SSH — Gerenciamento Headless</div>
+          <div class="ssh-panel-sub">Secure Shell com autenticação por chave pública/privada (Ed25519)</div>
+        </div>
+        <div class="ssh-panel-body">
+          <div class="code-block">
+<span class="comment"># Conectar no servidor via SSH</span>
+<span class="cmd">$ </span><span class="arg">ssh usuario@192.168.1.100</span>
+
+<span class="comment"># Copiar dataset para o servidor</span>
+<span class="cmd">$ </span><span class="arg">scp dataset.csv node01:/data/raw/</span>
+
+<span class="comment"># Gerar par de chaves (mais seguro que senha)</span>
+<span class="cmd">$ </span><span class="arg">ssh-keygen -t ed25519 -C "fatec-lab"</span>
+<span class="cmd">$ </span><span class="arg">ssh-copy-id usuario@hadoop-master</span>
+
+<span class="comment"># Acessar sem senha (chave configurada)</span>
+<span class="cmd">$ </span><span class="arg">ssh hadoop-master</span>
+<span class="out">Welcome to Ubuntu 22.04 LTS (Dell T110 II)</span>
+<span class="out">Last login: Mon Apr 28 08:30:15 2026</span>
+          </div>
+          <div style="margin-top:16px;font-size:12px;color:var(--text2);line-height:1.7;">
+            <strong style="color:var(--cyan2)">Hostnames recomendados:</strong><br>
+            <code style="color:var(--text);background:var(--bg);padding:2px 6px;border-radius:3px;font-size:11px;">hadoop-master</code> · 
+            <code style="color:var(--text);background:var(--bg);padding:2px 6px;border-radius:3px;font-size:11px;">spark-node01</code> · 
+            <code style="color:var(--text);background:var(--bg);padding:2px 6px;border-radius:3px;font-size:11px;">spark-node02</code><br>
+            Configurar em <code style="color:var(--text3);font-size:11px;">/etc/hosts</code> para facilitar a orquestração do cluster.
+          </div>
+        </div>
+      </div>
+
+      <!-- IPERF3 -->
+      <div class="ssh-panel">
+        <div class="ssh-panel-header">
+          <div class="ssh-panel-title">📊 Benchmark de Rede com iperf3</div>
+          <div class="ssh-panel-sub">Valida a largura de banda real entre servidor e desktops do lab</div>
+        </div>
+        <div class="ssh-panel-body">
+          <div class="code-block">
+<span class="comment"># No servidor Dell T110 (modo servidor)</span>
+<span class="cmd">$ </span><span class="arg">iperf3 -s</span>
+<span class="out">Server listening on 5201</span>
+
+<span class="comment"># No desktop do aluno (modo cliente)</span>
+<span class="cmd">$ </span><span class="arg">iperf3 -c 192.168.1.100 -t 30 -P 4</span>
+<span class="out">[ ID] Interval      Transfer     Bitrate</span>
+<span class="out">[SUM] 0-30 sec  3.41 GBytes   978 Mbits/sec</span>
+
+<span class="comment"># Teste bidirecional (TX + RX simultâneos)</span>
+<span class="cmd">$ </span><span class="arg">iperf3 -c 192.168.1.100 --bidir -t 20</span>
+          </div>
+
+          <div class="iperf-demo">
+            <div class="iperf-demo-title">📈 Comparativo de Resultados</div>
+            <div class="bw-bars">
+              <div class="bw-row">
+                <div class="bw-label">Cabo CAT6 correto</div>
+                <div class="bw-bar-wrap"><div class="bw-fill bw-perfect">978 Mbps</div></div>
+              </div>
+              <div class="bw-row">
+                <div class="bw-label">Cabo mal crimpado</div>
+                <div class="bw-bar-wrap"><div class="bw-fill bw-partial">~450 Mbps</div></div>
+              </div>
+              <div class="bw-row">
+                <div class="bw-label">4 fios apenas (errado)</div>
+                <div class="bw-bar-wrap"><div class="bw-fill bw-bad">94 Mbps</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SWITCH -->
+      <div class="ssh-panel">
+        <div class="ssh-panel-header">
+          <div class="ssh-panel-title">🔀 Switch Gerenciável L2/L3</div>
+          <div class="ssh-panel-sub">Controla o tráfego entre nós do cluster (Leste-Oeste)</div>
+        </div>
+        <div class="ssh-panel-body">
+          <div class="net-diagram">
+            <div class="nd-node">
+              <div class="nd-box" style="color:var(--cyan);border-color:rgba(6,182,212,.4);">💻</div>
+              Desktop<br>Aluno
+            </div>
+            <div class="nd-arrow">→</div>
+            <div class="nd-node">
+              <div class="nd-box" style="color:var(--blue2);border-color:rgba(59,130,246,.4);">🔀</div>
+              Switch<br>L2/L3
+            </div>
+            <div class="nd-arrow">→</div>
+            <div class="nd-node">
+              <div class="nd-box" style="color:var(--green2);border-color:rgba(52,211,153,.4);">🖥️</div>
+              Dell<br>T110 II
+            </div>
+            <div class="nd-arrow">→</div>
+            <div class="nd-node">
+              <div class="nd-box" style="color:var(--orange);border-color:rgba(249,115,22,.4);">🌐</div>
+              Router<br>Gateway
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.7;margin-top:8px;">
+            <strong style="color:var(--blue2)">Tráfego Leste-Oeste:</strong> Entre servidores do cluster — deve ter backplane alto para não ser o gargalo. Use VLANs para separar tráfego de dados do de gerência.<br><br>
+            <strong style="color:var(--orange)">Tráfego Norte-Sul:</strong> Saída para internet — gerenciado pelo roteador/firewall. Aqui onde SSH externo entra via NAT.
+          </div>
+        </div>
+      </div>
+
+      <!-- PATCH PANEL -->
+      <div class="ssh-panel">
+        <div class="ssh-panel-header">
+          <div class="ssh-panel-title">🔌 Patch Panel & Patch Cords</div>
+          <div class="ssh-panel-sub">Interface passiva que protege as portas caras do switch</div>
+        </div>
+        <div class="ssh-panel-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+            <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;">
+              <div style="font-family:var(--mono);font-size:10px;color:var(--cyan);letter-spacing:.15em;margin-bottom:6px;">PATCH PANEL</div>
+              <div style="font-size:12px;color:var(--text2);line-height:1.6;">Interface passiva — terminação permanente dos cabos horizontais (Cat6 das paredes). Protege as portas do switch do desgaste mecânico.</div>
+            </div>
+            <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;">
+              <div style="font-family:var(--mono);font-size:10px;color:var(--yellow2);letter-spacing:.15em;margin-bottom:6px;">PATCH CORD</div>
+              <div style="font-size:12px;color:var(--text2);line-height:1.6;">Cabos curtos e flexíveis para manobras rápidas entre o painel passivo e o switch ativo. Facilmente substituídos sem mover o cabeamento fixo.</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--text2);background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:6px;padding:12px;">
+            <strong style="color:var(--yellow2)">💡 Dica do lab:</strong> O mini-rack 6U/9U organiza toda a infraestrutura em ambiente ventilado, protegido e com fluxo de ar correto. Ideal para o laboratório de Big Data com 1 switch + 2 servidores + patch panel.
+          </div>
+        </div>
+      </div>
+    </div><!-- /ssh-grid -->
+  </div>
+</section>
+
+<!-- CABEAMENTO -->
+<section class="section" id="cabeamento">
+  <div class="container">
+    <div class="sec-label reveal"><span class="sec-num">07</span> Guia Prático</div>
+    <h2 class="sec-title reveal">Crimpagem <span style="color:var(--yellow2)">T568B</span></h2>
+    <p class="sec-desc reveal">O padrão mundial para conexões Ethernet Gigabit. Usar CAT6 para garantir largura de banda de 1Gbps sem perdas de pacotes. Todos os 8 fios devem ser crimpados corretamente.</p>
+
+    <div class="cable-guide reveal">
+      <div class="cable-guide-title">Ordem dos <span style="color:var(--yellow2)">Fios T568B</span></div>
+
+      <div class="t568b">
+        <div class="wire">
+          <div class="wire-num">1</div>
+          <div class="wire-bar w1"></div>
+          <div class="wire-label">Br/<span style="color:#f97316">Laranja</span></div>
+        </div>
+        <div class="wire">
+          <div class="wire-num">2</div>
+          <div class="wire-bar w2"></div>
+          <div class="wire-label" style="color:#f97316">Laranja</div>
+        </div>
+        <div class="wire-sep" style="background:rgba(255,255,255,.1)"></div>
+        <div class="wire">
+          <div class="wire-num">3</div>
+          <div class="wire-bar w3"></div>
+          <div class="wire-label">Br/<span style="color:#10b981">Verde</span></div>
+        </div>
+        <div class="wire">
+          <div class="wire-num">4</div>
+          <div class="wire-bar w4"></div>
+          <div class="wire-label" style="color:#3b82f6">Azul</div>
+        </div>
+        <div class="wire-sep" style="background:rgba(255,255,255,.1)"></div>
+        <div class="wire">
+          <div class="wire-num">5</div>
+          <div class="wire-bar w5"></div>
+          <div class="wire-label">Br/<span style="color:#3b82f6">Azul</span></div>
+        </div>
+        <div class="wire">
+          <div class="wire-num">6</div>
+          <div class="wire-bar w6"></div>
+          <div class="wire-label" style="color:#10b981">Verde</div>
+        </div>
+        <div class="wire-sep" style="background:rgba(255,255,255,.1)"></div>
+        <div class="wire">
+          <div class="wire-num">7</div>
+          <div class="wire-bar w7"></div>
+          <div class="wire-label">Br/<span style="color:#92400e">Marrom</span></div>
+        </div>
+        <div class="wire">
+          <div class="wire-num">8</div>
+          <div class="wire-bar w8"></div>
+          <div class="wire-label" style="color:#92400e">Marrom</div>
+        </div>
+      </div>
+
+      <div class="cable-steps">
+        <div class="cable-step">
+          <div class="cs-num">1</div>
+          <div class="cs-text"><strong>Descascar o cabo</strong>Remover 2cm do revestimento externo com o alicate decapador. Não cortar os pares internos.</div>
+        </div>
+        <div class="cable-step">
+          <div class="cs-num">2</div>
+          <div class="cs-text"><strong>Desenrolar os pares</strong>Separar os 4 pares trançados. Endireitá-los sem dobrar.</div>
+        </div>
+        <div class="cable-step">
+          <div class="cs-num">3</div>
+          <div class="cs-text"><strong>Ordenar T568B</strong>Organizar os 8 fios exatamente na ordem do diagrama acima.</div>
+        </div>
+        <div class="cable-step">
+          <div class="cs-num">4</div>
+          <div class="cs-text"><strong>Cortar reto</strong>Cortar os fios a ~1,5cm do revestimento, todos no mesmo nível.</div>
+        </div>
+        <div class="cable-step">
+          <div class="cs-num">5</div>
+          <div class="cs-text"><strong>Inserir no RJ-45</strong>Empurrar os 8 fios até o fundo. Os contatos de cobre ficam para cima.</div>
+        </div>
+        <div class="cable-step">
+          <div class="cs-num">6</div>
+          <div class="cs-text"><strong>Crimpar</strong>Pressionar firmemente com o alicate RJ-45 até ouvir o clique.</div>
+        </div>
+        <div class="cable-step">
+          <div class="cs-num">7</div>
+          <div class="cs-text"><strong>Repetir no outro lado</strong>Fazer o segundo conector com o mesmo padrão T568B.</div>
+        </div>
+        <div class="cable-step">
+          <div class="cs-num">8</div>
+          <div class="cs-text"><strong>Testar</strong>LEDs 1 a 8 devem acender em sequência no testador de cabos.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GPU -->
+<section class="section" id="gpu" style="background: rgba(13,18,32,.4);">
+  <div class="container">
+    <div class="sec-label reveal"><span class="sec-num">07b</span> Aceleração Computacional</div>
+    <h2 class="sec-title reveal">Gráficos &<br><span style="color:var(--purple)">GPGPU</span></h2>
+    <p class="sec-desc reveal">O slot PCIe x16 do T110 II permite upgrade para GPU profissional, transformando o servidor em plataforma de Machine Learning com aceleração CUDA.</p>
+
+    <div class="gpu-grid reveal">
+      <div class="gpu-card">
+        <span class="gpu-icon">🖥️</span>
+        <div class="gpu-title">Gráficos Internos</div>
+        <div class="gpu-body">Matrox® G200eW integrada com 8MB VRAM. Foco exclusivo em saída de console básica via VGA. Sem capacidade de renderização ou computação — apenas para configuração inicial headless.</div>
+      </div>
+      <div class="gpu-card">
+        <span class="gpu-icon">🔌</span>
+        <div class="gpu-title">Upgrade para GPU Profissional</div>
+        <div class="gpu-body">O slot PCIe x16 permite instalar placas profissionais como NVIDIA Quadro (visualização) ou Tesla/A-series (computação). Transformando o T110 numa plataforma de treino de modelos de ML em escala de laboratório.</div>
+      </div>
+      <div class="gpu-card">
+        <span class="gpu-icon">⚡</span>
+        <div class="gpu-title">GPGPU com CUDA</div>
+        <div class="gpu-body">Núcleos CUDA para processamento paralelo massivo. Uma GPU Tesla T4 tem 2560 CUDA cores — supera a CPU em tarefas de álgebra linear tensorial (backpropagation, product matrix). Essencial para treino de redes neurais.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CRONOGRAMA -->
+<section class="section" id="cronograma">
+  <div class="container">
+    <div class="sec-label reveal"><span class="sec-num">08</span> Planejamento</div>
+    <h2 class="sec-title reveal">Cronograma de<br><span style="color:var(--blue2)">Execução</span></h2>
+    <p class="sec-desc reveal">Distribuição das atividades ao longo do semestre, conectando cada bloco ao hardware estudado e aos conceitos de Big Data correspondentes.</p>
+
+    <table class="schedule-table reveal">
+      <thead>
+        <tr>
+          <th>Período</th>
+          <th>Tema Principal</th>
+          <th>Atividade Prática</th>
+          <th>Hardware/Ferramenta</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="wk-badge wk1">Sem. 1–2</span></td>
+          <td>
+            <div class="sched-title">Fundamentos de Hardware e Redes</div>
+            <div class="sched-sub">Identificação de componentes, hierarquia de computação, camada física</div>
+          </td>
+          <td>Desmontagem do servidor · Crimpagem CAT6 T568B · Teste com testador de cabos</td>
+          <td>Dell T110 II · Alicate crimper · Testador RJ-45</td>
+        </tr>
+        <tr>
+          <td><span class="wk-badge wk2">Sem. 3–4</span></td>
+          <td>
+            <div class="sched-title">Sistemas Operacionais e Virtualização</div>
+            <div class="sched-sub">Linux Server, Docker, containers e isolamento de processos</div>
+          </td>
+          <td>Instalação Ubuntu Server no T110 · Deploy de containers Docker · Jupyter + PySpark</td>
+          <td>Dell T110 II · Docker · Ubuntu 22.04 LTS</td>
+        </tr>
+        <tr>
+          <td><span class="wk-badge wk3">Sem. 5</span></td>
+          <td>
+            <div class="sched-title">Benchmarking e Stress Test</div>
+            <div class="sched-sub">Validação de performance real da infraestrutura</div>
+          </td>
+          <td>iperf3 com múltiplos clientes · Monitoramento de I/O com iostat · CPU stress com sysbench</td>
+          <td>iperf3 · iostat · sysbench · htop</td>
+        </tr>
+        <tr>
+          <td><span class="wk-badge wk4">Sem. 6–8</span></td>
+          <td>
+            <div class="sched-title">RAID, Storage e Tolerância a Falhas</div>
+            <div class="sched-sub">Configuração de arrays RAID, hot-swap e recuperação de dados</div>
+          </td>
+          <td>Configurar RAID 1 e RAID 5 via PERC · Simular falha de disco · Medir tempo de rebuild</td>
+          <td>PERC H200 · BIOS do RAID · smartctl</td>
+        </tr>
+        <tr>
+          <td><span class="wk-badge wk5">Sem. 9–10</span></td>
+          <td>
+            <div class="sched-title">Cluster Hadoop e Data Locality</div>
+            <div class="sched-sub">Configuração de pseudo-cluster, HDFS e jobs MapReduce</div>
+          </td>
+          <td>Deploy do Hadoop no T110 · Ingest de dataset no HDFS · Primeiro job WordCount · Medição de throughput</td>
+          <td>Hadoop 3.x · HDFS · MapReduce · YARN</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- CHECKLIST -->
+<section class="section" id="checklist" style="background: rgba(13,18,32,.4);">
+  <div class="container">
+    <div class="sec-label reveal"><span class="sec-num">09</span> Verificação</div>
+    <h2 class="sec-title reveal">Checklist da <span style="color:var(--green2)">Aula Prática</span></h2>
+    <p class="sec-desc reveal">Marque cada item conforme o grupo conclui. O progresso é calculado automaticamente. Levar o checklist preenchido é parte da avaliação formativa.</p>
+
+    <div class="checklist-panel reveal">
+      <div class="checklist-title">📋 Lista de Objetivos</div>
+      <div class="checklist-sub">Clique em cada item para marcar como concluído</div>
+
+      <div class="checklist" id="checklist">
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text">✅ Participei do briefing e entendo o fluxo de dados do servidor até o switch</div>
+          <span class="check-tag hbadge hb-cyan" style="font-size:9px;">Briefing</span>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text">🖥️ Identifiquei o processador Xeon E3, a memória ECC e a placa RAID PERC no servidor</div>
+          <span class="check-tag hbadge hb-blue" style="font-size:9px;">Est. 1</span>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text">💾 Distingui visualmente pentes de memória ECC vs RAM convencional</div>
+          <span class="check-tag hbadge hb-blue" style="font-size:9px;">Est. 1</span>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text">🔌 Identifiquei os slots PCIe 2.0 e entendi qual aceita GPU para GPGPU</div>
+          <span class="check-tag hbadge hb-blue" style="font-size:9px;">Est. 1</span>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text">✂️ Descasquei corretamente um cabo CAT6 sem cortar os pares internos</div>
+          <span class="check-tag hbadge hb-yellow" style="font-size:9px;">Est. 2</span>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text">🎨 Organizei os 8 fios no padrão T568B corretamente (ordem: Br/Laranja, Laranja, Br/Verde...)</div>
+          <span class="check-tag hbadge hb-yellow" style="font-size:9px;">Est. 2</span>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text">⚡ Crimpei o cabo RJ-45 e testei — todos os 8 LEDs acenderam em sequência correta</div>
+          <span class="check-tag hbadge hb-yellow" style="font-size:9px;">Est. 2</span>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text">📦 Instalei e executei o iperf3 no modo servidor e cliente</div>
+          <span class="check-tag hbadge hb-green" style="font-size:9px;">Est. 3</span>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text">📊 Registrei e comparei os resultados de largura de banda com cabo correto vs defeituoso</div>
+          <span class="check-tag hbadge hb-green" style="font-size:9px;">Est. 3</span>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text">🔁 Executei o teste bidirecional (--bidir) e entendi o impacto no throughput real</div>
+          <span class="check-tag hbadge hb-green" style="font-size:9px;">Est. 3</span>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text">🔗 Conectei meu cabo crimpado ao servidor Dell e validei o link (LED verde = 1GbE)</div>
+          <span class="check-tag hbadge hb-cyan" style="font-size:9px;">Grand Final</span>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text">📝 Consegui explicar por que ECC RAM é obrigatória em servidores de Big Data</div>
+          <span class="check-tag hbadge hb-blue" style="font-size:9px;">Conceito</span>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text">🛡️ Entendi a diferença entre RAID 0, 1 e 5 e quando usar cada um</div>
+          <span class="check-tag hbadge hb-blue" style="font-size:9px;">Conceito</span>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text">📡 Compreendi como um cabo mal crimpado impacta o tempo de transferência de um dataset de 1TB</div>
+          <span class="check-tag hbadge hb-blue" style="font-size:9px;">Conceito</span>
+        </div>
+      </div>
+
+      <div class="progress-summary">
+        <div class="prog-text" id="progText">0 de 14 concluídos</div>
+        <div class="prog-bar-wrap">
+          <div class="prog-bar-fill" id="progFill" style="width:0%"></div>
+        </div>
+        <div class="prog-pct" id="progPct">0%</div>
+      </div>
+    </div>
+
+    <!-- NOTA PEDAGÓGICA -->
+    <div class="ped-note reveal">
+      <div class="ped-note-label">📌 Nota Pedagógica — Infraestrutura como Experiência Tangível</div>
+      <div class="ped-grid">
+        <div>
+          <div class="ped-col-title" style="color:var(--cyan)">🎯 Por que mãos na massa?</div>
+          <div class="ped-col-body">Conceitos de latência de rede, integridade de memória e tolerância a falhas são abstratos no quadro. Cravar um cabo, ver o LED verde acender e medir 978 Mbps torna esses conceitos viscerais e memoráveis. A experiência física cria âncoras cognitivas duradouras.</div>
+        </div>
+        <div>
+          <div class="ped-col-title" style="color:var(--green)">🔗 Conexão com o PPC</div>
+          <div class="ped-col-body">Alinhado ao PPC CST em Ciência de Dados — Fatec Ourinhos. Competência: integrar sistemas de informação otimizando uso de redes, aplicando protocolos de segurança, integridade e performance de infraestrutura. Cada estação desenvolve uma dimensão dessa competência.</div>
+        </div>
+        <div>
+          <div class="ped-col-title" style="color:var(--yellow)">⚙️ Infraestrutura Mínima</div>
+          <div class="ped-col-body">1× Dell T110 II, switch gerenciável com 16 portas, cabos CAT6 e kit de crimpagem. Todos os softwares são open-source (Ubuntu, Docker, Hadoop, iperf3). Investimento inicial de R$2.500 para infraestrutura completa que suporta 5 anos de aulas práticas.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-l">
+    Infraestrutura para Big Data · Fatec Ourinhos<br>
+    Tecnologia em Ciência de Dados · Prof. Isaque Katahira<br>
+    <span class="ft-sig">Dell T110 II · Xeon E3 · ECC · PERC H200 · CAT6 · iperf3 · SSH</span>
+  </div>
+  <div class="ft-l ft-r">
+    Aula prática de 90 minutos<br>
+    3 estações · 3 grupos · rotação horária<br>
+    <span style="color:var(--blue2)">Hardware real → Dados reais → Resultados reais</span>
+  </div>
+</footer>
+
+<script>
+// PROGRESS BAR
+window.addEventListener('scroll', () => {
+  const prog = document.getElementById('progress-bar');
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  prog.style.width = pct + '%';
+});
+
+// REVEAL on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// TIMER
+const phases = [
+  { label: 'Briefing — 15 min', duration: 15 * 60, color: '#06b6d4' },
+  { label: 'Estação 1: Hardware — 20 min', duration: 20 * 60, color: '#3b82f6' },
+  { label: 'Estação 2: Cabeamento — 20 min', duration: 20 * 60, color: '#f59e0b' },
+  { label: 'Estação 3: iperf3 — 20 min', duration: 20 * 60, color: '#8b5cf6' },
+  { label: 'Grand Final — 15 min', duration: 15 * 60, color: '#10b981' },
+];
+let currentPhase = 0, timeLeft = phases[0].duration, timerInterval = null, running = false;
+
+function updateDisplay() {
+  const m = Math.floor(timeLeft / 60);
+  const s = timeLeft % 60;
+  document.getElementById('timerDisplay').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  document.getElementById('timerDisplay').style.color = phases[currentPhase].color;
+  document.getElementById('timerPhase').textContent = phases[currentPhase].label;
+  document.querySelectorAll('.pdot').forEach((d, i) => {
+    d.classList.remove('active', 'done');
+    if (i < currentPhase) d.classList.add('done');
+    else if (i === currentPhase) d.classList.add('active');
+  });
+}
+
+function startTimer() {
+  if (running) return;
+  running = true;
+  timerInterval = setInterval(() => {
+    if (timeLeft > 0) {
+      timeLeft--;
+      updateDisplay();
+    } else {
+      clearInterval(timerInterval);
+      running = false;
+      if (currentPhase < phases.length - 1) {
+        // alert com tom
+        document.getElementById('timerDisplay').style.animation = 'none';
+        setTimeout(() => nextPhase(), 500);
+      }
+    }
+  }, 1000);
+}
+
+function pauseTimer() {
+  clearInterval(timerInterval);
+  running = false;
+}
+
+function resetTimer() {
+  pauseTimer();
+  currentPhase = 0;
+  timeLeft = phases[0].duration;
+  updateDisplay();
+}
+
+function nextPhase() {
+  pauseTimer();
+  if (currentPhase < phases.length - 1) {
+    currentPhase++;
+    timeLeft = phases[currentPhase].duration;
+    updateDisplay();
+  }
+}
+
+updateDisplay();
+
+// CHECKLIST
+function toggleCheck(el) {
+  el.classList.toggle('checked');
+  if (el.classList.contains('checked')) {
+    el.querySelector('.check-box').textContent = '✓';
+  } else {
+    el.querySelector('.check-box').textContent = '';
+  }
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = document.querySelectorAll('.check-item').length;
+  const done = document.querySelectorAll('.check-item.checked').length;
+  const pct = Math.round((done / total) * 100);
+  document.getElementById('progText').textContent = `${done} de ${total} concluídos`;
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progPct').textContent = pct + '%';
+}
+</script>
+</body>
+</html>

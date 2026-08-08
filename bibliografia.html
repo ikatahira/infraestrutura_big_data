@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bibliografia — Infraestrutura para Big Data - FATEC Ourinhos</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 34px 40px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .header h1 { color: #1e3c72; font-size: 2em; margin-bottom: 6px; }
+        .header p { color: #666; font-size: 1em; }
+        .back-link {
+            display: inline-block;
+            margin-top: 16px;
+            font-size: .85em;
+            color: #2a5298;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-link:hover { text-decoration: underline; }
+
+        .notice {
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            border-left: 5px solid #ffb300;
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            color: #6d5300;
+            font-size: .92em;
+            line-height: 1.7;
+        }
+        .notice b { color: #8a6900; }
+        .notice ul { margin: 10px 0 0 20px; }
+        .notice li { margin-bottom: 6px; }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px 34px;
+            margin-bottom: 22px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .section h2 {
+            color: #1e3c72;
+            font-size: 1.4em;
+            margin-bottom: 6px;
+            border-bottom: 3px solid #2a5298;
+            padding-bottom: 10px;
+        }
+        .section .subhead {
+            color: #888;
+            font-size: .85em;
+            margin: 10px 0 18px;
+        }
+
+        .biblio-list { list-style: none; }
+        .biblio-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .biblio-item:last-child { border-bottom: none; }
+        .biblio-ref { color: #333; font-size: .92em; line-height: 1.55; flex: 1; }
+        .biblio-ref .isbn { display: block; font-size: .78em; color: #999; margin-top: 3px; font-family: monospace; }
+        .biblio-links { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; align-items: flex-end; }
+        .blink {
+            font-size: .74em;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            white-space: nowrap;
+            text-align: center;
+        }
+        .blink.mb { background: #1e3c72; color: white; }
+        .blink.mb:hover { background: #16294f; }
+        .blink.gb { background: #eef2ff; color: #2a5298; border: 1px solid #c7d4ff; }
+        .blink.gb:hover { background: #dfe6ff; }
+
+        @media (max-width: 700px) {
+            .biblio-item { flex-direction: column; }
+            .biblio-links { flex-direction: row; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Bibliografia</h1>
+            <p>Infraestrutura para Big Data (IAL008) — Curso Superior de Tecnologia em Ciência de Dados</p>
+            <p><strong>FATEC Ourinhos - Centro Paula Souza</strong></p>
+            <a href="index.html" class="back-link">← Voltar ao índice do curso</a>
+        </div>
+
+        <div class="notice">
+            <b>⚠️ Sobre o acesso aos livros:</b> os títulos abaixo são obras protegidas por direitos autorais, então esta página não hospeda os arquivos completos para download. Formas legítimas de acesso:
+            <ul>
+                <li><b>Minha Biblioteca / Biblioteca Virtual</b> — muitos destes títulos (incluindo os de Tanenbaum) já circulam em acervos digitais que o Centro Paula Souza costuma disponibilizar aos alunos. Verifique o acesso institucional com a biblioteca do campus.</li>
+                <li><b>Google Livros</b> — permite ler uma prévia significativa de cada título gratuitamente.</li>
+                <li><b>Biblioteca física do campus</b> ou compra em livrarias, quando o acesso digital não estiver disponível.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>📖 Bibliografia Básica</h2>
+            <p class="subhead">Registro bibliográfico oficial da disciplina</p>
+            <ul class="biblio-list">
+                <li class="biblio-item">
+                    <div class="biblio-ref">BENGFORT, Benjamin; KIM, Jenny. <em>Analítica de dados com Hadoop: Uma introdução para cientistas de dados</em>. Novatec editora, 2016.<span class="isbn">ISBN: 9788575225219</span></div>
+                    <div class="biblio-links"><a class="blink gb" href="https://www.google.com/search?tbm=bks&q=Anal%C3%ADtica+de+dados+com+Hadoop+Bengfort+Kim" target="_blank" rel="noopener">Buscar</a></div>
+                </li>
+                <li class="biblio-item">
+                    <div class="biblio-ref">COULOURIS, George; DOLLIMORE, Jean; KINDBERG, Tim; BLAIR, Gordon. <em>Sistemas Distribuídos - Conceitos e Projeto</em>. 5ª ed. Bookman editora, 2013.<span class="isbn">ISBN: 9788582600542</span></div>
+                    <div class="biblio-links"><a class="blink gb" href="https://www.google.com/search?tbm=bks&q=Sistemas+Distribu%C3%ADdos+Conceitos+e+Projeto+Coulouris+5+edi%C3%A7%C3%A3o" target="_blank" rel="noopener">Buscar</a></div>
+                </li>
+                <li class="biblio-item">
+                    <div class="biblio-ref">RAMOS, Atos. <em>Infraestrutura big data com opensource</em>. 1ª ed. Ciência Moderna, 2015.<span class="isbn">ISBN: 9788539905973</span></div>
+                    <div class="biblio-links"><a class="blink gb" href="https://www.google.com/search?tbm=bks&q=Infraestrutura+big+data+com+opensource+Atos+Ramos" target="_blank" rel="noopener">Buscar</a></div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>📗 Bibliografia Complementar</h2>
+            <p class="subhead">Registro bibliográfico oficial da disciplina</p>
+            <ul class="biblio-list">
+                <li class="biblio-item">
+                    <div class="biblio-ref">ERL, Thomas; KHATTAK, Wajid; BUHLER, Paul. <em>Big Data Fundamentals: Concepts, Drivers & Techniques</em>. Digital. Prentice Hall, 2015.<span class="isbn">ISBN: 9780134291208</span></div>
+                    <div class="biblio-links"><a class="blink gb" href="https://www.google.com/search?tbm=bks&q=Big+Data+Fundamentals+Concepts+Drivers+Techniques+Erl" target="_blank" rel="noopener">Buscar</a></div>
+                </li>
+                <li class="biblio-item">
+                    <div class="biblio-ref">SAMMER, Eric. <em>Hadoop operations</em>. O'Reilly media, 2012.<span class="isbn">ISBN: 9781449327057</span></div>
+                    <div class="biblio-links"><a class="blink gb" href="https://www.google.com/search?tbm=bks&q=Hadoop+Operations+Eric+Sammer" target="_blank" rel="noopener">Buscar</a></div>
+                </li>
+                <li class="biblio-item">
+                    <div class="biblio-ref">SILBERSCHATZ, Abraham. <em>Sistemas Operacionais com Java</em>. Rio de Janeiro: Elsevier Brasil, 2008.<span class="isbn">ISBN: 9788535224061</span></div>
+                    <div class="biblio-links"><a class="blink gb" href="https://www.google.com/search?tbm=bks&q=Sistemas+Operacionais+com+Java+Silberschatz" target="_blank" rel="noopener">Buscar</a></div>
+                </li>
+                <li class="biblio-item">
+                    <div class="biblio-ref">TAURION, C. <em>Big data</em>. Rio de Janeiro: Brasport, 2015.<span class="isbn">ISBN: 9788574526089</span></div>
+                    <div class="biblio-links"><a class="blink gb" href="https://www.google.com/search?tbm=bks&q=Big+data+Cezar+Taurion+Brasport" target="_blank" rel="noopener">Buscar</a></div>
+                </li>
+                <li class="biblio-item">
+                    <div class="biblio-ref">TANENBAUM, Andrew S.; WOODHULL, Albert S. <em>Sistemas Operacionais: Projeto e Implementação</em>. 3ª ed. Porto Alegre: Bookman, 2008.<span class="isbn">ISBN: 9788577800575</span></div>
+                    <div class="biblio-links"><a class="blink gb" href="https://www.google.com/search?tbm=bks&q=Sistemas+Operacionais+Projeto+e+Implementa%C3%A7%C3%A3o+Tanenbaum+Woodhull" target="_blank" rel="noopener">Buscar</a></div>
+                </li>
+                <li class="biblio-item">
+                    <div class="biblio-ref">TANENBAUM, Andrew S. <em>Sistemas Operacionais Modernos</em>. 3ª ed. São Paulo: Prentice-Hall Brasil, 2010.<span class="isbn">ISBN: 9788576052371</span></div>
+                    <div class="biblio-links">
+                        <a class="blink mb" href="https://www.bvirtual.com.br/NossoAcervo/Publicacao/36876" target="_blank" rel="noopener">Biblioteca Virtual</a>
+                        <a class="blink gb" href="https://www.google.com/search?tbm=bks&q=Sistemas+Operacionais+Modernos+Tanenbaum+3+edi%C3%A7%C3%A3o" target="_blank" rel="noopener">Buscar</a>
+                    </div>
+                </li>
+                <li class="biblio-item">
+                    <div class="biblio-ref">WHITE, T. <em>Hadoop: The definitive guide</em>. O'Reilly Media, Inc., 2012.<span class="isbn">ISBN: 9781449311520</span></div>
+                    <div class="biblio-links"><a class="blink gb" href="https://www.google.com/search?tbm=bks&q=Hadoop+The+Definitive+Guide+Tom+White" target="_blank" rel="noopener">Buscar</a></div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>📘 Bibliografia de Referência</h2>
+            <p class="subhead">Registro bibliográfico oficial da disciplina — links diretos fornecidos no plano de ensino</p>
+            <ul class="biblio-list">
+                <li class="biblio-item">
+                    <div class="biblio-ref">KARAU, H. et al. <em>Learning Spark</em>. O'Reilly Media, Inc., 2015.<span class="isbn">ISBN: 9781449358624</span></div>
+                    <div class="biblio-links"><a class="blink gb" href="https://books.google.com.br/books?id=9IPUlgEACAAJ" target="_blank" rel="noopener">Google Livros</a></div>
+                </li>
+                <li class="biblio-item">
+                    <div class="biblio-ref">LAM, C. <em>Hadoop in Action</em>. Manning Publications, 2011. (In Action)<span class="isbn">ISBN: 9781935182191</span></div>
+                    <div class="biblio-links"><a class="blink gb" href="https://books.google.com.br/books?id=iGq3PwAACAAJ" target="_blank" rel="noopener">Google Livros</a></div>
+                </li>
+                <li class="biblio-item">
+                    <div class="biblio-ref">STICKEL, B. et al. <em>Spark Operations: Operationalizing Apache Spark at Scale</em>. O'Reilly Media, 2015.<span class="isbn">ISBN: 9781491920282</span></div>
+                    <div class="biblio-links"><a class="blink gb" href="https://books.google.com.br/books?id=s81MrgEACAAJ" target="_blank" rel="noopener">Google Livros</a></div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

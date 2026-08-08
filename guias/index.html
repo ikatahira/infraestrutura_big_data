@@ -201,6 +201,17 @@
             background: #0f3460;
         }
 
+        .link-wsl {
+            background: rgba(120,80,220,0.15);
+            color: #c0a0f0;
+            border: 2px solid rgba(120,80,220,0.5);
+        }
+
+        .link-wsl:hover {
+            background: rgba(120,80,220,0.35);
+            color: white;
+        }
+
         .intro-section {
             background: white;
             border-radius: 12px;
@@ -234,6 +245,100 @@
         .highlight-box strong {
             color: #1e3c72;
         }
+
+        .info-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px 34px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .info-section h2 {
+            color: #1e3c72;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #2a5298;
+            padding-bottom: 10px;
+        }
+
+        .info-section h3 {
+            color: #2a5298;
+            font-size: 1.15em;
+            margin: 22px 0 10px;
+        }
+
+        .info-section p {
+            color: #444;
+            font-size: .97em;
+            line-height: 1.75;
+            text-align: justify;
+        }
+
+        .plano-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .plano-meta-item {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 10px;
+        }
+
+        .plano-meta-item .lbl {
+            display: block;
+            font-size: .68em;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            opacity: .8;
+            margin-bottom: 3px;
+        }
+
+        .plano-meta-item .val {
+            font-weight: bold;
+            font-size: 1em;
+        }
+        .footer {
+            background: white;
+            border-radius: 15px;
+            padding: 34px 30px;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .footer h3 {
+            color: #1e3c72;
+            margin-bottom: 8px;
+            font-size: 1.5em;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .footer-link {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .footer-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -241,7 +346,25 @@
         <div class="header">
             <h1>🚀 Infraestrutura para Big Data</h1>
             <p>Curso Superior de Tecnologia em Ciência de Dados</p>
-            <p style="margin-top: 10px; font-size: 0.9em; color: #888;">1º Semestre de 2026</p>
+            <p style="margin-top: 10px; font-size: 0.9em; color: #888;">2º Semestre de 2026</p>
+        </div>
+
+        <div class="info-section">
+            <h2>📋 Plano de Ensino</h2>
+            <div class="plano-meta">
+                <div class="plano-meta-item"><span class="lbl">Professor</span><span class="val">Isaque Katahira</span></div>
+                <div class="plano-meta-item"><span class="lbl">Sigla</span><span class="val">IAL008</span></div>
+                <div class="plano-meta-item"><span class="lbl">Curso</span><span class="val">Tecnologia em Ciência de Dados</span></div>
+                <div class="plano-meta-item"><span class="lbl">Semestre/Ano</span><span class="val">2º Semestre/2026</span></div>
+                <div class="plano-meta-item"><span class="lbl">Carga Horária Semestral</span><span class="val">80h</span></div>
+                <div class="plano-meta-item"><span class="lbl">Carga Horária Semanal</span><span class="val">4h (2 teórica + 2 prática)</span></div>
+            </div>
+
+            <h3>Ementa</h3>
+            <p>Recursos de hardware para Bigdata. Conceito de sistemas operacionais para bancos de dados distribuídos. Ferramentas que transformam sistemas operacionais em sistemas de armazenamento de grandes massas de dados. Ferramentas que implementem o processamento distribuído, usado em clusters computacionais. Desempenho e segurança de sistemas operacionais para Big Data. Características e processamento de sistemas: estrutura de programação MapReduce, incluindo o mapa, classificação de ordem, ordem aleatória e componentes de redução. Modos de configuração e funcionamento de um sistema para Big Data.</p>
+
+            <h3>Objetivo</h3>
+            <p>Conhecer, compreender características e configurar sistemas operacionais usados para armazenamento de grandes quantidades de dados. Identificar as opções de implementação dos sistemas operacionais e dos recursos de hardware necessários para a instalação de sistemas operacionais de Big Data. Implementar e configurar sistemas operacionais usados para armazenamento de grandes quantidades de dados.</p>
         </div>
 
         <div class="plano-ensino-box">
@@ -289,6 +412,7 @@
                         <a href="semanas/semana01.html" class="week-link link-semana">📄 Semana</a>
                         <a href="guias/semana01_guia.html" class="week-link link-guia">📚 Guia</a>
                         <a href="semanas/semana01_pratica_linux.html" class="week-link link-projeto">🖥️ Projeto</a>
+                        <a href="semanas/semana01_02.html" class="week-link link-wsl">🪟 WSL2</a>
                     </div>
                 </div>
 
@@ -398,13 +522,39 @@
                 </div>
                 <!-- FIM ATIVIDADE AVALIATIVA -->
 
-                <div class="week-card">
-                    <div class="week-number">4</div>
+                <!-- ARTIGO DE REFERÊNCIA + ASSISTENTE IA -->
+                <div class="week-card" style="border-left-color: #00bcd4; background: linear-gradient(135deg, #fff 0%, #e0f7fa 100%); grid-column: 1 / -1;">
+                    <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+                        <div class="week-number" style="background: linear-gradient(135deg, #00838f 0%, #00bcd4 100%); width:58px; height:58px; font-size:1.4em; flex-shrink:0;">📄</div>
+                        <div style="flex:1; min-width:220px;">
+                            <div style="font-family:monospace; font-size:.7em; letter-spacing:2px; color:#00838f; text-transform:uppercase; margin-bottom:4px;">🔬 Material de Apoio — Entre Semana 03 e 04</div>
+                            <div class="week-title" style="font-size:1.2em; color:#006064;">Artigo de Referência &amp; Assistente de Revisão IA</div>
+                            <div style="font-size:.9em; color:#00838f; margin-top:4px;">Leia o artigo modelo, identifique os erros e aprenda a corrigi-los com ajuda da IA</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:16px; color:#555; font-size:.9em; line-height:1.7;">
+                        Esta página apresenta o artigo <em>"Análise de Estabilidade e Desempenho da JVM em Infraestruturas Hadoop HDFS"</em> como referência prática. Um assistente de IA guia você pelas <strong>6 etapas de correção</strong> necessárias para elevar o trabalho ao padrão de revistas Qualis A1 — desde inconsistências de dados até benchmarking experimental.
+                    </div>
+                    <div style="margin-top:16px;">
+                        <a href="semanas/semana03_5.html"
+                           style="display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg,#00838f,#00bcd4); color:white; padding:13px 24px; border-radius:8px; text-decoration:none; font-weight:bold; font-size:.9em; box-shadow:0 4px 12px rgba(0,131,143,.35); transition:all .3s;">
+                            🤖 Abrir PDF + Assistente de Revisão IA
+                        </a>
+                    </div>
+                </div>
+
+                <div class="week-card" style="border-left-color: #ff6b35;">
+                    <div class="week-number" style="background: linear-gradient(135deg, #c2440a 0%, #ff6b35 100%);">4</div>
                     <div class="week-title">Apache Spark - Processamento In-Memory</div>
-                    <div class="week-links">
+                    <div class="week-links" style="flex-wrap:wrap;">
                         <a href="semanas/semana04.html" class="week-link link-semana">📄 Semana</a>
                         <a href="guias/semana04_guia.html" class="week-link link-guia">📚 Guia</a>
                     </div>
+                    <div class="week-links" style="flex-wrap:wrap;margin-top:8px;">
+                        <a href="semanas/semana04_1.html" class="week-link" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:white;flex:1;">🌱 Versão Iniciante</a>
+                        <a href="semanas/avaliacao_teorica_infra.html" class="week-link" style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;flex:1;">📝 Exercício Teórico</a>
+                    </div>
+                    <div style="margin-top:8px;font-size:.78em;color:#888;">☁️ Inclui Google Colab &amp; exemplos Kaggle</div>
                 </div>
 
                 <div class="week-card">
@@ -565,10 +715,25 @@
             </ul>
         </div>
 
+        <div class="footer">
+            <h3>📚 Recursos Adicionais</h3>
+            <p style="color:#666;">Acesse materiais complementares e recursos para o curso</p>
+            <div class="footer-links">
+                <a href="plano_ensino_infraestrutura_big_data.html" class="footer-link">📖 Bibliografia Completa</a>
+                <a href="videos.html" class="footer-link">🎬 Playlist de Vídeos</a>
+                <a href="#" class="footer-link">🔧 Ferramentas</a>
+                <a href="#" class="footer-link">💼 Portfólio de Projetos</a>
+            </div>
+            <p style="margin-top: 30px; color: #666;">
+                <strong>FATEC Ourinhos</strong> | Curso Superior de Tecnologia em Ciência de Dados<br>
+                Infraestrutura para Big Data (IAL008) | 6º Semestre
+            </p>
+        </div>
+
         <div style="text-align: center; color: white; margin-top: 30px; padding: 20px;">
             <p style="font-size: 1.1em; font-weight: bold;">Faculdade de Tecnologia de Ourinhos</p>
             <p>Centro Estadual de Educação Tecnológica Paula Souza</p>
-            <p style="margin-top: 10px; opacity: 0.8;">1º Semestre de 2026</p>
+            <p style="margin-top: 10px; opacity: 0.8;">2º Semestre de 2026</p>
         </div>
     </div>
 </body>

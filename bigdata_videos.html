@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playlist de Vídeos — Infraestrutura para Big Data - FATEC Ourinhos</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 34px 40px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .header h1 { color: #1e3c72; font-size: 2em; margin-bottom: 6px; }
+        .header p { color: #666; font-size: 1em; }
+        .back-link {
+            display: inline-block;
+            margin-top: 16px;
+            font-size: .85em;
+            color: #2a5298;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-link:hover { text-decoration: underline; }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px 34px;
+            margin-bottom: 22px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .section h2 {
+            color: #1e3c72;
+            font-size: 1.4em;
+            margin-bottom: 6px;
+            border-bottom: 3px solid #2a5298;
+            padding-bottom: 10px;
+        }
+        .section .subhead {
+            color: #888;
+            font-size: .85em;
+            margin: 10px 0 18px;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .video-card {
+            display: block;
+            text-decoration: none;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #eee;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: all .25s;
+        }
+        .video-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgba(30,60,114,0.25);
+        }
+        .video-thumb {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            overflow: hidden;
+        }
+        .video-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .video-play {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .video-play span {
+            width: 54px; height: 54px;
+            background: rgba(220,0,0,0.9);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white;
+            font-size: 1.3em;
+        }
+        .video-info { padding: 14px 16px; background: #fafafa; }
+        .video-title { color: #333; font-weight: bold; font-size: .95em; line-height: 1.4; margin-bottom: 4px; }
+        .video-meta { color: #888; font-size: .78em; }
+        .video-tag {
+            display: inline-block;
+            font-size: .65em;
+            font-weight: bold;
+            color: #2a5298;
+            background: #e3f2fd;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 Playlist de Vídeos</h1>
+            <p>Infraestrutura para Big Data (IAL008) — Curso Superior de Tecnologia em Ciência de Dados</p>
+            <p><strong>FATEC Ourinhos - Centro Paula Souza</strong></p>
+            <a href="index.html" class="back-link">← Voltar ao índice do curso</a>
+        </div>
+
+        <div class="section">
+            <h2>📺 Vídeos Recomendados</h2>
+            <p class="subhead">Complementos em vídeo para os temas trabalhados na disciplina</p>
+            <div class="video-grid">
+                <a class="video-card" href="https://youtu.be/HRfR4dJoKDc" target="_blank" rel="noopener">
+                    <div class="video-thumb">
+                        <img src="https://img.youtube.com/vi/HRfR4dJoKDc/hqdefault.jpg" alt="What is Big Data? - IBM Technology">
+                        <div class="video-play"><span>▶</span></div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">What is Big Data? — IBM Technology</div>
+                        <div class="video-meta">YouTube · 7:26 min</div>
+                        <span class="video-tag">Semana 01 — Conceitos de Big Data</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

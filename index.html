@@ -245,6 +245,100 @@
         .highlight-box strong {
             color: #1e3c72;
         }
+
+        .info-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px 34px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .info-section h2 {
+            color: #1e3c72;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #2a5298;
+            padding-bottom: 10px;
+        }
+
+        .info-section h3 {
+            color: #2a5298;
+            font-size: 1.15em;
+            margin: 22px 0 10px;
+        }
+
+        .info-section p {
+            color: #444;
+            font-size: .97em;
+            line-height: 1.75;
+            text-align: justify;
+        }
+
+        .plano-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .plano-meta-item {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 10px;
+        }
+
+        .plano-meta-item .lbl {
+            display: block;
+            font-size: .68em;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            opacity: .8;
+            margin-bottom: 3px;
+        }
+
+        .plano-meta-item .val {
+            font-weight: bold;
+            font-size: 1em;
+        }
+        .footer {
+            background: white;
+            border-radius: 15px;
+            padding: 34px 30px;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .footer h3 {
+            color: #1e3c72;
+            margin-bottom: 8px;
+            font-size: 1.5em;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .footer-link {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .footer-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -252,7 +346,25 @@
         <div class="header">
             <h1>🚀 Infraestrutura para Big Data</h1>
             <p>Curso Superior de Tecnologia em Ciência de Dados</p>
-            <p style="margin-top: 10px; font-size: 0.9em; color: #888;">1º Semestre de 2026</p>
+            <p style="margin-top: 10px; font-size: 0.9em; color: #888;">2º Semestre de 2026</p>
+        </div>
+
+        <div class="info-section">
+            <h2>📋 Plano de Ensino</h2>
+            <div class="plano-meta">
+                <div class="plano-meta-item"><span class="lbl">Professor</span><span class="val">Isaque Katahira</span></div>
+                <div class="plano-meta-item"><span class="lbl">Sigla</span><span class="val">IAL008</span></div>
+                <div class="plano-meta-item"><span class="lbl">Curso</span><span class="val">Tecnologia em Ciência de Dados</span></div>
+                <div class="plano-meta-item"><span class="lbl">Semestre/Ano</span><span class="val">2º Semestre/2026</span></div>
+                <div class="plano-meta-item"><span class="lbl">Carga Horária Semestral</span><span class="val">80h</span></div>
+                <div class="plano-meta-item"><span class="lbl">Carga Horária Semanal</span><span class="val">4h (2 teórica + 2 prática)</span></div>
+            </div>
+
+            <h3>Ementa</h3>
+            <p>Recursos de hardware para Bigdata. Conceito de sistemas operacionais para bancos de dados distribuídos. Ferramentas que transformam sistemas operacionais em sistemas de armazenamento de grandes massas de dados. Ferramentas que implementem o processamento distribuído, usado em clusters computacionais. Desempenho e segurança de sistemas operacionais para Big Data. Características e processamento de sistemas: estrutura de programação MapReduce, incluindo o mapa, classificação de ordem, ordem aleatória e componentes de redução. Modos de configuração e funcionamento de um sistema para Big Data.</p>
+
+            <h3>Objetivo</h3>
+            <p>Conhecer, compreender características e configurar sistemas operacionais usados para armazenamento de grandes quantidades de dados. Identificar as opções de implementação dos sistemas operacionais e dos recursos de hardware necessários para a instalação de sistemas operacionais de Big Data. Implementar e configurar sistemas operacionais usados para armazenamento de grandes quantidades de dados.</p>
         </div>
 
         <div class="plano-ensino-box">
@@ -603,10 +715,25 @@
             </ul>
         </div>
 
+        <div class="footer">
+            <h3>📚 Recursos Adicionais</h3>
+            <p style="color:#666;">Acesse materiais complementares e recursos para o curso</p>
+            <div class="footer-links">
+                <a href="plano_ensino_infraestrutura_big_data.html" class="footer-link">📖 Bibliografia Completa</a>
+                <a href="videos.html" class="footer-link">🎬 Playlist de Vídeos</a>
+                <a href="#" class="footer-link">🔧 Ferramentas</a>
+                <a href="#" class="footer-link">💼 Portfólio de Projetos</a>
+            </div>
+            <p style="margin-top: 30px; color: #666;">
+                <strong>FATEC Ourinhos</strong> | Curso Superior de Tecnologia em Ciência de Dados<br>
+                Infraestrutura para Big Data (IAL008) | 6º Semestre
+            </p>
+        </div>
+
         <div style="text-align: center; color: white; margin-top: 30px; padding: 20px;">
             <p style="font-size: 1.1em; font-weight: bold;">Faculdade de Tecnologia de Ourinhos</p>
             <p>Centro Estadual de Educação Tecnológica Paula Souza</p>
-            <p style="margin-top: 10px; opacity: 0.8;">1º Semestre de 2026</p>
+            <p style="margin-top: 10px; opacity: 0.8;">2º Semestre de 2026</p>
         </div>
     </div>
 </body>

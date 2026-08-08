@@ -744,6 +744,111 @@
         }
         .complete-btn:hover { background: linear-gradient(135deg, rgba(0,212,255,0.25), rgba(0,255,157,0.18)); transform: translateY(-1px); }
         .complete-btn.done { background: rgba(0,255,157,0.08); border-color: rgba(0,255,157,0.3); color: var(--accent2); cursor: default; }
+        .complete-btn:disabled:not(.done) { opacity: 0.4; cursor: not-allowed; }
+
+        /* ─── DRAG & DROP EXERCISE ─── */
+        .dnd-box {
+            margin: 16px 18px 20px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px 20px;
+        }
+        .dnd-title {
+            font-family: var(--font-display);
+            font-size: 0.78em;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .dnd-sub {
+            font-size: 0.82em;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+        .dnd-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 700px) { .dnd-grid { grid-template-columns: 1fr; } }
+        .dnd-pool {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .dnd-chip {
+            font-family: var(--font-mono);
+            font-size: 0.8em;
+            color: var(--text);
+            background: var(--panel);
+            border: 1px solid rgba(0,212,255,0.3);
+            border-radius: 8px;
+            padding: 11px 14px;
+            cursor: grab;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .dnd-chip:hover { border-color: var(--accent); background: rgba(0,212,255,0.08); }
+        .dnd-chip.selected { border-color: var(--accent2); background: rgba(0,255,157,0.1); box-shadow: 0 0 0 1px var(--accent2); }
+        .dnd-chip.placed { opacity: 0.25; cursor: default; pointer-events: none; text-decoration: line-through; }
+        .dnd-targets {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .dnd-target {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--panel);
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            padding: 9px 12px;
+        }
+        .dnd-target-label {
+            font-family: var(--font-display);
+            font-size: 0.78em;
+            font-weight: 700;
+            color: var(--text);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 108px;
+        }
+        .dnd-target-slot {
+            flex: 1;
+            min-height: 34px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.015);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            font-family: var(--font-mono);
+            font-size: 0.78em;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dnd-target-slot.dragover { border-color: var(--accent); background: rgba(0,212,255,0.08); }
+        .dnd-target-slot.filled { border-color: rgba(0,255,157,0.4); background: rgba(0,255,157,0.06); color: var(--accent2); cursor: default; }
+        .dnd-target-slot.wrong { border-color: #ff4757; background: rgba(255,71,87,0.1); animation: dndShake 0.4s; }
+        @keyframes dndShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+        .dnd-feedback {
+            margin-top: 14px;
+            font-family: var(--font-mono);
+            font-size: 0.78em;
+            color: var(--text-dim);
+            text-align: center;
+        }
+        .dnd-feedback.ok { color: var(--accent2); }
 
         /* ─── SECTION DIVIDER ─── */
         .section-divider {
@@ -1309,6 +1414,43 @@
                 </div>
             </div>
 
+            <div class="dnd-box">
+                <div class="dnd-title">🧲 Arraste e Solte — Ferramenta certa para cada V</div>
+                <div class="dnd-sub">Cada V do Big Data é resolvido por uma ferramenta que você vai aprender ao longo do semestre. Arraste cada ferramenta (ou toque para selecionar e depois toque no V correspondente) até o V que ela resolve.</div>
+                <div class="dnd-grid">
+                    <div class="dnd-pool" id="dndPool">
+                        <div class="dnd-chip" id="dndchip-hdfs" draggable="true" data-id="hdfs" data-label="🗄️ HDFS (Hadoop) — Sem. 02" ondragstart="dndDragStart(event,'hdfs')" onclick="dndSelectChip('hdfs',this)">🗄️ HDFS (Hadoop) — Sem. 02</div>
+                        <div class="dnd-chip" id="dndchip-kafka" draggable="true" data-id="kafka" data-label="⚡ Apache Kafka — Sem. 09" ondragstart="dndDragStart(event,'kafka')" onclick="dndSelectChip('kafka',this)">⚡ Apache Kafka — Sem. 09</div>
+                        <div class="dnd-chip" id="dndchip-mongodb" draggable="true" data-id="mongodb" data-label="🍃 MongoDB — Sem. 07" ondragstart="dndDragStart(event,'mongodb')" onclick="dndSelectChip('mongodb',this)">🍃 MongoDB — Sem. 07</div>
+                        <div class="dnd-chip" id="dndchip-spark" draggable="true" data-id="spark" data-label="🔥 Apache Spark — Sem. 04/05" ondragstart="dndDragStart(event,'spark')" onclick="dndSelectChip('spark',this)">🔥 Apache Spark — Sem. 04/05</div>
+                        <div class="dnd-chip" id="dndchip-mlbi" draggable="true" data-id="mlbi" data-label="📊 ML &amp; Dashboards de BI — Sem. 17/18" ondragstart="dndDragStart(event,'mlbi')" onclick="dndSelectChip('mlbi',this)">📊 ML &amp; Dashboards de BI — Sem. 17/18</div>
+                    </div>
+                    <div class="dnd-targets">
+                        <div class="dnd-target">
+                            <div class="dnd-target-label">📦 Volume</div>
+                            <div class="dnd-target-slot" id="dndslot-volume" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="this.classList.remove('dragover');dndDrop(event,'volume')" onclick="dndTargetClick('volume')">Solte aqui</div>
+                        </div>
+                        <div class="dnd-target">
+                            <div class="dnd-target-label">⚡ Velocidade</div>
+                            <div class="dnd-target-slot" id="dndslot-velocidade" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="this.classList.remove('dragover');dndDrop(event,'velocidade')" onclick="dndTargetClick('velocidade')">Solte aqui</div>
+                        </div>
+                        <div class="dnd-target">
+                            <div class="dnd-target-label">🎨 Variedade</div>
+                            <div class="dnd-target-slot" id="dndslot-variedade" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="this.classList.remove('dragover');dndDrop(event,'variedade')" onclick="dndTargetClick('variedade')">Solte aqui</div>
+                        </div>
+                        <div class="dnd-target">
+                            <div class="dnd-target-label">🔍 Veracidade</div>
+                            <div class="dnd-target-slot" id="dndslot-veracidade" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="this.classList.remove('dragover');dndDrop(event,'veracidade')" onclick="dndTargetClick('veracidade')">Solte aqui</div>
+                        </div>
+                        <div class="dnd-target">
+                            <div class="dnd-target-label">💎 Valor</div>
+                            <div class="dnd-target-slot" id="dndslot-valor" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="this.classList.remove('dragover');dndDrop(event,'valor')" onclick="dndTargetClick('valor')">Solte aqui</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="dnd-feedback" id="dndFeedback">0 / 5 combinações corretas — complete todas para liberar a conclusão da missão</div>
+            </div>
+
             <div class="checkpoint">
                 <div class="checkpoint-title">🏁 Checkpoint M2</div>
                 <ul class="checkpoint-items">
@@ -1317,7 +1459,7 @@
                     <li class="checkpoint-item"><input type="checkbox" id="c1c"><label for="c1c">Entendi que cada ferramenta do semestre ataca um ou mais Vs</label></li>
                 </ul>
             </div>
-            <button class="complete-btn" id="btn1" onclick="completeMission(1, 100)">✅ Missão 2 Concluída — Coletar +100 XP</button>
+            <button class="complete-btn" id="btn1" disabled onclick="completeMission(1, 100)">🔒 Resolva o exercício de arrastar e soltar para liberar</button>
         </div>
     </div>
 
@@ -2048,6 +2190,67 @@ EOF
     function scrollToMission(idx) {
         const el = document.getElementById('mission' + idx);
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ─── DRAG & DROP EXERCISE (Missão 2) ───
+    const dndAnswers = { volume: 'hdfs', velocidade: 'kafka', variedade: 'mongodb', veracidade: 'spark', valor: 'mlbi' };
+    let dndSolved = {};
+    let dndSelected = null;
+
+    function dndDragStart(e, id) {
+        e.dataTransfer.setData('text/plain', id);
+    }
+
+    function dndSelectChip(id, el) {
+        if (el.classList.contains('placed')) return;
+        document.querySelectorAll('.dnd-chip').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        dndSelected = id;
+    }
+
+    function dndDrop(e, targetKey) {
+        e.preventDefault();
+        const id = e.dataTransfer.getData('text/plain');
+        dndPlace(targetKey, id);
+    }
+
+    function dndTargetClick(targetKey) {
+        if (!dndSelected) return;
+        dndPlace(targetKey, dndSelected);
+        dndSelected = null;
+        document.querySelectorAll('.dnd-chip').forEach(c => c.classList.remove('selected'));
+    }
+
+    function dndPlace(targetKey, chipId) {
+        if (!chipId || dndSolved[targetKey]) return;
+        const slot = document.getElementById('dndslot-' + targetKey);
+        if (dndAnswers[targetKey] === chipId) {
+            dndSolved[targetKey] = true;
+            const chip = document.getElementById('dndchip-' + chipId);
+            slot.textContent = chip.dataset.label;
+            slot.classList.add('filled');
+            chip.classList.add('placed');
+            dndUpdateFeedback();
+        } else {
+            slot.classList.add('wrong');
+            showToast('❌ Combinação incorreta — tente de novo', true);
+            setTimeout(() => slot.classList.remove('wrong'), 450);
+        }
+    }
+
+    function dndUpdateFeedback() {
+        const n = Object.keys(dndSolved).length;
+        const fb = document.getElementById('dndFeedback');
+        if (n < 5) {
+            fb.textContent = n + ' / 5 combinações corretas — complete todas para liberar a conclusão da missão';
+        } else {
+            fb.textContent = '✅ Todas as combinações corretas! Missão 2 liberada para conclusão.';
+            fb.classList.add('ok');
+            const btn = document.getElementById('btn1');
+            btn.disabled = false;
+            btn.textContent = '✅ Missão 2 Concluída — Coletar +100 XP';
+            showToast('🎉 Exercício de associação completo!');
+        }
     }
 
     function copyCode(btn, code) {

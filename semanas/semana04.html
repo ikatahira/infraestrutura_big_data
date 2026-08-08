@@ -1,1470 +1,1622 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>S04 · Apache Spark | Big Data</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semana 04 — Linux Aprofundado | Infraestrutura para Big Data</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-:root{
-  --bg:#0a0e1a;--surface:#111827;--surface2:#1a2035;--surface3:#202840;--border:#2d3748;
-  --spark:#ff6b35;--spark-dim:rgba(255,107,53,.12);--spark-glow:rgba(255,107,53,.3);
-  --blue:#60a5fa;--blue-dim:rgba(96,165,250,.1);
-  --green:#34d399;--green-dim:rgba(52,211,153,.1);
-  --yellow:#fbbf24;--yellow-dim:rgba(251,191,36,.1);
-  --red:#f87171;--red-dim:rgba(248,113,113,.1);
-  --purple:#a78bfa;--purple-dim:rgba(167,139,250,.1);
-  --text:#e2e8f0;--text-muted:#94a3b8;--text-dim:#475569;
-  --r:10px;--r-sm:6px;
-  --mono:'JetBrains Mono',monospace;--sans:'Space Grotesk',sans-serif;
-}
-body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;overflow-x:hidden;}
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;600;700;900&display=swap');
 
-/* Subtle grid background */
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(96,165,250,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(96,165,250,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+        :root {
+            --bg: #060a10;
+            --surface: #0c1220;
+            --panel: #0f1828;
+            --border: rgba(255,255,255,0.08);
+            --accent: #00d4ff;
+            --accent2: #00ff9d;
+            --accent3: #ff6b35;
+            --warn: #ffd60a;
+            --xp-color: #ffd60a;
+            --text: #b8c8d8;
+            --text-dim: #5a7080;
+            --font-display: 'Outfit', sans-serif;
+            --font-body: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
 
-/* TOPBAR */
-.topbar{background:rgba(17,24,39,.95);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;backdrop-filter:blur(12px);}
-.topbar-inner{max-width:1280px;margin:0 auto;padding:10px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
-.tb-badge{background:var(--spark-dim);border:1px solid var(--spark);color:var(--spark);border-radius:50px;padding:4px 12px;font-size:.72em;font-weight:700;font-family:var(--mono);letter-spacing:.06em;}
-.tb-title{flex:1;}
-.tb-title h1{font-size:.95em;font-weight:700;}
-.tb-title p{font-size:.75em;color:var(--text-muted);}
-.xp-widget{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:50px;padding:6px 14px;}
-.xp-label{font-size:.72em;font-weight:700;color:var(--yellow);font-family:var(--mono);}
-.xp-bar{width:100px;height:5px;background:var(--border);border-radius:50px;overflow:hidden;}
-.xp-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--spark),var(--yellow));border-radius:50px;transition:width 1s cubic-bezier(.22,1,.36,1);}
-.xp-val{font-size:.72em;font-family:var(--mono);color:var(--yellow);min-width:60px;}
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* BREADCRUMB */
-.breadcrumb{background:var(--surface2);border-bottom:1px solid var(--border);padding:9px 24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;max-width:100%;}
-.breadcrumb a{text-decoration:none;padding:6px 14px;border-radius:6px;border:1px solid var(--border);color:var(--text-muted);font-size:.8em;font-weight:600;transition:all .2s;}
-.breadcrumb a:hover{border-color:var(--spark);color:var(--spark);}
-.bc-next{margin-left:auto;background:var(--spark-dim);color:var(--spark);border:1px solid var(--spark);}
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
 
-/* LAYOUT */
-.wrap{max-width:1280px;margin:0 auto;padding:24px;display:grid;grid-template-columns:240px 1fr;gap:24px;position:relative;z-index:1;}
-@media(max-width:960px){.wrap{grid-template-columns:1fr;}.sidebar{display:none;}}
+        /* ─── HEADER ─── */
+        .header {
+            background: linear-gradient(180deg, #060e1c 0%, var(--bg) 100%);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+        .header-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .header-icon {
+            font-size: 1.8em;
+            background: radial-gradient(circle, rgba(0,212,255,0.15), transparent);
+            width: 44px; height: 44px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 10px;
+            border: 1px solid rgba(0,212,255,0.2);
+        }
+        .header-title {
+            font-family: var(--font-display);
+            font-size: 0.95em;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 0.5px;
+        }
+        .header-sub {
+            font-size: 0.72em;
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+        }
+        .xp-hud {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,214,10,0.05);
+            border: 1px solid rgba(255,214,10,0.2);
+            border-radius: 8px;
+            padding: 8px 14px;
+        }
+        .xp-label {
+            font-family: var(--font-display);
+            font-size: 0.7em;
+            letter-spacing: 2px;
+            color: var(--xp-color);
+            font-weight: 700;
+        }
+        .xp-bar-wrap {
+            width: 120px;
+            height: 6px;
+            background: rgba(255,214,10,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .xp-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--xp-color), #ffaa00);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.8s cubic-bezier(.34,1.56,.64,1);
+        }
+        .xp-points {
+            font-family: var(--font-mono);
+            font-size: 0.72em;
+            color: var(--xp-color);
+            white-space: nowrap;
+        }
 
-/* SIDEBAR */
-.sidebar{position:sticky;top:96px;height:fit-content;display:flex;flex-direction:column;gap:14px;}
-.sidebar-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;}
-.sidebar-card h3{font-size:.7em;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;}
-.prog-item{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);}
-.prog-item:last-child{border-bottom:none;}
-.prog-dot{width:9px;height:9px;border-radius:50%;background:var(--border);flex-shrink:0;transition:all .4s;}
-.prog-dot.done{background:var(--green);box-shadow:0 0 6px rgba(52,211,153,.5);}
-.prog-dot.active{background:var(--spark);box-shadow:0 0 8px var(--spark-glow);}
-.prog-text{font-size:.78em;color:var(--text-muted);}
-.prog-text.done-text{color:var(--green);}
-.total-box{text-align:center;padding:10px 0 4px;}
-.total-num{font-size:2em;font-weight:700;color:var(--spark);font-family:var(--mono);}
-.total-lbl{font-size:.72em;color:var(--text-muted);}
-.prog-bar-track{height:6px;background:var(--surface2);border-radius:50px;overflow:hidden;margin-top:10px;}
-.prog-bar-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--spark),var(--yellow));transition:width .8s ease;}
-.nav-link{display:block;color:var(--text-muted);text-decoration:none;font-size:.8em;padding:6px 0;border-bottom:1px solid var(--border);transition:color .2s;}
-.nav-link:last-child{border-bottom:none;}
-.nav-link:hover{color:var(--spark);}
+        /* ─── XP TOAST ─── */
+        .xp-toast {
+            position: fixed;
+            top: 80px; right: 24px;
+            background: var(--surface);
+            border: 1px solid var(--xp-color);
+            border-radius: 10px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--xp-color);
+            font-size: 0.9em;
+            z-index: 999;
+            transform: translateX(200%);
+            transition: transform 0.5s cubic-bezier(.34,1.56,.64,1);
+        }
+        .xp-toast.show { transform: translateX(0); }
 
-/* HERO */
-.hero-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:30px;margin-bottom:20px;position:relative;overflow:hidden;}
-.hero-card::before{content:'';position:absolute;top:-60px;right:-60px;width:250px;height:250px;background:radial-gradient(circle,rgba(255,107,53,.15) 0%,transparent 70%);border-radius:50%;pointer-events:none;}
-.hero-label{font-size:.72em;font-weight:700;color:var(--spark);font-family:var(--mono);letter-spacing:.1em;margin-bottom:10px;}
-.hero-card h2{font-size:1.7em;font-weight:700;margin-bottom:8px;line-height:1.2;}
-.hero-card h2 span{color:var(--spark);}
-.hero-card p{color:var(--text-muted);font-size:.9em;max-width:620px;margin-bottom:18px;}
-.hero-chips{display:flex;gap:10px;flex-wrap:wrap;}
-.chip{padding:5px 13px;border-radius:50px;font-size:.75em;font-weight:600;border:1px solid;}
-.chip-spark{background:var(--spark-dim);color:var(--spark);border-color:var(--spark);}
-.chip-blue{background:var(--blue-dim);color:var(--blue);border-color:var(--blue);}
-.chip-yellow{background:var(--yellow-dim);color:var(--yellow);border-color:var(--yellow);}
-.chip-green{background:var(--green-dim);color:var(--green);border-color:var(--green);}
+        /* ─── EMENTA LOCATION BAR ─── */
+        .ementa-bar {
+            position: sticky;
+            top: 73px;
+            z-index: 99;
+            background: rgba(6,10,16,0.97);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 7px 24px;
+        }
+        .ementa-bar-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .ementa-tag {
+            font-family: var(--font-mono);
+            font-size: 0.62em;
+            letter-spacing: 1px;
+            color: var(--accent);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .ementa-div {
+            width: 1px;
+            height: 12px;
+            background: var(--border);
+            flex-shrink: 0;
+        }
+        .ementa-text {
+            font-family: var(--font-mono);
+            font-size: 0.64em;
+            color: var(--text-dim);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        @media (max-width: 768px) { .ementa-text { display: none; } }
 
-/* BADGES */
-.badges-strip{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
-.badge{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--surface);min-width:82px;transition:all .3s;cursor:default;}
-.badge.unlocked{border-color:var(--spark);background:var(--spark-dim);box-shadow:0 0 16px rgba(255,107,53,.2);animation:badgePop .4s ease;}
-.badge.locked{opacity:.25;filter:grayscale(1);}
-@keyframes badgePop{0%{transform:scale(.8);}60%{transform:scale(1.1);}100%{transform:scale(1);}}
-.badge-ico{font-size:1.7em;}
-.badge-nm{font-size:.68em;font-weight:700;text-align:center;color:var(--text);}
-.badge-xp{font-size:.62em;font-family:var(--mono);color:var(--yellow);}
+        /* ─── HERO ─── */
+        .hero {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 60px 24px 40px;
+            text-align: center;
+        }
+        .hero-badge {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.75em;
+            letter-spacing: 2px;
+            color: var(--accent2);
+            background: rgba(0,255,157,0.08);
+            border: 1px solid rgba(0,255,157,0.25);
+            padding: 6px 16px;
+            border-radius: 20px;
+            margin-bottom: 24px;
+        }
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2em, 5vw, 3.2em);
+            font-weight: 900;
+            color: white;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+        .hero h1 span { color: var(--accent); }
+        .hero-desc {
+            font-size: 1.05em;
+            color: var(--text-dim);
+            max-width: 640px;
+            margin: 0 auto 36px;
+            line-height: 1.8;
+        }
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        .hero-stat-val {
+            font-family: var(--font-display);
+            font-size: 1.8em;
+            font-weight: 900;
+            color: white;
+        }
+        .hero-stat-label {
+            font-size: 0.75em;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
 
-/* SECTIONS */
-.sec{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:20px;overflow:hidden;transition:border-color .2s;}
-.sec:hover{border-color:rgba(255,107,53,.3);}
-.sec-head{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--surface2);}
-.sec-icon{font-size:1.1em;}
-.sec-title{font-size:.95em;font-weight:700;}
-.sec-body{padding:20px;}
+        /* ─── PROGRESS / MISSION MAP ─── */
+        .progress-overview {
+            max-width: 1100px;
+            margin: 0 auto 16px;
+            padding: 0 24px;
+        }
+        .mission-map {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 20px;
+            background: var(--surface);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+        }
+        .mission-dot {
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-display);
+            font-size: 0.7em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            user-select: none;
+        }
+        .mission-dot.active {
+            background: rgba(0,212,255,0.15);
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 16px rgba(0,212,255,0.3);
+        }
+        .mission-dot.locked {
+            background: rgba(255,255,255,0.03);
+            border: 2px solid var(--border);
+            color: var(--text-dim);
+        }
+        .mission-dot.done {
+            background: rgba(0,255,157,0.12);
+            border: 2px solid var(--accent2);
+            color: var(--accent2);
+        }
+        .mission-line {
+            height: 2px;
+            width: 30px;
+            background: var(--border);
+            border-radius: 2px;
+            transition: background 0.5s;
+        }
+        .mission-line.done { background: var(--accent2); }
 
-/* QUIZ */
-.quiz-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin:16px 0;}
-.quiz-num{font-size:.68em;font-weight:700;color:var(--spark);font-family:var(--mono);letter-spacing:.08em;margin-bottom:6px;}
-.quiz-q{font-size:.93em;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.55;}
-.quiz-opts{display:flex;flex-direction:column;gap:8px;}
-.quiz-opt{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:11px 16px;cursor:pointer;transition:all .15s;text-align:left;color:var(--text);font-size:.87em;font-family:var(--sans);display:flex;align-items:center;gap:10px;}
-.quiz-opt:hover:not(.disabled){border-color:var(--spark);background:var(--spark-dim);transform:translateX(3px);}
-.quiz-opt.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);}
-.quiz-opt.wrong{border-color:var(--red);background:var(--red-dim);color:var(--red);}
-.quiz-opt.disabled{cursor:default;pointer-events:none;}
-.opt-letter{width:22px;height:22px;border-radius:4px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.75em;font-weight:700;flex-shrink:0;font-family:var(--mono);}
-.quiz-opt.correct .opt-letter{background:var(--green);color:#000;}
-.quiz-opt.wrong .opt-letter{background:var(--red);color:#fff;}
-.quiz-feedback{margin-top:12px;padding:12px 16px;border-radius:var(--r-sm);font-size:.84em;display:none;line-height:1.6;}
-.quiz-feedback.ok{background:var(--green-dim);border:1px solid var(--green);color:var(--green);display:block;}
-.quiz-feedback.fail{background:var(--red-dim);border:1px solid var(--red);color:var(--red);display:block;}
-.quiz-hint{margin-top:8px;}
-.quiz-hint summary{font-size:.8em;color:var(--blue);cursor:pointer;user-select:none;}
-.quiz-hint-body{font-size:.82em;color:var(--text-muted);margin-top:8px;padding:10px;background:var(--surface);border-radius:var(--r-sm);border:1px solid var(--border);}
+        /* ─── MAIN ─── */
+        .main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px 60px;
+        }
 
-/* CODE BLOCK */
-.code-block{background:#06090f;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin:14px 0;}
-.code-header{background:var(--surface2);padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
-.code-dots{display:flex;gap:5px;}
-.code-dot{width:10px;height:10px;border-radius:50%;}
-.code-label{font-size:.72em;color:var(--text-muted);font-family:var(--mono);margin-left:auto;}
-.copy-btn{font-size:.7em;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:3px 9px;cursor:pointer;font-family:var(--sans);transition:all .2s;}
-.copy-btn:hover{color:var(--spark);border-color:var(--spark);}
-.code-body{padding:18px;font-family:var(--mono);font-size:.81em;line-height:1.75;overflow-x:auto;white-space:pre;}
-.kw{color:#ff7b72;}.fn{color:#d2a8ff;}.str{color:#a5d6ff;}.cmt{color:#6e7681;}.num{color:#79c0ff;}.cls{color:#ffa657;}
+        /* ─── CONTEXT PANELS (prev/next week) ─── */
+        .context-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        @media(max-width:680px) { .context-row { grid-template-columns: 1fr; } }
 
-/* TERMINAL */
-.terminal{background:#06090f;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin:14px 0;}
-.term-bar{background:var(--surface2);padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
-.term-dot{width:10px;height:10px;border-radius:50%;}
-.term-title{font-size:.72em;color:var(--text-muted);font-family:var(--mono);margin-left:auto;}
-.term-body{padding:16px;font-family:var(--mono);font-size:.79em;line-height:1.85;}
-.t-prompt{color:var(--spark);}.t-cmd{color:var(--text);}.t-out{color:var(--text-muted);}.t-ok{color:var(--green);}.t-err{color:var(--red);}
+        .context-panel {
+            border-radius: 12px;
+            padding: 18px 20px;
+            border: 1px solid;
+            position: relative;
+            overflow: hidden;
+        }
+        .context-panel.prev {
+            background: rgba(90,70,180,0.06);
+            border-color: rgba(90,70,180,0.25);
+        }
+        .context-panel.next {
+            background: rgba(0,212,255,0.05);
+            border-color: rgba(0,212,255,0.2);
+        }
+        .context-panel-label {
+            font-family: var(--font-mono);
+            font-size: 0.65em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+        .context-panel.prev .context-panel-label { color: #9d80e0; }
+        .context-panel.next .context-panel-label { color: var(--accent); }
+        .context-panel-title {
+            font-family: var(--font-display);
+            font-size: 0.95em;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+        .context-panel-body {
+            font-size: 0.82em;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+        .context-panel.next .context-panel-body { color: #90b8d0; }
 
-/* VS GRID */
-.vs-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0;}
-@media(max-width:600px){.vs-grid{grid-template-columns:1fr;}}
-.vs-card{border-radius:var(--r);padding:18px;}
-.vs-mr{background:var(--red-dim);border:1px solid rgba(248,113,113,.35);}
-.vs-spark{background:var(--spark-dim);border:1px solid var(--spark);}
-.vs-title{font-size:.88em;font-weight:700;margin-bottom:12px;}
-.vs-item{display:flex;gap:8px;align-items:flex-start;font-size:.82em;color:var(--text-muted);padding:5px 0;border-bottom:1px dashed var(--border);}
-.vs-item:last-child{border-bottom:none;}
+        /* ─── DISCIPLINE PANEL ─── */
+        .discipline-panel {
+            background: linear-gradient(135deg, rgba(0,212,255,0.06) 0%, rgba(0,255,157,0.04) 100%);
+            border: 1px solid rgba(0,212,255,0.2);
+            border-radius: 14px;
+            padding: 24px 28px;
+            margin: 0 0 28px;
+            position: relative;
+            overflow: hidden;
+        }
+        .discipline-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 4px; height: 100%;
+            background: linear-gradient(180deg, var(--accent), var(--accent2));
+            border-radius: 4px 0 0 4px;
+        }
+        .discipline-panel-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .discipline-panel-title {
+            font-family: var(--font-display);
+            font-size: 0.7em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+        .discipline-panel-subtitle {
+            font-size: 0.72em;
+            color: var(--text-dim);
+            margin-left: auto;
+            font-family: var(--font-mono);
+        }
+        .discipline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 14px;
+            margin-top: 16px;
+        }
+        .discipline-item {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 14px 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .discipline-item-label {
+            font-family: var(--font-display);
+            font-size: 0.62em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+        .discipline-item-text {
+            font-size: 0.83em;
+            color: var(--text);
+            line-height: 1.65;
+        }
+        .discipline-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .discipline-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.76em;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-family: var(--font-body);
+            font-weight: 600;
+        }
+        .dtag-ementa { background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.25); color: #90d8f0; }
+        .dtag-objetivo { background: rgba(0,255,157,0.08); border: 1px solid rgba(0,255,157,0.2); color: #80e8b8; }
+        .dtag-competencia { background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.2); color: #e8d060; }
 
-/* ARCH GRID */
-.arch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:16px 0;}
-.arch-node{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:16px;text-align:center;transition:all .25s;cursor:default;}
-.arch-node:hover{transform:translateY(-4px);}
-.arch-node.driver{border-color:var(--spark);background:var(--spark-dim);}
-.arch-node.executor{border-color:var(--blue);background:var(--blue-dim);}
-.arch-node.cluster{border-color:var(--purple);background:var(--purple-dim);}
-.arch-icon{font-size:2em;margin-bottom:8px;}
-.arch-name{font-size:.85em;font-weight:700;margin-bottom:4px;}
-.arch-name.driver{color:var(--spark);}
-.arch-name.executor{color:var(--blue);}
-.arch-name.cluster{color:var(--purple);}
-.arch-desc{font-size:.75em;color:var(--text-muted);line-height:1.4;}
+        /* ─── MISSION CARD ─── */
+        .mission-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+        .mission-card.active-mission {
+            border-color: rgba(0,212,255,0.35);
+            box-shadow: 0 0 30px rgba(0,212,255,0.07);
+        }
+        .mission-card.completed { border-color: rgba(0,255,157,0.25); }
 
-/* RDD TABLE */
-.rdd-table{width:100%;border-collapse:collapse;font-size:.82em;margin:14px 0;}
-.rdd-table th{background:var(--surface2);color:var(--text-muted);padding:10px 12px;text-align:left;border:1px solid var(--border);font-weight:700;font-size:.75em;text-transform:uppercase;letter-spacing:.05em;}
-.rdd-table td{padding:10px 12px;border:1px solid var(--border);color:var(--text-muted);vertical-align:middle;}
-.rdd-table td:first-child{color:var(--blue);font-family:var(--mono);font-size:.9em;font-weight:600;}
-.rdd-table tr:hover td{background:var(--surface2);}
-.type-t{color:var(--spark) !important;font-weight:700;}
-.type-a{color:var(--green) !important;font-weight:700;}
+        .mission-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 20px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+        .mission-header:hover { background: rgba(255,255,255,0.02); }
 
-/* LAZY FLOW */
-.lazy-flow{display:flex;align-items:center;gap:0;flex-wrap:wrap;margin:16px 0;overflow-x:auto;padding-bottom:4px;}
-.lf-step{flex:1;min-width:120px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:14px 10px;text-align:center;transition:all .3s;}
-.lf-step.transform{border-color:var(--yellow);}
-.lf-step.action{border-color:var(--green);animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 rgba(52,211,153,0);}50%{box-shadow:0 0 12px rgba(52,211,153,.35);}}
-.lf-arrow{color:var(--text-dim);font-size:1.3em;padding:0 6px;flex-shrink:0;}
-.lf-label{font-size:.68em;font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;}
-.lf-label.transform{color:var(--yellow);}
-.lf-label.action{color:var(--green);}
-.lf-op{font-family:var(--mono);font-size:.76em;color:var(--text-muted);}
+        .mission-num {
+            font-family: var(--font-display);
+            font-size: 0.75em;
+            font-weight: 700;
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            background: rgba(0,212,255,0.1);
+            border: 1px solid rgba(0,212,255,0.25);
+            color: var(--accent);
+        }
+        .mission-meta { flex: 1; }
+        .mission-title {
+            font-family: var(--font-display);
+            font-size: 1em;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 6px;
+        }
+        .mission-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag {
+            font-family: var(--font-mono);
+            font-size: 0.68em;
+            padding: 3px 10px;
+            border-radius: 4px;
+        }
+        .tag-xp { background: rgba(255,214,10,0.1); color: var(--xp-color); border: 1px solid rgba(255,214,10,0.25); }
+        .tag-time { background: rgba(0,212,255,0.07); color: #90b8d0; border: 1px solid rgba(0,212,255,0.15); }
+        .tag-type { background: rgba(255,107,53,0.08); color: #e89070; border: 1px solid rgba(255,107,53,0.2); }
+        .tag-ementa { background: rgba(0,212,255,0.06); color: #7ecce0; border: 1px solid rgba(0,212,255,0.15); font-style: italic; }
+        .tag-wsl { background: rgba(120,80,220,0.1); color: #c0a0f0; border: 1px solid rgba(120,80,220,0.25); }
+        .mission-status { font-size: 1.1em; }
+        .mission-toggle {
+            color: var(--text-dim);
+            font-size: 1.1em;
+            transition: transform 0.3s;
+        }
+        .mission-card.open .mission-toggle { transform: rotate(180deg); }
+        .mission-body {
+            display: none;
+            border-top: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+        .mission-card.open .mission-body { display: block; }
 
-/* MISSION */
-.mission{background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-bottom:14px;transition:all .2s;display:flex;gap:14px;align-items:flex-start;position:relative;overflow:hidden;}
-.mission::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--border);transition:background .2s;}
-.mission:hover{border-color:var(--spark);}
-.mission:hover::before{background:var(--spark);}
-.mission.done{border-color:var(--green);background:rgba(52,211,153,.06);}
-.mission.done::before{background:var(--green);}
-.m-num{width:36px;height:36px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:.78em;font-weight:700;font-family:var(--mono);flex-shrink:0;color:var(--text-muted);}
-.mission.done .m-num{background:var(--green-dim);border-color:var(--green);color:var(--green);}
-.m-body{flex:1;}
-.m-title{font-size:.93em;font-weight:700;margin-bottom:5px;}
-.m-desc{font-size:.82em;color:var(--text-muted);line-height:1.55;margin-bottom:10px;}
-.m-tags{display:flex;gap:8px;flex-wrap:wrap;}
-.mtag{padding:3px 10px;border-radius:50px;font-size:.7em;font-weight:600;border:1px solid;}
-.t-time{background:var(--blue-dim);color:var(--blue);border-color:var(--blue);}
-.t-xp{background:var(--yellow-dim);color:var(--yellow);border-color:var(--yellow);}
-.t-diff-e{background:var(--green-dim);color:var(--green);border-color:var(--green);}
-.t-diff-m{background:var(--spark-dim);color:var(--spark);border-color:var(--spark);}
-.t-diff-h{background:var(--red-dim);color:var(--red);border-color:var(--red);}
-.m-check{width:28px;height:28px;border:1.5px solid var(--border);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-size:.9em;}
-.mission:hover .m-check{border-color:var(--spark);}
-.mission.done .m-check{background:var(--green);border-color:var(--green);color:#000;font-weight:700;}
-.mission-btn{margin-top:12px;display:inline-flex;align-items:center;gap:8px;background:var(--spark-dim);border:1px solid var(--spark);color:var(--spark);padding:8px 16px;border-radius:var(--r-sm);font-size:.8em;font-weight:600;cursor:pointer;transition:all .2s;font-family:var(--sans);}
-.mission-btn:hover{background:var(--spark);color:#fff;}
-.mission-btn:disabled{opacity:.4;cursor:not-allowed;}
-.mission.done .mission-btn{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+        .mission-intro {
+            padding: 16px 20px;
+            font-size: 0.9em;
+            color: var(--text);
+            line-height: 1.8;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
 
-/* TOAST */
-.toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--spark);border-radius:var(--r);padding:14px 18px;z-index:999;transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.22,1,.36,1);pointer-events:none;max-width:280px;box-shadow:0 12px 32px rgba(0,0,0,.5);}
-.toast.show{transform:translateY(0);opacity:1;}
-.toast-title{color:var(--spark);font-weight:700;font-size:.85em;margin-bottom:3px;}
-.toast-msg{color:var(--text-muted);font-size:.8em;}
+        /* ─── CONCEPT BOX ─── */
+        .concept-box {
+            margin: 14px 18px;
+            background: rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .concept-box-title {
+            padding: 10px 16px;
+            background: rgba(255,214,10,0.06);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-family: var(--font-display);
+            font-size: 0.78em;
+            font-weight: 700;
+            color: var(--warn);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .concept-box-body {
+            padding: 14px 18px;
+            font-size: 0.85em;
+            color: var(--text);
+            line-height: 1.85;
+        }
+        .concept-box-body strong { color: var(--accent2); }
+        .concept-box-body em { color: var(--accent); font-style: normal; }
 
-/* ====== NEW INTERACTIVE COMPONENTS ====== */
+        /* ─── STEP ─── */
+        .step {
+            margin: 12px 18px 0;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .step-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 18px;
+        }
+        .step-num {
+            font-family: var(--font-display);
+            font-size: 0.65em;
+            font-weight: 700;
+            width: 30px; height: 30px;
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            background: rgba(255,107,53,0.15);
+            border: 1px solid rgba(255,107,53,0.3);
+            color: var(--accent3);
+            margin-top: 2px;
+        }
+        .step-content { flex: 1; }
+        .step-title { font-weight: 600; font-size: 0.95em; color: white; margin-bottom: 6px; }
+        .step-desc { font-size: 0.85em; color: var(--text); line-height: 1.6; }
+        .step-desc code { font-family: var(--font-mono); font-size: 0.9em; color: var(--warn); background: rgba(255,214,10,0.07); padding: 1px 6px; border-radius: 4px; }
 
-/* SANDBOX */
-.sandbox{background:#06090f;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin:16px 0;}
-.sandbox-header{background:var(--surface2);padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
-.sandbox-dots{display:flex;gap:5px;}
-.sandbox-dot{width:10px;height:10px;border-radius:50%;}
-.sandbox-title{font-size:.75em;color:var(--text-muted);font-family:var(--mono);flex:1;}
-.sandbox-run{display:flex;align-items:center;gap:6px;background:var(--green);color:#000;border:none;border-radius:6px;padding:6px 14px;font-size:.78em;font-weight:700;cursor:pointer;transition:all .2s;font-family:var(--sans);}
-.sandbox-run:hover{background:#2eca8a;transform:scale(1.02);}
-.sandbox-run:disabled{opacity:.4;cursor:not-allowed;}
-.sandbox-run.running{background:var(--yellow);animation:blink .7s infinite;}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:.6;}}
-.sandbox-reset{background:transparent;color:var(--text-muted);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:.78em;cursor:pointer;font-family:var(--sans);transition:all .2s;}
-.sandbox-reset:hover{border-color:var(--spark);color:var(--spark);}
-.sandbox-editor{min-height:120px;padding:16px;font-family:var(--mono);font-size:.8em;line-height:1.75;color:var(--text);background:transparent;border:none;outline:none;width:100%;resize:vertical;caret-color:var(--spark);}
-.sandbox-divider{border:none;border-top:1px dashed var(--border);margin:0;}
-.sandbox-output{padding:16px;font-family:var(--mono);font-size:.79em;line-height:1.8;min-height:60px;border-top:1px solid var(--border);background:rgba(0,0,0,.3);}
-.out-line{display:flex;gap:8px;align-items:flex-start;}
-.out-prompt{color:var(--spark);flex-shrink:0;}
-.out-text{color:var(--text-muted);}
-.out-ok{color:var(--green);}
-.out-err{color:var(--red);}
-.out-info{color:var(--blue);}
-.sandbox-hint{font-size:.75em;color:var(--text-dim);padding:8px 16px;border-top:1px dashed var(--border);background:rgba(0,0,0,.2);font-family:var(--mono);}
+        /* ─── OS TABS ─── */
+        .os-tabs {
+            margin: 10px 18px 0;
+            display: flex;
+            gap: 6px;
+        }
+        .os-tab {
+            font-family: var(--font-mono);
+            font-size: 0.72em;
+            padding: 6px 14px;
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            color: var(--text-dim);
+            background: rgba(255,255,255,0.02);
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .os-tab.active-tab {
+            background: rgba(0,212,255,0.08);
+            color: var(--accent);
+            border-color: rgba(0,212,255,0.25);
+        }
+        .os-tab.wsl-tab.active-tab {
+            background: rgba(120,80,220,0.1);
+            color: #c0a0f0;
+            border-color: rgba(120,80,220,0.3);
+        }
+        .os-pane { display: none; }
+        .os-pane.active-pane { display: block; }
 
-/* DAG ANIMATOR */
-.dag-container{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin:16px 0;position:relative;overflow:hidden;}
-.dag-title{font-size:.78em;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px;}
-.dag-track{display:flex;align-items:center;gap:0;overflow-x:auto;padding:10px 0 14px;}
-.dag-node{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;}
-.dag-box{padding:10px 16px;border-radius:var(--r-sm);border:2px solid var(--border);font-family:var(--mono);font-size:.75em;font-weight:700;min-width:110px;text-align:center;transition:all .5s;position:relative;background:var(--surface);}
-.dag-box.lazy{border-color:var(--yellow);color:var(--yellow);}
-.dag-box.action-node{border-color:var(--green);color:var(--green);}
-.dag-box.running{animation:dagPulse .5s ease-in-out;}
-@keyframes dagPulse{0%{transform:scale(1);}50%{transform:scale(1.08);box-shadow:0 0 20px rgba(52,211,153,.5);}100%{transform:scale(1);}}
-.dag-box.executed{background:var(--green-dim) !important;border-color:var(--green) !important;color:var(--green) !important;}
-.dag-sub{font-size:.68em;color:var(--text-dim);font-family:var(--sans);}
-.dag-arrow{display:flex;align-items:center;padding:0 6px;color:var(--text-dim);font-size:1.2em;flex-shrink:0;transition:color .5s;}
-.dag-arrow.lit{color:var(--green);text-shadow:0 0 8px rgba(52,211,153,.6);}
-.dag-controls{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
-.dag-btn{padding:8px 18px;border-radius:var(--r-sm);border:1px solid var(--border);font-size:.8em;font-weight:600;cursor:pointer;transition:all .2s;font-family:var(--sans);color:var(--text-muted);background:var(--surface);}
-.dag-btn:hover{border-color:var(--spark);color:var(--spark);}
-.dag-btn.primary{background:var(--green-dim);border-color:var(--green);color:var(--green);}
-.dag-btn.primary:hover{background:var(--green);color:#000;}
-.dag-status{font-size:.8em;color:var(--text-muted);margin-top:12px;min-height:20px;font-family:var(--mono);}
+        /* ─── CODE BLOCK ─── */
+        .code-block {
+            margin: 12px 18px 16px;
+            position: relative;
+        }
+        .code-block-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #070c14;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            padding: 8px 14px;
+        }
+        .code-lang {
+            font-family: var(--font-mono);
+            font-size: 0.7em;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .copy-btn {
+            font-family: var(--font-mono);
+            font-size: 0.72em;
+            background: rgba(0,212,255,0.1);
+            color: var(--accent);
+            border: 1px solid rgba(0,212,255,0.3);
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .copy-btn:hover { background: rgba(0,212,255,0.2); box-shadow: 0 0 10px rgba(0,212,255,0.3); }
+        .copy-btn.copied { background: rgba(0,255,157,0.1); color: var(--accent2); border-color: rgba(0,255,157,0.3); }
+        .code-body {
+            background: #070c14;
+            border: 1px solid var(--border);
+            border-radius: 0 0 8px 8px;
+            padding: 16px;
+            overflow-x: auto;
+        }
+        .code-body code {
+            font-family: var(--font-mono);
+            font-size: 0.88em;
+            line-height: 1.8;
+            color: #a8d8a8;
+            display: block;
+            white-space: pre;
+        }
+        .code-body code .prompt { color: var(--accent2); user-select: none; }
+        .code-body code .comment { color: var(--text-dim); }
+        .code-body code .highlight { color: var(--warn); }
+        .code-body code .red { color: #ff7070; }
+        .code-body code .blue { color: #70b0ff; }
 
-/* DRAG DROP */
-.drag-area{margin:16px 0;}
-.drag-label{font-size:.8em;font-weight:600;color:var(--text-muted);margin-bottom:10px;}
-.drag-source{display:flex;flex-wrap:wrap;gap:8px;padding:16px;background:var(--surface2);border:2px dashed var(--border);border-radius:var(--r);min-height:60px;margin-bottom:12px;transition:border-color .2s;}
-.drag-source.dragover{border-color:var(--spark);}
-.drag-item{padding:8px 14px;border-radius:50px;border:1.5px solid var(--border);font-size:.8em;font-weight:600;cursor:grab;transition:all .2s;user-select:none;font-family:var(--mono);background:var(--surface);}
-.drag-item:active{cursor:grabbing;transform:scale(0.95);}
-.drag-item.transform-item{border-color:var(--yellow);color:var(--yellow);background:var(--yellow-dim);}
-.drag-item.action-item{border-color:var(--green);color:var(--green);background:var(--green-dim);}
-.drag-targets{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-@media(max-width:500px){.drag-targets{grid-template-columns:1fr;}}
-.drag-target{min-height:100px;padding:14px;background:var(--surface2);border:2px dashed var(--border);border-radius:var(--r);transition:all .2s;}
-.drag-target.dragover{border-color:var(--blue);background:var(--blue-dim);}
-.drag-target-label{font-size:.75em;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;}
-.drag-target-label.t{color:var(--yellow);}
-.drag-target-label.a{color:var(--green);}
-.drag-dropped{display:flex;flex-wrap:wrap;gap:6px;}
-.drag-check-btn{width:100%;padding:10px;background:var(--spark-dim);border:1px solid var(--spark);color:var(--spark);border-radius:var(--r-sm);font-size:.82em;font-weight:700;cursor:pointer;transition:all .2s;font-family:var(--sans);margin-top:12px;}
-.drag-check-btn:hover{background:var(--spark);color:#fff;}
-.drag-result{margin-top:10px;padding:12px;border-radius:var(--r-sm);font-size:.83em;display:none;}
-.drag-result.ok{background:var(--green-dim);border:1px solid var(--green);color:var(--green);display:block;}
-.drag-result.fail{background:var(--red-dim);border:1px solid var(--red);color:var(--red);display:block;}
+        /* WSL code block variant */
+        .code-block-wsl .code-block-header { background: #0d0818; border-color: rgba(120,80,220,0.2); }
+        .code-block-wsl .code-body { background: #0d0818; border-color: rgba(120,80,220,0.2); }
+        .code-block-wsl .copy-btn { background: rgba(120,80,220,0.1); color: #c0a0f0; border-color: rgba(120,80,220,0.3); }
 
-/* AI TUTOR */
-.ai-tutor{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin:20px 0;overflow:hidden;}
-.ai-header{background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(255,107,53,.1));border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:12px;}
-.ai-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--spark));display:flex;align-items:center;justify-content:center;font-size:1.1em;flex-shrink:0;}
-.ai-info h4{font-size:.9em;font-weight:700;color:var(--text);}
-.ai-info p{font-size:.72em;color:var(--text-muted);}
-.ai-badge{margin-left:auto;background:var(--green-dim);border:1px solid var(--green);color:var(--green);border-radius:50px;padding:3px 10px;font-size:.68em;font-weight:700;font-family:var(--mono);}
-.ai-chat{padding:20px;max-height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
-.ai-msg{display:flex;gap:10px;align-items:flex-start;}
-.ai-msg.user{flex-direction:row-reverse;}
-.ai-bubble{max-width:80%;padding:12px 16px;border-radius:12px;font-size:.84em;line-height:1.6;}
-.ai-bubble.bot{background:var(--surface2);border:1px solid var(--border);border-bottom-left-radius:4px;}
-.ai-bubble.user-b{background:var(--spark-dim);border:1px solid var(--spark);color:var(--text);border-bottom-right-radius:4px;}
-.ai-bubble p{margin-bottom:6px;}.ai-bubble p:last-child{margin-bottom:0;}
-.ai-bubble code{font-family:var(--mono);font-size:.9em;background:rgba(255,255,255,.08);padding:1px 5px;border-radius:3px;color:var(--blue);}
-.ai-typing{display:flex;gap:4px;align-items:center;padding:8px 0;}
-.typing-dot{width:6px;height:6px;border-radius:50%;background:var(--text-muted);animation:typing 1.2s infinite;}
-.typing-dot:nth-child(2){animation-delay:.2s;}
-.typing-dot:nth-child(3){animation-delay:.4s;}
-@keyframes typing{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-6px);}}
-.ai-input-area{border-top:1px solid var(--border);padding:14px 20px;display:flex;gap:10px;}
-.ai-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 14px;color:var(--text);font-size:.85em;font-family:var(--sans);outline:none;transition:border-color .2s;resize:none;}
-.ai-input:focus{border-color:var(--spark);}
-.ai-send{background:var(--spark);color:#fff;border:none;border-radius:var(--r-sm);padding:10px 18px;font-size:.82em;font-weight:700;cursor:pointer;transition:all .2s;font-family:var(--sans);}
-.ai-send:hover{background:#ff5520;}
-.ai-send:disabled{opacity:.4;cursor:not-allowed;}
-.ai-quick-btns{padding:0 20px 14px;display:flex;gap:8px;flex-wrap:wrap;}
-.ai-quick{padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:50px;font-size:.75em;cursor:pointer;color:var(--text-muted);transition:all .2s;font-family:var(--sans);}
-.ai-quick:hover{border-color:var(--spark);color:var(--spark);}
+        /* ─── EXPECTED OUTPUT ─── */
+        .expected-output { margin: 8px 18px 16px; }
+        .expected-output-label {
+            font-family: var(--font-mono);
+            font-size: 0.72em;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .output-box {
+            background: #050810;
+            border: 1px solid rgba(0,255,157,0.15);
+            border-radius: 6px;
+            padding: 12px 14px;
+            font-family: var(--font-mono);
+            font-size: 0.8em;
+            color: #6fe0a0;
+            line-height: 1.7;
+            white-space: pre;
+            overflow-x: auto;
+        }
 
-/* KNOWLEDGE CHECK */
-.kc-section{background:linear-gradient(135deg,var(--surface2),rgba(96,165,250,.05));border:1px solid var(--blue);border-radius:var(--r);padding:20px;margin:20px 0;}
-.kc-title{font-size:.88em;font-weight:700;color:var(--blue);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-.kc-items{display:flex;flex-direction:column;gap:8px;}
-.kc-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface);border-radius:var(--r-sm);border:1px solid var(--border);font-size:.83em;cursor:pointer;transition:all .2s;user-select:none;}
-.kc-item:hover{border-color:var(--blue);}
-.kc-item.checked{border-color:var(--green);background:var(--green-dim);color:var(--green);}
-.kc-item .kc-box{width:18px;height:18px;border:1.5px solid var(--border);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.8em;transition:all .2s;}
-.kc-item.checked .kc-box{background:var(--green);border-color:var(--green);color:#000;}
+        /* ─── ALERTS ─── */
+        .alert {
+            margin: 12px 18px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            line-height: 1.6;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .alert-icon { font-size: 1.1em; flex-shrink: 0; }
+        .alert-info { background: rgba(0,212,255,0.07); border: 1px solid rgba(0,212,255,0.2); color: #a0c8e8; }
+        .alert-warn { background: rgba(255,214,10,0.07); border: 1px solid rgba(255,214,10,0.25); color: #e8d880; }
+        .alert-success { background: rgba(0,255,157,0.07); border: 1px solid rgba(0,255,157,0.2); color: #80e8b8; }
+        .alert-danger { background: rgba(255,71,87,0.07); border: 1px solid rgba(255,71,87,0.2); color: #e88a8a; }
+        .alert a { color: var(--accent); }
 
-/* SCENARIO */
-.scenario-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin:16px 0;}
-.scenario-tag{font-size:.68em;font-weight:700;color:var(--purple);font-family:var(--mono);letter-spacing:.08em;margin-bottom:8px;}
-.scenario-text{font-size:.9em;color:var(--text);margin-bottom:14px;line-height:1.6;}
-.scenario-choices{display:flex;flex-direction:column;gap:8px;}
-.scenario-choice{padding:12px 16px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-sm);cursor:pointer;transition:all .2s;font-size:.85em;display:flex;align-items:flex-start;gap:10px;}
-.scenario-choice:hover:not(.disabled){border-color:var(--purple);background:var(--purple-dim);}
-.scenario-choice.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);}
-.scenario-choice.wrong{border-color:var(--red);background:var(--red-dim);color:var(--red);}
-.scenario-choice.disabled{cursor:default;pointer-events:none;}
-.scenario-feedback{margin-top:12px;padding:12px;border-radius:var(--r-sm);font-size:.83em;display:none;line-height:1.6;}
-.scenario-feedback.ok{background:var(--green-dim);border:1px solid var(--green);color:var(--green);display:block;}
-.scenario-feedback.fail{background:var(--red-dim);border:1px solid var(--red);color:var(--red);display:block;}
+        /* ─── CHECKPOINT ─── */
+        .checkpoint {
+            margin: 16px 18px;
+            background: rgba(0,255,157,0.05);
+            border: 1px solid rgba(0,255,157,0.2);
+            border-radius: 10px;
+            padding: 16px 18px;
+        }
+        .checkpoint-title {
+            font-family: var(--font-display);
+            font-size: 0.72em;
+            color: var(--accent2);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .checkpoint-items { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .checkpoint-item { display: flex; align-items: center; gap: 10px; font-size: 0.85em; color: var(--text); }
+        .checkpoint-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent2); }
+        .checkpoint-item label { cursor: pointer; }
 
-/* FILL BLANK */
-.fill-blank-area{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin:16px 0;}
-.fill-blank-code{font-family:var(--mono);font-size:.82em;line-height:2.2;background:#06090f;padding:18px;border-radius:var(--r-sm);border:1px solid var(--border);margin:12px 0;}
-.blank-input{background:rgba(96,165,250,.15);border:1px solid var(--blue);border-radius:4px;padding:2px 8px;font-family:var(--mono);font-size:.9em;color:var(--text);outline:none;min-width:100px;transition:all .2s;}
-.blank-input:focus{border-color:var(--spark);background:var(--spark-dim);}
-.blank-input.correct-b{border-color:var(--green);background:var(--green-dim);color:var(--green);}
-.blank-input.wrong-b{border-color:var(--red);background:var(--red-dim);color:var(--red);}
-.fill-check-btn{padding:9px 20px;background:var(--blue-dim);border:1px solid var(--blue);color:var(--blue);border-radius:var(--r-sm);font-size:.82em;font-weight:700;cursor:pointer;transition:all .2s;font-family:var(--sans);}
-.fill-check-btn:hover{background:var(--blue);color:#fff;}
-.fill-result{margin-top:10px;font-size:.83em;min-height:20px;}
+        /* ─── COMPLETE BUTTON ─── */
+        .complete-btn {
+            display: block;
+            margin: 16px 18px 20px;
+            width: calc(100% - 36px);
+            padding: 14px 20px;
+            background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,255,157,0.1));
+            border: 1px solid rgba(0,212,255,0.35);
+            border-radius: 10px;
+            color: var(--accent);
+            font-family: var(--font-display);
+            font-size: 0.9em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+        }
+        .complete-btn:hover { background: linear-gradient(135deg, rgba(0,212,255,0.25), rgba(0,255,157,0.18)); transform: translateY(-1px); }
+        .complete-btn.done { background: rgba(0,255,157,0.08); border-color: rgba(0,255,157,0.3); color: var(--accent2); cursor: default; }
+        .complete-btn:disabled:not(.done) { opacity: 0.4; cursor: not-allowed; }
 
-/* PROGRESS RING */
-.progress-ring-wrap{display:flex;align-items:center;gap:16px;padding:16px 0;}
-.progress-ring{transform:rotate(-90deg);}
-.ring-bg{fill:none;stroke:var(--border);stroke-width:4;}
-.ring-fill{fill:none;stroke:var(--spark);stroke-width:4;stroke-linecap:round;stroke-dasharray:157;stroke-dashoffset:157;transition:stroke-dashoffset 1s ease;}
-.ring-center{transform:rotate(90deg);font-family:var(--mono);font-size:11px;fill:var(--text);font-weight:700;}
-.ring-info h4{font-size:.95em;font-weight:700;color:var(--text);}
-.ring-info p{font-size:.8em;color:var(--text-muted);}
+        /* ─── DRAG & DROP EXERCISE ─── */
+        .dnd-box {
+            margin: 16px 18px 20px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px 20px;
+        }
+        .dnd-title {
+            font-family: var(--font-display);
+            font-size: 0.78em;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .dnd-sub {
+            font-size: 0.82em;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+        .dnd-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 700px) { .dnd-grid { grid-template-columns: 1fr; } }
+        .dnd-pool {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .dnd-chip {
+            font-family: var(--font-mono);
+            font-size: 0.8em;
+            color: var(--text);
+            background: var(--panel);
+            border: 1px solid rgba(0,212,255,0.3);
+            border-radius: 8px;
+            padding: 11px 14px;
+            cursor: grab;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .dnd-chip:hover { border-color: var(--accent); background: rgba(0,212,255,0.08); }
+        .dnd-chip.selected { border-color: var(--accent2); background: rgba(0,255,157,0.1); box-shadow: 0 0 0 1px var(--accent2); }
+        .dnd-chip.placed { opacity: 0.25; cursor: default; pointer-events: none; text-decoration: line-through; }
+        .dnd-targets {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .dnd-target {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--panel);
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            padding: 9px 12px;
+        }
+        .dnd-target-label {
+            font-family: var(--font-display);
+            font-size: 0.78em;
+            font-weight: 700;
+            color: var(--text);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 108px;
+        }
+        .dnd-target-slot {
+            flex: 1;
+            min-height: 34px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.015);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            font-family: var(--font-mono);
+            font-size: 0.78em;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dnd-target-slot.dragover { border-color: var(--accent); background: rgba(0,212,255,0.08); }
+        .dnd-target-slot.filled { border-color: rgba(0,255,157,0.4); background: rgba(0,255,157,0.06); color: var(--accent2); cursor: default; }
+        .dnd-target-slot.wrong { border-color: #ff4757; background: rgba(255,71,87,0.1); animation: dndShake 0.4s; }
+        @keyframes dndShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+        .dnd-feedback {
+            margin-top: 14px;
+            font-family: var(--font-mono);
+            font-size: 0.78em;
+            color: var(--text-dim);
+            text-align: center;
+        }
+        .dnd-feedback.ok { color: var(--accent2); }
 
-/* CONFETTI */
-@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
-.confetti-piece{position:fixed;width:10px;height:10px;top:0;border-radius:2px;pointer-events:none;z-index:9999;animation:confettiFall 3s ease-in forwards;}
+        /* ─── SECTION DIVIDER ─── */
+        .section-divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 36px 0 20px;
+        }
+        .section-divider-line { flex: 1; height: 1px; background: var(--border); }
+        .section-divider-label {
+            font-family: var(--font-display);
+            font-size: 0.7em;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
 
-/* TABS */
-.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:0;overflow-x:auto;}
-.tab-btn{padding:10px 18px;font-size:.82em;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--text-muted);border-bottom:2px solid transparent;transition:all .2s;font-family:var(--sans);white-space:nowrap;}
-.tab-btn.active{color:var(--spark);border-bottom-color:var(--spark);}
-.tab-btn:hover:not(.active){color:var(--text);}
-.tab-panel{display:none;padding:20px;}
-.tab-panel.active{display:block;}
+        /* ─── COMPARISON TABLE ─── */
+        .compare-table {
+            margin: 14px 18px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .compare-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .compare-table th {
+            background: rgba(255,255,255,0.04);
+            padding: 10px 16px;
+            text-align: left;
+            font-family: var(--font-display);
+            font-size: 0.78em;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            border-bottom: 1px solid var(--border);
+        }
+        .compare-table td {
+            padding: 10px 16px;
+            font-size: 0.83em;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .compare-table tr:last-child td { border-bottom: none; }
+        .compare-table tr:nth-child(even) td { background: rgba(255,255,255,0.01); }
+        .compare-table .td-good { color: var(--accent2); }
+        .compare-table .td-bad { color: #ff8080; }
 
-/* SCROLLBAR */
-::-webkit-scrollbar{width:6px;height:6px;}::-webkit-scrollbar-track{background:var(--surface);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}::-webkit-scrollbar-thumb:hover{background:var(--spark);}
-</style>
+        /* ─── FIVE VS GRID ─── */
+        .fivev-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin: 14px 18px;
+        }
+        .fivev-card {
+            background: rgba(0,0,0,0.25);
+            border-radius: 10px;
+            padding: 18px;
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+        .fivev-card:hover { border-color: rgba(0,212,255,0.3); transform: translateY(-3px); }
+        .fivev-icon { font-size: 2em; margin-bottom: 8px; }
+        .fivev-letter {
+            font-family: var(--font-display);
+            font-size: 1.8em;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .fivev-name { font-size: 0.8em; color: white; font-weight: 600; margin: 4px 0; }
+        .fivev-desc { font-size: 0.72em; color: var(--text-dim); line-height: 1.5; }
+
+        /* ─── DISCIPLINE CALLOUT ─── */
+        .discipline-callout {
+            margin: 12px 18px 0;
+            background: rgba(0,212,255,0.04);
+            border: 1px solid rgba(0,212,255,0.15);
+            border-radius: 8px;
+            padding: 13px 16px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            font-size: 0.82em;
+            line-height: 1.65;
+            color: #8ac4d8;
+        }
+        .discipline-callout-icon { font-size: 1.1em; flex-shrink: 0; margin-top: 1px; }
+        .discipline-callout strong { color: var(--accent); }
+
+        /* ─── VIDEO BOX ─── */
+        .video-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .video-box iframe {
+            width: 100%;
+            aspect-ratio: 16/9;
+            display: block;
+            border: none;
+        }
+        .video-caption {
+            padding: 14px 18px;
+            font-size: 0.82em;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* ─── FINAL BADGE ─── */
+        .final-badge {
+            background: radial-gradient(ellipse at center, rgba(0,212,255,0.1) 0%, transparent 70%), var(--panel);
+            border: 1px solid var(--accent);
+            border-radius: 16px;
+            padding: 40px 30px;
+            text-align: center;
+            margin: 40px 0;
+            position: relative;
+            overflow: hidden;
+            display: none;
+        }
+        .final-badge::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(0,212,255,0.02) 20px, rgba(0,212,255,0.02) 40px);
+        }
+        .final-badge-icon { font-size: 4em; margin-bottom: 16px; display: block; }
+        .final-badge h2 {
+            font-family: var(--font-display);
+            font-size: 1.4em;
+            color: var(--accent);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .final-badge p { color: var(--text-dim); font-size: 0.9em; margin-bottom: 20px; }
+        .final-xp { font-family: var(--font-display); font-size: 2em; color: var(--xp-color); font-weight: 700; }
+
+        /* ─── NEXT WEEK TEASER ─── */
+        .next-week-teaser {
+            background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(0,255,157,0.05));
+            border: 1px solid rgba(0,212,255,0.2);
+            border-radius: 14px;
+            padding: 28px;
+            margin: 24px 0;
+        }
+        .next-week-teaser h3 {
+            font-family: var(--font-display);
+            font-size: 0.72em;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .next-week-teaser-title {
+            font-family: var(--font-display);
+            font-size: 1.3em;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 12px;
+        }
+        .next-week-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 0.85em;
+            color: var(--text-dim);
+        }
+        .next-week-list li::before { content: '→ '; color: var(--accent); font-weight: 700; }
+
+        /* ─── NAV BAR ─── */
+        .nav-bar {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid var(--border);
+        }
+        .nav-link {
+            font-family: var(--font-display);
+            font-size: 0.72em;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--text-dim);
+            padding: 10px 20px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        .nav-link:hover { color: var(--accent); border-color: var(--accent); background: rgba(0,212,255,0.05); }
+        .nav-link.disabled { pointer-events: none; opacity: 0.3; }
+
+        /* ─── ACCORDION REFERENCE ─── */
+        .ref-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        .ref-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .ref-header:hover { background: rgba(255,255,255,0.02); }
+        .ref-body { display: none; border-top: 1px solid var(--border); }
+        .ref-card.open .ref-body { display: block; }
+
+        @media(max-width:600px) {
+            .xp-hud { display: none; }
+            .hero-stats { gap: 20px; }
+            .mission-map { gap: 4px; }
+            .mission-dot { width: 36px; height: 36px; }
+        }
+    
+        /* ─── NETACAD ASSIGNMENT BOX ─── */
+        .netacad-box {
+            background: linear-gradient(135deg, rgba(0,190,60,0.08), rgba(0,120,200,0.06));
+            border: 1px solid rgba(0,190,60,0.3);
+            border-radius: 16px;
+            padding: 28px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .netacad-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #00be3c, #0078c8, #00be3c);
+        }
+        .netacad-tag {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.62em;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #00be3c;
+            background: rgba(0,190,60,0.12);
+            border: 1px solid rgba(0,190,60,0.35);
+            padding: 4px 12px;
+            border-radius: 100px;
+            margin-bottom: 12px;
+        }
+        .netacad-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.15em;
+            color: white;
+            margin-bottom: 10px;
+        }
+        .netacad-body {
+            font-size: 0.88em;
+            color: var(--text-dim);
+            line-height: 1.75;
+            margin-bottom: 16px;
+        }
+        .netacad-body strong { color: var(--text); }
+        .netacad-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .netacad-meta span {
+            font-family: var(--font-mono);
+            font-size: 0.68em;
+            color: var(--text-dim);
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            padding: 5px 12px;
+            border-radius: 100px;
+        }
+        .netacad-link {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.75em;
+            font-weight: 700;
+            padding: 11px 22px;
+            background: #00be3c;
+            color: #001a06;
+            border-radius: 10px;
+            text-decoration: none;
+            letter-spacing: 0.3px;
+        }
+        .netacad-link:hover { opacity: 0.88; }
+    </style>
 </head>
 <body>
 
-<header class="topbar">
-  <div class="topbar-inner">
-    <span class="tb-badge">S04 · Spark</span>
-    <div class="tb-title">
-      <h1>Apache Spark — Processamento In-Memory</h1>
-      <p>Infraestrutura para Big Data · Ciência de Dados · FATec Ourinhos</p>
+<!-- XP TOAST -->
+<div class="xp-toast" id="xpToast">
+    <span>⚡</span>
+    <span id="xpToastMsg">+100 XP Conquistados!</span>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="header-inner">
+        <div class="header-brand">
+            <div class="header-icon">🐧</div>
+            <div>
+                <div class="header-title">Semana 04 — Linux Aprofundado</div>
+                <div class="header-sub">Infraestrutura para Big Data · Fatec Ourinhos</div>
+            </div>
+        </div>
+        <div class="xp-hud">
+            <div class="xp-label">XP</div>
+            <div class="xp-bar-wrap"><div class="xp-bar-fill" id="xpBarFill"></div></div>
+            <div class="xp-points" id="xpPoints">0 / 500 XP</div>
+        </div>
     </div>
-    <div class="xp-widget">
-      <span class="xp-label">XP</span>
-      <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
-      <span class="xp-val" id="xpVal">0/500</span>
-    </div>
-  </div>
 </header>
 
-<div class="breadcrumb">
-  <a href="semana03.html">⬅ S03 · MapReduce</a>
-  <a href="../index.html">🏠 Índice</a>
-  <a href="../guias/semana04_guia.html">📚 Guia</a>
-  <a href="semana05.html" class="bc-next">S05 · DataFrames ➡</a>
+<!-- EMENTA LOCATION BAR -->
+<div class="ementa-bar">
+    <div class="ementa-bar-inner">
+        <span class="ementa-tag">📍 IAL008 · INFRAESTRUTURA PARA BIG DATA</span>
+        <div class="ementa-div"></div>
+        <span class="ementa-text">Ementa: desempenho e segurança de sistemas operacionais para Big Data</span>
+    </div>
 </div>
 
-<div class="wrap">
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-card">
-      <h3>Progresso</h3>
-      <div class="prog-item"><div class="prog-dot active" id="pd0"></div><span class="prog-text" id="pt0">Quiz 1: Spark vs MR</span></div>
-      <div class="prog-item"><div class="prog-dot" id="pd1"></div><span class="prog-text" id="pt1">Quiz 2: RDD Ops</span></div>
-      <div class="prog-item"><div class="prog-dot" id="pd2"></div><span class="prog-text" id="pt2">Quiz 3: Lazy Eval</span></div>
-      <div class="prog-item"><div class="prog-dot" id="pd3"></div><span class="prog-text" id="pt3">Drag & Drop: Ops</span></div>
-      <div class="prog-item"><div class="prog-dot" id="pd4"></div><span class="prog-text" id="pt4">Sandbox: PySpark</span></div>
-      <div class="prog-item"><div class="prog-dot" id="pd5"></div><span class="prog-text" id="pt5">DAG Animado</span></div>
-      <div class="prog-item"><div class="prog-dot" id="pd6"></div><span class="prog-text" id="pt6">Cenário Real</span></div>
-      <div class="prog-item"><div class="prog-dot" id="pd7"></div><span class="prog-text" id="pt7">Preencher Código</span></div>
-      <div class="prog-item"><div class="prog-dot" id="pd8"></div><span class="prog-text" id="pt8">Missão 1</span></div>
-      <div class="prog-item"><div class="prog-dot" id="pd9"></div><span class="prog-text" id="pt9">Missão 2</span></div>
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-badge">🎮 Nivelamento 3 de 3 · Semana 4 de 4 — Última!</div>
+    <h1>Linux<br><span>Aprofundado</span></h1>
+    <p class="hero-desc">Última semana do mês de nivelamento: processos, memória, permissões e seu primeiro shell script — a base que sustenta tudo que vem a partir da Semana 05.</p>
+    <div class="hero-stats">
+        <div class="hero-stat"><div class="hero-stat-val">3</div><div class="hero-stat-label">Missões</div></div>
+        <div class="hero-stat"><div class="hero-stat-val">500</div><div class="hero-stat-label">XP Total</div></div>
+        <div class="hero-stat"><div class="hero-stat-val">~60min</div><div class="hero-stat-label">Duração</div></div>
+        <div class="hero-stat"><div class="hero-stat-val">Ubuntu 22.04</div><div class="hero-stat-label">Ambiente</div></div>
     </div>
-    <div class="sidebar-card">
-      <h3>XP desta semana</h3>
-      <div class="total-box">
-        <div class="total-num" id="sideXP">0</div>
-        <div class="total-lbl">de 500 XP</div>
-      </div>
-      <div class="prog-bar-track"><div class="prog-bar-fill" id="sideBar" style="width:0%"></div></div>
+</section>
+
+<div class="progress-overview">
+    <div class="context-row">
+        <div class="context-panel prev">
+            <div class="context-panel-label">📚 Aula Anterior</div>
+            <div class="context-panel-title">Semana 03 — Virtualização e Cloud Computing</div>
+            <div class="context-panel-body">Você entendeu hypervisors, IaaS/PaaS/SaaS, elasticidade, e explorou um provedor de nuvem gratuito.</div>
+        </div>
+        <div class="context-panel next">
+            <div class="context-panel-label">🚀 Próxima Aula</div>
+            <div class="context-panel-title">Hadoop HDFS — Sistema de Arquivos Distribuído</div>
+            <div class="context-panel-body">Com hardware, redes, virtualização/cloud e Linux nivelados, chegou a hora: você vai instalar o Hadoop de verdade e entender a arquitetura NameNode/DataNode.</div>
+        </div>
     </div>
-    <div class="sidebar-card">
-      <h3>Navegação</h3>
-      <a href="#vs" class="nav-link">⚡ Spark vs MapReduce</a>
-      <a href="#arch" class="nav-link">🏗️ Arquitetura</a>
-      <a href="#rdd" class="nav-link">🔵 RDDs</a>
-      <a href="#lazy" class="nav-link">😴 Lazy Evaluation</a>
-      <a href="#dag" class="nav-link">📊 DAG Interativo</a>
-      <a href="#sandbox" class="nav-link">💻 Sandbox PySpark</a>
-      <a href="#tutor" class="nav-link">🤖 Tutor IA</a>
-      <a href="#missoes" class="nav-link">⚔️ Missões</a>
-    </div>
-  </aside>
-
-  <!-- MAIN -->
-  <main>
-
-    <!-- HERO -->
-    <div class="hero-card">
-      <div class="hero-label">// SEMANA 04 · IN-MEMORY PROCESSING</div>
-      <h2>Apache Spark: <span>100x mais rápido</span></h2>
-      <p>Enquanto MapReduce salva tudo no disco a cada passo, o Spark mantém os dados na memória RAM. Explore, experimente código real, anime o DAG e tire dúvidas com o Tutor IA — tudo aqui, sem sair da página.</p>
-      <div class="hero-chips">
-        <span class="chip chip-spark">⚡ 500 XP</span>
-        <span class="chip chip-blue">🐍 PySpark Sandbox</span>
-        <span class="chip chip-yellow">⏱ ~2h</span>
-        <span class="chip chip-green">🤖 Tutor IA incluso</span>
-      </div>
-    </div>
-
-    <!-- BADGES -->
-    <div class="badges-strip">
-      <div class="badge locked" id="b0"><div class="badge-ico">⚡</div><div class="badge-nm">Speed Demon</div><div class="badge-xp">+50 XP</div></div>
-      <div class="badge locked" id="b1"><div class="badge-ico">🔵</div><div class="badge-nm">RDD Master</div><div class="badge-xp">+50 XP</div></div>
-      <div class="badge locked" id="b2"><div class="badge-ico">😴</div><div class="badge-nm">Lazy Genius</div><div class="badge-xp">+50 XP</div></div>
-      <div class="badge locked" id="b3"><div class="badge-ico">🧩</div><div class="badge-nm">Sorter</div><div class="badge-xp">+60 XP</div></div>
-      <div class="badge locked" id="b4"><div class="badge-ico">💻</div><div class="badge-nm">Dev PySpark</div><div class="badge-xp">+70 XP</div></div>
-      <div class="badge locked" id="b5"><div class="badge-ico">📊</div><div class="badge-nm">DAG Pilot</div><div class="badge-xp">+50 XP</div></div>
-      <div class="badge locked" id="b6"><div class="badge-ico">🎯</div><div class="badge-nm">Cenário Real</div><div class="badge-xp">+60 XP</div></div>
-      <div class="badge locked" id="b7"><div class="badge-ico">✏️</div><div class="badge-nm">Code Filler</div><div class="badge-xp">+50 XP</div></div>
-      <div class="badge locked" id="b8"><div class="badge-ico">🔧</div><div class="badge-nm">Spark Installer</div><div class="badge-xp">+60 XP</div></div>
-      <div class="badge locked" id="b9"><div class="badge-ico">🏆</div><div class="badge-nm">Spark Master</div><div class="badge-xp">BÔNUS</div></div>
-    </div>
-
-    <!-- ============================== SPARK VS MR ============================== -->
-    <div class="sec" id="vs">
-      <div class="sec-head"><span class="sec-icon">⚡</span><span class="sec-title">Por que Spark? Spark vs MapReduce</span></div>
-      <div class="sec-body">
-        <p style="color:var(--text-muted);font-size:.88em;margin-bottom:16px;">MapReduce funciona, mas tem um problema crítico: a cada passo ele grava os dados no disco HDFS. Isso é lento. O Spark mantém os dados na memória entre os passos — muito mais eficiente para tarefas iterativas como Machine Learning.</p>
-        <div class="vs-grid">
-          <div class="vs-card vs-mr">
-            <div class="vs-title" style="color:var(--red);">🐢 MapReduce</div>
-            <div class="vs-item"><span>💾</span> Salva no disco a cada operação</div>
-            <div class="vs-item"><span>🐌</span> Lento para algoritmos iterativos</div>
-            <div class="vs-item"><span>☕</span> API verbosa em Java</div>
-            <div class="vs-item"><span>✅</span> Ótimo para batch único grande</div>
-          </div>
-          <div class="vs-card vs-spark">
-            <div class="vs-title" style="color:var(--spark);">🚀 Apache Spark</div>
-            <div class="vs-item"><span>🧠</span> Processa na memória RAM</div>
-            <div class="vs-item"><span>⚡</span> Até 100x mais rápido em ML</div>
-            <div class="vs-item"><span>🐍</span> APIs em Python, Scala, Java, R</div>
-            <div class="vs-item"><span>✅</span> Batch + Streaming + ML + SQL</div>
-          </div>
-        </div>
-
-        <!-- QUIZ 1 -->
-        <div class="quiz-box">
-          <div class="quiz-num">// QUIZ 01</div>
-          <div class="quiz-q">🧠 Por que o Spark é <strong>mais rápido</strong> que o MapReduce para algoritmos de Machine Learning iterativos?</div>
-          <div class="quiz-opts">
-            <button class="quiz-opt" onclick="quiz('q1','a','wrong',this)"><span class="opt-letter">A</span>O Spark usa hardware mais poderoso</button>
-            <button class="quiz-opt" onclick="quiz('q1','b','correct',this)"><span class="opt-letter">B</span>O Spark mantém os dados na memória entre iterações, evitando leitura/escrita em disco</button>
-            <button class="quiz-opt" onclick="quiz('q1','c','wrong',this)"><span class="opt-letter">C</span>O Spark usa mais nós no cluster automaticamente</button>
-            <button class="quiz-opt" onclick="quiz('q1','d','wrong',this)"><span class="opt-letter">D</span>O Spark usa uma linguagem de programação mais rápida</button>
-          </div>
-          <div class="quiz-feedback ok" id="q1ok">✅ Correto! +50 XP. Em ML, o mesmo dataset é lido dezenas de vezes. MapReduce leria do disco a cada iteração; Spark mantém na RAM, que é ~1.000x mais rápida.</div>
-          <div class="quiz-feedback fail" id="q1fail">❌ A chave está no armazenamento em memória (RAM) vs disco. Dados na RAM são ~1.000x mais rápidos de acessar. Tente novamente na próxima sessão!</div>
-          <details class="quiz-hint"><summary>💡 Dica</summary><div class="quiz-hint-body">Pense em ML: você treina um modelo por 100 épocas. Quantas vezes o dataset é lido? Onde Spark guarda isso entre as iterações?</div></details>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================== ARQUITETURA ============================== -->
-    <div class="sec" id="arch">
-      <div class="sec-head"><span class="sec-icon">🏗️</span><span class="sec-title">Arquitetura Spark — Driver + Executors</span></div>
-      <div class="sec-body">
-        <p style="color:var(--text-muted);font-size:.88em;margin-bottom:14px;">O Spark tem arquitetura mestre-escravo. O <strong style="color:var(--spark);">Driver</strong> coordena tudo, os <strong style="color:var(--blue);">Executors</strong> fazem o trabalho pesado nos nós do cluster.</p>
-        <div class="arch-grid">
-          <div class="arch-node driver">
-            <div class="arch-icon">🧠</div>
-            <div class="arch-name driver">DRIVER</div>
-            <div class="arch-desc">SparkContext. Coordena o job, cria o DAG e distribui as tasks</div>
-          </div>
-          <div class="arch-node cluster">
-            <div class="arch-icon">🎯</div>
-            <div class="arch-name cluster">CLUSTER MANAGER</div>
-            <div class="arch-desc">YARN / Standalone / Kubernetes. Gerencia os recursos físicos</div>
-          </div>
-          <div class="arch-node executor">
-            <div class="arch-icon">⚙️</div>
-            <div class="arch-name executor">EXECUTOR</div>
-            <div class="arch-desc">Roda em cada nó worker. Executa tasks e armazena dados em cache</div>
-          </div>
-        </div>
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px;margin-top:12px;">
-          <p style="font-size:.82em;color:var(--text-muted);"><strong style="color:var(--text);">Fluxo:</strong> Seu código PySpark roda no Driver → Driver cria o plano de execução (DAG) → Cluster Manager aloca Executors → Executors processam partições dos dados em paralelo → resultado volta ao Driver.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================== RDDs ============================== -->
-    <div class="sec" id="rdd">
-      <div class="sec-head"><span class="sec-icon">🔵</span><span class="sec-title">RDDs — Resilient Distributed Datasets</span></div>
-      <div class="sec-body">
-        <div class="tabs">
-          <button class="tab-btn active" onclick="showTab('rdd','teoria')">📖 Teoria</button>
-          <button class="tab-btn" onclick="showTab('rdd','operacoes')">⚙️ Operações</button>
-          <button class="tab-btn" onclick="showTab('rdd','sortear')">🧩 Classificar</button>
-        </div>
-        <div class="tab-panel active" id="rdd-teoria">
-          <p style="color:var(--text-muted);font-size:.88em;margin-bottom:14px;"><strong style="color:var(--text);">RDD</strong> é a abstração central do Spark: uma coleção de dados distribuída, imutável e tolerante a falhas. Pense nele como uma "lista gigante" particionada entre os nós do cluster.</p>
-          <p style="color:var(--text-muted);font-size:.85em;margin-bottom:16px;"><strong style="color:var(--spark);">Transformações</strong> (lazy) criam um novo RDD mas não executam nada ainda. <strong style="color:var(--green);">Ações</strong> disparam a execução real do pipeline.</p>
-          <div class="code-block">
-            <div class="code-header">
-              <div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#28c840"></div></div>
-              <span class="code-label">rdd_pipeline.py — PySpark</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button>
-            </div>
-            <div class="code-body"><span class="kw">from</span> pyspark <span class="kw">import</span> SparkContext
-
-sc = SparkContext(<span class="str">"local"</span>, <span class="str">"MeuApp"</span>)
-
-<span class="cmt"># Criar RDD a partir de arquivo no HDFS</span>
-logs = sc.<span class="fn">textFile</span>(<span class="str">"hdfs:///logs/app.log"</span>)
-
-<span class="cmt"># Transformações (lazy) — só anotam no DAG</span>
-erros = (logs
-    .<span class="fn">filter</span>(<span class="kw">lambda</span> linha: <span class="str">"ERROR"</span> <span class="kw">in</span> linha)   <span class="cmt"># transf.</span>
-    .<span class="fn">map</span>(<span class="kw">lambda</span> linha: linha.<span class="fn">split</span>(<span class="str">" "</span>)[<span class="num">2</span>])     <span class="cmt"># transf.</span>
-    .<span class="fn">distinct</span>()                                    <span class="cmt"># transf.</span>
-)
-
-<span class="cmt"># Só aqui o Spark EXECUTA tudo de uma vez ↓</span>
-print(<span class="str">f"Tipos únicos de erro: </span>{erros.<span class="fn">count</span>()}<span class="str">"</span>)  <span class="cmt"># AÇÃO!</span>
-print(erros.<span class="fn">collect</span>())                              <span class="cmt"># AÇÃO!</span></div>
-          </div>
-        </div>
-        <div class="tab-panel" id="rdd-operacoes">
-          <table class="rdd-table">
-            <tr><th>Operação</th><th>Tipo</th><th>O que faz</th><th>Exemplo</th></tr>
-            <tr><td>map()</td><td class="type-t">Transformação</td><td>Aplica função a cada elemento</td><td style="font-family:var(--mono);font-size:.8em;">.map(lambda x: x*2)</td></tr>
-            <tr><td>filter()</td><td class="type-t">Transformação</td><td>Filtra elementos por condição</td><td style="font-family:var(--mono);font-size:.8em;">.filter(lambda x: x > 0)</td></tr>
-            <tr><td>flatMap()</td><td class="type-t">Transformação</td><td>map + achata listas</td><td style="font-family:var(--mono);font-size:.8em;">.flatMap(lambda l: l.split(" "))</td></tr>
-            <tr><td>distinct()</td><td class="type-t">Transformação</td><td>Remove duplicatas</td><td style="font-family:var(--mono);font-size:.8em;">.distinct()</td></tr>
-            <tr><td>groupByKey()</td><td class="type-t">Transformação</td><td>Agrupa por chave (par K,V)</td><td style="font-family:var(--mono);font-size:.8em;">.groupByKey()</td></tr>
-            <tr><td>collect()</td><td class="type-a">Ação</td><td>Traz todos os dados ao Driver</td><td style="font-family:var(--mono);font-size:.8em;">.collect()</td></tr>
-            <tr><td>count()</td><td class="type-a">Ação</td><td>Conta o número de elementos</td><td style="font-family:var(--mono);font-size:.8em;">.count()</td></tr>
-            <tr><td>reduce()</td><td class="type-a">Ação</td><td>Agrega com uma função</td><td style="font-family:var(--mono);font-size:.8em;">.reduce(lambda a,b: a+b)</td></tr>
-            <tr><td>saveAsTextFile()</td><td class="type-a">Ação</td><td>Salva resultado no HDFS</td><td style="font-family:var(--mono);font-size:.8em;">.saveAsTextFile("/output")</td></tr>
-          </table>
-
-          <!-- QUIZ 2 -->
-          <div class="quiz-box">
-            <div class="quiz-num">// QUIZ 02</div>
-            <div class="quiz-q">🧠 Você quer filtrar linhas de um RDD com erros e contar quantas são. Qual sequência está <strong>correta</strong>?</div>
-            <div class="quiz-opts">
-              <button class="quiz-opt" onclick="quiz('q2','a','wrong',this)"><span class="opt-letter">A</span>count() → filter("ERROR")</button>
-              <button class="quiz-opt" onclick="quiz('q2','b','correct',this)"><span class="opt-letter">B</span>filter("ERROR") → count()</button>
-              <button class="quiz-opt" onclick="quiz('q2','c','wrong',this)"><span class="opt-letter">C</span>collect() → filter("ERROR")</button>
-              <button class="quiz-opt" onclick="quiz('q2','d','wrong',this)"><span class="opt-letter">D</span>map() → count()</button>
-            </div>
-            <div class="quiz-feedback ok" id="q2ok">✅ Correto! +50 XP. <code>filter()</code> é transformação (lazy), <code>count()</code> é ação (dispara execução). Sempre: transformações primeiro, ação no final.</div>
-            <div class="quiz-feedback fail" id="q2fail">❌ Lembre: você aplica transformações (filter, map) para definir o pipeline, depois dispara com uma ação (count, collect).</div>
-            <details class="quiz-hint"><summary>💡 Dica</summary><div class="quiz-hint-body">Ações sempre vêm por último no pipeline. Qual dessas opções começa com uma transformação e termina com uma ação?</div></details>
-          </div>
-        </div>
-        <div class="tab-panel" id="rdd-sortear">
-          <!-- DRAG AND DROP -->
-          <div class="drag-area">
-            <div class="drag-label">🎯 Arraste cada operação para a categoria correta: <strong style="color:var(--yellow);">Transformação</strong> ou <strong style="color:var(--green);">Ação</strong></div>
-            <div class="drag-source" id="dragSource" ondragover="dragOver(event)" ondrop="dropBack(event)">
-              <div class="drag-item transform-item" draggable="true" ondragstart="dragStart(event,'filter','transform')" id="di-filter">filter()</div>
-              <div class="drag-item action-item" draggable="true" ondragstart="dragStart(event,'count','action')" id="di-count">count()</div>
-              <div class="drag-item transform-item" draggable="true" ondragstart="dragStart(event,'map','transform')" id="di-map">map()</div>
-              <div class="drag-item action-item" draggable="true" ondragstart="dragStart(event,'collect','action')" id="di-collect">collect()</div>
-              <div class="drag-item transform-item" draggable="true" ondragstart="dragStart(event,'flatMap','transform')" id="di-flatMap">flatMap()</div>
-              <div class="drag-item action-item" draggable="true" ondragstart="dragStart(event,'reduce','action')" id="di-reduce">reduce()</div>
-              <div class="drag-item transform-item" draggable="true" ondragstart="dragStart(event,'distinct','transform')" id="di-distinct">distinct()</div>
-              <div class="drag-item action-item" draggable="true" ondragstart="dragStart(event,'saveAsTextFile','action')" id="di-saveAsTextFile">saveAsTextFile()</div>
-            </div>
-            <div class="drag-targets">
-              <div class="drag-target" id="dt-transform" ondragover="dragOver(event)" ondrop="dropTarget(event,'transform')">
-                <div class="drag-target-label t">⚙️ Transformações (Lazy)</div>
-                <div class="drag-dropped" id="dd-transform"></div>
-              </div>
-              <div class="drag-target" id="dt-action" ondragover="dragOver(event)" ondrop="dropTarget(event,'action')">
-                <div class="drag-target-label a">▶️ Ações (Executa agora)</div>
-                <div class="drag-dropped" id="dd-action"></div>
-              </div>
-            </div>
-            <button class="drag-check-btn" onclick="checkDrag()">✅ Verificar classificação</button>
-            <div class="drag-result" id="dragResult"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================== LAZY EVALUATION ============================== -->
-    <div class="sec" id="lazy">
-      <div class="sec-head"><span class="sec-icon">😴</span><span class="sec-title">Lazy Evaluation — O segredo da eficiência do Spark</span></div>
-      <div class="sec-body">
-        <p style="color:var(--text-muted);font-size:.88em;margin-bottom:14px;">Spark <strong style="color:var(--red);">NÃO executa nada</strong> quando você chama <code style="color:var(--blue);font-family:var(--mono)">map()</code> ou <code style="color:var(--blue);font-family:var(--mono)">filter()</code>. Ele apenas anota o que precisa ser feito (o DAG). Só quando você chama uma <strong style="color:var(--green);">Ação</strong> é que o Spark otimiza e executa tudo de uma vez.</p>
-
-        <div class="lazy-flow">
-          <div class="lf-step transform"><div class="lf-label transform">LAZY</div><div class="lf-op">textFile()</div></div>
-          <div class="lf-arrow">→</div>
-          <div class="lf-step transform"><div class="lf-label transform">LAZY</div><div class="lf-op">filter()</div></div>
-          <div class="lf-arrow">→</div>
-          <div class="lf-step transform"><div class="lf-label transform">LAZY</div><div class="lf-op">map()</div></div>
-          <div class="lf-arrow">→</div>
-          <div class="lf-step action"><div class="lf-label action">EXECUTA AGORA!</div><div class="lf-op">count() / collect()</div></div>
-        </div>
-
-        <!-- QUIZ 3 -->
-        <div class="quiz-box">
-          <div class="quiz-num">// QUIZ 03</div>
-          <div class="quiz-q">🧠 Você escreveu: <code style="color:var(--blue);font-family:var(--mono);">rdd2 = rdd.filter(lambda x: x > 0).map(lambda x: x * 2)</code>. Quando o Spark <strong>realmente processa</strong> os dados?</div>
-          <div class="quiz-opts">
-            <button class="quiz-opt" onclick="quiz('q3','a','wrong',this)"><span class="opt-letter">A</span>Na linha do filter()</button>
-            <button class="quiz-opt" onclick="quiz('q3','b','wrong',this)"><span class="opt-letter">B</span>Na linha do map()</button>
-            <button class="quiz-opt" onclick="quiz('q3','c','correct',this)"><span class="opt-letter">C</span>Somente quando uma ação (count, collect, save...) for chamada</button>
-            <button class="quiz-opt" onclick="quiz('q3','d','wrong',this)"><span class="opt-letter">D</span>Imediatamente ao criar o pipeline</button>
-          </div>
-          <div class="quiz-feedback ok" id="q3ok">✅ Lazy Evaluation! +50 XP. O Spark apenas anota as transformações no DAG. Nenhum dado é movido até uma ação ser chamada — isso permite otimizações internas poderosas.</div>
-          <div class="quiz-feedback fail" id="q3fail">❌ filter() e map() apenas constroem o plano (DAG). A execução real só acontece com uma ação (count, collect, saveAsTextFile...).</div>
-          <details class="quiz-hint"><summary>💡 Dica</summary><div class="quiz-hint-body">"Lazy" = preguiçoso. O Spark é "preguiçoso": só trabalha quando você insiste com uma ação. Antes disso, ele só faz anotações no caderno (DAG).</div></details>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================== DAG INTERATIVO ============================== -->
-    <div class="sec" id="dag">
-      <div class="sec-head"><span class="sec-icon">📊</span><span class="sec-title">DAG Interativo — Veja o Spark executar passo a passo</span></div>
-      <div class="sec-body">
-        <p style="color:var(--text-muted);font-size:.88em;margin-bottom:16px;">Clique em "▶ Executar Job" e observe como o Spark processa o DAG: cada transformação é otimizada e as ações disparam a execução real nos Executors.</p>
-
-        <div class="dag-container">
-          <div class="dag-title">// DAG DE EXECUÇÃO — Análise de logs de erro</div>
-          <div class="dag-track" id="dagTrack">
-            <div class="dag-node">
-              <div class="dag-box lazy" id="dn0">textFile()</div>
-              <div class="dag-sub">Lê HDFS</div>
-            </div>
-            <div class="dag-arrow" id="da0">→</div>
-            <div class="dag-node">
-              <div class="dag-box lazy" id="dn1">filter(ERROR)</div>
-              <div class="dag-sub">Transformação</div>
-            </div>
-            <div class="dag-arrow" id="da1">→</div>
-            <div class="dag-node">
-              <div class="dag-box lazy" id="dn2">map(split)</div>
-              <div class="dag-sub">Transformação</div>
-            </div>
-            <div class="dag-arrow" id="da2">→</div>
-            <div class="dag-node">
-              <div class="dag-box lazy" id="dn3">distinct()</div>
-              <div class="dag-sub">Transformação</div>
-            </div>
-            <div class="dag-arrow" id="da3">→</div>
-            <div class="dag-node">
-              <div class="dag-box action-node" id="dn4">count() ▶</div>
-              <div class="dag-sub">AÇÃO — dispara!</div>
-            </div>
-          </div>
-          <div class="dag-controls">
-            <button class="dag-btn primary" id="dagRunBtn" onclick="runDAG()">▶ Executar Job</button>
-            <button class="dag-btn" onclick="resetDAG()">↺ Resetar</button>
-          </div>
-          <div class="dag-status" id="dagStatus">⏳ Aguardando execução...</div>
-        </div>
-
-        <!-- CENÁRIO REAL -->
-        <div class="scenario-box" id="cenario">
-          <div class="scenario-tag">// CENÁRIO REAL</div>
-          <div class="scenario-text">🏢 <strong>Situação:</strong> Sua empresa tem 10TB de logs de acesso e precisa contar, por dia, quantas requisições resultaram em erro 500. Você precisa rodar esse processo todo dia. Qual tecnologia é <strong>mais indicada</strong>?</div>
-          <div class="scenario-choices">
-            <div class="scenario-choice" onclick="pickScenario(this,'wrong')">🐢 MapReduce: lê os logs e salva resultados intermediários em disco a cada etapa</div>
-            <div class="scenario-choice" onclick="pickScenario(this,'correct')">🚀 Spark: carrega os logs em memória, aplica filter+count e retorna resultado — repetível e eficiente</div>
-            <div class="scenario-choice" onclick="pickScenario(this,'wrong')">🗄️ SQL direto no banco: faz SELECT COUNT(*) WHERE status=500 GROUP BY date</div>
-          </div>
-          <div class="scenario-feedback ok" id="sfOk">✅ +60 XP! Correto! Para processos repetitivos em big data, Spark é ideal: mantém dados em cache entre execuções, pipelines limpos em Python, e é muito mais rápido que MapReduce para esse padrão iterativo diário.</div>
-          <div class="scenario-feedback fail" id="sfFail">❌ Quase! Pense em: volume (10TB), frequência (diário) e necessidade de velocidade. Qual tecnologia mantém dados em memória e tem pipeline limpo em Python?</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================== SANDBOX ============================== -->
-    <div class="sec" id="sandbox">
-      <div class="sec-head"><span class="sec-icon">💻</span><span class="sec-title">Sandbox PySpark — Simule e Experimente</span></div>
-      <div class="sec-body">
-        <p style="color:var(--text-muted);font-size:.88em;margin-bottom:14px;">Escreva código PySpark e veja o resultado simulado. O sandbox reconhece operações reais do Spark e simula a execução em um dataset de logs de exemplo.</p>
-
-        <!-- FILL IN THE BLANK -->
-        <div class="fill-blank-area" id="fillBlank">
-          <div style="font-size:.85em;font-weight:600;color:var(--text);margin-bottom:8px;">✏️ Desafio: Preencha os campos em branco para completar o pipeline</div>
-          <p style="font-size:.8em;color:var(--text-muted);margin-bottom:4px;">Complete o código para: carregar o arquivo, filtrar erros, extrair mensagens e contar</p>
-          <div class="fill-blank-code">
-<span class="kw">from</span> pyspark <span class="kw">import</span> SparkContext
-sc = SparkContext(<span class="str">"local"</span>, <span class="str">"Logs"</span>)
-
-logs = sc.<input class="blank-input" id="blank1" placeholder="método" style="width:90px"> (<span class="str">"logs.txt"</span>)
-
-erros = logs.<input class="blank-input" id="blank2" placeholder="transf." style="width:70px">(<span class="kw">lambda</span> l: <span class="str">"ERROR"</span> <span class="kw">in</span> l)
-
-msgs = erros.<input class="blank-input" id="blank3" placeholder="transf." style="width:60px">(<span class="kw">lambda</span> l: l.<span class="fn">split</span>(<span class="str">" "</span>)[<span class="num">-1</span>])
-
-total = msgs.<input class="blank-input" id="blank4" placeholder="ação" style="width:70px">()
-<span class="fn">print</span>(total)
-          </div>
-          <button class="fill-check-btn" onclick="checkFill()">🔍 Verificar código</button>
-          <div class="fill-result" id="fillResult"></div>
-        </div>
-
-        <div style="margin-top:16px;">
-          <div style="font-size:.85em;font-weight:600;color:var(--text);margin-bottom:10px;">🖥️ Sandbox — Escreva e execute PySpark</div>
-          <div class="sandbox">
-            <div class="sandbox-header">
-              <div class="sandbox-dots"><div class="sandbox-dot" style="background:#ff5f57"></div><div class="sandbox-dot" style="background:#ffbd2e"></div><div class="sandbox-dot" style="background:#28c840"></div></div>
-              <span class="sandbox-title">spark_session.py — Dataset: 1000 registros de logs simulados</span>
-              <button class="sandbox-reset" onclick="resetSandbox()">↺ Exemplo</button>
-              <button class="sandbox-run" id="runBtn" onclick="runSandbox()">▶ Executar</button>
-            </div>
-            <textarea class="sandbox-editor" id="sandboxCode" spellcheck="false">from pyspark import SparkContext
-sc = SparkContext("local", "AnalyseLogs")
-
-# Dataset simulado (já carregado em memória)
-logs = sc.textFile("logs.txt")
-
-# Contar total de linhas
-total = logs.count()
-print(f"Total de linhas: {total}")
-
-# Filtrar apenas erros
-erros = logs.filter(lambda l: "ERROR" in l)
-print(f"Total de ERRORs: {erros.count()}")
-
-# Extrair tipos de erro e contar por tipo
-tipos = erros.map(lambda l: l.split("]")[1].strip().split(" ")[0])
-contagem = tipos.countByValue()
-
-print("\nErros por tipo:")
-for tipo, qtd in sorted(contagem.items()):
-    print(f"  {tipo}: {qtd}")</textarea>
-            <div class="sandbox-output" id="sandboxOutput">
-              <div class="out-line"><span class="out-text" style="color:var(--text-dim);">// Pressione ▶ Executar para rodar o código...</span></div>
-            </div>
-            <div class="sandbox-hint">💡 Tente modificar: use .filter(lambda l: "WARN" in l) ou .map(lambda l: l.split(" ")[0]) para extrair datas</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================== KNOWLEDGE CHECK ============================== -->
-    <div class="kc-section">
-      <div class="kc-title">📋 Checklist de Aprendizado — Marque o que você já entende</div>
-      <div class="kc-items">
-        <div class="kc-item" onclick="toggleKC(this)"><div class="kc-box">✓</div>Entendo por que Spark é mais rápido que MapReduce para ML iterativo</div>
-        <div class="kc-item" onclick="toggleKC(this)"><div class="kc-box">✓</div>Sei a diferença entre Transformações (lazy) e Ações no RDD</div>
-        <div class="kc-item" onclick="toggleKC(this)"><div class="kc-box">✓</div>Entendo o conceito de Lazy Evaluation e por que ele é eficiente</div>
-        <div class="kc-item" onclick="toggleKC(this)"><div class="kc-box">✓</div>Conheço as funções map(), filter(), flatMap(), count(), collect(), reduce()</div>
-        <div class="kc-item" onclick="toggleKC(this)"><div class="kc-box">✓</div>Entendo a arquitetura Driver + Cluster Manager + Executors</div>
-        <div class="kc-item" onclick="toggleKC(this)"><div class="kc-box">✓</div>Sei o que é um DAG e como o Spark o usa para otimizar a execução</div>
-      </div>
-    </div>
-
-    <!-- ============================== TUTOR IA ============================== -->
-    <div class="ai-tutor" id="tutor">
-      <div class="ai-header">
-        <div class="ai-avatar">🤖</div>
-        <div class="ai-info">
-          <h4>Tutor Spark IA</h4>
-          <p>Especialista em Apache Spark · FATec Ourinhos</p>
-        </div>
-        <span class="ai-badge">● ONLINE</span>
-      </div>
-      <div class="ai-chat" id="aiChat">
-        <div class="ai-msg">
-          <div class="ai-bubble bot">
-            <p>👋 Olá! Sou seu tutor de Apache Spark. Estou aqui para te ajudar a entender qualquer conceito desta semana.</p>
-            <p>Pode me perguntar sobre RDDs, Lazy Evaluation, diferenças com MapReduce, DAG, ou até pedir exemplos de código PySpark!</p>
-          </div>
-        </div>
-      </div>
-      <div class="ai-quick-btns">
-        <button class="ai-quick" onclick="quickAsk('O que é um RDD e por que é imutável?')">O que é um RDD?</button>
-        <button class="ai-quick" onclick="quickAsk('Explica Lazy Evaluation com um exemplo prático')">Lazy Evaluation</button>
-        <button class="ai-quick" onclick="quickAsk('Qual a diferença entre map() e flatMap()?')">map vs flatMap</button>
-        <button class="ai-quick" onclick="quickAsk('Quando devo usar cache() ou persist() no Spark?')">cache() e persist()</button>
-        <button class="ai-quick" onclick="quickAsk('Me dê um exemplo completo de Word Count em PySpark')">Word Count</button>
-      </div>
-      <div class="ai-input-area">
-        <textarea class="ai-input" id="aiInput" placeholder="Pergunte sobre Spark, RDDs, Lazy Evaluation, DAG..." rows="2" onkeydown="aiKeydown(event)"></textarea>
-        <button class="ai-send" id="aiSendBtn" onclick="sendAI()">Enviar ↗</button>
-      </div>
-    </div>
-
-    <!-- ============================== GOOGLE COLAB ============================== -->
-    <div class="sec" id="colab">
-      <div class="sec-head"><span class="sec-icon">☁️</span><span class="sec-title">Como executar PySpark no Google Colab — sem instalar nada!</span></div>
-      <div class="sec-body">
-        <p style="color:var(--text-muted);font-size:.88em;margin-bottom:16px;">O <strong style="color:var(--blue);">Google Colab</strong> é um ambiente Jupyter gratuito na nuvem. Você pode rodar PySpark diretamente no navegador, sem instalar Spark na sua máquina. Siga os passos abaixo:</p>
-
-        <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:18px;">
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 18px;display:flex;gap:14px;align-items:flex-start;">
-            <div style="background:var(--spark-dim);border:1px solid var(--spark);color:var(--spark);width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85em;flex-shrink:0;">1</div>
-            <div>
-              <div style="font-size:.88em;font-weight:700;color:var(--text);margin-bottom:4px;">Acesse o Google Colab</div>
-              <div style="font-size:.82em;color:var(--text-muted);">Vá em <a href="https://colab.research.google.com" target="_blank" style="color:var(--blue);">colab.research.google.com</a>, faça login com sua conta Google e clique em <strong>"+ Novo notebook"</strong>.</div>
-            </div>
-          </div>
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 18px;display:flex;gap:14px;align-items:flex-start;">
-            <div style="background:var(--spark-dim);border:1px solid var(--spark);color:var(--spark);width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85em;flex-shrink:0;">2</div>
-            <div>
-              <div style="font-size:.88em;font-weight:700;color:var(--text);margin-bottom:4px;">Instale o Java e PySpark na primeira célula</div>
-              <div style="font-size:.82em;color:var(--text-muted);">Cole e execute o código de instalação abaixo. Isso precisa ser feito a cada nova sessão do Colab.</div>
-            </div>
-          </div>
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 18px;display:flex;gap:14px;align-items:flex-start;">
-            <div style="background:var(--spark-dim);border:1px solid var(--spark);color:var(--spark);width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85em;flex-shrink:0;">3</div>
-            <div>
-              <div style="font-size:.88em;font-weight:700;color:var(--text);margin-bottom:4px;">Configure o ambiente e inicie o SparkContext</div>
-              <div style="font-size:.82em;color:var(--text-muted);">Após instalar, configure as variáveis de ambiente JAVA_HOME e SPARK_HOME, depois crie seu SparkContext normalmente.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="code-block">
-          <div class="code-header">
-            <div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#28c840"></div></div>
-            <span class="code-label">Célula 1 — Instalação (rode uma vez por sessão)</span>
-            <button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button>
-          </div>
-          <div class="code-body"><span class="cmt"># Instala Java e PySpark no Colab</span>
-<span class="fn">!</span>apt-get install -y openjdk-11-jdk-headless -qq > /dev/null
-<span class="fn">!</span>pip install pyspark==3.5.0 -q
-
-<span class="kw">import</span> os
-os.environ[<span class="str">"JAVA_HOME"</span>] = <span class="str">"/usr/lib/jvm/java-11-openjdk-amd64"</span>
-
-<span class="fn">print</span>(<span class="str">"✅ PySpark instalado com sucesso!"</span>)</div>
-        </div>
-
-        <div class="code-block">
-          <div class="code-header">
-            <div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#28c840"></div></div>
-            <span class="code-label">Célula 2 — Primeiro RDD no Colab</span>
-            <button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button>
-          </div>
-          <div class="code-body"><span class="kw">from</span> pyspark <span class="kw">import</span> SparkContext
-
-<span class="cmt"># Inicia o SparkContext</span>
-sc = SparkContext(<span class="str">"local[*]"</span>, <span class="str">"MeuPrimeiroSparkColab"</span>)
-
-<span class="cmt"># Cria um RDD com uma lista de números</span>
-numeros = sc.parallelize([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>])
-
-<span class="cmt"># Aplica transformações e ação</span>
-resultado = numeros.<span class="fn">map</span>(<span class="kw">lambda</span> x: x * <span class="num">2</span>).<span class="fn">reduce</span>(<span class="kw">lambda</span> a, b: a + b)
-<span class="fn">print</span>(<span class="str">f"Resultado: {resultado}"</span>)  <span class="cmt"># Esperado: 30</span>
-
-<span class="cmt"># Sempre feche o SparkContext ao terminar</span>
-sc.stop()</div>
-        </div>
-
-        <div style="background:var(--blue-dim);border:1px solid var(--blue);border-radius:var(--r-sm);padding:14px 18px;margin-top:10px;font-size:.84em;color:var(--blue);">
-          💡 <strong>Dica:</strong> Use <code style="font-family:var(--mono);">local[*]</code> para utilizar todos os núcleos disponíveis no Colab. Evite criar dois SparkContexts na mesma sessão — sempre chame <code style="font-family:var(--mono);">sc.stop()</code> antes de recriar.
-        </div>
-
-        <div style="margin-top:16px;text-align:center;">
-          <a href="https://colab.research.google.com/drive/1hIEKN_-e6P7Zt5yyCjrLvHFRbj2_LGAK" target="_blank"
-             style="display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#ff6b35,#f59e0b);color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-size:.88em;font-weight:700;box-shadow:0 4px 14px rgba(255,107,53,.35);transition:all .2s;">
-            🚀 Abrir Template PySpark no Colab
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================== KAGGLE EXEMPLOS ============================== -->
-    <div class="sec" id="kaggle">
-      <div class="sec-head"><span class="sec-icon">📊</span><span class="sec-title">Exemplos prontos no Kaggle — Datasets reais para praticar</span></div>
-      <div class="sec-body">
-        <p style="color:var(--text-muted);font-size:.88em;margin-bottom:16px;">O <strong style="color:var(--yellow);">Kaggle</strong> oferece notebooks PySpark prontos com datasets reais. Você pode abrir, copiar e modificar diretamente no navegador. Veja alguns exemplos curados para esta semana:</p>
-
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:18px;">
-          <!-- Card 1 -->
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:18px;transition:all .25s;cursor:pointer;" onmouseover="this.style.borderColor='var(--yellow)'" onmouseout="this.style.borderColor='var(--border)'">
-            <div style="font-size:1.8em;margin-bottom:8px;">📈</div>
-            <div style="font-size:.88em;font-weight:700;color:var(--text);margin-bottom:6px;">PySpark RDD — Análise de Vendas</div>
-            <div style="font-size:.78em;color:var(--text-muted);margin-bottom:12px;line-height:1.5;">Dataset de transações de e-commerce. Pratica filter(), map(), reduceByKey() para encontrar produtos mais vendidos por região.</div>
-            <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
-              <span style="background:var(--yellow-dim);color:var(--yellow);border:1px solid var(--yellow);border-radius:50px;padding:2px 9px;font-size:.7em;font-weight:700;">RDD</span>
-              <span style="background:var(--green-dim);color:var(--green);border:1px solid var(--green);border-radius:50px;padding:2px 9px;font-size:.7em;font-weight:700;">Iniciante</span>
-            </div>
-            <a href="https://www.kaggle.com/code/search?q=pyspark+rdd+sales" target="_blank"
-               style="display:inline-flex;align-items:center;gap:6px;background:var(--yellow-dim);color:var(--yellow);border:1px solid var(--yellow);border-radius:6px;padding:7px 14px;text-decoration:none;font-size:.78em;font-weight:700;">🔗 Ver no Kaggle</a>
-          </div>
-          <!-- Card 2 -->
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:18px;transition:all .25s;cursor:pointer;" onmouseover="this.style.borderColor='var(--yellow)'" onmouseout="this.style.borderColor='var(--border)'">
-            <div style="font-size:1.8em;margin-bottom:8px;">🌐</div>
-            <div style="font-size:.88em;font-weight:700;color:var(--text);margin-bottom:6px;">PySpark — Log Analysis (Apache Logs)</div>
-            <div style="font-size:.78em;color:var(--text-muted);margin-bottom:12px;line-height:1.5;">Dataset de logs de servidor web. Filtra erros 404/500, conta por IP e hora — direto do Colab com dados reais.</div>
-            <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
-              <span style="background:var(--yellow-dim);color:var(--yellow);border:1px solid var(--yellow);border-radius:50px;padding:2px 9px;font-size:.7em;font-weight:700;">RDD</span>
-              <span style="background:var(--blue-dim);color:var(--blue);border:1px solid var(--blue);border-radius:50px;padding:2px 9px;font-size:.7em;font-weight:700;">Intermediário</span>
-            </div>
-            <a href="https://www.kaggle.com/code/search?q=pyspark+log+analysis" target="_blank"
-               style="display:inline-flex;align-items:center;gap:6px;background:var(--yellow-dim);color:var(--yellow);border:1px solid var(--yellow);border-radius:6px;padding:7px 14px;text-decoration:none;font-size:.78em;font-weight:700;">🔗 Ver no Kaggle</a>
-          </div>
-          <!-- Card 3 -->
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:18px;transition:all .25s;cursor:pointer;" onmouseover="this.style.borderColor='var(--yellow)'" onmouseout="this.style.borderColor='var(--border)'">
-            <div style="font-size:1.8em;margin-bottom:8px;">🏙️</div>
-            <div style="font-size:.88em;font-weight:700;color:var(--text);margin-bottom:6px;">NYC Taxi — PySpark Word Count & Stats</div>
-            <div style="font-size:.78em;color:var(--text-muted);margin-bottom:12px;line-height:1.5;">Dataset clássico de táxis de Nova York. Calcula médias de corrida, conta viagens por bairro com RDD operations.</div>
-            <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
-              <span style="background:var(--spark-dim);color:var(--spark);border:1px solid var(--spark);border-radius:50px;padding:2px 9px;font-size:.7em;font-weight:700;">RDD + Stats</span>
-              <span style="background:var(--blue-dim);color:var(--blue);border:1px solid var(--blue);border-radius:50px;padding:2px 9px;font-size:.7em;font-weight:700;">Intermediário</span>
-            </div>
-            <a href="https://www.kaggle.com/code/search?q=pyspark+nyc+taxi" target="_blank"
-               style="display:inline-flex;align-items:center;gap:6px;background:var(--yellow-dim);color:var(--yellow);border:1px solid var(--yellow);border-radius:6px;padding:7px 14px;text-decoration:none;font-size:.78em;font-weight:700;">🔗 Ver no Kaggle</a>
-          </div>
-          <!-- Card 4 -->
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:18px;transition:all .25s;cursor:pointer;" onmouseover="this.style.borderColor='var(--yellow)'" onmouseout="this.style.borderColor='var(--border)'">
-            <div style="font-size:1.8em;margin-bottom:8px;">🐦</div>
-            <div style="font-size:.88em;font-weight:700;color:var(--text);margin-bottom:6px;">Twitter Sentiment — PySpark Pipeline</div>
-            <div style="font-size:.78em;color:var(--text-muted);margin-bottom:12px;line-height:1.5;">Processamento de texto com Spark. Tokenização, contagem de palavras e análise de sentimento usando RDD e flatMap.</div>
-            <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
-              <span style="background:var(--purple-dim);color:var(--purple);border:1px solid var(--purple);border-radius:50px;padding:2px 9px;font-size:.7em;font-weight:700;">NLP</span>
-              <span style="background:var(--red-dim);color:var(--red);border:1px solid var(--red);border-radius:50px;padding:2px 9px;font-size:.7em;font-weight:700;">Avançado</span>
-            </div>
-            <a href="https://www.kaggle.com/code/search?q=pyspark+twitter+sentiment" target="_blank"
-               style="display:inline-flex;align-items:center;gap:6px;background:var(--yellow-dim);color:var(--yellow);border:1px solid var(--yellow);border-radius:6px;padding:7px 14px;text-decoration:none;font-size:.78em;font-weight:700;">🔗 Ver no Kaggle</a>
-          </div>
-        </div>
-
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 18px;font-size:.83em;color:var(--text-muted);line-height:1.7;">
-          <strong style="color:var(--yellow);">📌 Como usar o Kaggle:</strong><br>
-          1. Acesse <a href="https://www.kaggle.com" target="_blank" style="color:var(--blue);">kaggle.com</a> e crie uma conta gratuita.<br>
-          2. Abra qualquer notebook acima e clique em <strong>"Copy &amp; Edit"</strong> para criar sua própria cópia.<br>
-          3. O Kaggle oferece GPU/CPU gratuita — você pode rodar PySpark diretamente na plataforma!<br>
-          4. Salve seu notebook público para incluir no portfólio do curso.
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================== MISSÕES ============================== -->
-    <div class="sec" id="missoes">
-      <div class="sec-head"><span class="sec-icon">⚔️</span><span class="sec-title">Missões Práticas</span></div>
-      <div class="sec-body">
-
-        <div class="mission" id="m1">
-          <div class="m-num" id="mn1">01</div>
-          <div class="m-body">
-            <div class="m-title">🔧 Missão 1 — Instalar Spark e Executar primeiro RDD</div>
-            <div class="m-desc">Instale o Spark 3.x com o script <code style="color:var(--blue);font-family:var(--mono);">spark-install.sh</code>. Inicie o <code style="color:var(--blue);font-family:var(--mono);">pyspark</code>, crie um RDD com <code style="color:var(--blue);font-family:var(--mono);">sc.parallelize([1,2,3,4,5])</code> e chame <code style="color:var(--blue);font-family:var(--mono);">.reduce(lambda a,b: a+b)</code>. Resultado esperado: <strong style="color:var(--green);">15</strong>.</div>
-            <div class="m-tags">
-              <span class="mtag t-time">⏱ 25 min</span>
-              <span class="mtag t-xp">+60 XP</span>
-              <span class="mtag t-diff-e">🟢 Iniciante</span>
-            </div>
-            <button class="mission-btn" id="mb1" onclick="completeMission('m1','b8',60,'🔧 Missão 1 completa!','Spark instalado e funcionando!')">✓ Marcar como concluída</button>
-          </div>
-          <div class="m-check" id="mc1">○</div>
-        </div>
-
-        <div class="mission" id="m2">
-          <div class="m-num" id="mn2">02</div>
-          <div class="m-body">
-            <div class="m-title">📊 Missão 2 — Análise de Logs com RDD Operations</div>
-            <div class="m-desc">Carregue o arquivo <code style="color:var(--blue);font-family:var(--mono);">log_data.txt</code> no Spark. Use <code style="color:var(--blue);font-family:var(--mono);">filter()</code> para separar linhas ERROR, <code style="color:var(--blue);font-family:var(--mono);">map()</code> para extrair a mensagem de erro, e <code style="color:var(--blue);font-family:var(--mono);">countByValue()</code> para contar erros por tipo. Mostre os <strong>5 erros mais frequentes</strong>.</div>
-            <div class="m-tags">
-              <span class="mtag t-time">⏱ 40 min</span>
-              <span class="mtag t-xp">+70 XP</span>
-              <span class="mtag t-diff-m">🟡 Intermediário</span>
-            </div>
-            <button class="mission-btn" id="mb2" onclick="completeMission('m2','b9',70,'📊 Missão 2 completa!','Log Analyst desbloqueado!')">✓ Marcar como concluída</button>
-          </div>
-          <div class="m-check" id="mc2">○</div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- NAV BOTTOM -->
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
-      <a href="semana03.html" style="text-decoration:none;padding:10px 20px;border-radius:6px;border:1px solid var(--border);color:var(--text-muted);font-size:.85em;font-weight:600;transition:all .2s;">⬅ S03 · MapReduce</a>
-      <a href="../index.html" style="text-decoration:none;padding:10px 20px;border-radius:6px;border:1px solid var(--border);color:var(--text-muted);font-size:.85em;font-weight:600;transition:all .2s;">🏠 Índice</a>
-      <a href="semana05.html" style="margin-left:auto;text-decoration:none;padding:10px 20px;border-radius:6px;background:var(--spark-dim);color:var(--spark);border:1px solid var(--spark);font-size:.85em;font-weight:700;transition:all .2s;">S05 · DataFrames ➡</a>
-    </div>
-  </main>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast">
-  <div class="toast-title" id="toastTitle"></div>
-  <div class="toast-msg" id="toastMsg"></div>
+<div class="progress-overview">
+    <div class="mission-map" id="missionMap">
+        <div class="mission-dot active" onclick="scrollToMission(0)" title="Missão 1: Processos e Memória">M1</div><div class="mission-line" id="line0"></div><div class="mission-dot locked" onclick="scrollToMission(1)" title="Missão 2: Permissões e Scripts">M2</div><div class="mission-line" id="line1"></div><div class="mission-dot locked" onclick="scrollToMission(2)" title="Missão 3: Prática">M3</div>
+    </div>
+</div>
+
+<div class="progress-overview">
+    <div class="discipline-panel">
+        <div class="discipline-panel-header">
+            <span>🎓</span>
+            <span class="discipline-panel-title">Contexto da Disciplina — Por que estamos aqui?</span>
+            <span class="discipline-panel-subtitle">IAL008 · 2º Sem/2026 · Prof. Isaque Katahira</span>
+        </div>
+        <div class="discipline-grid">
+            <div class="discipline-item">
+                <div class="discipline-item-label">📋 Ementa — O que diz o plano de ensino</div>
+                <div class="discipline-item-text">Esta semana fecha o nivelamento cobrindo: <strong>"Desempenho e segurança de sistemas operacionais para Big Data"</strong> — o último pré-requisito antes de entrarmos nas ferramentas de verdade.</div>
+            </div>
+            <div class="discipline-item">
+                <div class="discipline-item-label">🎯 O que você vai dominar hoje</div>
+                <div class="discipline-item-text">Ao final, você saberá <strong>diagnosticar processos e memória</strong>, entenderá <strong>permissões de arquivo</strong>, e terá escrito <strong>seu primeiro shell script</strong> de automação.</div>
+            </div>
+        </div>
+        <div class="discipline-links"><span class="discipline-tag dtag-ementa">🐧 Processos e Memória</span><span class="discipline-tag dtag-ementa">🔐 Permissões</span><span class="discipline-tag dtag-objetivo">🎯 Escrever um shell script</span><span class="discipline-tag dtag-competencia">⭐ Nivelamento NetAcad — Módulo Final</span></div>
+    </div>
+</div>
+
+<div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-label">⚔️ Início das Missões</div>
+    <div class="section-divider-line"></div>
+</div>
+
+    <!-- ════════════════════════════════════════════════ -->
+    <!-- MISSÃO 1 — Processos e Gerenciamento de Memória -->
+    <!-- ════════════════════════════════════════════════ -->
+    <div class="mission-card active-mission open" id="mission0">
+        <div class="mission-header" onclick="toggleMission(0)">
+            <div class="mission-num">M1</div>
+            <div class="mission-meta">
+                <div class="mission-title">🐧 Processos e Gerenciamento de Memória</div>
+                <div class="mission-tags">
+                    <span class="tag tag-xp">⚡ +150 XP</span>
+                    <span class="tag tag-time">⏱ ~18 min</span>
+                    <span class="tag tag-type">Conceitual · Nivelamento</span>
+                    <span class="tag tag-ementa">📋 Ementa: Desempenho e segurança de sistemas operacionais para Big Data</span>
+                </div>
+            </div>
+            <div class="mission-status" id="status0">⚡</div>
+            <div class="mission-toggle">▾</div>
+        </div>
+        <div class="mission-body">
+            <div class="mission-intro">📌 <strong>Nivelamento (Semana 4 de 4 — última!):</strong> vamos aprofundar o Linux que você vem usando desde a Semana 01, focando no que mais importa para rodar Hadoop e Spark: processos e memória.</div>
+            
+            <div class="concept-box">
+                <div class="concept-box-title">🐧 Processos, Memória RAM e Swap</div>
+                <div class="concept-box-body">Toda ferramenta de Big Data que você vai instalar (Hadoop, Spark) roda como <em>processos</em> Linux consumindo RAM. Entender isso evita muita dor de cabeça de VM travando.<br><br><strong>Processo (PID)</strong> — cada programa em execução no Linux tem um número único de identificação. Você já viu isso na Semana 01 com <code>ps aux</code>. Um serviço Hadoop, por exemplo, roda como vários processos (NameNode, DataNode) simultaneamente.<br><br><strong>RAM (memória de trabalho)</strong> — onde tudo que está sendo processado agora fica temporariamente. Quando você inicia o Hadoop, ele reserva uma parte da RAM só para ele.<br><br><strong>Swap</strong> — quando a RAM enche, o Linux usa uma parte do disco como "memória de emergência". É <em>muito</em> mais lento que RAM. Se seu Hadoop/Spark começa a usar swap pesadamente, é sinal de que a VM precisa de mais RAM.<br><br><strong>htop / free -h</strong> — ferramentas de diagnóstico que você já viu de relance na Semana 01. Agora, preste atenção: RAM livre baixa + swap sendo usado = hora de fechar processos ou aumentar a RAM da VM.</div>
+            </div>
+
+            <div class="checkpoint">
+                <div class="checkpoint-title">🏁 Checkpoint M1</div>
+                <ul class="checkpoint-items">
+                    <li class="checkpoint-item"><input type="checkbox" id="c0a"><label for="c0a">Sei o que é um PID e um processo</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c0b"><label for="c0b">Diferencio RAM de swap</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c0c"><label for="c0c">Sei diagnosticar falta de RAM com htop/free -h</label></li>
+                </ul>
+            </div>
+            <button class="complete-btn" id="btn0" onclick="completeMission(0, 150)">✅ Missão 1 Concluída — Coletar +150 XP</button>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════ -->
+    <!-- MISSÃO 2 — Permissões de Arquivo e Introdução a Shell Scripting -->
+    <!-- ════════════════════════════════════════════════ -->
+    <div class="mission-card" id="mission1">
+        <div class="mission-header" onclick="toggleMission(1)">
+            <div class="mission-num">M2</div>
+            <div class="mission-meta">
+                <div class="mission-title">🔐 Permissões de Arquivo e Introdução a Shell Scripting</div>
+                <div class="mission-tags">
+                    <span class="tag tag-xp">⚡ +150 XP</span>
+                    <span class="tag tag-time">⏱ ~18 min</span>
+                    <span class="tag tag-type">Conceitual · Nivelamento</span>
+                    <span class="tag tag-ementa">📋 Ementa: Desempenho e segurança de sistemas operacionais para Big Data</span>
+                </div>
+            </div>
+            <div class="mission-status" id="status1">🔒</div>
+            <div class="mission-toggle">▾</div>
+        </div>
+        <div class="mission-body">
+            <div class="mission-intro">Agora que você entende processos e memória, vamos ver como o Linux controla quem pode acessar o quê — e como automatizar tarefas repetitivas.</div>
+            
+            <div class="concept-box">
+                <div class="concept-box-title">🔐 Permissões, Usuários e Automação com Shell Script</div>
+                <div class="concept-box-body"><strong>Permissões de arquivo</strong> — todo arquivo Linux tem 3 tipos de permissão (leitura, escrita, execução) para 3 categorias (dono, grupo, outros). O Hadoop, por exemplo, precisa rodar sob um usuário com permissão de leitura/escrita nas pastas de dados.<br><br><strong><code>chmod</code></strong> — muda as permissões de um arquivo. Ex: <code>chmod 755 script.sh</code> dá permissão total ao dono, e leitura+execução para os demais.<br><br><strong><code>chown</code></strong> — muda o dono de um arquivo. Útil quando você precisa que o usuário <code>hadoop</code> (criado na Semana 02... ou melhor, que vamos criar na Semana 05) seja dono das pastas de dados.<br><br><strong>Shell script</strong> — um arquivo <code>.sh</code> com uma sequência de comandos Linux, executado de uma vez só. Em vez de digitar 10 comandos toda vez que quiser iniciar o Hadoop, você escreve um script uma vez e roda com <code>./iniciar.sh</code>.</div>
+            </div>
+
+            <div class="checkpoint">
+                <div class="checkpoint-title">🏁 Checkpoint M2</div>
+                <ul class="checkpoint-items">
+                    <li class="checkpoint-item"><input type="checkbox" id="c1a"><label for="c1a">Sei o que chmod e chown controlam</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c1b"><label for="c1b">Entendo o sistema de permissões dono/grupo/outros</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c1c"><label for="c1c">Sei o que é e para que serve um shell script</label></li>
+                </ul>
+            </div>
+            <button class="complete-btn" id="btn1" onclick="completeMission(1, 150)">✅ Missão 2 Concluída — Coletar +150 XP</button>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════ -->
+    <!-- MISSÃO 3 — Prática — Diagnóstico de Sistema e Primeiro Shell Script -->
+    <!-- ════════════════════════════════════════════════ -->
+    <div class="mission-card" id="mission2">
+        <div class="mission-header" onclick="toggleMission(2)">
+            <div class="mission-num">M3</div>
+            <div class="mission-meta">
+                <div class="mission-title">🛠️ Prática — Diagnóstico de Sistema e Primeiro Shell Script</div>
+                <div class="mission-tags">
+                    <span class="tag tag-xp">⚡ +200 XP</span>
+                    <span class="tag tag-time">⏱ ~25 min</span>
+                    <span class="tag tag-type">Prática</span>
+                    <span class="tag tag-ementa">📋 Ementa: Desempenho e segurança de sistemas operacionais para Big Data</span>
+                </div>
+            </div>
+            <div class="mission-status" id="status2">🔒</div>
+            <div class="mission-toggle">▾</div>
+        </div>
+        <div class="mission-body">
+            <div class="mission-intro">Vamos fechar o mês de nivelamento colocando tudo em prática: diagnóstico de sistema, permissões e seu primeiro script de automação.</div>
+            
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-num">01</div>
+                    <div class="step-content">
+                        <div class="step-title">Diagnosticar processos e memória da sua VM</div>
+                        <div class="step-desc">Vamos ver o que está consumindo RAM agora mesmo:</div>
+                    </div>
+                </div>
+                
+            </div>
+
+                <div class="code-block" style="margin: 16px 0;">
+                    <div class="code-block-header">
+                        <span class="code-lang">bash</span>
+                        <button class="copy-btn" onclick="copyCode(this, `htop
+# pressione F6 para ordenar por uso de memória, q para sair
+free -h
+ps aux --sort=-%mem | head -10`)">📋 Copiar</button>
+                    </div>
+                    <div class="code-body"><code>htop
+# pressione F6 para ordenar por uso de memória, q para sair
+free -h
+ps aux --sort=-%mem | head -10</code></div>
+                </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-num">02</div>
+                    <div class="step-content">
+                        <div class="step-title">Criar um arquivo e testar permissões</div>
+                        <div class="step-desc">Vamos criar um script simples e ajustar suas permissões:</div>
+                    </div>
+                </div>
+                
+            </div>
+
+                <div class="code-block" style="margin: 16px 0;">
+                    <div class="code-block-header">
+                        <span class="code-lang">bash</span>
+                        <button class="copy-btn" onclick="copyCode(this, `echo '#!/bin/bash\necho &quot;Verificando sistema...&quot;\nfree -h\ndf -h /\nnproc' > verificar.sh
+ls -l verificar.sh
+# repare que ainda não tem permissão de execução (sem x)`)">📋 Copiar</button>
+                    </div>
+                    <div class="code-body"><code>echo '#!/bin/bash\necho "Verificando sistema..."\nfree -h\ndf -h /\nnproc' > verificar.sh
+ls -l verificar.sh
+# repare que ainda não tem permissão de execução (sem x)</code></div>
+                </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-num">03</div>
+                    <div class="step-content">
+                        <div class="step-title">Dar permissão de execução e rodar o script</div>
+                        <div class="step-desc">Use chmod para liberar a execução:</div>
+                    </div>
+                </div>
+                
+            </div>
+
+                <div class="code-block" style="margin: 16px 0;">
+                    <div class="code-block-header">
+                        <span class="code-lang">bash</span>
+                        <button class="copy-btn" onclick="copyCode(this, `chmod +x verificar.sh
+ls -l verificar.sh
+# agora aparece x nas permissões
+./verificar.sh`)">📋 Copiar</button>
+                    </div>
+                    <div class="code-body"><code>chmod +x verificar.sh
+ls -l verificar.sh
+# agora aparece x nas permissões
+./verificar.sh</code></div>
+                </div>
+
+                <div class="alert alert-info">
+                    <span class="alert-icon">ℹ️</span>
+                    <span><strong>Você acabou de automatizar</strong> os mesmos comandos que rodou manualmente na Semana 01 (Missão de Hardware) — isso é exatamente o tipo de script que vamos usar para automatizar o início do Hadoop nas próximas semanas.</span>
+                </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-num">04</div>
+                    <div class="step-content">
+                        <div class="step-title">Testar mudança de dono com chown (opcional, requer sudo)</div>
+                        <div class="step-desc">Se quiser ver o chown em ação:</div>
+                    </div>
+                </div>
+                
+            </div>
+
+                <div class="code-block" style="margin: 16px 0;">
+                    <div class="code-block-header">
+                        <span class="code-lang">bash</span>
+                        <button class="copy-btn" onclick="copyCode(this, `whoami
+# veja quem é o dono atual do arquivo
+ls -l verificar.sh`)">📋 Copiar</button>
+                    </div>
+                    <div class="code-body"><code>whoami
+# veja quem é o dono atual do arquivo
+ls -l verificar.sh</code></div>
+                </div>
+
+            <div class="checkpoint">
+                <div class="checkpoint-title">🏁 Checkpoint M3</div>
+                <ul class="checkpoint-items">
+                    <li class="checkpoint-item"><input type="checkbox" id="c2a"><label for="c2a">Usei htop/free -h para diagnosticar o consumo da minha VM</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c2b"><label for="c2b">Criei um script .sh e dei permissão de execução com chmod</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c2c"><label for="c2c">Meu script rodou e mostrou informações do sistema</label></li>
+                </ul>
+            </div>
+            <button class="complete-btn" id="btn2" onclick="completeMission(2, 200)">✅ Missão 3 Concluída — Coletar +200 XP</button>
+        </div>
+    </div>
+
+<!-- FINAL BADGE -->
+<div class="final-badge" id="finalBadge">
+    <span class="final-badge-icon">🏆</span>
+    <h2>Semana 04 — Mês de Nivelamento Completo Concluída!</h2>
+    <p>Você concluiu o mês de nivelamento: Hardware (S01), Redes (S02), Virtualização/Cloud (S03) e Linux Aprofundado (S04). A partir daqui, o curso segue 100% para as ferramentas de Big Data.</p>
+    <div class="final-xp">🏅 500 XP Coletados!</div>
+</div>
+
+
+    <div class="netacad-box">
+        <div class="netacad-tag">🎓 NIVELAMENTO · NETACAD</div>
+        <div class="netacad-title">📥 Tarefa para entregar: Mobile, Linux, and OSX Operating Systems</div>
+        <div class="netacad-body">
+            Como identificamos que a grade do curso não tem disciplina de <strong>Sistemas Operacionais</strong>, vamos preencher essa base aos poucos, módulo por módulo, ao longo destas 4 semanas — direto conectado com o que você praticou hoje.<br><br>
+            <strong>O que fazer:</strong> acesse o link abaixo, faça login (ou crie conta gratuita) na NetAcad, e complete o <strong>Módulo 12: Mobile, Linux, and OSX Operating Systems</strong> do curso <em>IT Essentials</em>. Ao final, tire um print da tela de conclusão (com seu nome de perfil visível) e envie como comprovante.
+        </div>
+        <div class="netacad-meta">
+            <span>📚 Curso: IT Essentials (Cisco NetAcad)</span>
+            <span>🆓 Gratuito</span>
+            <span>🏅 Gera certificado Cisco</span>
+            <span>⚠️ Bônus/nivelamento — não vale nota</span>
+        </div>
+        <a class="netacad-link" href="https://www.netacad.com/courses/it-essentials" target="_blank" rel="noopener">🔗 Abrir Curso na NetAcad</a>
+    </div>
+
+
+<div class="next-week-teaser">
+    <h3>🚀 O que vem na próxima semana</h3>
+    <div class="next-week-teaser-title">Hadoop HDFS — Sistema de Arquivos Distribuído</div>
+    <ul class="next-week-list"><li>Você vai instalar o <strong>Hadoop 3.3.6</strong> de verdade, com toda a base de rede/virtualização/Linux já pronta</li><li>Vai entender a arquitetura <strong>NameNode / DataNode / Replicação</strong></li><li>Vai rodar seus primeiros comandos <code>hdfs dfs</code></li></ul>
+</div>
+
+</div><!-- /main -->
+
+<!-- NAV -->
+<div class="nav-bar">
+    <a href="semana03.html" class="nav-link">⬅ Semana 03</a>
+    <a href="semana05.html" class="nav-link">Semana 05 — Hadoop HDFS ➡</a>
 </div>
 
 <script>
-// ========== STATE ==========
-let xp = 0, maxXP = 500;
-const done = {};
-let draggedItem = null, draggedType = null;
-const placed = { transform: new Set(), action: new Set() };
-const correctTypes = {
-  filter:'transform',map:'transform',flatMap:'transform',distinct:'transform',
-  count:'action',collect:'action',reduce:'action',saveAsTextFile:'action'
-};
+    const TOTAL_XP = 500;
+    const missionXP = [150, 150, 200];
+    let completed = new Array(3).fill(false);
+    let currentXP = 0;
 
-// ========== XP & BADGES ==========
-function updateXP() {
-  const p = (xp / maxXP) * 100;
-  document.getElementById('xpFill').style.width = p + '%';
-  document.getElementById('xpVal').textContent = xp + '/' + maxXP;
-  document.getElementById('sideXP').textContent = xp;
-  document.getElementById('sideBar').style.width = p + '%';
-}
-function unlockBadge(id) {
-  const b = document.getElementById(id);
-  if (b && !b.classList.contains('unlocked')) {
-    b.classList.remove('locked');
-    b.classList.add('unlocked');
-  }
-}
-function toast(t, m) {
-  document.getElementById('toastTitle').textContent = t;
-  document.getElementById('toastMsg').textContent = m;
-  const el = document.getElementById('toast');
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 3500);
-}
-function markProg(i, state) {
-  const d = document.getElementById('pd' + i);
-  const t = document.getElementById('pt' + i);
-  if (d) { d.classList.remove('active'); d.classList.add(state || 'done'); }
-  if (t && state !== 'fail') t.classList.add('done-text');
-}
-function checkAll() {
-  if (Object.keys(done).length >= 9) {
-    setTimeout(() => {
-      unlockBadge('b9');
-      toast('🏆 SPARK MASTER!', 'Todas as atividades concluídas!');
-      launchConfetti();
-    }, 800);
-  }
-}
-
-// ========== QUIZ ==========
-function quiz(id, choice, result, btn) {
-  if (done[id]) return;
-  done[id] = true;
-  const opts = btn.closest('.quiz-opts').querySelectorAll('.quiz-opt');
-  opts.forEach(o => { o.classList.add('disabled'); o.style.pointerEvents = 'none'; });
-  btn.classList.add(result === 'correct' ? 'correct' : 'wrong');
-  const qNum = { q1: [0,'b0',50], q2: [1,'b1',50], q3: [2,'b2',50] }[id];
-  if (result === 'correct') {
-    document.getElementById(id + 'ok').style.display = 'block';
-    xp += qNum[2]; unlockBadge(qNum[1]); markProg(qNum[0]);
-    toast('⚡ +' + qNum[2] + ' XP!', 'Badge desbloqueado!');
-  } else {
-    document.getElementById(id + 'fail').style.display = 'block';
-  }
-  updateXP(); checkAll();
-}
-
-// ========== TABS ==========
-function showTab(section, tab) {
-  const panels = document.querySelectorAll('#' + section + '-' + 'teoria, #' + section + '-operacoes, #' + section + '-sortear');
-  document.querySelectorAll('#' + section + ' .tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('#' + section + ' .tab-btn').forEach(b => b.classList.remove('active'));
-  const target = document.getElementById(section + '-' + tab);
-  if (target) target.classList.add('active');
-  event.target.classList.add('active');
-}
-
-// ========== DRAG & DROP ==========
-function dragStart(e, name, type) {
-  draggedItem = name; draggedType = type;
-  e.dataTransfer.effectAllowed = 'move';
-}
-function dragOver(e) { e.preventDefault(); e.currentTarget.classList.add('dragover'); }
-function dropTarget(e, targetType) {
-  e.preventDefault(); e.currentTarget.classList.remove('dragover');
-  const container = document.getElementById('dd-' + targetType);
-  const itemEl = document.getElementById('di-' + draggedItem);
-  if (!itemEl) return;
-  itemEl.parentNode.removeChild(itemEl);
-  container.appendChild(itemEl);
-  placed[draggedType === targetType ? 'transform' : 'action'];
-  placed[targetType].add(draggedItem + ':' + draggedType);
-  draggedItem = null; draggedType = null;
-}
-function dropBack(e) {
-  e.preventDefault(); e.currentTarget.classList.remove('dragover');
-  const itemEl = document.getElementById('di-' + draggedItem);
-  if (itemEl) {
-    itemEl.parentNode.removeChild(itemEl);
-    document.getElementById('dragSource').appendChild(itemEl);
-  }
-  draggedItem = null; draggedType = null;
-}
-function checkDrag() {
-  if (done['drag']) return;
-  const res = document.getElementById('dragResult');
-  let correct = 0, total = 8;
-  ['transform','action'].forEach(type => {
-    const container = document.getElementById('dd-' + type);
-    container.querySelectorAll('.drag-item').forEach(item => {
-      const name = item.id.replace('di-','');
-      if (correctTypes[name] === type) correct++;
-    });
-  });
-  if (correct === total) {
-    done['drag'] = true;
-    res.className = 'drag-result ok';
-    res.textContent = '✅ Perfeito! +60 XP. Você classificou todos os 8 operadores corretamente!';
-    xp += 60; unlockBadge('b3'); markProg(3);
-    updateXP(); toast('🧩 +60 XP!', 'Sorter desbloqueado!'); checkAll();
-  } else {
-    res.className = 'drag-result fail';
-    res.textContent = `❌ ${correct}/${total} corretos. Revise: Transformações = lazy (não executam), Ações = disparam a execução.`;
-  }
-  res.style.display = 'block';
-}
-
-// ========== DAG ANIMATOR ==========
-let dagRunning = false;
-async function runDAG() {
-  if (dagRunning) return;
-  dagRunning = true;
-  document.getElementById('dagRunBtn').disabled = true;
-  const statuses = [
-    '⏳ Buildando DAG...',
-    '🔍 Analisando textFile() — lazy, anotando no plano...',
-    '🔍 filter(ERROR) — lazy, adicionando ao DAG...',
-    '🔍 map(split) — lazy, otimizando combinação...',
-    '🔍 distinct() — lazy, planejando shuffle...',
-    '🚀 Ação count() detectada! Disparando execução do job...',
-    '✅ Job concluído! 42 tipos únicos de erro encontrados.'
-  ];
-  const status = document.getElementById('dagStatus');
-  for (let i = 0; i < 5; i++) {
-    await sleep(700);
-    status.textContent = statuses[i + 1];
-    const node = document.getElementById('dn' + i);
-    node.classList.add('running');
-    await sleep(300);
-    node.classList.add('executed');
-    if (i < 4) document.getElementById('da' + i).classList.add('lit');
-  }
-  await sleep(600);
-  status.textContent = statuses[5];
-  await sleep(800);
-  status.textContent = statuses[6];
-  status.style.color = 'var(--green)';
-  if (!done['dag']) {
-    done['dag'] = true;
-    xp += 50; unlockBadge('b5'); markProg(5);
-    updateXP(); toast('📊 +50 XP!', 'DAG Pilot desbloqueado!'); checkAll();
-  }
-  dagRunning = false;
-  document.getElementById('dagRunBtn').disabled = false;
-}
-function resetDAG() {
-  for (let i = 0; i < 5; i++) {
-    const n = document.getElementById('dn' + i);
-    n.classList.remove('running','executed');
-    if (i < 4) document.getElementById('da' + i).classList.remove('lit');
-  }
-  document.getElementById('dagStatus').textContent = '⏳ Aguardando execução...';
-  document.getElementById('dagStatus').style.color = '';
-  dagRunning = false;
-  document.getElementById('dagRunBtn').disabled = false;
-}
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-// ========== SCENARIO ==========
-function pickScenario(el, result) {
-  if (done['scenario']) return;
-  done['scenario'] = true;
-  el.closest('.scenario-choices').querySelectorAll('.scenario-choice').forEach(c => c.classList.add('disabled'));
-  el.classList.add(result === 'correct' ? 'correct' : 'wrong');
-  document.getElementById(result === 'correct' ? 'sfOk' : 'sfFail').style.display = 'block';
-  if (result === 'correct') {
-    xp += 60; unlockBadge('b6'); markProg(6);
-    updateXP(); toast('🎯 +60 XP!', 'Cenário Real dominado!'); checkAll();
-  }
-}
-
-// ========== FILL IN THE BLANK ==========
-function checkFill() {
-  if (done['fill']) return;
-  const answers = [
-    { id: 'blank1', correct: 'textFile' },
-    { id: 'blank2', correct: 'filter' },
-    { id: 'blank3', correct: 'map' },
-    { id: 'blank4', correct: 'count' },
-  ];
-  let allCorrect = true;
-  answers.forEach(a => {
-    const input = document.getElementById(a.id);
-    const val = input.value.trim().replace(/\(\)/g, '');
-    if (val === a.correct) {
-      input.classList.add('correct-b');
-      input.classList.remove('wrong-b');
-    } else {
-      input.classList.add('wrong-b');
-      input.classList.remove('correct-b');
-      allCorrect = false;
-    }
-  });
-  const res = document.getElementById('fillResult');
-  if (allCorrect) {
-    done['fill'] = true;
-    res.style.color = 'var(--green)';
-    res.textContent = '✅ +50 XP! Perfeito! textFile() → filter() → map() → count() — pipeline correto!';
-    xp += 50; unlockBadge('b7'); markProg(7);
-    updateXP(); toast('✏️ +50 XP!', 'Code Filler desbloqueado!'); checkAll();
-  } else {
-    res.style.color = 'var(--red)';
-    res.textContent = '❌ Alguns campos estão incorretos. Dica: siga o pipeline — carregar → filtrar → transformar → ação';
-  }
-}
-
-// ========== SANDBOX ==========
-const FAKE_LOGS = [
-  '[2024-01-15 08:23:11] ERROR NullPointerException: objeto nulo na linha 42',
-  '[2024-01-15 08:24:03] WARN Conexão lenta detectada: 2300ms',
-  '[2024-01-15 08:24:45] ERROR NullPointerException: objeto nulo na linha 87',
-  '[2024-01-15 08:25:01] INFO Usuário login: user_1042',
-  '[2024-01-15 08:26:12] ERROR OutOfMemoryError: heap space insuficiente',
-  '[2024-01-15 08:27:33] ERROR NullPointerException: objeto nulo na linha 42',
-  '[2024-01-15 08:28:00] WARN Retry automático: tentativa 2',
-  '[2024-01-15 08:29:44] ERROR TimeoutException: conexão expirou após 30s',
-  '[2024-01-15 08:30:15] ERROR NullPointerException: objeto nulo na linha 13',
-  '[2024-01-15 08:31:02] ERROR OutOfMemoryError: metaspace cheio',
-];
-// Expand to 1000
-const LOGS = [];
-for (let i = 0; i < 100; i++) LOGS.push(...FAKE_LOGS.map(l => l.replace('01-15', `01-${String(i % 28 + 1).padStart(2, '0')}`)));
-
-function runSandbox() {
-  const code = document.getElementById('sandboxCode').value;
-  const out = document.getElementById('sandboxOutput');
-  const btn = document.getElementById('runBtn');
-  btn.disabled = true; btn.classList.add('running'); btn.textContent = '⏳ Executando...';
-  out.innerHTML = '<div class="out-line"><span class="out-text" style="color:var(--yellow)">⏳ SparkContext inicializando...</span></div>';
-  setTimeout(() => {
     try {
-      const result = simulateSpark(code);
-      out.innerHTML = result;
-      if (!done['sandbox']) {
-        done['sandbox'] = true;
-        xp += 70; unlockBadge('b4'); markProg(4);
-        updateXP(); toast('💻 +70 XP!', 'Dev PySpark desbloqueado!'); checkAll();
-      }
-    } catch(e) {
-      out.innerHTML = `<div class="out-line"><span class="out-err">❌ SyntaxError: ${e.message}</span></div>`;
+        const saved = JSON.parse(localStorage.getItem('bigdata_s04_state') || '{}');
+        if (saved.completed) completed = saved.completed;
+        if (saved.currentXP !== undefined) currentXP = saved.currentXP;
+    } catch(e) {}
+
+    function saveState() {
+        try { localStorage.setItem('bigdata_s04_state', JSON.stringify({completed, currentXP})); } catch(e) {}
     }
-    btn.disabled = false; btn.classList.remove('running'); btn.textContent = '▶ Executar';
-  }, 1200);
-}
 
-function simulateSpark(code) {
-  const lines = [];
-  const add = (text, cls = 'out-text') =>
-    lines.push(`<div class="out-line"><span class="out-prompt">$</span><span class="${cls}">${text}</span></div>`);
+    function updateUI() {
+        document.getElementById('xpBarFill').style.width = (currentXP / TOTAL_XP * 100) + '%';
+        document.getElementById('xpPoints').textContent = currentXP + ' / ' + TOTAL_XP + ' XP';
 
-  add('SparkContext iniciado — modo local[*]', 'out-info');
-  add('Carregando dataset: logs.txt (1000 linhas)', 'out-info');
+        const dots = document.querySelectorAll('.mission-dot');
+        const lines = document.querySelectorAll('.mission-line');
 
-  if (code.includes('count()') || code.includes('.count()')) {
-    const totalMatch = code.includes('logs.count') || code.includes('textFile');
-    const errosMatch = code.includes('filter') && (code.includes('"ERROR"') || code.includes("'ERROR'"));
-    if (totalMatch) add('Total de linhas: 1000', 'out-ok');
-    if (errosMatch) add('Total de ERRORs: 700', 'out-ok');
-  }
+        completed.forEach((done, i) => {
+            const card = document.getElementById('mission' + i);
+            const btn = document.getElementById('btn' + i);
+            const statusEl = document.getElementById('status' + i);
+            if (!card) return;
+            if (done) {
+                card.classList.add('completed');
+                card.classList.remove('active-mission');
+                if (btn) { btn.classList.add('done'); btn.textContent = '✅ Missão ' + (i+1) + ' Concluída!'; btn.disabled = true; }
+                if (statusEl) statusEl.textContent = '✅';
+                if (dots[i]) { dots[i].classList.remove('locked', 'active'); dots[i].classList.add('done'); }
+                if (lines[i]) lines[i].classList.add('done');
+            }
+        });
 
-  if (code.includes('countByValue')) {
-    add('\nErros por tipo:', 'out-ok');
-    add('  NullPointerException: 300', 'out-text');
-    add('  OutOfMemoryError: 200', 'out-text');
-    add('  TimeoutException: 100', 'out-text');
-    add('  ConnectionRefused: 60', 'out-text');
-    add('  FileNotFoundException: 40', 'out-text');
-  }
+        const nextIdx = completed.indexOf(false);
+        if (nextIdx !== -1 && dots[nextIdx]) {
+            dots[nextIdx].classList.remove('locked');
+            dots[nextIdx].classList.add('active');
+            const nextCard = document.getElementById('mission' + nextIdx);
+            if (nextCard) nextCard.classList.add('active-mission');
+        }
 
-  if (code.includes('reduce')) {
-    add('Resultado do reduce: 5050', 'out-ok');
-  }
+        if (completed.every(v => v)) {
+            document.getElementById('finalBadge').style.display = 'block';
+        }
+    }
 
-  if (code.includes('collect')) {
-    add('[linha1, linha2, linha3, ... (700 itens)]', 'out-text');
-  }
+    function completeMission(idx, xp) {
+        if (completed[idx]) return;
+        if (idx > 0 && !completed[idx - 1]) {
+            showToast('⚠️ Complete a Missão ' + idx + ' primeiro!', true);
+            return;
+        }
+        completed[idx] = true;
+        currentXP += xp;
+        saveState();
+        updateUI();
+        showToast('+' + xp + ' XP — Missão ' + (idx+1) + ' completa!');
 
-  if (code.includes('parallelize')) {
-    const nums = code.match(/parallelize\(\[([^\]]+)\]/);
-    if (nums) add('RDD criado: [' + nums[1] + ']', 'out-ok');
-  }
+        const nextIdx = idx + 1;
+        if (nextIdx < 3) {
+            setTimeout(() => {
+                const nextCard = document.getElementById('mission' + nextIdx);
+                if (nextCard) {
+                    nextCard.classList.add('open');
+                    nextCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 800);
+        }
+    }
 
-  if (code.includes('WARN') || code.includes('"WARN"') || code.includes("'WARN'")) {
-    add('Total de WARNs: 200', 'out-ok');
-  }
+    function showToast(msg, warn) {
+        const toast = document.getElementById('xpToast');
+        document.getElementById('xpToastMsg').textContent = msg;
+        toast.style.borderColor = warn ? 'var(--warn)' : 'var(--xp-color)';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
 
-  if (lines.length <= 2) {
-    add('Pipeline construído (lazy). Adicione uma ação como .count() para executar.', 'out-info');
-  }
+    function toggleMission(id) {
+        const card = typeof id === 'number' ? document.getElementById('mission' + id) : document.getElementById(id);
+        if (card) card.classList.toggle('open');
+    }
 
-  add('\n✅ Job concluído em 0.42s — 4 stages, 8 tasks', 'out-ok');
-  return lines.join('');
-}
+    function scrollToMission(idx) {
+        const el = document.getElementById('mission' + idx);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 
-function resetSandbox() {
-  document.getElementById('sandboxCode').value = `from pyspark import SparkContext
-sc = SparkContext("local", "AnalyseLogs")
+    function copyCode(btn, code) {
+        navigator.clipboard.writeText(code).then(() => {
+            const orig = btn.innerHTML;
+            btn.innerHTML = '✅ Copiado!';
+            btn.classList.add('copied');
+            setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
+        }).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = code;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            const orig = btn.innerHTML;
+            btn.innerHTML = '✅ Copiado!';
+            setTimeout(() => { btn.innerHTML = orig; }, 2000);
+        });
+    }
 
-logs = sc.textFile("logs.txt")
-
-# Tente modificar este código!
-erros = logs.filter(lambda l: "ERROR" in l)
-print(f"Total de ERRORs: {erros.count()}")
-
-tipos = erros.map(lambda l: l.split("]")[1].strip().split(" ")[0])
-contagem = tipos.countByValue()
-for tipo, qtd in sorted(contagem.items()):
-    print(f"  {tipo}: {qtd}")`;
-  document.getElementById('sandboxOutput').innerHTML = '<div class="out-line"><span class="out-text" style="color:var(--text-dim);">// Pressione ▶ Executar para rodar o código...</span></div>';
-}
-
-// ========== MISSIONS ==========
-function completeMission(mid, bid, pts, t, m) {
-  if (done[mid]) return;
-  done[mid] = true;
-  const el = document.getElementById(mid);
-  el.classList.add('done');
-  document.getElementById('mc' + mid.slice(1)).textContent = '✓';
-  document.getElementById('mn' + mid.slice(1)).textContent = '✓';
-  const btn = document.getElementById('mb' + mid.slice(1));
-  btn.textContent = '✅ Concluída!'; btn.disabled = true;
-  xp += pts; unlockBadge(bid);
-  const progIdx = mid === 'm1' ? 8 : 9;
-  markProg(progIdx);
-  updateXP(); toast(t, m); checkAll();
-}
-
-// ========== KNOWLEDGE CHECK ==========
-function toggleKC(el) { el.classList.toggle('checked'); }
-
-// ========== AI TUTOR ==========
-async function sendAI() {
-  const input = document.getElementById('aiInput');
-  const msg = input.value.trim();
-  if (!msg) return;
-  input.value = '';
-  appendMsg(msg, 'user');
-  showTyping();
-  document.getElementById('aiSendBtn').disabled = true;
-
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: `Você é o Tutor de Apache Spark para alunos de Infraestrutura para Big Data da FATec Ourinhos. 
-Responda SEMPRE em português brasileiro.
-Seja didático, use exemplos de código PySpark quando relevante.
-Use formatação simples (sem markdown pesado). Use emojis para tornar mais visual.
-Foque em: RDDs, Lazy Evaluation, Transformações vs Ações, DAG, Arquitetura Spark, comparação com MapReduce.
-Respostas curtas e diretas (máx 200 palavras). Se o aluno errar um conceito, corrija gentilmente.`,
-        messages: [{ role: 'user', content: msg }]
-      })
-    });
-    const data = await response.json();
-    removeTyping();
-    const text = data.content?.[0]?.text || 'Desculpe, não consegui processar sua pergunta.';
-    appendMsg(text, 'bot');
-  } catch (e) {
-    removeTyping();
-    appendMsg('⚠️ Erro de conexão com o Tutor IA. Verifique sua conexão e tente novamente.', 'bot');
-  }
-  document.getElementById('aiSendBtn').disabled = false;
-}
-
-function appendMsg(text, role) {
-  const chat = document.getElementById('aiChat');
-  const div = document.createElement('div');
-  div.className = 'ai-msg' + (role === 'user' ? ' user' : '');
-  div.innerHTML = `<div class="ai-bubble ${role === 'user' ? 'user-b' : 'bot'}"><p>${text.replace(/\n/g,'</p><p>').replace(/`([^`]+)`/g,'<code>$1</code>')}</p></div>`;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
-function showTyping() {
-  const chat = document.getElementById('aiChat');
-  const div = document.createElement('div');
-  div.className = 'ai-msg'; div.id = 'typingIndicator';
-  div.innerHTML = '<div class="ai-bubble bot"><div class="ai-typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>';
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
-function removeTyping() {
-  const t = document.getElementById('typingIndicator');
-  if (t) t.remove();
-}
-function aiKeydown(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAI(); } }
-function quickAsk(q) {
-  document.getElementById('aiInput').value = q;
-  sendAI();
-}
-
-// ========== CONFETTI ==========
-function launchConfetti() {
-  const colors = ['#ff6b35','#fbbf24','#34d399','#60a5fa','#a78bfa'];
-  for (let i = 0; i < 60; i++) {
-    const c = document.createElement('div');
-    c.className = 'confetti-piece';
-    c.style.cssText = `left:${Math.random()*100}vw;background:${colors[i%5]};animation-delay:${Math.random()*2}s;animation-duration:${2+Math.random()*2}s;width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>0.5?'50%':'2px'};`;
-    document.body.appendChild(c);
-    setTimeout(() => c.remove(), 5000);
-  }
-}
-
-// ========== COPY CODE ==========
-function copyCode(btn) {
-  const code = btn.closest('.code-block').querySelector('.code-body').innerText;
-  navigator.clipboard.writeText(code).then(() => { btn.textContent = '✅ Copiado!'; setTimeout(() => btn.textContent = '📋 Copiar', 2000); });
-}
-
-// ========== INIT ==========
-updateXP();
-markProg(0, 'active');
+    updateUI();
 </script>
 </body>
 </html>

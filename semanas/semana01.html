@@ -1083,6 +1083,79 @@
             .mission-map { gap: 4px; }
             .mission-dot { width: 36px; height: 36px; }
         }
+/* ─── NETACAD ASSIGNMENT BOX ─── */
+        .netacad-box {
+            background: linear-gradient(135deg, rgba(0,190,60,0.08), rgba(0,120,200,0.06));
+            border: 1px solid rgba(0,190,60,0.3);
+            border-radius: 16px;
+            padding: 28px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .netacad-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #00be3c, #0078c8, #00be3c);
+        }
+        .netacad-tag {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.62em;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #00be3c;
+            background: rgba(0,190,60,0.12);
+            border: 1px solid rgba(0,190,60,0.35);
+            padding: 4px 12px;
+            border-radius: 100px;
+            margin-bottom: 12px;
+        }
+        .netacad-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.15em;
+            color: white;
+            margin-bottom: 10px;
+        }
+        .netacad-body {
+            font-size: 0.88em;
+            color: var(--text-dim);
+            line-height: 1.75;
+            margin-bottom: 16px;
+        }
+        .netacad-body strong { color: var(--text); }
+        .netacad-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .netacad-meta span {
+            font-family: var(--font-mono);
+            font-size: 0.68em;
+            color: var(--text-dim);
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            padding: 5px 12px;
+            border-radius: 100px;
+        }
+        .netacad-link {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.75em;
+            font-weight: 700;
+            padding: 11px 22px;
+            background: #00be3c;
+            color: #001a06;
+            border-radius: 10px;
+            text-decoration: none;
+            letter-spacing: 0.3px;
+        }
+        .netacad-link:hover { opacity: 0.88; }
+    
     </style>
 </head>
 <body>
@@ -1563,6 +1636,23 @@
                 <span><strong>Por que Ubuntu 22.04 LTS?</strong> O Hadoop 3.3, Spark 3.x, Kafka, MongoDB e Cassandra são todos desenvolvidos e testados primariamente em Linux. O Ubuntu 22.04 LTS (Long-Term Support) garante suporte até abril de 2027 e é a distribuição mais usada em servidores de Big Data. O sufixo "LTS" significa que você não terá quebras inesperadas por atualizações.</span>
             </div>
 
+            <div class="concept-box">
+                <div class="concept-box-title">💻 Antes de Instalar: O que é Hardware? (Ementa: Recursos de hardware para Big Data)</div>
+                <div class="concept-box-body">
+                    Antes dos passos técnicos, vale alinhar 4 termos que você vai usar o semestre inteiro — e que a "Missão dos Requisitos Mínimos" logo abaixo pressupõe que você já conhece:
+                    <br><br>
+                    <strong>🧠 RAM (memória)</strong> — é a "mesa de trabalho" do computador: onde tudo que está sendo processado <em>agora</em> fica temporariamente. Quanto mais RAM, mais coisas rodando ao mesmo tempo sem travar. Se falta RAM, o sistema trava ou fica extremamente lento. Big Data trabalha com volumes enormes de dados em memória — por isso RAM é o recurso mais crítico dessa disciplina.
+                    <br><br>
+                    <strong>💾 Armazenamento (HD/SSD)</strong> — é o "armário": onde os arquivos ficam guardados <em>mesmo depois de desligar</em> o computador. Diferente da RAM, não se apaga. SSD é bem mais rápido que HD tradicional (importante para bancos de dados distribuídos, que leem/escrevem disco o tempo todo).
+                    <br><br>
+                    <strong>⚙️ CPU e núcleos (cores)</strong> — é quem "faz as contas". Cada núcleo consegue processar uma tarefa por vez; mais núcleos = mais tarefas em paralelo. Isso conecta direto com a ideia de <em>processamento distribuído</em> que vamos ver no MapReduce: um cluster de Big Data nada mais é do que várias CPUs (em várias máquinas) trabalhando ao mesmo tempo no mesmo problema.
+                    <br><br>
+                    <strong>🧩 Virtualização (VT-x / AMD-V)</strong> — é o recurso do processador que permite "rodar um computador dentro do computador" — no seu caso, o Ubuntu vai rodar <em>dentro</em> do VirtualBox, que roda dentro do seu Windows/macOS. Esse recurso vem desligado por padrão em muitos notebooks e precisa ser ativado na BIOS — é a causa nº1 de erro na instalação da VM.
+                    <br><br>
+                    💡 <strong>Por que isso importa para Big Data especificamente:</strong> um cluster de Big Data real (Hadoop, Spark) é literalmente dezenas ou centenas de máquinas somando RAM + CPU + armazenamento. A VM que você vai criar agora é uma versão em miniatura de <em>um nó</em> desse cluster — entender os recursos de uma máquina é o primeiro passo para entender como eles se somam em um cluster inteiro.
+                </div>
+            </div>
+
             <!-- Passo 1 -->
             <div class="step">
                 <div class="step-header">
@@ -2003,6 +2093,22 @@ EOF
     </div>
 
     <!-- SEÇÃO DE REFERÊNCIA RÁPIDA -->
+    <div class="netacad-box">
+        <div class="netacad-tag">🎓 NIVELAMENTO · NETACAD</div>
+        <div class="netacad-title">📥 Tarefa para entregar: Introduction to Personal Computer Hardware</div>
+        <div class="netacad-body">
+            Como identificamos que a grade do curso não tem disciplina de <strong>Hardware/Arquitetura de Computadores</strong>, vamos preencher essa base aos poucos, módulo por módulo, ao longo das próximas 4 semanas — direto conectado com o que você praticou hoje na Missão 4.<br><br>
+            <strong>O que fazer:</strong> acesse o link abaixo, faça login (ou crie conta gratuita) na NetAcad, e complete o <strong>Módulo 1: Introduction to Personal Computer Hardware</strong> do curso <em>IT Essentials</em>. Ao final, tire um print da tela de conclusão (com seu nome de perfil visível) e envie como comprovante.
+        </div>
+        <div class="netacad-meta">
+            <span>📚 Curso: IT Essentials (Cisco NetAcad)</span>
+            <span>🆓 Gratuito</span>
+            <span>🏅 Gera certificado Cisco</span>
+            <span>⚠️ Bônus/nivelamento — não vale nota</span>
+        </div>
+        <a class="netacad-link" href="https://www.netacad.com/courses/it-essentials" target="_blank" rel="noopener">🔗 Abrir Curso na NetAcad</a>
+    </div>
+
     <div class="section-divider">
         <div class="section-divider-line"></div>
         <div class="section-divider-label">📋 Referência Rápida</div>

@@ -1,1815 +1,1594 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Infraestrutura para Big Data — Experiências Práticas em Ciência de Dados</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semana 14 — AWS EMR e Data Lakes | Infraestrutura para Big Data</title>
 <style>
-  :root {
-    --bg: #0a0e17;
-    --bg2: #0f1520;
-    --bg3: #151d2e;
-    --surface: #1a2438;
-    --border: #243050;
-    --accent: #00d4ff;
-    --accent2: #ff6b35;
-    --accent3: #39ff85;
-    --text: #e2e8f4;
-    --muted: #6b7a99;
-    --warn: #ffb347;
-    --font-mono: 'JetBrains Mono', monospace;
-    --font-sans: 'Syne', sans-serif;
-  }
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;600;700;900&display=swap');
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #060a10;
+            --surface: #0c1220;
+            --panel: #0f1828;
+            --border: rgba(255,255,255,0.08);
+            --accent: #00d4ff;
+            --accent2: #00ff9d;
+            --accent3: #ff6b35;
+            --warn: #ffd60a;
+            --xp-color: #ffd60a;
+            --text: #b8c8d8;
+            --text-dim: #5a7080;
+            --font-display: 'Outfit', sans-serif;
+            --font-body: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
 
-  html { scroll-behavior: smooth; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-sans);
-    line-height: 1.7;
-    overflow-x: hidden;
-  }
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
 
-  /* ── RECALL BANNER ── */
-  .recall-banner {
-    position: relative;
-    z-index: 1;
-    background: linear-gradient(135deg, rgba(255,179,71,.08), rgba(255,107,53,.06));
-    border-top: 3px solid var(--accent2);
-    border-bottom: 1px solid rgba(255,107,53,.25);
-    padding: 0;
-    overflow: hidden;
-  }
-  .recall-inner {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 44px 24px;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 32px;
-    align-items: start;
-  }
-  .recall-icon-col {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    padding-top: 4px;
-  }
-  .recall-emoji { font-size: 2.8rem; }
-  .recall-tag {
-    font-family: var(--font-mono);
-    font-size: .62rem;
-    font-weight: 700;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--accent2);
-    border: 1px solid rgba(255,107,53,.35);
-    padding: 3px 8px;
-    border-radius: 4px;
-    white-space: nowrap;
-  }
-  .recall-content h3 {
-    font-size: 1.25rem;
-    font-weight: 800;
-    margin-bottom: 12px;
-    color: var(--text);
-    letter-spacing: -.01em;
-  }
-  .recall-content h3 span { color: var(--accent2); }
-  .recall-content p { font-size: .9rem; color: var(--muted); line-height: 1.7; margin-bottom: 16px; }
-  .recall-steps {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 20px;
-  }
-  .recall-step {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 16px;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    min-width: 180px;
-    flex: 1;
-  }
-  .recall-step-num {
-    font-family: var(--font-mono);
-    font-size: .65rem;
-    font-weight: 700;
-    background: var(--accent2);
-    color: var(--bg);
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-  .recall-step h4 { font-size: .8rem; font-weight: 700; margin-bottom: 2px; }
-  .recall-step p { font-size: .75rem; color: var(--muted); margin: 0; line-height: 1.4; }
-  .recall-bridge {
-    margin-top: 20px;
-    background: rgba(0,212,255,.06);
-    border: 1px solid rgba(0,212,255,.2);
-    border-radius: 8px;
-    padding: 14px 18px;
-    font-size: .86rem;
-    color: var(--muted);
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-  }
-  .recall-bridge strong { color: var(--accent); }
-  @media (max-width: 600px) {
-    .recall-inner { grid-template-columns: 1fr; gap: 20px; }
-    .recall-icon-col { flex-direction: row; align-items: center; }
-  }
+        /* ─── HEADER ─── */
+        .header {
+            background: linear-gradient(180deg, #060e1c 0%, var(--bg) 100%);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+        .header-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .header-icon {
+            font-size: 1.8em;
+            background: radial-gradient(circle, rgba(0,212,255,0.15), transparent);
+            width: 44px; height: 44px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 10px;
+            border: 1px solid rgba(0,212,255,0.2);
+        }
+        .header-title {
+            font-family: var(--font-display);
+            font-size: 0.95em;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 0.5px;
+        }
+        .header-sub {
+            font-size: 0.72em;
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+        }
+        .xp-hud {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,214,10,0.05);
+            border: 1px solid rgba(255,214,10,0.2);
+            border-radius: 8px;
+            padding: 8px 14px;
+        }
+        .xp-label {
+            font-family: var(--font-display);
+            font-size: 0.7em;
+            letter-spacing: 2px;
+            color: var(--xp-color);
+            font-weight: 700;
+        }
+        .xp-bar-wrap {
+            width: 120px;
+            height: 6px;
+            background: rgba(255,214,10,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .xp-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--xp-color), #ffaa00);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.8s cubic-bezier(.34,1.56,.64,1);
+        }
+        .xp-points {
+            font-family: var(--font-mono);
+            font-size: 0.72em;
+            color: var(--xp-color);
+            white-space: nowrap;
+        }
 
-  /* ── RECALL BANNER ── */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,212,255,.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,212,255,.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
+        /* ─── XP TOAST ─── */
+        .xp-toast {
+            position: fixed;
+            top: 80px; right: 24px;
+            background: var(--surface);
+            border: 1px solid var(--xp-color);
+            border-radius: 10px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--xp-color);
+            font-size: 0.9em;
+            z-index: 999;
+            transform: translateX(200%);
+            transition: transform 0.5s cubic-bezier(.34,1.56,.64,1);
+        }
+        .xp-toast.show { transform: translateX(0); }
 
-  /* ── NAV ── */
-  nav {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(10,14,23,.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    padding: 14px 32px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  nav .badge {
-    background: var(--accent);
-    color: var(--bg);
-    font-family: var(--font-mono);
-    font-size: .68rem;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 4px;
-    letter-spacing: .04em;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  nav .nav-meta { display: flex; flex-direction: column; gap: 1px; }
-  nav .title { font-weight: 700; font-size: .92rem; color: var(--text); line-height: 1.2; }
-  nav .nav-inst { font-family: var(--font-mono); font-size: .6rem; color: var(--muted); letter-spacing: .04em; }
-  nav .steps {
-    margin-left: auto;
-    display: flex;
-    gap: 6px;
-  }
-  nav .steps a {
-    font-family: var(--font-mono);
-    font-size: .72rem;
-    color: var(--muted);
-    text-decoration: none;
-    padding: 4px 10px;
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    transition: all .2s;
-  }
-  nav .steps a:hover { color: var(--accent); border-color: var(--accent); }
+        /* ─── EMENTA LOCATION BAR ─── */
+        .ementa-bar {
+            position: sticky;
+            top: 73px;
+            z-index: 99;
+            background: rgba(6,10,16,0.97);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 7px 24px;
+        }
+        .ementa-bar-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .ementa-tag {
+            font-family: var(--font-mono);
+            font-size: 0.62em;
+            letter-spacing: 1px;
+            color: var(--accent);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .ementa-div {
+            width: 1px;
+            height: 12px;
+            background: var(--border);
+            flex-shrink: 0;
+        }
+        .ementa-text {
+            font-family: var(--font-mono);
+            font-size: 0.64em;
+            color: var(--text-dim);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        @media (max-width: 768px) { .ementa-text { display: none; } }
 
-  /* ── HERO ── */
-  .hero {
-    position: relative;
-    z-index: 1;
-    min-height: 82vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 60px 24px;
-    overflow: hidden;
-  }
-  .hero-glow {
-    position: absolute;
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(0,212,255,.12) 0%, transparent 70%);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    pointer-events: none;
-    animation: pulse 4s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%,100% { opacity: .6; transform: translate(-50%,-50%) scale(1); }
-    50% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
-  }
-  .hero-tag {
-    font-family: var(--font-mono);
-    font-size: .75rem;
-    color: var(--accent);
-    letter-spacing: .2em;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    border: 1px solid rgba(0,212,255,.3);
-    padding: 6px 16px;
-    border-radius: 20px;
-    display: inline-block;
-  }
-  .hero h1 {
-    font-size: clamp(2.4rem, 6vw, 5rem);
-    font-weight: 800;
-    line-height: 1.05;
-    letter-spacing: -.02em;
-    margin-bottom: 20px;
-  }
-  .hero h1 span { color: var(--accent); }
-  .hero p {
-    font-size: 1.15rem;
-    color: var(--muted);
-    max-width: 640px;
-    margin-bottom: 40px;
-  }
+        /* ─── HERO ─── */
+        .hero {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 60px 24px 40px;
+            text-align: center;
+        }
+        .hero-badge {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.75em;
+            letter-spacing: 2px;
+            color: var(--accent2);
+            background: rgba(0,255,157,0.08);
+            border: 1px solid rgba(0,255,157,0.25);
+            padding: 6px 16px;
+            border-radius: 20px;
+            margin-bottom: 24px;
+        }
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2em, 5vw, 3.2em);
+            font-weight: 900;
+            color: white;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+        .hero h1 span { color: var(--accent); }
+        .hero-desc {
+            font-size: 1.05em;
+            color: var(--text-dim);
+            max-width: 640px;
+            margin: 0 auto 36px;
+            line-height: 1.8;
+        }
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        .hero-stat-val {
+            font-family: var(--font-display);
+            font-size: 1.8em;
+            font-weight: 900;
+            color: white;
+        }
+        .hero-stat-label {
+            font-size: 0.75em;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
 
-  /* ── ANIMATED LOG STREAM ── */
-  .log-stream {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px 24px;
-    max-width: 680px;
-    width: 100%;
-    text-align: left;
-    font-family: var(--font-mono);
-    font-size: .78rem;
-    overflow: hidden;
-    position: relative;
-  }
-  .log-stream .log-header {
-    color: var(--muted);
-    margin-bottom: 12px;
-    font-size: .7rem;
-    letter-spacing: .1em;
-  }
-  .log-line {
-    padding: 3px 0;
-    animation: fadeIn .4s ease forwards;
-    opacity: 0;
-    white-space: nowrap;
-    overflow: hidden;
-  }
-  .log-line:nth-child(2) { animation-delay: .5s; }
-  .log-line:nth-child(3) { animation-delay: 1s; }
-  .log-line:nth-child(4) { animation-delay: 1.5s; }
-  .log-line:nth-child(5) { animation-delay: 2s; }
-  .log-line:nth-child(6) { animation-delay: 2.5s; }
-  @keyframes fadeIn { to { opacity: 1; } }
-  .log-id { color: var(--muted); }
-  .log-ts { color: var(--accent2); }
-  .log-val { color: var(--accent); }
-  .log-ok { color: var(--accent3); }
-  .log-alert { color: var(--warn); }
+        /* ─── PROGRESS / MISSION MAP ─── */
+        .progress-overview {
+            max-width: 1100px;
+            margin: 0 auto 16px;
+            padding: 0 24px;
+        }
+        .mission-map {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 20px;
+            background: var(--surface);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+        }
+        .mission-dot {
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-display);
+            font-size: 0.7em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            user-select: none;
+        }
+        .mission-dot.active {
+            background: rgba(0,212,255,0.15);
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 16px rgba(0,212,255,0.3);
+        }
+        .mission-dot.locked {
+            background: rgba(255,255,255,0.03);
+            border: 2px solid var(--border);
+            color: var(--text-dim);
+        }
+        .mission-dot.done {
+            background: rgba(0,255,157,0.12);
+            border: 2px solid var(--accent2);
+            color: var(--accent2);
+        }
+        .mission-line {
+            height: 2px;
+            width: 30px;
+            background: var(--border);
+            border-radius: 2px;
+            transition: background 0.5s;
+        }
+        .mission-line.done { background: var(--accent2); }
 
-  /* ── SECTIONS ── */
-  .section {
-    position: relative;
-    z-index: 1;
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 80px 24px;
-  }
-  .section-label {
-    font-family: var(--font-mono);
-    font-size: .7rem;
-    color: var(--accent);
-    letter-spacing: .2em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .section-label::before {
-    content: '';
-    display: block;
-    width: 24px;
-    height: 2px;
-    background: var(--accent);
-  }
-  h2 {
-    font-size: clamp(1.8rem, 4vw, 2.8rem);
-    font-weight: 800;
-    letter-spacing: -.02em;
-    margin-bottom: 24px;
-    line-height: 1.1;
-  }
-  h2 .hl { color: var(--accent); }
-  p.lead {
-    font-size: 1.1rem;
-    color: var(--muted);
-    max-width: 720px;
-    margin-bottom: 40px;
-  }
-  .divider {
-    border: none;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--border), transparent);
-    margin: 0;
-  }
+        /* ─── MAIN ─── */
+        .main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px 60px;
+        }
 
-  /* ── CONCEPT CARDS ── */
-  .concept-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-    margin-top: 40px;
-  }
-  .concept-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 28px;
-    transition: border-color .2s, transform .2s;
-    position: relative;
-    overflow: hidden;
-  }
-  .concept-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--accent);
-  }
-  .concept-card:nth-child(2)::before { background: var(--accent2); }
-  .concept-card:nth-child(3)::before { background: var(--accent3); }
-  .concept-card:hover { border-color: var(--accent); transform: translateY(-3px); }
-  .concept-card .icon {
-    font-size: 2rem;
-    margin-bottom: 16px;
-    display: block;
-  }
-  .concept-card h3 {
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-    color: var(--text);
-  }
-  .concept-card p { font-size: .88rem; color: var(--muted); line-height: 1.65; }
+        /* ─── CONTEXT PANELS (prev/next week) ─── */
+        .context-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        @media(max-width:680px) { .context-row { grid-template-columns: 1fr; } }
 
-  /* ── CIRCUIT DIAGRAM ── */
-  .circuit-wrapper {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 40px;
-    margin-top: 40px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    align-items: center;
-  }
-  @media (max-width: 640px) {
-    .circuit-wrapper { grid-template-columns: 1fr; }
-  }
-  .circuit-info h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; }
-  .pin-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
-  .pin-list li {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    font-size: .88rem;
-    padding: 12px 16px;
-    background: var(--bg3);
-    border-radius: 8px;
-    border-left: 3px solid var(--border);
-  }
-  .pin-list li.v5 { border-color: var(--accent2); }
-  .pin-list li.a0 { border-color: var(--accent); }
-  .pin-list li.gnd { border-color: var(--muted); }
-  .pin-tag {
-    font-family: var(--font-mono);
-    font-size: .7rem;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 4px;
-    min-width: 44px;
-    text-align: center;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-  .pin-tag.red { background: rgba(255,107,53,.2); color: var(--accent2); }
-  .pin-tag.blue { background: rgba(0,212,255,.15); color: var(--accent); }
-  .pin-tag.gray { background: rgba(107,122,153,.2); color: var(--muted); }
-  .pin-desc { color: var(--muted); line-height: 1.5; }
-  .pin-desc strong { color: var(--text); }
+        .context-panel {
+            border-radius: 12px;
+            padding: 18px 20px;
+            border: 1px solid;
+            position: relative;
+            overflow: hidden;
+        }
+        .context-panel.prev {
+            background: rgba(90,70,180,0.06);
+            border-color: rgba(90,70,180,0.25);
+        }
+        .context-panel.next {
+            background: rgba(0,212,255,0.05);
+            border-color: rgba(0,212,255,0.2);
+        }
+        .context-panel-label {
+            font-family: var(--font-mono);
+            font-size: 0.65em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+        .context-panel.prev .context-panel-label { color: #9d80e0; }
+        .context-panel.next .context-panel-label { color: var(--accent); }
+        .context-panel-title {
+            font-family: var(--font-display);
+            font-size: 0.95em;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+        .context-panel-body {
+            font-size: 0.82em;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+        .context-panel.next .context-panel-body { color: #90b8d0; }
 
-  /* ── SVG CIRCUIT ── */
-  .circuit-svg-wrap {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .circuit-svg-wrap svg {
-    width: 100%;
-    max-width: 360px;
-    height: auto;
-  }
+        /* ─── DISCIPLINE PANEL ─── */
+        .discipline-panel {
+            background: linear-gradient(135deg, rgba(0,212,255,0.06) 0%, rgba(0,255,157,0.04) 100%);
+            border: 1px solid rgba(0,212,255,0.2);
+            border-radius: 14px;
+            padding: 24px 28px;
+            margin: 0 0 28px;
+            position: relative;
+            overflow: hidden;
+        }
+        .discipline-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 4px; height: 100%;
+            background: linear-gradient(180deg, var(--accent), var(--accent2));
+            border-radius: 4px 0 0 4px;
+        }
+        .discipline-panel-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .discipline-panel-title {
+            font-family: var(--font-display);
+            font-size: 0.7em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+        .discipline-panel-subtitle {
+            font-size: 0.72em;
+            color: var(--text-dim);
+            margin-left: auto;
+            font-family: var(--font-mono);
+        }
+        .discipline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 14px;
+            margin-top: 16px;
+        }
+        .discipline-item {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 14px 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .discipline-item-label {
+            font-family: var(--font-display);
+            font-size: 0.62em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+        .discipline-item-text {
+            font-size: 0.83em;
+            color: var(--text);
+            line-height: 1.65;
+        }
+        .discipline-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .discipline-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.76em;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-family: var(--font-body);
+            font-weight: 600;
+        }
+        .dtag-ementa { background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.25); color: #90d8f0; }
+        .dtag-objetivo { background: rgba(0,255,157,0.08); border: 1px solid rgba(0,255,157,0.2); color: #80e8b8; }
+        .dtag-competencia { background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.2); color: #e8d060; }
 
-  /* ── DIVISOR TENSÃO ── */
-  .concept-box {
-    background: linear-gradient(135deg, rgba(0,212,255,.07), rgba(0,212,255,.02));
-    border: 1px solid rgba(0,212,255,.25);
-    border-radius: 12px;
-    padding: 24px 28px;
-    margin-top: 28px;
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
-  }
-  .concept-box .cb-icon { font-size: 1.8rem; flex-shrink: 0; }
-  .concept-box h4 { font-size: .95rem; font-weight: 700; margin-bottom: 6px; }
-  .concept-box p { font-size: .86rem; color: var(--muted); line-height: 1.6; }
+        /* ─── MISSION CARD ─── */
+        .mission-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+        .mission-card.active-mission {
+            border-color: rgba(0,212,255,0.35);
+            box-shadow: 0 0 30px rgba(0,212,255,0.07);
+        }
+        .mission-card.completed { border-color: rgba(0,255,157,0.25); }
 
-  /* ── CODE BLOCK ── */
-  .code-section { background: var(--bg2); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; margin-top: 40px; }
-  .code-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg3);
-  }
-  .code-header .dot { width: 12px; height: 12px; border-radius: 50%; }
-  .dot-r { background: #ff5f57; }
-  .dot-y { background: #ffbd2e; }
-  .dot-g { background: #27c840; }
-  .code-header .filename {
-    font-family: var(--font-mono);
-    font-size: .75rem;
-    color: var(--muted);
-    margin-left: 8px;
-  }
-  .code-header .lang-badge {
-    margin-left: auto;
-    font-family: var(--font-mono);
-    font-size: .65rem;
-    color: var(--accent2);
-    border: 1px solid rgba(255,107,53,.3);
-    padding: 2px 8px;
-    border-radius: 4px;
-  }
-  pre {
-    padding: 28px;
-    overflow-x: auto;
-    font-family: var(--font-mono);
-    font-size: .82rem;
-    line-height: 1.8;
-    counter-reset: line;
-  }
-  .line {
-    display: block;
-    position: relative;
-  }
-  .line::before {
-    content: counter(line);
-    counter-increment: line;
-    color: var(--border);
-    font-size: .7rem;
-    min-width: 28px;
-    display: inline-block;
-    text-align: right;
-    margin-right: 20px;
-    user-select: none;
-  }
-  .c-comment { color: #506484; }
-  .c-kw { color: #c792ea; }
-  .c-type { color: var(--accent2); }
-  .c-fn { color: var(--accent); }
-  .c-str { color: var(--accent3); }
-  .c-num { color: #f78c6c; }
-  .c-var { color: var(--text); }
-  .c-op { color: var(--muted); }
+        .mission-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 20px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+        .mission-header:hover { background: rgba(255,255,255,0.02); }
 
-  /* ── ANNOTATIONS ── */
-  .annotations {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 16px;
-    margin-top: 32px;
-  }
-  .anno {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px 20px;
-    display: flex;
-    gap: 14px;
-    align-items: flex-start;
-  }
-  .anno-num {
-    font-family: var(--font-mono);
-    font-size: .7rem;
-    font-weight: 700;
-    background: var(--accent);
-    color: var(--bg);
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .anno-num.o { background: var(--accent2); }
-  .anno-num.g { background: var(--accent3); }
-  .anno h4 { font-size: .85rem; font-weight: 700; margin-bottom: 4px; }
-  .anno p { font-size: .8rem; color: var(--muted); line-height: 1.5; }
+        .mission-num {
+            font-family: var(--font-display);
+            font-size: 0.75em;
+            font-weight: 700;
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            background: rgba(0,212,255,0.1);
+            border: 1px solid rgba(0,212,255,0.25);
+            color: var(--accent);
+        }
+        .mission-meta { flex: 1; }
+        .mission-title {
+            font-family: var(--font-display);
+            font-size: 1em;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 6px;
+        }
+        .mission-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag {
+            font-family: var(--font-mono);
+            font-size: 0.68em;
+            padding: 3px 10px;
+            border-radius: 4px;
+        }
+        .tag-xp { background: rgba(255,214,10,0.1); color: var(--xp-color); border: 1px solid rgba(255,214,10,0.25); }
+        .tag-time { background: rgba(0,212,255,0.07); color: #90b8d0; border: 1px solid rgba(0,212,255,0.15); }
+        .tag-type { background: rgba(255,107,53,0.08); color: #e89070; border: 1px solid rgba(255,107,53,0.2); }
+        .tag-ementa { background: rgba(0,212,255,0.06); color: #7ecce0; border: 1px solid rgba(0,212,255,0.15); font-style: italic; }
+        .tag-wsl { background: rgba(120,80,220,0.1); color: #c0a0f0; border: 1px solid rgba(120,80,220,0.25); }
+        .mission-status { font-size: 1.1em; }
+        .mission-toggle {
+            color: var(--text-dim);
+            font-size: 1.1em;
+            transition: transform 0.3s;
+        }
+        .mission-card.open .mission-toggle { transform: rotate(180deg); }
+        .mission-body {
+            display: none;
+            border-top: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+        .mission-card.open .mission-body { display: block; }
 
-  /* ── DATA FLOW DIAGRAM ── */
-  .dataflow {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    margin-top: 40px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .df-node {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px 22px;
-    text-align: center;
-    min-width: 120px;
-    transition: border-color .2s;
-  }
-  .df-node:hover { border-color: var(--accent); }
-  .df-node .df-icon { font-size: 1.8rem; margin-bottom: 8px; }
-  .df-node h4 { font-size: .78rem; font-weight: 700; margin-bottom: 4px; }
-  .df-node p { font-size: .7rem; color: var(--muted); }
-  .df-arrow {
-    font-size: 1.4rem;
-    color: var(--accent);
-    padding: 0 8px;
-    flex-shrink: 0;
-    opacity: .6;
-  }
+        .mission-intro {
+            padding: 16px 20px;
+            font-size: 0.9em;
+            color: var(--text);
+            line-height: 1.8;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
 
-  /* ── CHALLENGES ── */
-  .challenges { display: flex; flex-direction: column; gap: 28px; margin-top: 40px; }
-  .challenge {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-    transition: border-color .2s;
-  }
-  .challenge:hover { border-color: var(--accent); }
-  .ch-header {
-    padding: 20px 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg3);
-  }
-  .ch-num {
-    font-family: var(--font-mono);
-    font-size: .75rem;
-    font-weight: 700;
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .ch-num.v { background: rgba(0,212,255,.15); color: var(--accent); }
-  .ch-num.q { background: rgba(57,255,133,.12); color: var(--accent3); }
-  .ch-num.f { background: rgba(255,179,71,.12); color: var(--warn); }
-  .ch-header h3 { font-size: 1rem; font-weight: 700; }
-  .ch-header .ch-tag {
-    margin-left: auto;
-    font-family: var(--font-mono);
-    font-size: .65rem;
-    color: var(--muted);
-    border: 1px solid var(--border);
-    padding: 3px 8px;
-    border-radius: 4px;
-  }
-  .ch-body { padding: 24px; }
-  .ch-body p { font-size: .9rem; color: var(--muted); line-height: 1.7; margin-bottom: 16px; }
-  .ch-body p:last-child { margin-bottom: 0; }
-  .ch-body .highlight {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px 20px;
-    font-family: var(--font-mono);
-    font-size: .8rem;
-    color: var(--accent);
-    line-height: 1.7;
-  }
-  .ch-body .tip {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    background: rgba(57,255,133,.06);
-    border: 1px solid rgba(57,255,133,.2);
-    border-radius: 8px;
-    padding: 14px 18px;
-    font-size: .84rem;
-    color: var(--muted);
-  }
-  .ch-body .tip .tip-icon { font-size: 1rem; flex-shrink: 0; margin-top: 2px; }
+        /* ─── CONCEPT BOX ─── */
+        .concept-box {
+            margin: 14px 18px;
+            background: rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .concept-box-title {
+            padding: 10px 16px;
+            background: rgba(255,214,10,0.06);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-family: var(--font-display);
+            font-size: 0.78em;
+            font-weight: 700;
+            color: var(--warn);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .concept-box-body {
+            padding: 14px 18px;
+            font-size: 0.85em;
+            color: var(--text);
+            line-height: 1.85;
+        }
+        .concept-box-body strong { color: var(--accent2); }
+        .concept-box-body em { color: var(--accent); font-style: normal; }
 
-  /* ── MATH ── */
-  .math-box {
-    background: var(--bg);
-    border: 1px solid var(--accent);
-    border-radius: 10px;
-    padding: 20px 24px;
-    margin-top: 16px;
-    font-family: var(--font-mono);
-    font-size: .88rem;
-    color: var(--accent);
-  }
-  .math-box .result { font-size: 1.1rem; font-weight: 700; color: var(--accent2); margin-top: 8px; }
+        /* ─── STEP ─── */
+        .step {
+            margin: 12px 18px 0;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .step-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 18px;
+        }
+        .step-num {
+            font-family: var(--font-display);
+            font-size: 0.65em;
+            font-weight: 700;
+            width: 30px; height: 30px;
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            background: rgba(255,107,53,0.15);
+            border: 1px solid rgba(255,107,53,0.3);
+            color: var(--accent3);
+            margin-top: 2px;
+        }
+        .step-content { flex: 1; }
+        .step-title { font-weight: 600; font-size: 0.95em; color: white; margin-bottom: 6px; }
+        .step-desc { font-size: 0.85em; color: var(--text); line-height: 1.6; }
+        .step-desc code { font-family: var(--font-mono); font-size: 0.9em; color: var(--warn); background: rgba(255,214,10,0.07); padding: 1px 6px; border-radius: 4px; }
 
-  /* ── FOOTER ── */
-  footer {
-    position: relative;
-    z-index: 1;
-    border-top: 1px solid var(--border);
-    padding: 40px 32px;
-    text-align: center;
-    font-family: var(--font-mono);
-    font-size: .75rem;
-    color: var(--muted);
-  }
-  footer span { color: var(--accent); }
+        /* ─── OS TABS ─── */
+        .os-tabs {
+            margin: 10px 18px 0;
+            display: flex;
+            gap: 6px;
+        }
+        .os-tab {
+            font-family: var(--font-mono);
+            font-size: 0.72em;
+            padding: 6px 14px;
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            color: var(--text-dim);
+            background: rgba(255,255,255,0.02);
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .os-tab.active-tab {
+            background: rgba(0,212,255,0.08);
+            color: var(--accent);
+            border-color: rgba(0,212,255,0.25);
+        }
+        .os-tab.wsl-tab.active-tab {
+            background: rgba(120,80,220,0.1);
+            color: #c0a0f0;
+            border-color: rgba(120,80,220,0.3);
+        }
+        .os-pane { display: none; }
+        .os-pane.active-pane { display: block; }
 
-  /* ── COMPONENT GALLERY ── */
-  .comp-gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    margin-top: 40px;
-  }
-  .comp-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-    transition: border-color .25s, transform .2s;
-  }
-  .comp-card:hover { border-color: var(--accent); transform: translateY(-3px); }
-  .comp-card .comp-img {
-    width: 100%;
-    height: 160px;
-    object-fit: contain;
-    background: #fff;
-    padding: 12px;
-    display: block;
-  }
-  .comp-card .comp-body { padding: 16px 18px; }
-  .comp-card h4 { font-size: .88rem; font-weight: 700; margin-bottom: 6px; }
-  .comp-card p { font-size: .78rem; color: var(--muted); line-height: 1.55; }
-  .comp-card .comp-tag {
-    display: inline-block;
-    font-family: var(--font-mono);
-    font-size: .62rem;
-    color: var(--accent);
-    border: 1px solid rgba(0,212,255,.3);
-    padding: 2px 8px;
-    border-radius: 4px;
-    margin-top: 8px;
-  }
+        /* ─── CODE BLOCK ─── */
+        .code-block {
+            margin: 12px 18px 16px;
+            position: relative;
+        }
+        .code-block-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #070c14;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            padding: 8px 14px;
+        }
+        .code-lang {
+            font-family: var(--font-mono);
+            font-size: 0.7em;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .copy-btn {
+            font-family: var(--font-mono);
+            font-size: 0.72em;
+            background: rgba(0,212,255,0.1);
+            color: var(--accent);
+            border: 1px solid rgba(0,212,255,0.3);
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .copy-btn:hover { background: rgba(0,212,255,0.2); box-shadow: 0 0 10px rgba(0,212,255,0.3); }
+        .copy-btn.copied { background: rgba(0,255,157,0.1); color: var(--accent2); border-color: rgba(0,255,157,0.3); }
+        .code-body {
+            background: #070c14;
+            border: 1px solid var(--border);
+            border-radius: 0 0 8px 8px;
+            padding: 16px;
+            overflow-x: auto;
+        }
+        .code-body code {
+            font-family: var(--font-mono);
+            font-size: 0.88em;
+            line-height: 1.8;
+            color: #a8d8a8;
+            display: block;
+            white-space: pre;
+        }
+        .code-body code .prompt { color: var(--accent2); user-select: none; }
+        .code-body code .comment { color: var(--text-dim); }
+        .code-body code .highlight { color: var(--warn); }
+        .code-body code .red { color: #ff7070; }
+        .code-body code .blue { color: #70b0ff; }
 
-  /* ── RESISTOR COLOR LEGEND ── */
-  .resistor-legend {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 28px;
-    margin-top: 32px;
-  }
-  .resistor-legend h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
-  .resistor-legend .sub { font-size: .84rem; color: var(--muted); margin-bottom: 24px; }
-  .res-visual {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    margin-bottom: 28px;
-  }
-  .res-body {
-    display: flex;
-    align-items: stretch;
-    height: 48px;
-    border-radius: 24px;
-    overflow: hidden;
-    background: #d4b483;
-    border: 2px solid #b8965a;
-    position: relative;
-    box-shadow: 0 4px 16px rgba(0,0,0,.4);
-  }
-  .res-wire {
-    width: 40px;
-    height: 4px;
-    background: #aaa;
-    align-self: center;
-    flex-shrink: 0;
-  }
-  .res-band {
-    width: 22px;
-    height: 100%;
-    flex-shrink: 0;
-  }
-  .res-gap { width: 18px; background: #d4b483; }
-  .res-gap-lg { width: 28px; background: #d4b483; }
-  .band-brown { background: #8B4513; }
-  .band-black { background: #111; }
-  .band-orange { background: #FF8C00; }
-  .band-gold { background: #FFD700; }
-  .band-labels {
-    display: flex;
-    justify-content: center;
-    gap: 4px;
-    flex-wrap: wrap;
-    margin-top: 16px;
-  }
-  .band-label {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    min-width: 80px;
-    padding: 10px 12px;
-    background: var(--bg3);
-    border-radius: 8px;
-    border: 1px solid var(--border);
-  }
-  .band-swatch {
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    border: 1px solid rgba(255,255,255,.15);
-    flex-shrink: 0;
-  }
-  .band-label h5 { font-size: .72rem; font-weight: 700; text-align: center; }
-  .band-label p { font-size: .68rem; color: var(--muted); text-align: center; line-height: 1.3; margin: 0; }
-  .band-label .band-val { font-family: var(--font-mono); font-size: .8rem; font-weight: 700; color: var(--accent); }
+        /* WSL code block variant */
+        .code-block-wsl .code-block-header { background: #0d0818; border-color: rgba(120,80,220,0.2); }
+        .code-block-wsl .code-body { background: #0d0818; border-color: rgba(120,80,220,0.2); }
+        .code-block-wsl .copy-btn { background: rgba(120,80,220,0.1); color: #c0a0f0; border-color: rgba(120,80,220,0.3); }
 
-  /* ── ARDUINO IDE STEPS ── */
-  .ide-steps { display: flex; flex-direction: column; gap: 0; margin-top: 40px; }
-  .ide-step {
-    display: grid;
-    grid-template-columns: 56px 1fr;
-    gap: 0;
-  }
-  .ide-step-left {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
-  }
-  .ide-step-num {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--accent);
-    color: var(--bg);
-    font-family: var(--font-mono);
-    font-size: .85rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    z-index: 1;
-  }
-  .ide-step:nth-child(2) .ide-step-num { background: var(--accent2); }
-  .ide-step:nth-child(3) .ide-step-num { background: var(--accent3); color: var(--bg); }
-  .ide-step:nth-child(4) .ide-step-num { background: var(--warn); color: var(--bg); }
-  .ide-step:nth-child(5) .ide-step-num { background: #c792ea; color: var(--bg); }
-  .ide-connector {
-    width: 2px;
-    flex: 1;
-    background: var(--border);
-    min-height: 24px;
-  }
-  .ide-step:last-child .ide-connector { display: none; }
-  .ide-step-content {
-    padding: 0 0 32px 20px;
-  }
-  .ide-step-content h4 { font-size: .95rem; font-weight: 700; margin-bottom: 8px; margin-top: 8px; }
-  .ide-step-content p { font-size: .86rem; color: var(--muted); line-height: 1.65; margin-bottom: 10px; }
-  .ide-step-content p:last-child { margin-bottom: 0; }
-  .ide-mock {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-    margin-top: 12px;
-  }
-  .ide-mock-bar {
-    background: #2c2c2c;
-    padding: 7px 14px;
-    font-family: var(--font-mono);
-    font-size: .7rem;
-    color: #999;
-    border-bottom: 1px solid #444;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .ide-mock-bar .dot { width: 10px; height: 10px; border-radius: 50%; }
-  .ide-mock-body {
-    padding: 16px 18px;
-    font-family: var(--font-mono);
-    font-size: .78rem;
-    line-height: 1.7;
-  }
-  .ide-path { color: #aaa; }
-  .ide-selected { background: rgba(0,212,255,.12); color: var(--accent); padding: 1px 6px; border-radius: 3px; }
-  .ide-note {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    background: rgba(255,179,71,.07);
-    border: 1px solid rgba(255,179,71,.25);
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: .82rem;
-    color: var(--muted);
-    margin-top: 12px;
-  }
-  .ide-note strong { color: var(--warn); }
+        /* ─── EXPECTED OUTPUT ─── */
+        .expected-output { margin: 8px 18px 16px; }
+        .expected-output-label {
+            font-family: var(--font-mono);
+            font-size: 0.72em;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .output-box {
+            background: #050810;
+            border: 1px solid rgba(0,255,157,0.15);
+            border-radius: 6px;
+            padding: 12px 14px;
+            font-family: var(--font-mono);
+            font-size: 0.8em;
+            color: #6fe0a0;
+            line-height: 1.7;
+            white-space: pre;
+            overflow-x: auto;
+        }
 
-  /* ── COMPONENT GALLERY ── */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+        /* ─── ALERTS ─── */
+        .alert {
+            margin: 12px 18px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            line-height: 1.6;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .alert-icon { font-size: 1.1em; flex-shrink: 0; }
+        .alert-info { background: rgba(0,212,255,0.07); border: 1px solid rgba(0,212,255,0.2); color: #a0c8e8; }
+        .alert-warn { background: rgba(255,214,10,0.07); border: 1px solid rgba(255,214,10,0.25); color: #e8d880; }
+        .alert-success { background: rgba(0,255,157,0.07); border: 1px solid rgba(0,255,157,0.2); color: #80e8b8; }
+        .alert-danger { background: rgba(255,71,87,0.07); border: 1px solid rgba(255,71,87,0.2); color: #e88a8a; }
+        .alert a { color: var(--accent); }
 
-  @media (max-width: 600px) {
-    nav .steps { display: none; }
-    .dataflow { flex-direction: column; }
-    .df-arrow { transform: rotate(90deg); }
-  }
-</style>
+        /* ─── CHECKPOINT ─── */
+        .checkpoint {
+            margin: 16px 18px;
+            background: rgba(0,255,157,0.05);
+            border: 1px solid rgba(0,255,157,0.2);
+            border-radius: 10px;
+            padding: 16px 18px;
+        }
+        .checkpoint-title {
+            font-family: var(--font-display);
+            font-size: 0.72em;
+            color: var(--accent2);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .checkpoint-items { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .checkpoint-item { display: flex; align-items: center; gap: 10px; font-size: 0.85em; color: var(--text); }
+        .checkpoint-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent2); }
+        .checkpoint-item label { cursor: pointer; }
+
+        /* ─── COMPLETE BUTTON ─── */
+        .complete-btn {
+            display: block;
+            margin: 16px 18px 20px;
+            width: calc(100% - 36px);
+            padding: 14px 20px;
+            background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,255,157,0.1));
+            border: 1px solid rgba(0,212,255,0.35);
+            border-radius: 10px;
+            color: var(--accent);
+            font-family: var(--font-display);
+            font-size: 0.9em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+        }
+        .complete-btn:hover { background: linear-gradient(135deg, rgba(0,212,255,0.25), rgba(0,255,157,0.18)); transform: translateY(-1px); }
+        .complete-btn.done { background: rgba(0,255,157,0.08); border-color: rgba(0,255,157,0.3); color: var(--accent2); cursor: default; }
+        .complete-btn:disabled:not(.done) { opacity: 0.4; cursor: not-allowed; }
+
+        /* ─── DRAG & DROP EXERCISE ─── */
+        .dnd-box {
+            margin: 16px 18px 20px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px 20px;
+        }
+        .dnd-title {
+            font-family: var(--font-display);
+            font-size: 0.78em;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .dnd-sub {
+            font-size: 0.82em;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+        .dnd-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 700px) { .dnd-grid { grid-template-columns: 1fr; } }
+        .dnd-pool {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .dnd-chip {
+            font-family: var(--font-mono);
+            font-size: 0.8em;
+            color: var(--text);
+            background: var(--panel);
+            border: 1px solid rgba(0,212,255,0.3);
+            border-radius: 8px;
+            padding: 11px 14px;
+            cursor: grab;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .dnd-chip:hover { border-color: var(--accent); background: rgba(0,212,255,0.08); }
+        .dnd-chip.selected { border-color: var(--accent2); background: rgba(0,255,157,0.1); box-shadow: 0 0 0 1px var(--accent2); }
+        .dnd-chip.placed { opacity: 0.25; cursor: default; pointer-events: none; text-decoration: line-through; }
+        .dnd-targets {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .dnd-target {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--panel);
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            padding: 9px 12px;
+        }
+        .dnd-target-label {
+            font-family: var(--font-display);
+            font-size: 0.78em;
+            font-weight: 700;
+            color: var(--text);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 108px;
+        }
+        .dnd-target-slot {
+            flex: 1;
+            min-height: 34px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.015);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            font-family: var(--font-mono);
+            font-size: 0.78em;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dnd-target-slot.dragover { border-color: var(--accent); background: rgba(0,212,255,0.08); }
+        .dnd-target-slot.filled { border-color: rgba(0,255,157,0.4); background: rgba(0,255,157,0.06); color: var(--accent2); cursor: default; }
+        .dnd-target-slot.wrong { border-color: #ff4757; background: rgba(255,71,87,0.1); animation: dndShake 0.4s; }
+        @keyframes dndShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+        .dnd-feedback {
+            margin-top: 14px;
+            font-family: var(--font-mono);
+            font-size: 0.78em;
+            color: var(--text-dim);
+            text-align: center;
+        }
+        .dnd-feedback.ok { color: var(--accent2); }
+
+        /* ─── SECTION DIVIDER ─── */
+        .section-divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 36px 0 20px;
+        }
+        .section-divider-line { flex: 1; height: 1px; background: var(--border); }
+        .section-divider-label {
+            font-family: var(--font-display);
+            font-size: 0.7em;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
+
+        /* ─── COMPARISON TABLE ─── */
+        .compare-table {
+            margin: 14px 18px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .compare-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .compare-table th {
+            background: rgba(255,255,255,0.04);
+            padding: 10px 16px;
+            text-align: left;
+            font-family: var(--font-display);
+            font-size: 0.78em;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            border-bottom: 1px solid var(--border);
+        }
+        .compare-table td {
+            padding: 10px 16px;
+            font-size: 0.83em;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .compare-table tr:last-child td { border-bottom: none; }
+        .compare-table tr:nth-child(even) td { background: rgba(255,255,255,0.01); }
+        .compare-table .td-good { color: var(--accent2); }
+        .compare-table .td-bad { color: #ff8080; }
+
+        /* ─── FIVE VS GRID ─── */
+        .fivev-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin: 14px 18px;
+        }
+        .fivev-card {
+            background: rgba(0,0,0,0.25);
+            border-radius: 10px;
+            padding: 18px;
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+        .fivev-card:hover { border-color: rgba(0,212,255,0.3); transform: translateY(-3px); }
+        .fivev-icon { font-size: 2em; margin-bottom: 8px; }
+        .fivev-letter {
+            font-family: var(--font-display);
+            font-size: 1.8em;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .fivev-name { font-size: 0.8em; color: white; font-weight: 600; margin: 4px 0; }
+        .fivev-desc { font-size: 0.72em; color: var(--text-dim); line-height: 1.5; }
+
+        /* ─── DISCIPLINE CALLOUT ─── */
+        .discipline-callout {
+            margin: 12px 18px 0;
+            background: rgba(0,212,255,0.04);
+            border: 1px solid rgba(0,212,255,0.15);
+            border-radius: 8px;
+            padding: 13px 16px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            font-size: 0.82em;
+            line-height: 1.65;
+            color: #8ac4d8;
+        }
+        .discipline-callout-icon { font-size: 1.1em; flex-shrink: 0; margin-top: 1px; }
+        .discipline-callout strong { color: var(--accent); }
+
+        /* ─── VIDEO BOX ─── */
+        .video-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .video-box iframe {
+            width: 100%;
+            aspect-ratio: 16/9;
+            display: block;
+            border: none;
+        }
+        .video-caption {
+            padding: 14px 18px;
+            font-size: 0.82em;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* ─── FINAL BADGE ─── */
+        .final-badge {
+            background: radial-gradient(ellipse at center, rgba(0,212,255,0.1) 0%, transparent 70%), var(--panel);
+            border: 1px solid var(--accent);
+            border-radius: 16px;
+            padding: 40px 30px;
+            text-align: center;
+            margin: 40px 0;
+            position: relative;
+            overflow: hidden;
+            display: none;
+        }
+        .final-badge::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(0,212,255,0.02) 20px, rgba(0,212,255,0.02) 40px);
+        }
+        .final-badge-icon { font-size: 4em; margin-bottom: 16px; display: block; }
+        .final-badge h2 {
+            font-family: var(--font-display);
+            font-size: 1.4em;
+            color: var(--accent);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .final-badge p { color: var(--text-dim); font-size: 0.9em; margin-bottom: 20px; }
+        .final-xp { font-family: var(--font-display); font-size: 2em; color: var(--xp-color); font-weight: 700; }
+
+        /* ─── NEXT WEEK TEASER ─── */
+        .next-week-teaser {
+            background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(0,255,157,0.05));
+            border: 1px solid rgba(0,212,255,0.2);
+            border-radius: 14px;
+            padding: 28px;
+            margin: 24px 0;
+        }
+        .next-week-teaser h3 {
+            font-family: var(--font-display);
+            font-size: 0.72em;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .next-week-teaser-title {
+            font-family: var(--font-display);
+            font-size: 1.3em;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 12px;
+        }
+        .next-week-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 0.85em;
+            color: var(--text-dim);
+        }
+        .next-week-list li::before { content: '→ '; color: var(--accent); font-weight: 700; }
+
+        /* ─── NAV BAR ─── */
+        .nav-bar {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid var(--border);
+        }
+        .nav-link {
+            font-family: var(--font-display);
+            font-size: 0.72em;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--text-dim);
+            padding: 10px 20px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        .nav-link:hover { color: var(--accent); border-color: var(--accent); background: rgba(0,212,255,0.05); }
+        .nav-link.disabled { pointer-events: none; opacity: 0.3; }
+
+        /* ─── ACCORDION REFERENCE ─── */
+        .ref-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        .ref-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .ref-header:hover { background: rgba(255,255,255,0.02); }
+        .ref-body { display: none; border-top: 1px solid var(--border); }
+        .ref-card.open .ref-body { display: block; }
+
+        @media(max-width:600px) {
+            .xp-hud { display: none; }
+            .hero-stats { gap: 20px; }
+            .mission-map { gap: 4px; }
+            .mission-dot { width: 36px; height: 36px; }
+        }
+    
+        /* ─── NETACAD ASSIGNMENT BOX ─── */
+        .netacad-box {
+            background: linear-gradient(135deg, rgba(0,190,60,0.08), rgba(0,120,200,0.06));
+            border: 1px solid rgba(0,190,60,0.3);
+            border-radius: 16px;
+            padding: 28px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .netacad-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #00be3c, #0078c8, #00be3c);
+        }
+        .netacad-tag {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.62em;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #00be3c;
+            background: rgba(0,190,60,0.12);
+            border: 1px solid rgba(0,190,60,0.35);
+            padding: 4px 12px;
+            border-radius: 100px;
+            margin-bottom: 12px;
+        }
+        .netacad-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.15em;
+            color: white;
+            margin-bottom: 10px;
+        }
+        .netacad-body {
+            font-size: 0.88em;
+            color: var(--text-dim);
+            line-height: 1.75;
+            margin-bottom: 16px;
+        }
+        .netacad-body strong { color: var(--text); }
+        .netacad-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .netacad-meta span {
+            font-family: var(--font-mono);
+            font-size: 0.68em;
+            color: var(--text-dim);
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            padding: 5px 12px;
+            border-radius: 100px;
+        }
+        .netacad-link {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.75em;
+            font-weight: 700;
+            padding: 11px 22px;
+            background: #00be3c;
+            color: #001a06;
+            border-radius: 10px;
+            text-decoration: none;
+            letter-spacing: 0.3px;
+        }
+        .netacad-link:hover { opacity: 0.88; }
+    </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <span class="badge">EXPERIÊNCIAS PRÁTICAS</span>
-  <div class="nav-meta">
-    <span class="title">Infraestrutura para Big Data — Ciência de Dados</span>
-    <span class="nav-inst">Prof. Isaque Katahira · FATEC Ourinhos</span>
-  </div>
-  <div class="steps">
-    <a href="#recap">Aula Anterior</a>
-    <a href="#conceito">Conceito</a>
-    <a href="#circuito">Circuito</a>
-    <a href="#ide">Arduino IDE</a>
-    <a href="#codigo">Código</a>
-    <a href="#desafios">Desafios</a>
-  </div>
-</nav>
+<!-- XP TOAST -->
+<div class="xp-toast" id="xpToast">
+    <span>⚡</span>
+    <span id="xpToastMsg">+100 XP Conquistados!</span>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="header-inner">
+        <div class="header-brand">
+            <div class="header-icon">⚙️</div>
+            <div>
+                <div class="header-title">Semana 14 — AWS EMR</div>
+                <div class="header-sub">Infraestrutura para Big Data · Fatec Ourinhos</div>
+            </div>
+        </div>
+        <div class="xp-hud">
+            <div class="xp-label">XP</div>
+            <div class="xp-bar-wrap"><div class="xp-bar-fill" id="xpBarFill"></div></div>
+            <div class="xp-points" id="xpPoints">0 / 500 XP</div>
+        </div>
+    </div>
+</header>
+
+<!-- EMENTA LOCATION BAR -->
+<div class="ementa-bar">
+    <div class="ementa-bar-inner">
+        <span class="ementa-tag">📍 IAL008 · INFRAESTRUTURA PARA BIG DATA</span>
+        <div class="ementa-div"></div>
+        <span class="ementa-text">Ementa: modos de configuração e funcionamento de um sistema para Big Data e ferramentas de armazenamento de grandes massas de dados</span>
+    </div>
+</div>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-glow"></div>
-  <div class="hero-tag">▶ EXPERIÊNCIAS PRÁTICAS · INFRAESTRUTURA PARA BIG DATA</div>
-  <h1>O <span>Nascimento</span><br>do Dado</h1>
-  <p>Como um simples sensor de luz se transforma em dados estruturados, logs auditáveis e insumo para Big Data.</p>
-
-  <div class="log-stream">
-    <div class="log-header">// MONITOR SERIAL — SAÍDA AO VIVO</div>
-    <div class="log-line"><span class="log-id">LOG_ID</span>, <span class="log-ts">TIMESTAMP_MS</span>, <span class="log-val">LUMINOSITY_VALUE</span>, STATUS</div>
-    <div class="log-line"><span class="log-id">1</span>, <span class="log-ts">1000</span>, <span class="log-val">112</span>, <span class="log-ok">NORMAL</span></div>
-    <div class="log-line"><span class="log-id">2</span>, <span class="log-ts">2001</span>, <span class="log-val">134</span>, <span class="log-ok">NORMAL</span></div>
-    <div class="log-line"><span class="log-id">3</span>, <span class="log-ts">3003</span>, <span class="log-val">748</span>, <span class="log-alert">⚠ ALERTA: LUZ ACESA</span></div>
-    <div class="log-line"><span class="log-id">4</span>, <span class="log-ts">4004</span>, <span class="log-val">821</span>, <span class="log-alert">⚠ ALERTA: LUZ ACESA</span></div>
-    <div class="log-line"><span class="log-id">5</span>, <span class="log-ts">5005</span>, <span class="log-val">98</span>, <span class="log-ok">NORMAL</span></div>
-  </div>
+    <div class="hero-badge">🎮 Missão 14 · Big Data Gerenciado</div>
+    <h1>AWS EMR<br><span>+ Data Lakes e S3</span></h1>
+    <p class="hero-desc">Você vai rodar Hadoop e Spark sem instalar nada, e entender como o S3 funciona como Data Lake — a combinação mais usada de Big Data na nuvem.</p>
+    <div class="hero-stats">
+        <div class="hero-stat"><div class="hero-stat-val">3</div><div class="hero-stat-label">Missões</div></div>
+        <div class="hero-stat"><div class="hero-stat-val">500</div><div class="hero-stat-label">XP Total</div></div>
+        <div class="hero-stat"><div class="hero-stat-val">~50min</div><div class="hero-stat-label">Duração</div></div>
+        <div class="hero-stat"><div class="hero-stat-val">AWS Academy</div><div class="hero-stat-label">Ambiente</div></div>
+    </div>
 </section>
 
-<hr class="divider">
-
-<!-- RECALL: AULA ANTERIOR — CABO DE REDE -->
-<div class="recall-banner" id="recap">
-  <div class="recall-inner">
-    <div class="recall-icon-col">
-      <span class="recall-emoji">🔌</span>
-      <span class="recall-tag">Aula Anterior</span>
+<div class="progress-overview">
+    <div class="context-row">
+        <div class="context-panel prev">
+            <div class="context-panel-label">📚 Aula Anterior</div>
+            <div class="context-panel-title">Semana 13 — AWS Introdução</div>
+            <div class="context-panel-body">Você explorou o console AWS e criou seu primeiro bucket S3.</div>
+        </div>
+        <div class="context-panel next">
+            <div class="context-panel-label">🚀 Próxima Aula</div>
+            <div class="context-panel-title">IoT e Big Data</div>
+            <div class="context-panel-body">Na próxima semana, você vai conectar sensores físicos (ESP32) a um pipeline de Big Data — fechando o ciclo de ingestão em tempo real.</div>
+        </div>
     </div>
-    <div class="recall-content">
-      <h3>Você lembra da <span>aula passada</span>?</h3>
-      <p>Na última aula, construímos com as próprias mãos o <strong>cabo de rede padrão T568B</strong> — crimpamos os fios no conector <strong>RJ-45</strong> seguindo a sequência correta de cores e, em seguida, testamos a continuidade de cada par utilizando o <strong>testador de cabo de rede</strong>. Aquela experiência foi muito mais do que aprender a fazer um cabo: foi aprender que <em>dados só trafegam quando a infraestrutura física está correta</em>.</p>
-      <div class="recall-steps">
-        <div class="recall-step">
-          <div class="recall-step-num">1</div>
-          <div>
-            <h4>Decapagem e Separação</h4>
-            <p>Removemos a capa do cabo UTP e separamos os 4 pares trançados de fios.</p>
-          </div>
-        </div>
-        <div class="recall-step">
-          <div class="recall-step-num">2</div>
-          <div>
-            <h4>Sequência T568B</h4>
-            <p>Organizamos os fios na ordem correta: B/L, L, B/V, AL, B/AL, V, B/M, M.</p>
-          </div>
-        </div>
-        <div class="recall-step">
-          <div class="recall-step-num">3</div>
-          <div>
-            <h4>Crimpagem RJ-45</h4>
-            <p>Inserimos os fios no conector RJ-45 e usamos o alicate de crimpar para fixá-los.</p>
-          </div>
-        </div>
-        <div class="recall-step">
-          <div class="recall-step-num">4</div>
-          <div>
-            <h4>Teste de Continuidade</h4>
-            <p>Conectamos o cabo ao testador: os 8 LEDs devem acender em sequência — qualquer falha indica erro na crimpagem.</p>
-          </div>
-        </div>
-      </div>
-      <div class="recall-bridge">
-        <span style="font-size:1.1rem;flex-shrink:0">🔗</span>
-        <span><strong>Conectando com hoje:</strong> O cabo de rede que você fez é a infraestrutura física que carrega os dados. Hoje vamos um passo além — vamos <em>gerar</em> dados de telemetria com um sensor e entender como eles nascem, são estruturados e fluem até sistemas de Big Data. Física → Elétrica → Digital → Informação.</span>
-      </div>
-    </div>
-  </div>
 </div>
 
-<hr class="divider">
-
-<!-- SEÇÃO 1 — CONCEITO -->
-<section class="section" id="conceito">
-  <div class="section-label">01 · O Conceito</div>
-  <h2>Sensor → <span class="hl">Dado Bruto</span> → Informação</h2>
-  <p class="lead">Antes de falarmos em Spark, Hadoop ou pipelines, precisamos entender onde nasce o dado. Tudo começa com um sensor físico capturando o mundo real.</p>
-
-  <div class="concept-grid">
-    <div class="concept-card">
-      <span class="icon">🏢</span>
-      <h3>O Cenário: Data Center</h3>
-      <p>Imagine um rack de servidores em um Data Center corporativo. Por segurança, qualquer abertura de porta deve ser <strong>registrada com timestamp</strong> para auditoria e conformidade (LGPD, SOX, ISO 27001).</p>
+<div class="progress-overview">
+    <div class="mission-map" id="missionMap">
+        <div class="mission-dot active" onclick="scrollToMission(0)" title="Missão 1: AWS EMR">M1</div><div class="mission-line" id="line0"></div><div class="mission-dot locked" onclick="scrollToMission(1)" title="Missão 2: Data Lakes">M2</div><div class="mission-line" id="line1"></div><div class="mission-dot locked" onclick="scrollToMission(2)" title="Missão 3: Prática EMR + S3">M3</div>
     </div>
-    <div class="concept-card">
-      <span class="icon">💡</span>
-      <h3>O Sensor: LDR</h3>
-      <p>O LDR (<em>Light Dependent Resistor</em>) é nossa câmera de segurança simplificada. Quando a porta do rack é aberta, a luz incide no sensor — e o Arduino <strong>registra esse evento instantaneamente</strong>.</p>
-    </div>
-    <div class="concept-card">
-      <span class="icon">📋</span>
-      <h3>O Produto: Log Estruturado</h3>
-      <p>O resultado é um <strong>log em formato CSV</strong> com ID, timestamp, valor bruto e status processado — exatamente o tipo de arquivo que sistemas de Big Data ingerem e analisam.</p>
-    </div>
-  </div>
+</div>
 
-  <!-- Data flow -->
-  <div class="dataflow">
-    <div class="df-node">
-      <div class="df-icon">☀️</div>
-      <h4>Luz Física</h4>
-      <p>Evento real</p>
-    </div>
-    <div class="df-arrow">→</div>
-    <div class="df-node">
-      <div class="df-icon">🔌</div>
-      <h4>LDR</h4>
-      <p>Resistência varia</p>
-    </div>
-    <div class="df-arrow">→</div>
-    <div class="df-node">
-      <div class="df-icon">⚡</div>
-      <h4>Tensão A0</h4>
-      <p>0 – 5V analógico</p>
-    </div>
-    <div class="df-arrow">→</div>
-    <div class="df-node">
-      <div class="df-icon">🔢</div>
-      <h4>ADC Arduino</h4>
-      <p>0 – 1023 digital</p>
-    </div>
-    <div class="df-arrow">→</div>
-    <div class="df-node">
-      <div class="df-icon">📄</div>
-      <h4>Log CSV</h4>
-      <p>Dado estruturado</p>
-    </div>
-    <div class="df-arrow">→</div>
-    <div class="df-node">
-      <div class="df-icon">🗄️</div>
-      <h4>Big Data</h4>
-      <p>Hadoop / Spark</p>
-    </div>
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- SEÇÃO 2 — CIRCUITO -->
-<section class="section" id="circuito">
-  <div class="section-label">02 · Circuito</div>
-  <h2>Montagem do <span class="hl">Divisor de Tensão</span></h2>
-  <p class="lead">O LDR não entrega um valor diretamente — ele muda sua resistência. Precisamos de um divisor de tensão para converter essa resistência em uma tensão legível pelo Arduino.</p>
-
-  <div class="circuit-wrapper">
-    <!-- SVG do circuito -->
-    <div class="circuit-svg-wrap">
-      <svg viewBox="0 0 340 440" xmlns="http://www.w3.org/2000/svg" style="background:transparent">
-        <!-- Fios verticais -->
-        <line x1="170" y1="20" x2="170" y2="60" stroke="#ff6b35" stroke-width="2.5"/>
-        <line x1="170" y1="120" x2="170" y2="180" stroke="#00d4ff" stroke-width="2.5"/>
-        <line x1="170" y1="240" x2="170" y2="300" stroke="#6b7a99" stroke-width="2.5"/>
-        <line x1="170" y1="360" x2="170" y2="420" stroke="#6b7a99" stroke-width="2.5"/>
-
-        <!-- 5V Label -->
-        <rect x="130" y="5" width="80" height="24" rx="5" fill="#1a2438" stroke="#ff6b35" stroke-width="1.5"/>
-        <text x="170" y="21" text-anchor="middle" fill="#ff6b35" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700">5V (Arduino)</text>
-
-        <!-- LDR body -->
-        <rect x="128" y="60" width="84" height="60" rx="8" fill="#1a2438" stroke="#00d4ff" stroke-width="2"/>
-        <text x="170" y="86" text-anchor="middle" fill="#00d4ff" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700">LDR</text>
-        <text x="170" y="103" text-anchor="middle" fill="#6b7a99" font-family="JetBrains Mono, monospace" font-size="9">Fotoresistor</text>
-        <!-- LDR symbol arrows -->
-        <line x1="118" y1="74" x2="108" y2="64" stroke="#ffb347" stroke-width="1.5"/>
-        <line x1="118" y1="84" x2="105" y2="74" stroke="#ffb347" stroke-width="1.5"/>
-        <text x="97" y="62" fill="#ffb347" font-family="JetBrains Mono, monospace" font-size="11">☀</text>
-
-        <!-- Nó do meio — A0 -->
-        <circle cx="170" cy="180" r="5" fill="#00d4ff"/>
-        <!-- A0 wire right -->
-        <line x1="175" y1="180" x2="280" y2="180" stroke="#00d4ff" stroke-width="2"/>
-        <rect x="252" y="165" width="80" height="24" rx="5" fill="#1a2438" stroke="#00d4ff" stroke-width="1.5"/>
-        <text x="292" y="181" text-anchor="middle" fill="#00d4ff" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700">A0 (Arduino)</text>
-
-        <!-- Resistor body — bege/creme como resistor real -->
-        <rect x="120" y="240" width="100" height="60" rx="10" fill="#d4b483" stroke="#b8965a" stroke-width="2"/>
-        <!-- Faixas corretas do resistor 10kΩ: Marrom(1) Preto(0) Laranja(x1000) Dourado(5%) -->
-        <!-- Faixa 1: Marrom = 1 -->
-        <rect x="135" y="242" width="8" height="56" rx="2" fill="#8B4513"/>
-        <!-- Faixa 2: Preto = 0 -->
-        <rect x="149" y="242" width="8" height="56" rx="2" fill="#111111"/>
-        <!-- Faixa 3: Laranja = x1000 -->
-        <rect x="163" y="242" width="8" height="56" rx="2" fill="#FF8C00"/>
-        <!-- Faixa 4: Dourado = 5% tolerância (separada) -->
-        <rect x="186" y="242" width="8" height="56" rx="2" fill="#FFD700"/>
-        <text x="170" y="316" text-anchor="middle" fill="#39ff85" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">10kΩ</text>
-
-        <!-- GND Label -->
-        <rect x="130" y="420" width="80" height="24" rx="5" fill="#1a2438" stroke="#6b7a99" stroke-width="1.5"/>
-        <text x="170" y="436" text-anchor="middle" fill="#6b7a99" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700">GND (Arduino)</text>
-
-        <!-- Labels laterais -->
-        <text x="55" y="93" fill="#ff6b35" font-family="JetBrains Mono, monospace" font-size="9">R varia</text>
-        <text x="55" y="103" fill="#ff6b35" font-family="JetBrains Mono, monospace" font-size="9">com luz</text>
-      </svg>
-    </div>
-
-    <!-- Info do circuito -->
-    <div class="circuit-info">
-      <h3>Conexões passo a passo</h3>
-      <ul class="pin-list">
-        <li class="v5">
-          <span class="pin-tag red">5V</span>
-          <div class="pin-desc">
-            <strong>Arduino 5V → Perna 1 do LDR</strong><br>
-            Fornece tensão de referência ao circuito. O LDR receberá toda a corrente nesta perna.
-          </div>
-        </li>
-        <li class="a0">
-          <span class="pin-tag blue">A0</span>
-          <div class="pin-desc">
-            <strong>Perna 2 do LDR → Pino A0 do Arduino</strong><br>
-            O ponto de leitura. É aqui que o Arduino "escuta" a tensão que varia conforme a luz.
-          </div>
-        </li>
-        <li class="gnd">
-          <span class="pin-tag gray">GND</span>
-          <div class="pin-desc">
-            <strong>Resistor 10kΩ: Pino A0 → GND</strong><br>
-            Fecha o circuito e cria o divisor de tensão. Sem ele, a leitura fica instável (flutuando).
-          </div>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="concept-box">
-    <span class="cb-icon">⚡</span>
-    <div>
-      <h4>Por que o Divisor de Tensão?</h4>
-      <p>O Arduino só lê tensões (0 a 5V), mas o LDR muda sua <strong>resistência</strong> com a luz. O resistor de 10kΩ forma um par com o LDR: quando há luz, o LDR tem baixa resistência → maior tensão em A0 → valor próximo de 1023. No escuro, alta resistência → tensão menor → valor próximo de 0. Isso é a <strong>conversão analógico-digital (ADC)</strong> — o primeiro passo da telemetria.</p>
-    </div>
-  </div>
-
-  <!-- LEGENDA DO RESISTOR -->
-  <div class="resistor-legend">
-    <h3>🎨 Como identificar o resistor de 10kΩ pelas faixas coloridas?</h3>
-    <p class="sub">Todo resistor tem um código de cores padronizado internacionalmente. Cada faixa representa um dígito, um multiplicador ou a tolerância. Veja como ler o seu resistor de 10kΩ:</p>
-
-    <div class="res-visual">
-      <div class="res-wire"></div>
-      <div class="res-body">
-        <div class="res-gap"></div>
-        <div class="res-band band-brown"></div>
-        <div class="res-gap"></div>
-        <div class="res-band band-black"></div>
-        <div class="res-gap"></div>
-        <div class="res-band band-orange"></div>
-        <div class="res-gap-lg"></div>
-        <div class="res-band band-gold"></div>
-        <div class="res-gap"></div>
-      </div>
-      <div class="res-wire"></div>
-    </div>
-
-    <div class="band-labels">
-      <div class="band-label">
-        <div class="band-swatch" style="background:#8B4513"></div>
-        <h5>1ª Faixa</h5>
-        <div class="band-val">1</div>
-        <p>Marrom<br>Dígito 1</p>
-      </div>
-      <div class="band-label">
-        <div class="band-swatch" style="background:#222;border-color:#555"></div>
-        <h5>2ª Faixa</h5>
-        <div class="band-val">0</div>
-        <p>Preto<br>Dígito 0</p>
-      </div>
-      <div class="band-label">
-        <div class="band-swatch" style="background:#FF8C00"></div>
-        <h5>3ª Faixa</h5>
-        <div class="band-val">×1.000</div>
-        <p>Laranja<br>Multiplicador</p>
-      </div>
-      <div class="band-label">
-        <div class="band-swatch" style="background:#FFD700"></div>
-        <h5>4ª Faixa</h5>
-        <div class="band-val">±5%</div>
-        <p>Dourado<br>Tolerância</p>
-      </div>
-    </div>
-
-    <div style="text-align:center;margin-top:20px;font-family:var(--font-mono);font-size:.88rem;color:var(--muted)">
-      Leitura: <strong style="color:var(--text)">1</strong> + <strong style="color:var(--text)">0</strong> × <strong style="color:var(--text)">1.000</strong> = <strong style="color:var(--accent);font-size:1rem">10.000Ω = 10kΩ</strong> &nbsp;(tolerância ±5%)
-    </div>
-  </div>
-
-  <!-- GALERIA DE COMPONENTES -->
-  <div class="section-label" style="margin-top:52px">🧩 Conheça os Componentes</div>
-  <p style="color:var(--muted);font-size:.9rem;margin-bottom:0">Antes de montar, identifique cada peça na bancada. Veja como cada uma se parece fisicamente:</p>
-
-  <div class="comp-gallery">
-
-    <!-- ARDUINO UNO -->
-    <div class="comp-card">
-      <div class="comp-img" style="background:#1a6b2a;display:flex;align-items:center;justify-content:center;padding:8px">
-        <svg viewBox="0 0 240 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px">
-          <!-- PCB body -->
-          <rect x="10" y="10" width="220" height="135" rx="6" fill="#1a6b2a" stroke="#0d4a1a" stroke-width="2"/>
-          <!-- USB connector -->
-          <rect x="10" y="38" width="22" height="30" rx="3" fill="#888" stroke="#555" stroke-width="1.5"/>
-          <rect x="14" y="44" width="14" height="18" rx="2" fill="#333"/>
-          <!-- DC jack -->
-          <rect x="10" y="80" width="18" height="22" rx="3" fill="#333" stroke="#555" stroke-width="1.5"/>
-          <circle cx="19" cy="91" r="5" fill="#111"/>
-          <!-- Reset button -->
-          <rect x="44" y="14" width="18" height="18" rx="3" fill="#1a88e8" stroke="#0d5aaa" stroke-width="1"/>
-          <text x="53" y="27" text-anchor="middle" fill="white" font-size="7" font-family="sans-serif">RST</text>
-          <!-- ATmega chip -->
-          <rect x="80" y="55" width="70" height="50" rx="4" fill="#222" stroke="#444" stroke-width="1"/>
-          <!-- chip legs left -->
-          <line x1="80" y1="62" x2="72" y2="62" stroke="#888" stroke-width="2"/>
-          <line x1="80" y1="69" x2="72" y2="69" stroke="#888" stroke-width="2"/>
-          <line x1="80" y1="76" x2="72" y2="76" stroke="#888" stroke-width="2"/>
-          <line x1="80" y1="83" x2="72" y2="83" stroke="#888" stroke-width="2"/>
-          <line x1="80" y1="90" x2="72" y2="90" stroke="#888" stroke-width="2"/>
-          <line x1="80" y1="97" x2="72" y2="97" stroke="#888" stroke-width="2"/>
-          <!-- chip legs right -->
-          <line x1="150" y1="62" x2="158" y2="62" stroke="#888" stroke-width="2"/>
-          <line x1="150" y1="69" x2="158" y2="69" stroke="#888" stroke-width="2"/>
-          <line x1="150" y1="76" x2="158" y2="76" stroke="#888" stroke-width="2"/>
-          <line x1="150" y1="83" x2="158" y2="83" stroke="#888" stroke-width="2"/>
-          <line x1="150" y1="90" x2="158" y2="90" stroke="#888" stroke-width="2"/>
-          <line x1="150" y1="97" x2="158" y2="97" stroke="#888" stroke-width="2"/>
-          <text x="115" y="75" text-anchor="middle" fill="#aaa" font-size="7" font-family="monospace">ATmega</text>
-          <text x="115" y="86" text-anchor="middle" fill="#aaa" font-size="7" font-family="monospace">328P</text>
-          <!-- pinos digitais topo -->
-          <rect x="165" y="13" width="55" height="10" rx="2" fill="#111" stroke="#444" stroke-width="1"/>
-          <text x="192" y="21" text-anchor="middle" fill="#aaa" font-size="6" font-family="monospace">D0–D13</text>
-          <!-- furinhos digitais -->
-          <circle cx="170" cy="18" r="2" fill="#333" stroke="#888" stroke-width=".8"/>
-          <circle cx="176" cy="18" r="2" fill="#333" stroke="#888" stroke-width=".8"/>
-          <circle cx="182" cy="18" r="2" fill="#333" stroke="#888" stroke-width=".8"/>
-          <circle cx="188" cy="18" r="2" fill="#333" stroke="#888" stroke-width=".8"/>
-          <circle cx="194" cy="18" r="2" fill="#333" stroke="#888" stroke-width=".8"/>
-          <circle cx="200" cy="18" r="2" fill="#333" stroke="#888" stroke-width=".8"/>
-          <circle cx="206" cy="18" r="2" fill="#333" stroke="#888" stroke-width=".8"/>
-          <circle cx="212" cy="18" r="2" fill="#333" stroke="#888" stroke-width=".8"/>
-          <!-- pinos analógicos base -->
-          <rect x="165" y="130" width="55" height="10" rx="2" fill="#111" stroke="#444" stroke-width="1"/>
-          <text x="192" y="138" text-anchor="middle" fill="#aaa" font-size="6" font-family="monospace">A0–A5</text>
-          <circle cx="170" cy="135" r="2" fill="#333" stroke="#888" stroke-width=".8"/>
-          <circle cx="176" cy="135" r="2" fill="#333" stroke="#888" stroke-width=".8"/>
-          <circle cx="182" cy="135" r="2" fill="#333" stroke="#888" stroke-width=".8"/>
-          <circle cx="188" cy="135" r="2" fill="#333" stroke="#888" stroke-width=".8"/>
-          <circle cx="194" cy="135" r="2" fill="#333" stroke="#888" stroke-width=".8"/>
-          <circle cx="200" cy="135" r="2" fill="#333" stroke="#888" stroke-width=".8"/>
-          <!-- LEDs -->
-          <circle cx="55" cy="35" r="4" fill="#ff3" opacity=".9"/>
-          <text x="55" y="47" text-anchor="middle" fill="#aaa" font-size="6" font-family="sans-serif">PWR</text>
-          <circle cx="68" cy="35" r="4" fill="#0f0" opacity=".9"/>
-          <text x="68" y="47" text-anchor="middle" fill="#aaa" font-size="6" font-family="sans-serif">L13</text>
-          <!-- label -->
-          <text x="40" y="110" fill="#5af" font-size="11" font-family="monospace" font-weight="bold">Arduino</text>
-          <text x="40" y="124" fill="#5af" font-size="11" font-family="monospace" font-weight="bold">Uno R3</text>
-        </svg>
-      </div>
-      <div class="comp-body">
-        <h4>Arduino Uno</h4>
-        <p>Microcontrolador baseado no ATmega328P. Possui 14 pinos digitais, 6 pinos analógicos (A0–A5), e se conecta ao computador via USB. É o "cérebro" do projeto.</p>
-        <span class="comp-tag">Microcontrolador</span>
-      </div>
-    </div>
-
-    <!-- LDR -->
-    <div class="comp-card">
-      <div class="comp-img" style="background:#111;display:flex;align-items:center;justify-content:center;padding:12px">
-        <svg viewBox="0 0 200 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:180px">
-          <!-- leads (pernas metálicas) -->
-          <line x1="82" y1="125" x2="82" y2="152" stroke="#aaa" stroke-width="3" stroke-linecap="round"/>
-          <line x1="118" y1="125" x2="118" y2="152" stroke="#aaa" stroke-width="3" stroke-linecap="round"/>
-          <!-- corpo circular -->
-          <circle cx="100" cy="82" r="44" fill="#c0a020" stroke="#8a7010" stroke-width="3"/>
-          <!-- trilha em espiral (CdS) -->
-          <circle cx="100" cy="82" r="36" fill="none" stroke="#5a3a00" stroke-width="1.5" stroke-dasharray="6,4"/>
-          <path d="M 100 55 A 27 27 0 1 1 73 82 A 18 18 0 1 0 100 64" fill="none" stroke="#3a2000" stroke-width="3.5" stroke-linecap="round"/>
-          <!-- janela transparente no centro -->
-          <circle cx="100" cy="82" r="14" fill="#e8d060" opacity=".6"/>
-          <!-- raios de luz -->
-          <line x1="100" y1="22" x2="100" y2="32" stroke="#ffdd00" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="132" y1="32" x2="125" y2="39" stroke="#ffdd00" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="145" y1="60" x2="136" y2="63" stroke="#ffdd00" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="68" y1="32" x2="75" y2="39" stroke="#ffdd00" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="55" y1="60" x2="64" y2="63" stroke="#ffdd00" stroke-width="2.5" stroke-linecap="round"/>
-          <!-- label -->
-          <text x="100" y="150" text-anchor="middle" fill="#aaa" font-size="10" font-family="monospace">LDR</text>
-        </svg>
-      </div>
-      <div class="comp-body">
-        <h4>LDR (Fotoresistor)</h4>
-        <p>Light Dependent Resistor. A resistência varia com a luz: no escuro ~1MΩ, com luz intensa ~100Ω. Reconhecível pelo corpo redondo dourado com trilha em espiral (CdS) visível.</p>
-        <span class="comp-tag">Sensor Analógico</span>
-      </div>
-    </div>
-
-    <!-- RESISTOR 10kΩ -->
-    <div class="comp-card">
-      <div class="comp-img" style="background:#111;display:flex;align-items:center;justify-content:center;padding:12px">
-        <svg viewBox="0 0 220 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:200px">
-          <!-- sombra -->
-          <rect x="42" y="68" width="136" height="34" rx="17" fill="rgba(0,0,0,.4)" transform="translate(3,5)"/>
-          <!-- leads -->
-          <line x1="10" y1="77" x2="46" y2="77" stroke="#aaa" stroke-width="3" stroke-linecap="round"/>
-          <line x1="174" y1="77" x2="210" y2="77" stroke="#aaa" stroke-width="3" stroke-linecap="round"/>
-          <!-- corpo bege -->
-          <rect x="42" y="58" width="136" height="38" rx="19" fill="#d4b483" stroke="#b09060" stroke-width="2"/>
-          <!-- highlight superior -->
-          <rect x="52" y="60" width="116" height="12" rx="8" fill="rgba(255,255,255,.18)"/>
-          <!-- Faixa 1: MARROM -->
-          <rect x="62" y="58" width="14" height="38" rx="2" fill="#8B4513"/>
-          <!-- Faixa 2: PRETO -->
-          <rect x="84" y="58" width="14" height="38" rx="2" fill="#111"/>
-          <!-- Faixa 3: LARANJA -->
-          <rect x="106" y="58" width="14" height="38" rx="2" fill="#FF8C00"/>
-          <!-- gap maior antes do dourado -->
-          <!-- Faixa 4: DOURADO -->
-          <rect x="140" y="58" width="14" height="38" rx="2" fill="#FFD700"/>
-          <!-- labels das faixas -->
-          <text x="69" y="110" text-anchor="middle" fill="#8B4513" font-size="8" font-family="monospace" font-weight="bold">M</text>
-          <text x="91" y="110" text-anchor="middle" fill="#666" font-size="8" font-family="monospace" font-weight="bold">P</text>
-          <text x="113" y="110" text-anchor="middle" fill="#FF8C00" font-size="8" font-family="monospace" font-weight="bold">L</text>
-          <text x="147" y="110" text-anchor="middle" fill="#cc9900" font-size="8" font-family="monospace" font-weight="bold">D</text>
-          <text x="110" y="130" text-anchor="middle" fill="#39ff85" font-size="12" font-family="monospace" font-weight="bold">10kΩ</text>
-          <!-- legenda -->
-          <text x="69" y="148" text-anchor="middle" fill="#777" font-size="7" font-family="monospace">Marrom</text>
-          <text x="91" y="148" text-anchor="middle" fill="#777" font-size="7" font-family="monospace">Preto</text>
-          <text x="113" y="148" text-anchor="middle" fill="#777" font-size="7" font-family="monospace">Laranja</text>
-          <text x="147" y="148" text-anchor="middle" fill="#777" font-size="7" font-family="monospace">Dourado</text>
-        </svg>
-      </div>
-      <div class="comp-body">
-        <h4>Resistor 10kΩ</h4>
-        <p>Componente passivo que limita a corrente. Identificado pelas 4 faixas: <strong style="color:#c0845a">Marrom</strong> (1), <strong style="color:#888">Preto</strong> (0), <strong style="color:#FF8C00">Laranja</strong> (×1000), <strong style="color:#ccaa00">Dourado</strong> (±5%) = 10.000Ω.</p>
-        <span class="comp-tag">Componente Passivo</span>
-      </div>
-    </div>
-
-    <!-- PROTOBOARD -->
-    <div class="comp-card">
-      <div class="comp-img" style="background:#111;display:flex;align-items:center;justify-content:center;padding:8px">
-        <svg viewBox="0 0 220 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:210px">
-          <!-- corpo branco da protoboard -->
-          <rect x="8" y="8" width="204" height="139" rx="6" fill="#e8e8e0" stroke="#aaa" stroke-width="2"/>
-          <!-- barramento + esquerda -->
-          <rect x="14" y="14" width="16" height="127" rx="3" fill="#ffeedd" stroke="#ccc" stroke-width="1"/>
-          <!-- furos barramento + esquerda -->
-          <circle cx="22" cy="22" r="2.2" fill="#c00"/>
-          <circle cx="22" cy="30" r="2.2" fill="#c00"/>
-          <circle cx="22" cy="38" r="2.2" fill="#c00"/>
-          <circle cx="22" cy="46" r="2.2" fill="#c00"/>
-          <circle cx="22" cy="54" r="2.2" fill="#c00"/>
-          <circle cx="22" cy="62" r="2.2" fill="#c00"/>
-          <circle cx="22" cy="70" r="2.2" fill="#aaa"/>
-          <circle cx="22" cy="78" r="2.2" fill="#00a"/>
-          <circle cx="22" cy="86" r="2.2" fill="#00a"/>
-          <circle cx="22" cy="94" r="2.2" fill="#00a"/>
-          <circle cx="22" cy="102" r="2.2" fill="#00a"/>
-          <circle cx="22" cy="110" r="2.2" fill="#00a"/>
-          <circle cx="22" cy="118" r="2.2" fill="#00a"/>
-          <!-- linha vermelha e azul barramento esq -->
-          <line x1="18" y1="14" x2="18" y2="68" stroke="#c00" stroke-width="1.5"/>
-          <line x1="18" y1="76" x2="18" y2="135" stroke="#00a" stroke-width="1.5"/>
-          <!-- área central -->
-          <rect x="34" y="14" width="152" height="127" rx="2" fill="#d8d8d0"/>
-          <!-- trilhas horizontais (5 furos cada grupo) -->
-          <!-- linha A-E -->
-          <rect x="36" y="20" width="148" height="52" rx="2" fill="#ccc8b8"/>
-          <!-- furos área superior (representativos) -->
-          <circle cx="44" cy="28" r="2" fill="#555"/> <circle cx="53" cy="28" r="2" fill="#555"/> <circle cx="62" cy="28" r="2" fill="#555"/> <circle cx="71" cy="28" r="2" fill="#555"/> <circle cx="80" cy="28" r="2" fill="#555"/>
-          <circle cx="93" cy="28" r="2" fill="#555"/> <circle cx="102" cy="28" r="2" fill="#555"/> <circle cx="111" cy="28" r="2" fill="#555"/> <circle cx="120" cy="28" r="2" fill="#555"/> <circle cx="129" cy="28" r="2" fill="#555"/>
-          <circle cx="142" cy="28" r="2" fill="#555"/> <circle cx="151" cy="28" r="2" fill="#555"/> <circle cx="160" cy="28" r="2" fill="#555"/> <circle cx="169" cy="28" r="2" fill="#555"/> <circle cx="178" cy="28" r="2" fill="#555"/>
-          <circle cx="44" cy="38" r="2" fill="#555"/> <circle cx="53" cy="38" r="2" fill="#555"/> <circle cx="62" cy="38" r="2" fill="#555"/> <circle cx="71" cy="38" r="2" fill="#555"/> <circle cx="80" cy="38" r="2" fill="#555"/>
-          <circle cx="93" cy="38" r="2" fill="#555"/> <circle cx="102" cy="38" r="2" fill="#555"/> <circle cx="111" cy="38" r="2" fill="#555"/> <circle cx="120" cy="38" r="2" fill="#555"/> <circle cx="129" cy="38" r="2" fill="#555"/>
-          <circle cx="44" cy="48" r="2" fill="#555"/> <circle cx="53" cy="48" r="2" fill="#555"/> <circle cx="62" cy="48" r="2" fill="#555"/>
-          <circle cx="44" cy="58" r="2" fill="#555"/> <circle cx="53" cy="58" r="2" fill="#555"/> <circle cx="62" cy="58" r="2" fill="#555"/>
-          <!-- gap central -->
-          <rect x="36" y="76" width="148" height="8" rx="1" fill="#bbb"/>
-          <text x="110" y="83" text-anchor="middle" fill="#888" font-size="7" font-family="monospace">gap</text>
-          <!-- linha F-J -->
-          <rect x="36" y="88" width="148" height="50" rx="2" fill="#ccc8b8"/>
-          <circle cx="44" cy="96" r="2" fill="#555"/> <circle cx="53" cy="96" r="2" fill="#555"/> <circle cx="62" cy="96" r="2" fill="#555"/> <circle cx="71" cy="96" r="2" fill="#555"/> <circle cx="80" cy="96" r="2" fill="#555"/>
-          <circle cx="93" cy="96" r="2" fill="#555"/> <circle cx="102" cy="96" r="2" fill="#555"/> <circle cx="111" cy="96" r="2" fill="#555"/> <circle cx="120" cy="96" r="2" fill="#555"/> <circle cx="129" cy="96" r="2" fill="#555"/>
-          <circle cx="44" cy="106" r="2" fill="#555"/> <circle cx="53" cy="106" r="2" fill="#555"/> <circle cx="62" cy="106" r="2" fill="#555"/>
-          <circle cx="44" cy="116" r="2" fill="#555"/> <circle cx="53" cy="116" r="2" fill="#555"/> <circle cx="62" cy="116" r="2" fill="#555"/>
-          <!-- barramento + direita -->
-          <rect x="190" y="14" width="16" height="127" rx="3" fill="#ffeedd" stroke="#ccc" stroke-width="1"/>
-          <circle cx="198" cy="22" r="2.2" fill="#c00"/>
-          <circle cx="198" cy="30" r="2.2" fill="#c00"/>
-          <circle cx="198" cy="38" r="2.2" fill="#c00"/>
-          <circle cx="198" cy="46" r="2.2" fill="#c00"/>
-          <circle cx="198" cy="78" r="2.2" fill="#00a"/>
-          <circle cx="198" cy="86" r="2.2" fill="#00a"/>
-          <circle cx="198" cy="94" r="2.2" fill="#00a"/>
-          <line x1="202" y1="14" x2="202" y2="60" stroke="#c00" stroke-width="1.5"/>
-          <line x1="202" y1="72" x2="202" y2="135" stroke="#00a" stroke-width="1.5"/>
-          <!-- label -->
-          <text x="110" y="148" text-anchor="middle" fill="#555" font-size="9" font-family="monospace" font-weight="bold">PROTOBOARD 400pts</text>
-        </svg>
-      </div>
-      <div class="comp-body">
-        <h4>Protoboard</h4>
-        <p>Placa de prototipagem sem solda. Furos ligados em colunas verticais (área central) e trilhas horizontais nos barramentos laterais <strong style="color:#c00">+</strong> e <strong style="color:#66f">−</strong>. Permite montar e desmontar circuitos facilmente.</p>
-        <span class="comp-tag">Bancada de Prototipagem</span>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- SEÇÃO 2.5 — ARDUINO IDE -->
-<section class="section" id="ide">
-  <div class="section-label">02.5 · Arduino IDE</div>
-  <h2>Configurando o <span class="hl">Arduino IDE</span></h2>
-  <p class="lead">Antes de digitar uma linha de código, precisamos preparar o ambiente de desenvolvimento. O Arduino IDE é o software que permite escrever, compilar e enviar programas para a placa. Siga cada passo com atenção.</p>
-
-  <div class="ide-steps">
-
-    <!-- Passo 1 -->
-    <div class="ide-step">
-      <div class="ide-step-left">
-        <div class="ide-step-num">1</div>
-        <div class="ide-connector"></div>
-      </div>
-      <div class="ide-step-content">
-        <h4>Abra o Arduino IDE</h4>
-        <p>Localize o atalho na área de trabalho ou no menu iniciar e abra o programa. Você verá a tela principal com o editor de código, os botões de Verificar (✓) e Carregar (→) no topo.</p>
-        <div class="ide-mock">
-          <div class="ide-mock-bar">
-            <div class="dot" style="background:#ff5f57"></div>
-            <div class="dot" style="background:#ffbd2e"></div>
-            <div class="dot" style="background:#27c840"></div>
-            <span style="margin-left:8px">Arduino IDE 2.x</span>
-          </div>
-          <div class="ide-mock-body">
-            <span style="color:#6b7a99">// Tela inicial — sketch em branco</span><br>
-            <span style="color:#c792ea">void</span> <span style="color:#00d4ff">setup</span>() {<br>
-            &nbsp;&nbsp;<span style="color:#6b7a99">// código de inicialização</span><br>
-            }<br><br>
-            <span style="color:#c792ea">void</span> <span style="color:#00d4ff">loop</span>() {<br>
-            &nbsp;&nbsp;<span style="color:#6b7a99">// código repetido</span><br>
-            }
-          </div>
+<div class="progress-overview">
+    <div class="discipline-panel">
+        <div class="discipline-panel-header">
+            <span>🎓</span>
+            <span class="discipline-panel-title">Contexto da Disciplina — Por que estamos aqui?</span>
+            <span class="discipline-panel-subtitle">IAL008 · 2º Sem/2026 · Prof. Isaque Katahira</span>
         </div>
-      </div>
+        <div class="discipline-grid">
+            <div class="discipline-item">
+                <div class="discipline-item-label">📋 Ementa — O que diz o plano de ensino</div>
+                <div class="discipline-item-text">Esta semana funde <strong>AWS EMR</strong> com <strong>Data Lakes e S3</strong> — dois temas que na prática do mercado sempre andam juntos.</div>
+            </div>
+            <div class="discipline-item">
+                <div class="discipline-item-label">🎯 O que você vai dominar hoje</div>
+                <div class="discipline-item-text">Ao final, você terá <strong>criado e usado um cluster EMR real</strong>, processando dados diretamente do seu Data Lake em S3.</div>
+            </div>
+        </div>
+        <div class="discipline-links"><span class="discipline-tag dtag-ementa">⚙️ AWS EMR</span><span class="discipline-tag dtag-ementa">🏞️ Data Lake</span><span class="discipline-tag dtag-objetivo">🎯 Processar dados do S3 com Spark</span></div>
+    </div>
+</div>
+
+<div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-label">⚔️ Início das Missões</div>
+    <div class="section-divider-line"></div>
+</div>
+
+    <!-- ════════════════════════════════════════════════ -->
+    <!-- MISSÃO 1 — AWS EMR — Hadoop e Spark como Serviço Gerenciado -->
+    <!-- ════════════════════════════════════════════════ -->
+    <div class="mission-card active-mission open" id="mission0">
+        <div class="mission-header" onclick="toggleMission(0)">
+            <div class="mission-num">M1</div>
+            <div class="mission-meta">
+                <div class="mission-title">⚙️ AWS EMR — Hadoop e Spark como Serviço Gerenciado</div>
+                <div class="mission-tags">
+                    <span class="tag tag-xp">⚡ +150 XP</span>
+                    <span class="tag tag-time">⏱ ~15 min</span>
+                    <span class="tag tag-type">Conceitual</span>
+                    <span class="tag tag-ementa">📋 Ementa: Modos de configuração e funcionamento de um sistema para Big Data</span>
+                </div>
+            </div>
+            <div class="mission-status" id="status0">⚡</div>
+            <div class="mission-toggle">▾</div>
+        </div>
+        <div class="mission-body">
+            <div class="mission-intro">Você já instalou Hadoop e Spark manualmente (Semanas 05 e 07). Agora vai ver a versão "sem esforço" que empresas reais usam no dia a dia.</div>
+            
+            <div class="concept-box">
+                <div class="concept-box-title">⚙️ AWS EMR — Hadoop e Spark Sem Instalar Nada</div>
+                <div class="concept-box-body">Lembra do PaaS que você estudou na Semana 03? O <strong>EMR (Elastic MapReduce)</strong> é o exemplo perfeito: em vez de instalar Java, configurar SSH, baixar o tar.gz do Hadoop (como você fez manualmente na Semana 05), o EMR já entrega um cluster Hadoop/Spark pronto em minutos.<br><br><strong>O que o EMR gerencia por você</strong> — provisionamento das máquinas EC2, instalação do Hadoop/Spark/Hive, configuração de rede entre os nós (lembra da Semana 02?), monitoramento e desligamento automático.<br><br><strong>Trade-off</strong> — você ganha velocidade e menos trabalho operacional, mas perde o controle fino de configuração que teve ao instalar manualmente. Por isso vale ter feito a instalação manual primeiro (Semana 05) — agora você entende <em>o que</em> o EMR está fazendo por baixo dos panos.</div>
+            </div>
+
+            <div class="checkpoint">
+                <div class="checkpoint-title">🏁 Checkpoint M1</div>
+                <ul class="checkpoint-items">
+                    <li class="checkpoint-item"><input type="checkbox" id="c0a"><label for="c0a">Entendo o que o EMR automatiza</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c0b"><label for="c0b">Sei o trade-off entre EMR e instalação manual</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c0c"><label for="c0c">Consigo explicar por que instalar manualmente primeiro ajudou a entender o EMR</label></li>
+                </ul>
+            </div>
+            <button class="complete-btn" id="btn0" onclick="completeMission(0, 150)">✅ Missão 1 Concluída — Coletar +150 XP</button>
+        </div>
     </div>
 
-    <!-- Passo 2 -->
-    <div class="ide-step">
-      <div class="ide-step-left">
-        <div class="ide-step-num">2</div>
-        <div class="ide-connector"></div>
-      </div>
-      <div class="ide-step-content">
-        <h4>Conecte o Arduino Uno ao computador via USB</h4>
-        <p>Use o cabo USB tipo A–B (o mesmo de impressoras antigas) para conectar o Arduino Uno à porta USB do computador. O LED verde de alimentação da placa deve acender imediatamente.</p>
-        <div class="ide-note">
-          <span>🔌</span>
-          <span><strong>Atenção:</strong> Nunca conecte ou desconecte componentes no protoboard enquanto o Arduino estiver ligado via USB. Sempre desconecte o USB antes de mudar o circuito para evitar curto-circuito.</span>
+    <!-- ════════════════════════════════════════════════ -->
+    <!-- MISSÃO 2 — Data Lakes e AWS S3 como Armazenamento Central -->
+    <!-- ════════════════════════════════════════════════ -->
+    <div class="mission-card" id="mission1">
+        <div class="mission-header" onclick="toggleMission(1)">
+            <div class="mission-num">M2</div>
+            <div class="mission-meta">
+                <div class="mission-title">🏞️ Data Lakes e AWS S3 como Armazenamento Central</div>
+                <div class="mission-tags">
+                    <span class="tag tag-xp">⚡ +150 XP</span>
+                    <span class="tag tag-time">⏱ ~15 min</span>
+                    <span class="tag tag-type">Conceitual</span>
+                    <span class="tag tag-ementa">📋 Ementa: Ferramentas que transformam sistemas operacionais em sistemas de armazenamento de grandes massas de dados</span>
+                </div>
+            </div>
+            <div class="mission-status" id="status1">🔒</div>
+            <div class="mission-toggle">▾</div>
         </div>
-      </div>
+        <div class="mission-body">
+            <div class="mission-intro">Esta semana funde EMR com Data Lakes/S3 porque, na prática, os dois andam juntos: o EMR processa, o S3 guarda.</div>
+            
+            <div class="concept-box">
+                <div class="concept-box-title">🏞️ Data Lakes — Guardar Tudo, Estruturar Depois</div>
+                <div class="concept-box-body"><strong>Data Lake</strong> — um repositório central que guarda dados <em>em qualquer formato</em> (estruturado, semi-estruturado, bruto), sem exigir que você defina um schema antes de guardar — diferente de um Data Warehouse tradicional, que exige estrutura definida logo na entrada.<br><br><strong>S3 como Data Lake</strong> — o S3 (que você já usa desde a Semana 13) é a escolha mais comum para construir um Data Lake na AWS: armazenamento barato, praticamente ilimitado, e o EMR pode ler dados direto do S3 sem precisar copiar para dentro do cluster.<br><br><strong>Schema-on-read vs schema-on-write</strong> — em um banco tradicional, você define a estrutura <em>antes</em> de inserir dados (schema-on-write). Em um Data Lake, você guarda os dados brutos e decide a estrutura <em>na hora de ler/analisar</em> (schema-on-read) — mais flexível, mas exige mais disciplina para não virar um "pântano de dados" (data swamp) desorganizado.</div>
+            </div>
+
+            <div class="checkpoint">
+                <div class="checkpoint-title">🏁 Checkpoint M2</div>
+                <ul class="checkpoint-items">
+                    <li class="checkpoint-item"><input type="checkbox" id="c1a"><label for="c1a">Sei o que é um Data Lake</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c1b"><label for="c1b">Entendo por que S3 é usado como Data Lake</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c1c"><label for="c1c">Sei diferenciar schema-on-read de schema-on-write</label></li>
+                </ul>
+            </div>
+            <button class="complete-btn" id="btn1" onclick="completeMission(1, 150)">✅ Missão 2 Concluída — Coletar +150 XP</button>
+        </div>
     </div>
 
-    <!-- Passo 3 -->
-    <div class="ide-step">
-      <div class="ide-step-left">
-        <div class="ide-step-num">3</div>
-        <div class="ide-connector"></div>
-      </div>
-      <div class="ide-step-content">
-        <h4>Selecione a placa: Arduino Uno</h4>
-        <p>No menu superior, clique em <strong>Ferramentas → Placa → Arduino AVR Boards → Arduino Uno</strong>. Isso instrui o compilador a gerar código para o microcontrolador correto (ATmega328P).</p>
-        <div class="ide-mock">
-          <div class="ide-mock-bar">
-            <div class="dot" style="background:#ff5f57"></div>
-            <div class="dot" style="background:#ffbd2e"></div>
-            <div class="dot" style="background:#27c840"></div>
-            <span style="margin-left:8px">Ferramentas</span>
-          </div>
-          <div class="ide-mock-body">
-            <span class="ide-path">Ferramentas</span><br>
-            &nbsp;&nbsp;<span class="ide-path">▶ Placa</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span class="ide-path">▶ Arduino AVR Boards</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ide-selected">✔ Arduino Uno</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ide-path">Arduino Mega</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ide-path">Arduino Nano</span>
-          </div>
+    <!-- ════════════════════════════════════════════════ -->
+    <!-- MISSÃO 3 — Prática — Criar um Cluster EMR e Processar Dados do S3 -->
+    <!-- ════════════════════════════════════════════════ -->
+    <div class="mission-card" id="mission2">
+        <div class="mission-header" onclick="toggleMission(2)">
+            <div class="mission-num">M3</div>
+            <div class="mission-meta">
+                <div class="mission-title">🛠️ Prática — Criar um Cluster EMR e Processar Dados do S3</div>
+                <div class="mission-tags">
+                    <span class="tag tag-xp">⚡ +200 XP</span>
+                    <span class="tag tag-time">⏱ ~30 min</span>
+                    <span class="tag tag-type">Prática</span>
+                    <span class="tag tag-ementa">📋 Ementa: Modos de configuração e funcionamento de um sistema para Big Data</span>
+                </div>
+            </div>
+            <div class="mission-status" id="status2">🔒</div>
+            <div class="mission-toggle">▾</div>
         </div>
-        <div class="ide-note">
-          <span>💡</span>
-          <span>Selecionar a placa errada é um erro comum. O código pode até compilar, mas <strong>não funcionará corretamente</strong> no hardware. Sempre confirme que está em <strong>Arduino Uno</strong> antes de carregar.</span>
+        <div class="mission-body">
+            <div class="mission-intro">Vamos criar um cluster EMR de verdade e rodar Spark sobre os dados que já estão no seu bucket S3.</div>
+            
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-num">01</div>
+                    <div class="step-content">
+                        <div class="step-title">Criar um cluster EMR</div>
+                        <div class="step-desc">No console AWS, busque EMR e crie um cluster simples:</div>
+                    </div>
+                </div>
+                
+            </div>
+
+                <div class="code-block" style="margin: 16px 0;">
+                    <div class="code-block-header">
+                        <span class="code-lang">text</span>
+                        <button class="copy-btn" onclick="copyCode(this, `Console AWS > EMR > Create cluster
+Aplicações: Hadoop, Spark
+Instância: 1 nó primário + 2 nós núcleo (m5.xlarge, ou o menor disponível no Academy)`)">📋 Copiar</button>
+                    </div>
+                    <div class="code-body"><code>Console AWS > EMR > Create cluster
+Aplicações: Hadoop, Spark
+Instância: 1 nó primário + 2 nós núcleo (m5.xlarge, ou o menor disponível no Academy)</code></div>
+                </div>
+
+                <div class="alert alert-warn">
+                    <span class="alert-icon">⚠️</span>
+                    <span><strong>Atenção ao custo/tempo:</strong> clusters EMR consomem créditos rapidamente. Encerre o cluster assim que terminar a prática (EMR > Terminate).</span>
+                </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-num">02</div>
+                    <div class="step-content">
+                        <div class="step-title">Apontar o cluster para o seu bucket S3</div>
+                        <div class="step-desc">Configure o cluster para ler os dados que você subiu na Semana 13:</div>
+                    </div>
+                </div>
+                
+            </div>
+
+                <div class="code-block" style="margin: 16px 0;">
+                    <div class="code-block-header">
+                        <span class="code-lang">text</span>
+                        <button class="copy-btn" onclick="copyCode(this, `No passo de configuração do cluster, defina o diretório de logs e dados como:
+s3://bigdata-[seu-nome]-s3/`)">📋 Copiar</button>
+                    </div>
+                    <div class="code-body"><code>No passo de configuração do cluster, defina o diretório de logs e dados como:
+s3://bigdata-[seu-nome]-s3/</code></div>
+                </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-num">03</div>
+                    <div class="step-content">
+                        <div class="step-title">Rodar um job Spark no cluster EMR</div>
+                        <div class="step-desc">Reaproveite o mesmo script WordCount que você já rodou localmente na Semana 07/08, agora apontando para o S3:</div>
+                    </div>
+                </div>
+                
+            </div>
+
+                <div class="code-block" style="margin: 16px 0;">
+                    <div class="code-block-header">
+                        <span class="code-lang">python</span>
+                        <button class="copy-btn" onclick="copyCode(this, `df = spark.read.csv(&quot;s3://bigdata-[seu-nome]-s3/vendas.csv&quot;, header=True, inferSchema=True)
+df.groupBy(&quot;categoria&quot;).sum(&quot;preco&quot;).show()`)">📋 Copiar</button>
+                    </div>
+                    <div class="code-body"><code>df = spark.read.csv("s3://bigdata-[seu-nome]-s3/vendas.csv", header=True, inferSchema=True)
+df.groupBy("categoria").sum("preco").show()</code></div>
+                </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-num">04</div>
+                    <div class="step-content">
+                        <div class="step-title">Encerrar o cluster</div>
+                        <div class="step-desc">Sempre finalize para não consumir créditos à toa:</div>
+                    </div>
+                </div>
+                
+            </div>
+
+                <div class="code-block" style="margin: 16px 0;">
+                    <div class="code-block-header">
+                        <span class="code-lang">text</span>
+                        <button class="copy-btn" onclick="copyCode(this, `Console AWS > EMR > Selecionar cluster > Terminate`)">📋 Copiar</button>
+                    </div>
+                    <div class="code-body"><code>Console AWS > EMR > Selecionar cluster > Terminate</code></div>
+                </div>
+
+            <div class="checkpoint">
+                <div class="checkpoint-title">🏁 Checkpoint M3</div>
+                <ul class="checkpoint-items">
+                    <li class="checkpoint-item"><input type="checkbox" id="c2a"><label for="c2a">Cluster EMR criado com sucesso</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c2b"><label for="c2b">Rodei um job Spark lendo dados direto do S3</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c2c"><label for="c2c">Encerrei o cluster ao final da prática</label></li>
+                </ul>
+            </div>
+            <button class="complete-btn" id="btn2" onclick="completeMission(2, 200)">✅ Missão 3 Concluída — Coletar +200 XP</button>
         </div>
-      </div>
     </div>
 
-    <!-- Passo 4 -->
-    <div class="ide-step">
-      <div class="ide-step-left">
-        <div class="ide-step-num">4</div>
-        <div class="ide-connector"></div>
-      </div>
-      <div class="ide-step-content">
-        <h4>Selecione a porta USB (COM)</h4>
-        <p>Vá em <strong>Ferramentas → Porta</strong> e selecione a porta onde o Arduino está conectado. No Windows aparece como <code>COM3</code>, <code>COM4</code>, etc. No Linux/Mac aparece como <code>/dev/ttyUSB0</code> ou <code>/dev/cu.usbmodem</code>.</p>
-        <div class="ide-mock">
-          <div class="ide-mock-bar">
-            <div class="dot" style="background:#ff5f57"></div>
-            <div class="dot" style="background:#ffbd2e"></div>
-            <div class="dot" style="background:#27c840"></div>
-            <span style="margin-left:8px">Ferramentas → Porta</span>
-          </div>
-          <div class="ide-mock-body">
-            <span class="ide-path">Ferramentas</span><br>
-            &nbsp;&nbsp;<span class="ide-path">▶ Porta</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span class="ide-selected">✔ COM3 (Arduino Uno)</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span class="ide-path">COM1</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span class="ide-path">COM2</span>
-          </div>
-        </div>
-        <div class="ide-note">
-          <span>⚠️</span>
-          <span><strong>Porta não aparece?</strong> Pode ser necessário instalar o driver CH340 ou FTDI. Desconecte e reconecte o USB. Se usar Windows, verifique no Gerenciador de Dispositivos em "Portas (COM e LPT)".</span>
-        </div>
-      </div>
-    </div>
+<!-- FINAL BADGE -->
+<div class="final-badge" id="finalBadge">
+    <span class="final-badge-icon">🏆</span>
+    <h2>Semana 14 Concluída!</h2>
+    <p>Você já usa EMR e Data Lakes na prática — o combo mais usado de Big Data gerenciado na nuvem.</p>
+    <div class="final-xp">🏅 500 XP Coletados!</div>
+</div>
 
-    <!-- Passo 5 -->
-    <div class="ide-step">
-      <div class="ide-step-left">
-        <div class="ide-step-num">5</div>
-        <div class="ide-connector"></div>
-      </div>
-      <div class="ide-step-content">
-        <h4>Carregue o código e abra o Monitor Serial</h4>
-        <p>Clique no botão <strong>→ (Carregar)</strong> para compilar e enviar o código ao Arduino. Após o upload, abra o <strong>Monitor Serial</strong> em Ferramentas → Monitor Serial (ou Ctrl+Shift+M) e configure a velocidade para <strong>9600 bps</strong>. Os logs começarão a aparecer em tempo real!</p>
-        <div class="ide-mock">
-          <div class="ide-mock-bar">
-            <div class="dot" style="background:#ff5f57"></div>
-            <div class="dot" style="background:#ffbd2e"></div>
-            <div class="dot" style="background:#27c840"></div>
-            <span style="margin-left:8px">Monitor Serial — 9600 baud</span>
-          </div>
-          <div class="ide-mock-body">
-            <span style="color:#39ff85">--- INICIANDO SISTEMA DE MONITORAMENTO ---</span><br>
-            <span style="color:#6b7a99">LOG_ID, TIMESTAMP_MS, LUMINOSITY_VALUE, STATUS</span><br>
-            <span style="color:#aaa">1, 1001, 118, </span><span style="color:#39ff85">NORMAL</span><br>
-            <span style="color:#aaa">2, 2003, 122, </span><span style="color:#39ff85">NORMAL</span><br>
-            <span style="color:#aaa">3, 3004, 815, </span><span style="color:#ffb347">⚠ ALERTA: LUZ ACESA</span><br>
-            <span style="color:#aaa">4, 4006, 104, </span><span style="color:#39ff85">NORMAL</span>
-          </div>
-        </div>
-        <div class="ide-note">
-          <span>🎯</span>
-          <span>O Monitor Serial é a nossa primeira ferramenta de <strong>observabilidade de dados</strong>. É equivalente ao <code>tail -f</code> em sistemas Unix — você vê o dado nascendo em tempo real. Guarde esse arquivo depois: ele é o seu primeiro dataset bruto!</span>
-        </div>
-      </div>
-    </div>
 
-  </div>
-</section>
 
-<hr class="divider">
+<div class="next-week-teaser">
+    <h3>🚀 O que vem na próxima semana</h3>
+    <div class="next-week-teaser-title">IoT e Big Data</div>
+    <ul class="next-week-list"><li>Você vai programar um <strong>ESP32</strong> para enviar dados de sensores</li><li>Vai conectar esses dados ao <strong>Kafka</strong> que você já sabe usar (Semana 11)</li></ul>
+</div>
 
-<!-- SEÇÃO 3 — CÓDIGO -->
-<section class="section" id="codigo">
-  <div class="section-label">03 · O Código</div>
-  <h2>Gerando <span class="hl">Logs Profissionais</span></h2>
-  <p class="lead">O código abaixo não apenas lê o sensor — ele o transforma em um <strong>log estruturado em CSV</strong>, pronto para ser ingerido por sistemas de Big Data.</p>
+</div><!-- /main -->
 
-  <div class="code-section">
-    <div class="code-header">
-      <div class="dot dot-r"></div>
-      <div class="dot dot-y"></div>
-      <div class="dot dot-g"></div>
-      <span class="filename">monitoramento_rack.ino</span>
-      <span class="lang-badge">C++ / Arduino</span>
-    </div>
-    <pre><span class="line"><span class="c-comment">// ──────────────────────────────────────────────────────────</span></span>
-<span class="line"><span class="c-comment">// SISTEMA DE MONITORAMENTO DE ATIVOS — TELEMETRIA COM LDR</span></span>
-<span class="line"><span class="c-comment">// Curso de Ciência de Dados — Módulo 1</span></span>
-<span class="line"><span class="c-comment">// ──────────────────────────────────────────────────────────</span></span>
-<span class="line"></span>
-<span class="line"><span class="c-comment">// Definição do pino analógico</span></span>
-<span class="line"><span class="c-kw">const</span> <span class="c-type">int</span> <span class="c-var">pinoLDR</span> <span class="c-op">=</span> <span class="c-var">A0</span><span class="c-op">;</span></span>
-<span class="line"><span class="c-type">int</span> <span class="c-var">luminosidade</span> <span class="c-op">=</span> <span class="c-num">0</span><span class="c-op">;</span></span>
-<span class="line"></span>
-<span class="line"><span class="c-type">void</span> <span class="c-fn">setup</span><span class="c-op">() {</span></span>
-<span class="line">  <span class="c-comment">// Inicializa a Serial com 9600 bps</span></span>
-<span class="line">  <span class="c-var">Serial</span><span class="c-op">.</span><span class="c-fn">begin</span><span class="c-op">(</span><span class="c-num">9600</span><span class="c-op">);</span></span>
-<span class="line">  <span class="c-var">Serial</span><span class="c-op">.</span><span class="c-fn">println</span><span class="c-op">(</span><span class="c-str">"--- INICIANDO SISTEMA DE MONITORAMENTO DE ATIVOS ---"</span><span class="c-op">);</span></span>
-<span class="line">  <span class="c-var">Serial</span><span class="c-op">.</span><span class="c-fn">println</span><span class="c-op">(</span><span class="c-str">"LOG_ID, TIMESTAMP_MS, LUMINOSITY_VALUE, STATUS"</span><span class="c-op">);</span></span>
-<span class="line"><span class="c-op">}</span></span>
-<span class="line"></span>
-<span class="line"><span class="c-type">void</span> <span class="c-fn">loop</span><span class="c-op">() {</span></span>
-<span class="line">  <span class="c-comment">// Lê o valor do LDR (0 a 1023)</span></span>
-<span class="line">  <span class="c-var">luminosidade</span> <span class="c-op">=</span> <span class="c-fn">analogRead</span><span class="c-op">(</span><span class="c-var">pinoLDR</span><span class="c-op">);</span></span>
-<span class="line"></span>
-<span class="line">  <span class="c-comment">// Define um status baseado no limiar (threshold)</span></span>
-<span class="line">  <span class="c-type">String</span> <span class="c-var">status</span> <span class="c-op">=</span> <span class="c-op">(</span><span class="c-var">luminosidade</span> <span class="c-op">&gt;</span> <span class="c-num">600</span><span class="c-op">)</span> <span class="c-op">?</span></span>
-<span class="line">    <span class="c-str">"ALERTA: LUZ ACESA"</span> <span class="c-op">:</span> <span class="c-str">"NORMAL"</span><span class="c-op">;</span></span>
-<span class="line"></span>
-<span class="line">  <span class="c-comment">// Gera a linha de log separada por vírgulas (CSV)</span></span>
-<span class="line">  <span class="c-comment">// Facilita a importação futura em sistemas de Big Data</span></span>
-<span class="line">  <span class="c-var">Serial</span><span class="c-op">.</span><span class="c-fn">print</span><span class="c-op">(</span><span class="c-fn">millis</span><span class="c-op">() /</span> <span class="c-num">1000</span><span class="c-op">);</span>  <span class="c-comment">// Contador de segundos</span></span>
-<span class="line">  <span class="c-var">Serial</span><span class="c-op">.</span><span class="c-fn">print</span><span class="c-op">(</span><span class="c-str">", "</span><span class="c-op">);</span></span>
-<span class="line">  <span class="c-var">Serial</span><span class="c-op">.</span><span class="c-fn">print</span><span class="c-op">(</span><span class="c-fn">millis</span><span class="c-op">());</span>         <span class="c-comment">// Timestamp em ms</span></span>
-<span class="line">  <span class="c-var">Serial</span><span class="c-op">.</span><span class="c-fn">print</span><span class="c-op">(</span><span class="c-str">", "</span><span class="c-op">);</span></span>
-<span class="line">  <span class="c-var">Serial</span><span class="c-op">.</span><span class="c-fn">print</span><span class="c-op">(</span><span class="c-var">luminosidade</span><span class="c-op">);</span>     <span class="c-comment">// O dado bruto (raw data)</span></span>
-<span class="line">  <span class="c-var">Serial</span><span class="c-op">.</span><span class="c-fn">print</span><span class="c-op">(</span><span class="c-str">", "</span><span class="c-op">);</span></span>
-<span class="line">  <span class="c-var">Serial</span><span class="c-op">.</span><span class="c-fn">println</span><span class="c-op">(</span><span class="c-var">status</span><span class="c-op">);</span>         <span class="c-comment">// O dado processado (insight)</span></span>
-<span class="line"></span>
-<span class="line">  <span class="c-fn">delay</span><span class="c-op">(</span><span class="c-num">1000</span><span class="c-op">);</span>  <span class="c-comment">// Taxa de amostragem: 1 dado por segundo</span></span>
-<span class="line"><span class="c-op">}</span></span>
-</pre>
-  </div>
-
-  <!-- Anotações do código -->
-  <div class="annotations">
-    <div class="anno">
-      <div class="anno-num">1</div>
-      <div>
-        <h4>Cabeçalho CSV</h4>
-        <p>O <code>setup()</code> imprime o cabeçalho uma única vez. Todo arquivo CSV precisa de um cabeçalho para que ferramentas como Pandas e Spark saibam o nome de cada coluna.</p>
-      </div>
-    </div>
-    <div class="anno">
-      <div class="anno-num o">2</div>
-      <div>
-        <h4>Dado Bruto vs. Processado</h4>
-        <p><code>luminosidade</code> é o <strong>raw data</strong> (0–1023). <code>status</code> é o <strong>dado processado</strong> — já com significado de negócio. Em Data Science, sempre preservamos o dado bruto.</p>
-      </div>
-    </div>
-    <div class="anno">
-      <div class="anno-num g">3</div>
-      <div>
-        <h4>Timestamp em Millisegundos</h4>
-        <p><code>millis()</code> retorna o tempo desde o boot em ms. Em Big Data, o <strong>timestamp preciso</strong> é fundamental para juntar (JOIN) dados de múltiplas fontes por janela de tempo.</p>
-      </div>
-    </div>
-    <div class="anno">
-      <div class="anno-num">4</div>
-      <div>
-        <h4>Taxa de Amostragem</h4>
-        <p>O <code>delay(1000)</code> define 1 amostra/segundo. Mudar para <code>delay(1)</code> gera 1000 amostras/segundo — a base do Desafio 1 desta aula.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- SEÇÃO 4 — DESAFIOS -->
-<section class="section" id="desafios">
-  <div class="section-label">04 · Desafios</div>
-  <h2>Discussão de <span class="hl">Infraestrutura</span></h2>
-  <p class="lead">Agora que o dado está sendo gerado, vamos pensar como engenheiros de dados. Cada desafio conecta o hardware físico a um problema real de Big Data.</p>
-
-  <div class="challenges">
-
-    <!-- Desafio 1 -->
-    <div class="challenge">
-      <div class="ch-header">
-        <div class="ch-num v">D1</div>
-        <div>
-          <h3>Volume — Quantos dados conseguimos gerar?</h3>
-        </div>
-        <span class="ch-tag">Big Data · Volume</span>
-      </div>
-      <div class="ch-body">
-        <p>Se esse sensor gerasse <strong>1 dado a cada milissegundo</strong> (<code>delay(1)</code>), quantos registros teríamos em 1 dia? Nosso computador aguentaria salvar esse log em um arquivo <code>.txt</code> comum?</p>
-        <div class="math-box">
-          1.000 amostras/s × 60s × 60min × 24h =
-          <div class="result">86.400.000 linhas/dia ≈ 86,4 milhões de registros</div>
-          <br>
-          Cada linha ≈ 40 bytes → <strong>~3,4 GB por dia</strong> por sensor<br>
-          Com 1.000 sensores em um Data Center → <strong>~3,4 TB/dia</strong>
-        </div>
-        <div class="tip" style="margin-top:16px">
-          <span class="tip-icon">💡</span>
-          <span>É exatamente esse volume que justifica o uso de <strong>HDFS</strong> (sistema de arquivos distribuído do Hadoop) e <strong>Apache Kafka</strong> para ingestão em streaming. Um <code>.txt</code> local traria problemas de I/O, falta de espaço e impossibilidade de consultas paralelas.</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Desafio 2 -->
-    <div class="challenge">
-      <div class="ch-header">
-        <div class="ch-num q">D2</div>
-        <div>
-          <h3>Qualidade — Como o Spark limpa dados ruidosos?</h3>
-        </div>
-        <span class="ch-tag">Spark · Qualidade</span>
-      </div>
-      <div class="ch-body">
-        <p>Passe a mão sobre o LDR <strong>rapidamente</strong>. Observe que o valor oscila bruscamente — picos de 700, 300, 800 em frações de segundo que não representam a realidade do ambiente.</p>
-        <div class="highlight">
-          // Exemplo de ruído observado no Serial Monitor:<br>
-          12, 12001, 115, NORMAL<br>
-          13, 13003, 742, ⚠ ALERTA: LUZ ACESA  ← sombra da mão!<br>
-          14, 14001, 118, NORMAL<br>
-          15, 15002, 119, NORMAL
-        </div>
-        <p style="margin-top:16px">Esse pico de <code>742</code> é um falso positivo — um dado ruidoso. Em <strong>Apache Spark</strong> (que veremos no sábado), podemos aplicar:</p>
-        <div class="tip">
-          <span class="tip-icon">🔧</span>
-          <div>
-            <strong>Média Móvel (Moving Average):</strong> calcula a média dos últimos N valores. Picos isolados são "suavizados" sem gerar alertas falsos.<br><br>
-            <strong>Filtro por Desvio Padrão:</strong> valores além de 2σ da média são descartados ou marcados como <code>OUTLIER</code> — isso é <em>limpeza de dados</em> em escala.
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Desafio 3 -->
-    <div class="challenge">
-      <div class="ch-header">
-        <div class="ch-num f">D3</div>
-        <div>
-          <h3>Formatação — O Delimitador importa em Big Data?</h3>
-        </div>
-        <span class="ch-tag">ETL · Delimitador</span>
-      </div>
-      <div class="ch-body">
-        <p>Altere o código para usar <code>;</code> ou <code>|</code> como separador em vez de vírgula. Substitua todas as ocorrências de <code>", "</code> pelo novo delimitador.</p>
-        <div class="highlight">
-          <span style="color:#6b7a99">// Versão com pipe ( | ) como delimitador:</span><br>
-          Serial.print(<span style="color:#39ff85">" | "</span>);  <span style="color:#6b7a99">// substitui ", "</span><br><br>
-          <span style="color:#6b7a99">// Saída resultante:</span><br>
-          LOG_ID | TIMESTAMP_MS | LUMINOSITY_VALUE | STATUS<br>
-          1 | 1000 | 112 | NORMAL<br>
-          2 | 2001 | 134 | NORMAL
-        </div>
-        <p style="margin-top:16px">Por que isso importa? Em Big Data, ao importar um arquivo no <strong>Hive</strong>, <strong>Spark</strong> ou <strong>AWS Athena</strong>, você declara o delimitador explicitamente:</p>
-        <div class="highlight">
-          <span style="color:#c792ea">-- HiveQL:</span><br>
-          ROW FORMAT DELIMITED<br>
-          FIELDS TERMINATED BY <span style="color:#39ff85">'|'</span><br><br>
-          <span style="color:#6b7a99"># Python / Pandas:</span><br>
-          df = pd.read_csv(<span style="color:#39ff85">'log.txt'</span>, sep=<span style="color:#39ff85">'|'</span>)
-        </div>
-        <div class="tip" style="margin-top:16px">
-          <span class="tip-icon">⚠️</span>
-          <span>Vírgula (<code>,</code>) é problemático quando os dados em si contêm vírgulas (ex: textos em português). O pipe (<code>|</code>) é mais seguro para dados textuais. TSV (<code>\t</code>) é padrão em muitos exports de banco de dados.</span>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- SUMÁRIO FINAL -->
-<section class="section" style="padding-bottom:60px">
-  <div class="section-label">Resumo da Aula</div>
-  <h2>Do Fóton ao <span class="hl">DataFrame</span></h2>
-  <p class="lead">Nesta aula, você percorreu o ciclo completo de vida de um dado — desde a física do sensor até a estrutura que alimenta plataformas de Big Data. E lembrou que tudo isso só funciona porque existe um cabo de rede bem crimpado na outra ponta.</p>
-
-  <div class="concept-grid">
-    <div class="concept-card">
-      <span class="icon">🔌</span>
-      <h3>Infraestrutura Física</h3>
-      <p>Aula passada: cabo RJ-45 e testador de rede. Hoje: sensor LDR e Arduino. Sem infraestrutura física, não há dado que trafegue — seja ele elétrico ou digital.</p>
-    </div>
-    <div class="concept-card">
-      <span class="icon">📡</span>
-      <h3>Telemetria</h3>
-      <p>O LDR simula um sensor IoT real. Sensores são a origem de dados no mundo físico — a base de qualquer pipeline de dados.</p>
-    </div>
-    <div class="concept-card">
-      <span class="icon">🗂️</span>
-      <h3>Dado Estruturado</h3>
-      <p>O formato CSV com cabeçalho é o ponto de entrada de ferramentas como Pandas, Spark e Hive. Estrutura é fundamental para análise em escala.</p>
-    </div>
-    <div class="concept-card">
-      <span class="icon">🚀</span>
-      <h3>Próximos Passos</h3>
-      <p>No sábado, esse mesmo arquivo CSV será ingerido pelo Spark para limpeza, agregação e análise em tempo real — fechando o ciclo completo.</p>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <p><span>Prof. Isaque Katahira</span> · Infraestrutura para Big Data · FATEC Ourinhos</p>
-  <p style="margin-top:6px">Experiências Práticas em Ciência de Dados — <span>O Nascimento do Dado</span></p>
-  <p style="margin-top:6px;font-size:.65rem">Arduino + LDR → CSV → Big Data Pipeline</p>
-</footer>
+<!-- NAV -->
+<div class="nav-bar">
+    <a href="semana13.html" class="nav-link">⬅ Semana 13</a>
+    <a href="semana15.html" class="nav-link">Semana 15 — IoT ➡</a>
+</div>
 
 <script>
-  // Animated log stream (re-runs every 8 seconds)
-  function animateLog() {
-    const lines = document.querySelectorAll('.log-line');
-    lines.forEach((l, i) => {
-      l.style.opacity = '0';
-      l.style.animation = 'none';
-      void l.offsetWidth;
-      l.style.animation = `fadeIn .4s ease ${i * 0.5}s forwards`;
-    });
-  }
-  setInterval(animateLog, 8000);
+    const TOTAL_XP = 500;
+    const missionXP = [150, 150, 200];
+    let completed = new Array(3).fill(false);
+    let currentXP = 0;
 
-  // Highlight nav links on scroll
-  const sections = document.querySelectorAll('.section[id]');
-  const navLinks = document.querySelectorAll('nav .steps a');
-  window.addEventListener('scroll', () => {
-    let current = '';
-    sections.forEach(s => {
-      if (window.scrollY >= s.offsetTop - 120) current = s.id;
-    });
-    navLinks.forEach(a => {
-      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--accent)' : '';
-      a.style.borderColor = a.getAttribute('href') === '#' + current ? 'var(--accent)' : '';
-    });
-  });
+    try {
+        const saved = JSON.parse(localStorage.getItem('bigdata_s14_state') || '{}');
+        if (saved.completed) completed = saved.completed;
+        if (saved.currentXP !== undefined) currentXP = saved.currentXP;
+    } catch(e) {}
+
+    function saveState() {
+        try { localStorage.setItem('bigdata_s14_state', JSON.stringify({completed, currentXP})); } catch(e) {}
+    }
+
+    function updateUI() {
+        document.getElementById('xpBarFill').style.width = (currentXP / TOTAL_XP * 100) + '%';
+        document.getElementById('xpPoints').textContent = currentXP + ' / ' + TOTAL_XP + ' XP';
+
+        const dots = document.querySelectorAll('.mission-dot');
+        const lines = document.querySelectorAll('.mission-line');
+
+        completed.forEach((done, i) => {
+            const card = document.getElementById('mission' + i);
+            const btn = document.getElementById('btn' + i);
+            const statusEl = document.getElementById('status' + i);
+            if (!card) return;
+            if (done) {
+                card.classList.add('completed');
+                card.classList.remove('active-mission');
+                if (btn) { btn.classList.add('done'); btn.textContent = '✅ Missão ' + (i+1) + ' Concluída!'; btn.disabled = true; }
+                if (statusEl) statusEl.textContent = '✅';
+                if (dots[i]) { dots[i].classList.remove('locked', 'active'); dots[i].classList.add('done'); }
+                if (lines[i]) lines[i].classList.add('done');
+            }
+        });
+
+        const nextIdx = completed.indexOf(false);
+        if (nextIdx !== -1 && dots[nextIdx]) {
+            dots[nextIdx].classList.remove('locked');
+            dots[nextIdx].classList.add('active');
+            const nextCard = document.getElementById('mission' + nextIdx);
+            if (nextCard) nextCard.classList.add('active-mission');
+        }
+
+        if (completed.every(v => v)) {
+            document.getElementById('finalBadge').style.display = 'block';
+        }
+    }
+
+    function completeMission(idx, xp) {
+        if (completed[idx]) return;
+        if (idx > 0 && !completed[idx - 1]) {
+            showToast('⚠️ Complete a Missão ' + idx + ' primeiro!', true);
+            return;
+        }
+        completed[idx] = true;
+        currentXP += xp;
+        saveState();
+        updateUI();
+        showToast('+' + xp + ' XP — Missão ' + (idx+1) + ' completa!');
+
+        const nextIdx = idx + 1;
+        if (nextIdx < 3) {
+            setTimeout(() => {
+                const nextCard = document.getElementById('mission' + nextIdx);
+                if (nextCard) {
+                    nextCard.classList.add('open');
+                    nextCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 800);
+        }
+    }
+
+    function showToast(msg, warn) {
+        const toast = document.getElementById('xpToast');
+        document.getElementById('xpToastMsg').textContent = msg;
+        toast.style.borderColor = warn ? 'var(--warn)' : 'var(--xp-color)';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    function toggleMission(id) {
+        const card = typeof id === 'number' ? document.getElementById('mission' + id) : document.getElementById(id);
+        if (card) card.classList.toggle('open');
+    }
+
+    function scrollToMission(idx) {
+        const el = document.getElementById('mission' + idx);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function copyCode(btn, code) {
+        navigator.clipboard.writeText(code).then(() => {
+            const orig = btn.innerHTML;
+            btn.innerHTML = '✅ Copiado!';
+            btn.classList.add('copied');
+            setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
+        }).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = code;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            const orig = btn.innerHTML;
+            btn.innerHTML = '✅ Copiado!';
+            setTimeout(() => { btn.innerHTML = orig; }, 2000);
+        });
+    }
+
+    updateUI();
 </script>
 </body>
 </html>

@@ -135,6 +135,48 @@
         }
         .xp-toast.show { transform: translateX(0); }
 
+        /* ─── EMENTA LOCATION BAR ─── */
+        .ementa-bar {
+            position: sticky;
+            top: 73px;
+            z-index: 99;
+            background: rgba(6,10,16,0.97);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 7px 24px;
+        }
+        .ementa-bar-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .ementa-tag {
+            font-family: var(--font-mono);
+            font-size: 0.62em;
+            letter-spacing: 1px;
+            color: var(--accent);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .ementa-div {
+            width: 1px;
+            height: 12px;
+            background: var(--border);
+            flex-shrink: 0;
+        }
+        .ementa-text {
+            font-family: var(--font-mono);
+            font-size: 0.64em;
+            color: var(--text-dim);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        @media (max-width: 768px) { .ementa-text { display: none; } }
+
         /* ─── HERO ─── */
         .hero {
             max-width: 1100px;
@@ -965,6 +1007,15 @@
         </div>
     </div>
 </header>
+
+<!-- EMENTA LOCATION BAR -->
+<div class="ementa-bar">
+    <div class="ementa-bar-inner">
+        <span class="ementa-tag">📍 IAL008 · INFRAESTRUTURA PARA BIG DATA</span>
+        <div class="ementa-div"></div>
+        <span class="ementa-text">Ementa: recursos de hardware para Big Data e conceito de sistemas operacionais para bancos de dados distribuídos</span>
+    </div>
+</div>
 
 <!-- HERO -->
 <section class="hero">

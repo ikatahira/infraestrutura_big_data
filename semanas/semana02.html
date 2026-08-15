@@ -1156,6 +1156,124 @@
             letter-spacing: 0.3px;
         }
         .netacad-link:hover { opacity: 0.88; }
+        /* ─── INTERACTIVE WIDGETS ─── */
+        .interactive-box {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px 26px;
+            margin: 22px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .interactive-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+        }
+        .interactive-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            color: #fff;
+            font-size: 1.05em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        .interactive-sub {
+            font-size: 0.82em;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+        }
+        .interactive-sub code { color: var(--accent2); }
+
+        .dns-input-row { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+        .dns-input {
+            background: #060a10; border: 1px solid var(--border); border-radius: 8px;
+            padding: 10px 14px; color: #fff; font-family: var(--font-mono); flex: 1; min-width: 200px;
+            font-size: 0.85em;
+        }
+        .dns-input:focus { outline: none; border-color: var(--accent); }
+        .sim-btn {
+            background: var(--accent); color: #001622; border: none; border-radius: 8px;
+            padding: 10px 22px; font-weight: 700; cursor: pointer; font-family: var(--font-body);
+            font-size: 0.88em; transition: opacity .2s, transform .1s; white-space: nowrap;
+        }
+        .sim-btn:hover:not(:disabled) { opacity: 0.88; }
+        .sim-btn:active:not(:disabled) { transform: scale(0.97); }
+        .sim-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        .dns-flow { position: relative; display: flex; justify-content: space-between; align-items: flex-start; margin: 10px 0 4px; }
+        .dns-node { display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 2; width: 92px; }
+        .dns-node-icon {
+            width: 54px; height: 54px; border-radius: 50%; background: #0c1220; border: 2px solid var(--border);
+            display: flex; align-items: center; justify-content: center; font-size: 1.4em;
+            transition: all .35s;
+        }
+        .dns-node.active .dns-node-icon {
+            border-color: var(--accent); box-shadow: 0 0 20px rgba(0,212,255,0.55); background: rgba(0,212,255,0.12);
+            transform: scale(1.08);
+        }
+        .dns-node-label { font-size: 0.66em; color: var(--text-dim); text-align: center; line-height: 1.3; }
+        .dns-node.active .dns-node-label { color: var(--accent); }
+        .dns-line { position: absolute; top: 27px; left: 46px; right: 46px; height: 2px; background: var(--border); z-index: 1; }
+        .dns-packet {
+            position: absolute; top: 19px; width: 16px; height: 16px; border-radius: 50%;
+            background: var(--accent2); box-shadow: 0 0 14px var(--accent2); opacity: 0; z-index: 3;
+            transition: left 0.8s cubic-bezier(.4,0,.2,1), opacity .2s;
+        }
+        .dns-packet.show { opacity: 1; }
+
+        .dns-status {
+            background: #060a10; border: 1px solid var(--border); border-radius: 10px;
+            padding: 13px 18px; font-family: var(--font-mono); font-size: 0.8em; color: var(--accent2);
+            min-height: 18px; margin-top: 26px;
+        }
+        .dns-result {
+            margin-top: 12px; padding: 14px 18px; border-radius: 10px;
+            background: rgba(0,255,157,0.08); border: 1px solid rgba(0,255,157,0.3);
+            font-size: 0.85em; color: var(--text); display: none;
+        }
+        .dns-result.show { display: block; }
+
+        /* port explorer */
+        .port-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap: 10px; margin-bottom: 4px; }
+        .port-card {
+            background: #0c1220; border: 1px solid var(--border); border-radius: 10px;
+            padding: 14px 10px; text-align: center; cursor: pointer; transition: all .25s;
+        }
+        .port-card:hover { border-color: rgba(0,212,255,0.4); transform: translateY(-2px); }
+        .port-card.active { border-color: var(--accent); background: rgba(0,212,255,0.08); box-shadow: 0 0 16px rgba(0,212,255,0.2); }
+        .port-card.active.bigdata { border-color: var(--accent2); background: rgba(0,255,157,0.08); box-shadow: 0 0 16px rgba(0,255,157,0.2); }
+        .port-num { font-family: var(--font-mono); font-weight: 700; font-size: 1.15em; color: #fff; }
+        .port-name { font-size: 0.68em; color: var(--text-dim); margin-top: 4px; }
+        .port-card.bigdata .port-name { color: var(--accent2); }
+
+        /* cluster simulator */
+        .cluster-stage { position: relative; height: 210px; margin: 10px 0 4px; }
+        .cluster-node { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 6px; width: 76px; z-index: 2; }
+        .cluster-icon {
+            width: 54px; height: 54px; border-radius: 50%; background: #0c1220; border: 2px solid var(--border);
+            display: flex; align-items: center; justify-content: center; font-size: 1.4em; transition: all .3s; position: relative;
+        }
+        .cluster-node.active .cluster-icon { border-color: var(--accent); box-shadow: 0 0 18px rgba(0,212,255,0.5); }
+        .cluster-node.processing .cluster-icon { border-color: var(--warn); animation: pulseWorker 0.8s infinite alternate; }
+        .cluster-node.done .cluster-icon { border-color: var(--accent2); box-shadow: 0 0 18px rgba(0,255,157,0.5); }
+        .cluster-node.done .cluster-icon::after { content: '✓'; position: absolute; top: -6px; right: -6px; background: var(--accent2); color: #001a06; width: 18px; height: 18px; border-radius: 50%; font-size: 0.65em; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+        @keyframes pulseWorker { from { box-shadow: 0 0 8px rgba(255,214,10,0.4); } to { box-shadow: 0 0 22px rgba(255,214,10,0.8); } }
+        .cluster-lbl { font-size: 0.64em; color: var(--text-dim); text-align: center; }
+        .cluster-node.active .cluster-lbl, .cluster-node.processing .cluster-lbl, .cluster-node.done .cluster-lbl { color: var(--text); }
+        .cluster-client { top: 0; left: 0; }
+        .cluster-master { top: 0; left: 50%; transform: translateX(-50%); }
+        .cluster-worker-row { position: absolute; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; }
+        .cluster-worker-row .cluster-node { position: static; transform: none; }
+        .cluster-packet {
+            position: absolute; width: 16px; height: 16px; border-radius: 50%;
+            background: var(--accent2); box-shadow: 0 0 14px var(--accent2); opacity: 0; z-index: 3; pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -1296,6 +1414,34 @@
                 <div class="concept-box-body">Toda a infraestrutura de Big Data — do seu notebook a um cluster de 500 máquinas — depende de máquinas conversando entre si pela rede. Sem isso, não existe processamento distribuído.<br><br><strong>Endereço IP</strong> — o "endereço de rua" de uma máquina na rede (ex: <code>192.168.1.10</code>). Pode ser IPv4 (o mais comum) ou IPv6. Redes locais costumam usar faixas privadas como <code>192.168.x.x</code> ou <code>10.x.x.x</code>.<br><br><strong>Porta</strong> — o "número do apartamento" dentro do IP. Uma máquina roda dezenas de serviços ao mesmo tempo (web, SSH, banco de dados), cada um numa porta diferente. Ex: HTTP usa a porta 80, SSH usa a 22.<br><br><strong>Protocolo TCP/IP</strong> — o "idioma" combinado entre as máquinas para trocar dados sem perder nada no caminho, mesmo que a mensagem precise passar por várias redes intermediárias.<br><br><strong>DNS</strong> — o "catálogo de nomes": traduz nomes fáceis de lembrar (<code>google.com</code>) para o IP real da máquina, porque decorar números seria inviável.</div>
             </div>
 
+            <!-- WIDGET INTERATIVO: DNS -->
+            <div class="interactive-box">
+                <div class="interactive-title">🎬 Simulador — Como o DNS Resolve um Nome</div>
+                <div class="interactive-sub">Digite um domínio e veja, passo a passo e animado, o caminho que a resposta percorre até seu terminal.</div>
+                <div class="dns-input-row">
+                    <input type="text" class="dns-input" id="dnsInput" placeholder="ex: google.com" value="google.com">
+                    <button class="sim-btn" id="dnsBtn" onclick="animateDNS()">🔍 Resolver Endereço</button>
+                </div>
+                <div class="dns-flow" id="dnsFlow">
+                    <div class="dns-line"></div>
+                    <div class="dns-packet" id="dnsPacket"></div>
+                    <div class="dns-node"><div class="dns-node-icon">💻</div><div class="dns-node-label">Seu<br>Terminal</div></div>
+                    <div class="dns-node"><div class="dns-node-icon">📇</div><div class="dns-node-label">Resolver<br>DNS Local</div></div>
+                    <div class="dns-node"><div class="dns-node-icon">🌐</div><div class="dns-node-label">Servidores<br>DNS (Internet)</div></div>
+                    <div class="dns-node"><div class="dns-node-icon">🖥️</div><div class="dns-node-label">Servidor de<br>Destino</div></div>
+                </div>
+                <div class="dns-status" id="dnsStatusText">👆 Digite um domínio e clique em "Resolver Endereço" para começar.</div>
+                <div class="dns-result" id="dnsResult">✅ <strong>Conexão estabelecida!</strong> É exatamente esse processo — nome → DNS → IP → conexão — que roda toda vez que um cliente Hadoop precisa encontrar o NameNode do cluster pelo nome, antes de trocar qualquer dado.</div>
+            </div>
+
+            <!-- WIDGET INTERATIVO: PORTAS -->
+            <div class="interactive-box">
+                <div class="interactive-title">🚪 Explorador de Portas — Um IP, Vários Serviços</div>
+                <div class="interactive-sub">Clique em cada porta para ver qual serviço "mora" nesse apartamento do IP <code>192.168.1.10</code>. As em verde já vão aparecer no seu cluster de Big Data em breve.</div>
+                <div class="port-grid" id="portGrid"></div>
+                <div class="dns-status" id="portDetail">👆 Clique em uma porta para explorar</div>
+            </div>
+
             <div class="checkpoint">
                 <div class="checkpoint-title">🏁 Checkpoint M1</div>
                 <ul class="checkpoint-items">
@@ -1332,6 +1478,25 @@
             <div class="concept-box">
                 <div class="concept-box-title">🖧 Cliente-Servidor e Topologia de um Cluster</div>
                 <div class="concept-box-body"><strong>Cliente-servidor</strong> — o modelo mais comum de comunicação: o <em>cliente</em> pede algo (ex: seu terminal rodando <code>hdfs dfs -ls</code>), o <em>servidor</em> responde (ex: o NameNode do Hadoop). A maioria dos serviços de Big Data segue esse padrão.<br><br><strong>LAN (rede local)</strong> — a rede que conecta máquinas fisicamente próximas (mesmo prédio/datacenter). Um cluster Hadoop normalmente roda todo dentro da mesma LAN, para minimizar o tempo de resposta (latência) entre os nós.<br><br><strong>Master/Worker</strong> — o padrão de arquitetura usado por praticamente toda ferramenta de Big Data (Hadoop, Spark, Kafka): 1 (ou poucos) nós <em>master</em> coordenam o trabalho, e vários nós <em>worker</em> executam as tarefas. É rede que permite essa coordenação acontecer.<br><br><strong>Firewall e portas abertas</strong> — em um cluster real, é preciso liberar portas específicas entre os nós (ex: a porta 9870 do NameNode) para que a comunicação não seja bloqueada por segurança — uma das causas mais comuns de "cluster não funciona" no mundo real.</div>
+            </div>
+
+            <!-- WIDGET INTERATIVO: MASTER/WORKER -->
+            <div class="interactive-box">
+                <div class="interactive-title">🖧 Simulador — Um Job Distribuído em Ação</div>
+                <div class="interactive-sub">O mesmo padrão de Hadoop, Spark e Kafka: o Master coordena, os Workers processam em paralelo. Clique e assista.</div>
+                <div class="cluster-stage" id="clusterStage">
+                    <div class="cluster-node cluster-client" id="clClient"><div class="cluster-icon">💻</div><div class="cluster-lbl">Cliente</div></div>
+                    <div class="cluster-node cluster-master" id="clMaster"><div class="cluster-icon">🗂️</div><div class="cluster-lbl">Master</div></div>
+                    <div class="cluster-worker-row" id="clWorkerRow">
+                        <div class="cluster-node"><div class="cluster-icon">🖥️</div><div class="cluster-lbl">Worker 1</div></div>
+                        <div class="cluster-node"><div class="cluster-icon">🖥️</div><div class="cluster-lbl">Worker 2</div></div>
+                        <div class="cluster-node"><div class="cluster-icon">🖥️</div><div class="cluster-lbl">Worker 3</div></div>
+                        <div class="cluster-node"><div class="cluster-icon">🖥️</div><div class="cluster-lbl">Worker 4</div></div>
+                    </div>
+                </div>
+                <div style="margin-top:8px;"><button class="sim-btn" id="simBtn" onclick="runClusterSim()">▶️ Enviar Job MapReduce</button></div>
+                <div class="dns-status" id="simStatusText">Clique no botão para simular o fluxo completo de um job distribuído.</div>
+                <div class="dns-result" id="simResult">🎉 <strong>Isso é, em essência, o que roda por trás de qualquer job Hadoop, Spark ou Kafka</strong> — e é exatamente o padrão master/worker que você vai configurar de verdade nas próximas semanas de Big Data. A etapa final (Master agregando os resultados) é literalmente a fase <em>Reduce</em> do MapReduce.</div>
             </div>
 
             <div class="checkpoint">
@@ -1788,6 +1953,170 @@ dig google.com</code></div>
     }
 
     updateUI();
+
+    // ═══════════════════════════════════════════
+    //  WIDGET 1 — SIMULADOR DE RESOLUÇÃO DNS
+    // ═══════════════════════════════════════════
+    function animateDNS() {
+        const btn = document.getElementById('dnsBtn');
+        const flow = document.getElementById('dnsFlow');
+        const packet = document.getElementById('dnsPacket');
+        const statusEl = document.getElementById('dnsStatusText');
+        const resultEl = document.getElementById('dnsResult');
+        const nodes = flow.querySelectorAll('.dns-node');
+        const domainRaw = document.getElementById('dnsInput').value.trim();
+        const domain = domainRaw || 'google.com';
+
+        btn.disabled = true;
+        resultEl.classList.remove('show');
+        nodes.forEach(n => n.classList.remove('active'));
+
+        const fakeIP = '142.250.' + (Math.floor(Math.random()*200)+10) + '.' + (Math.floor(Math.random()*200)+10);
+        const steps = [
+            `💻 Seu terminal quer se conectar a "${domain}" — mas só conhece o nome, não o IP.`,
+            `📇 Pergunta ao Resolver DNS local: "qual o IP de ${domain}?"`,
+            `🌐 O resolver local não tem em cache — consulta os servidores DNS espalhados pela internet.`,
+            `🖥️ Resposta chega: ${domain} = ${fakeIP}. Agora sim, a conexão real pode começar.`,
+        ];
+
+        function placePacketAt(nodeIndex) {
+            const nodeEl = nodes[nodeIndex];
+            const nodeRect = nodeEl.getBoundingClientRect();
+            const flowRect = flow.getBoundingClientRect();
+            packet.style.left = (nodeRect.left - flowRect.left + nodeRect.width/2 - 8) + 'px';
+        }
+
+        let i = 0;
+        function step() {
+            if (i > 0) nodes[i-1].classList.remove('active');
+            if (i >= steps.length) {
+                packet.classList.remove('show');
+                resultEl.classList.add('show');
+                btn.disabled = false;
+                return;
+            }
+            nodes[i].classList.add('active');
+            placePacketAt(i);
+            packet.classList.add('show');
+            statusEl.textContent = steps[i];
+            i++;
+            setTimeout(step, 1500);
+        }
+        // posiciona o pacote no nó inicial antes de iniciar a animação
+        placePacketAt(0);
+        setTimeout(step, 150);
+    }
+
+    // ═══════════════════════════════════════════
+    //  WIDGET 2 — EXPLORADOR DE PORTAS
+    // ═══════════════════════════════════════════
+    const PORTS = [
+        { port: 22, name: 'SSH', desc: 'Acesso remoto seguro ao terminal da máquina — porta que quase sempre aparece no seu <code>ss -tulnp</code> da Missão 3.', bigdata: false },
+        { port: 53, name: 'DNS', desc: 'Serviço de resolução de nomes — a mesma porta usada na simulação de DNS acima.', bigdata: false },
+        { port: 80, name: 'HTTP', desc: 'Tráfego web sem criptografia.', bigdata: false },
+        { port: 443, name: 'HTTPS', desc: 'Tráfego web criptografado — é a porta que o <code>curl -I</code> da Missão 3 vai usar.', bigdata: false },
+        { port: 9870, name: 'Hadoop NameNode', desc: 'Interface web do NameNode do Hadoop — você vai abrir essa porta pra valer nas próximas semanas de Big Data.', bigdata: true },
+        { port: 8088, name: 'YARN ResourceManager', desc: 'Painel de gerenciamento de recursos do cluster — mostra quais jobs MapReduce/Spark estão rodando.', bigdata: true },
+    ];
+    (function buildPorts() {
+        const grid = document.getElementById('portGrid');
+        if (!grid) return;
+        PORTS.forEach((p, idx) => {
+            const d = document.createElement('div');
+            d.className = 'port-card' + (p.bigdata ? ' bigdata' : '');
+            d.innerHTML = `<div class="port-num">:${p.port}</div><div class="port-name">${p.name}</div>`;
+            d.onclick = () => {
+                grid.querySelectorAll('.port-card').forEach(c => c.classList.remove('active'));
+                d.classList.add('active');
+                const detail = document.getElementById('portDetail');
+                detail.innerHTML = `<strong style="color:${p.bigdata ? 'var(--accent2)' : 'var(--accent)'}">:${p.port} — ${p.name}</strong><br>${p.desc}`;
+            };
+            grid.appendChild(d);
+        });
+    })();
+
+    // ═══════════════════════════════════════════
+    //  WIDGET 3 — SIMULADOR MASTER/WORKER
+    // ═══════════════════════════════════════════
+    function runClusterSim() {
+        const btn = document.getElementById('simBtn');
+        const stage = document.getElementById('clusterStage');
+        const statusEl = document.getElementById('simStatusText');
+        const resultEl = document.getElementById('simResult');
+        const client = document.getElementById('clClient');
+        const master = document.getElementById('clMaster');
+        const workers = Array.from(document.querySelectorAll('#clWorkerRow .cluster-node'));
+
+        btn.disabled = true;
+        resultEl.classList.remove('show');
+        [master, ...workers].forEach(n => n.classList.remove('active', 'processing', 'done'));
+
+        function pos(el) {
+            const r = el.getBoundingClientRect();
+            const s = stage.getBoundingClientRect();
+            return { x: r.left - s.left + r.width / 2, y: r.top - s.top + r.height / 2 };
+        }
+        function makePacket() {
+            const p = document.createElement('div');
+            p.className = 'cluster-packet';
+            stage.appendChild(p);
+            return p;
+        }
+        function movePacket(p, from, to, duration) {
+            return new Promise(resolve => {
+                p.style.left = (from.x - 8) + 'px';
+                p.style.top = (from.y - 8) + 'px';
+                p.style.opacity = '1';
+                requestAnimationFrame(() => {
+                    p.style.transition = `left ${duration}ms cubic-bezier(.4,0,.2,1), top ${duration}ms cubic-bezier(.4,0,.2,1)`;
+                    p.style.left = (to.x - 8) + 'px';
+                    p.style.top = (to.y - 8) + 'px';
+                });
+                setTimeout(resolve, duration);
+            });
+        }
+        function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        (async () => {
+            statusEl.textContent = '1️⃣ Cliente envia o job ao Master...';
+            const p1 = makePacket();
+            await movePacket(p1, pos(client), pos(master), 700);
+            p1.remove();
+            master.classList.add('active');
+            await wait(200);
+
+            statusEl.textContent = '2️⃣ Master divide o trabalho e distribui as tarefas entre os Workers...';
+            const distPackets = workers.map(() => makePacket());
+            await Promise.all(workers.map((w, idx) => new Promise(res => {
+                setTimeout(async () => {
+                    await movePacket(distPackets[idx], pos(master), pos(w), 700);
+                    distPackets[idx].remove();
+                    w.classList.add('processing');
+                    res();
+                }, idx * 160);
+            })));
+
+            statusEl.textContent = '3️⃣ Workers processam suas fatias dos dados em paralelo (a etapa Map)...';
+            await wait(1600);
+            workers.forEach(w => w.classList.remove('processing'));
+            workers.forEach(w => w.classList.add('done'));
+
+            statusEl.textContent = '4️⃣ Cada Worker envia seu resultado parcial de volta ao Master...';
+            const backPackets = workers.map(() => makePacket());
+            await Promise.all(workers.map((w, idx) => new Promise(res => {
+                setTimeout(async () => {
+                    await movePacket(backPackets[idx], pos(w), pos(master), 700);
+                    backPackets[idx].remove();
+                    res();
+                }, idx * 160);
+            })));
+
+            statusEl.textContent = '✅ Master agrega os resultados parciais em um resultado final (a etapa Reduce)!';
+            master.classList.add('done');
+            resultEl.classList.add('show');
+            btn.disabled = false;
+        })();
+    }
 </script>
 </body>
 </html>

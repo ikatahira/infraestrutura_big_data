@@ -1323,6 +1323,21 @@
         }
         .example-note strong { color: var(--text); }
         .example-note.elastic { border-left-color: var(--accent2); }
+        /* ─── GALERIA DE INFOGRÁFICOS DE EXEMPLO ─── */
+        .infographic-gallery {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px; margin: 6px 0 18px;
+        }
+        .infographic-card {
+            background: #06090f; border: 1px solid rgba(190,60,190,0.28);
+            border-radius: 12px; padding: 12px; display: flex; flex-direction: column;
+        }
+        .infographic-card svg { width: 100%; height: auto; display: block; border-radius: 8px; }
+        .infographic-caption {
+            font-family: var(--font-mono); font-size: 0.7em; color: var(--text-dim);
+            margin-top: 10px; text-align: center; line-height: 1.5;
+        }
+        .infographic-caption strong { color: #e070e0; }
         /* ─── INTERACTIVE WIDGETS ─── */
         .interactive-box {
             background: var(--panel);
@@ -2108,6 +2123,98 @@ Portal: portal.azure.com (entre com sua conta institucional)</code></div>
             </div>
             <div class="example-note">🧩 <strong>Virtualização:</strong> por baixo de cada camada acima, o provedor usa um hypervisor para fatiar servidores físicos em VMs — é isso que torna possível alugar "só um pedacinho" de um servidor gigante.</div>
             <div class="example-note elastic">📈 <strong>Elasticidade:</strong> no lançamento do sistema (pico de acesso), o Dataproc escala sozinho de 3 para 30 workers para processar os dados mais rápido, e volta a encolher depois — sem ninguém precisar comprar servidor novo.</div>
+        </div>
+
+        <div class="assignment-title" style="font-size: 1em; margin-top: 4px;">🖼️ Exemplos de Infográficos — dois estilos possíveis</div>
+        <div class="assignment-body" style="margin-top: 4px;">Isso é só para dar ideia do <em>nível de acabamento visual</em> esperado — layout em pôster, layout em linha do tempo, ou qualquer outro estilo do Canva. O conteúdo precisa ser <strong>seu</strong>, com outro projeto.</div>
+        <div class="infographic-gallery">
+            <div class="infographic-card">
+                <svg viewBox="0 0 520 640" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="520" height="640" rx="14" fill="#0a0f1a"/>
+                    <text x="260" y="42" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="800" fill="#ffffff">🎬 Sistema de Recomendação</text>
+                    <text x="260" y="66" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5a7080">Arquitetura de Nuvem — Ciência de Dados</text>
+                    <line x1="40" y1="82" x2="480" y2="82" stroke="#1a2436" stroke-width="1"/>
+
+                    <rect x="40" y="104" width="440" height="108" rx="10" fill="rgba(0,212,255,0.10)" stroke="#00d4ff" stroke-width="1.5"/>
+                    <text x="66" y="140" font-family="Arial, sans-serif" font-size="26">🖥️</text>
+                    <text x="102" y="134" font-family="Arial, sans-serif" font-size="15" font-weight="800" fill="#00d4ff">IaaS — AWS EC2 (GPU)</text>
+                    <text x="102" y="156" font-family="Arial, sans-serif" font-size="12" fill="#b8c8d8">Treina o modelo de recomendação —</text>
+                    <text x="102" y="174" font-family="Arial, sans-serif" font-size="12" fill="#b8c8d8">você configura tudo na VM alugada</text>
+                    <text x="102" y="198" font-family="Arial, sans-serif" font-size="10.5" font-style="italic" fill="#5a7080">🧩 hypervisor fatia o servidor físico em VMs</text>
+
+                    <line x1="260" y1="212" x2="260" y2="240" stroke="#5a7080" stroke-width="2"/>
+                    <polygon points="260,248 254,236 266,236" fill="#5a7080"/>
+
+                    <rect x="40" y="252" width="440" height="108" rx="10" fill="rgba(255,107,53,0.10)" stroke="#ff6b35" stroke-width="1.5"/>
+                    <text x="66" y="288" font-family="Arial, sans-serif" font-size="26">🛠️</text>
+                    <text x="102" y="282" font-family="Arial, sans-serif" font-size="15" font-weight="800" fill="#ff9d6b">PaaS — Google Dataproc</text>
+                    <text x="102" y="304" font-family="Arial, sans-serif" font-size="12" fill="#b8c8d8">Roda o pipeline Spark de ETL pronto</text>
+                    <text x="102" y="322" font-family="Arial, sans-serif" font-size="12" fill="#b8c8d8">— sem precisar instalar nada</text>
+                    <text x="102" y="346" font-family="Arial, sans-serif" font-size="10.5" font-style="italic" fill="#5a7080">📈 autoscaling: 3 → 30 workers no pico</text>
+
+                    <line x1="260" y1="360" x2="260" y2="388" stroke="#5a7080" stroke-width="2"/>
+                    <polygon points="260,396 254,384 266,384" fill="#5a7080"/>
+
+                    <rect x="40" y="400" width="440" height="108" rx="10" fill="rgba(0,255,157,0.10)" stroke="#00ff9d" stroke-width="1.5"/>
+                    <text x="66" y="436" font-family="Arial, sans-serif" font-size="26">📱</text>
+                    <text x="102" y="430" font-family="Arial, sans-serif" font-size="15" font-weight="800" fill="#00ff9d">SaaS — Streamlit Cloud</text>
+                    <text x="102" y="452" font-family="Arial, sans-serif" font-size="12" fill="#b8c8d8">Dashboard pronto onde o usuário final</text>
+                    <text x="102" y="470" font-family="Arial, sans-serif" font-size="12" fill="#b8c8d8">vê as recomendações geradas</text>
+
+                    <line x1="40" y1="536" x2="480" y2="536" stroke="#1a2436" stroke-width="1"/>
+                    <circle cx="60" cy="562" r="6" fill="#00d4ff"/><text x="74" y="567" font-family="Arial, sans-serif" font-size="12" fill="#b8c8d8">IaaS</text>
+                    <circle cx="150" cy="562" r="6" fill="#ff6b35"/><text x="164" y="567" font-family="Arial, sans-serif" font-size="12" fill="#b8c8d8">PaaS</text>
+                    <circle cx="240" cy="562" r="6" fill="#00ff9d"/><text x="254" y="567" font-family="Arial, sans-serif" font-size="12" fill="#b8c8d8">SaaS</text>
+                    <text x="480" y="612" text-anchor="end" font-family="Arial, sans-serif" font-size="10" fill="#3a4a5a">estilo: pôster vertical</text>
+                </svg>
+                <div class="infographic-caption"><strong>Estilo 1 — Pôster vertical</strong><br>Camadas empilhadas de baixo (infraestrutura) para cima (usuário final), com anotações de virtualização e elasticidade ao lado de cada seta.</div>
+            </div>
+
+            <div class="infographic-card">
+                <svg viewBox="0 0 520 640" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="520" height="640" rx="14" fill="#0a0f1a"/>
+                    <text x="260" y="42" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="800" fill="#ffffff">📊 Pipeline de Vendas</text>
+                    <text x="260" y="66" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5a7080">Arquitetura de Nuvem — E-commerce</text>
+                    <line x1="40" y1="82" x2="480" y2="82" stroke="#1a2436" stroke-width="1"/>
+
+                    <rect x="30" y="140" width="145" height="150" rx="10" fill="rgba(0,212,255,0.10)" stroke="#00d4ff" stroke-width="1.5"/>
+                    <text x="102" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="26">🗄️</text>
+                    <text x="102" y="204" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="800" fill="#00d4ff">IaaS</text>
+                    <text x="102" y="222" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" fill="#b8c8d8">Azure VM</text>
+                    <text x="102" y="248" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#8fa4b8">Armazena os</text>
+                    <text x="102" y="262" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#8fa4b8">dados brutos</text>
+
+                    <polygon points="205,215 180,208 180,222" fill="#5a7080"/>
+
+                    <rect x="210" y="140" width="145" height="150" rx="10" fill="rgba(255,107,53,0.10)" stroke="#ff6b35" stroke-width="1.5"/>
+                    <text x="282" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="26">⚙️</text>
+                    <text x="282" y="204" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="800" fill="#ff9d6b">PaaS</text>
+                    <text x="282" y="222" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" fill="#b8c8d8">Databricks</text>
+                    <text x="282" y="248" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#8fa4b8">Transforma</text>
+                    <text x="282" y="262" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#8fa4b8">os dados (ETL)</text>
+
+                    <polygon points="385,215 360,208 360,222" fill="#5a7080"/>
+
+                    <rect x="390" y="140" width="120" height="150" rx="10" fill="rgba(0,255,157,0.10)" stroke="#00ff9d" stroke-width="1.5"/>
+                    <text x="450" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="26">📊</text>
+                    <text x="450" y="204" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="800" fill="#00ff9d">SaaS</text>
+                    <text x="450" y="222" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" fill="#b8c8d8">Power BI</text>
+                    <text x="450" y="248" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#8fa4b8">Dashboard p/</text>
+                    <text x="450" y="262" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#8fa4b8">diretoria</text>
+
+                    <rect x="30" y="330" width="480" height="1" fill="#1a2436"/>
+                    <rect x="30" y="360" width="480" height="70" rx="10" fill="rgba(255,255,255,0.03)" stroke="#2a3648"/>
+                    <text x="50" y="386" font-family="Arial, sans-serif" font-size="12" fill="#c0a0f0">🧩 <tspan font-weight="700" fill="#c0a0f0">Virtualização:</tspan></text>
+                    <text x="50" y="404" font-family="Arial, sans-serif" font-size="11" fill="#8fa4b8">o hypervisor do Azure fatia o servidor físico para criar a VM do IaaS acima</text>
+
+                    <rect x="30" y="444" width="480" height="70" rx="10" fill="rgba(255,255,255,0.03)" stroke="#2a3648"/>
+                    <text x="50" y="470" font-family="Arial, sans-serif" font-size="12" fill="#7ee0a8">📈 <tspan font-weight="700" fill="#7ee0a8">Elasticidade:</tspan></text>
+                    <text x="50" y="488" font-family="Arial, sans-serif" font-size="11" fill="#8fa4b8">no Black Friday, o Databricks escala sozinho para processar o pico de vendas</text>
+
+                    <text x="480" y="612" text-anchor="end" font-family="Arial, sans-serif" font-size="10" fill="#3a4a5a">estilo: linha do tempo horizontal</text>
+                </svg>
+                <div class="infographic-caption"><strong>Estilo 2 — Linha do tempo horizontal</strong><br>Fluxo da esquerda para a direita, com virtualização e elasticidade explicadas em caixas de destaque abaixo do fluxo.</div>
+            </div>
         </div>
 
         <div class="assignment-body">

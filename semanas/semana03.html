@@ -1157,6 +1157,50 @@
             letter-spacing: 0.3px;
         }
         .netacad-link:hover { opacity: 0.88; }
+        /* ─── EVG COURSE CONTENT CARD ─── */
+        .evg-course-card {
+            background: rgba(0,190,60,0.05);
+            border: 1px solid rgba(0,190,60,0.22);
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin: 4px 0 16px;
+        }
+        .evg-course-rating {
+            font-family: var(--font-mono); font-size: 0.72em; color: var(--text-dim);
+            margin-bottom: 14px; display: flex; align-items: center; gap: 6px;
+        }
+        .evg-course-meta-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 14px; margin-bottom: 18px;
+        }
+        .evg-course-meta-label {
+            font-family: var(--font-mono); font-size: 0.62em; letter-spacing: 1px;
+            text-transform: uppercase; color: #00be3c; margin-bottom: 4px;
+        }
+        .evg-course-meta-value { font-size: 0.85em; color: var(--text); font-weight: 600; line-height: 1.4; }
+        .evg-course-modules-label {
+            font-family: var(--font-display); font-weight: 700; font-size: 0.8em;
+            color: #fff; margin-bottom: 10px; letter-spacing: 0.3px;
+        }
+        .evg-course-modules-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 10px;
+        }
+        .evg-course-module {
+            display: flex; align-items: flex-start; gap: 9px;
+            font-size: 0.8em; color: var(--text-dim); line-height: 1.5;
+        }
+        .evg-course-module-num {
+            flex-shrink: 0; width: 20px; height: 20px; border-radius: 5px;
+            background: rgba(0,190,60,0.14); border: 1px solid rgba(0,190,60,0.35);
+            color: #00be3c; font-family: var(--font-mono); font-size: 0.68em; font-weight: 700;
+            display: flex; align-items: center; justify-content: center; margin-top: 1px;
+        }
+        .evg-course-audience {
+            margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.06);
+            font-size: 0.78em; color: var(--text-dim); line-height: 1.6;
+        }
+        .evg-course-audience strong { color: var(--text); }
         /* ─── ASSIGNMENT (ATIVIDADE PARA ENTREGA) BOX ─── */
         .assignment-box {
             background: linear-gradient(135deg, rgba(190,60,190,0.1), rgba(120,80,220,0.06));
@@ -1484,7 +1528,7 @@
     <div class="hero-stats">
         <div class="hero-stat"><div class="hero-stat-val">3</div><div class="hero-stat-label">Missões</div></div>
         <div class="hero-stat"><div class="hero-stat-val">500</div><div class="hero-stat-label">XP Total</div></div>
-        <div class="hero-stat"><div class="hero-stat-val">~60min</div><div class="hero-stat-label">Duração</div></div>
+        <div class="hero-stat"><div class="hero-stat-val">~60min</div></div>
         <div class="hero-stat"><div class="hero-stat-val">Ubuntu 22.04</div><div class="hero-stat-label">Ambiente</div></div>
     </div>
 </section>
@@ -1527,7 +1571,7 @@
                 <div class="discipline-item-text">Ao final, você saberá <strong>o que é um hypervisor e como VMs funcionam</strong>, entenderá <strong>IaaS/PaaS/SaaS e elasticidade</strong>, e terá explorado <strong>configurações reais de rede de VM e o console de um provedor de nuvem</strong>.</div>
             </div>
         </div>
-        <div class="discipline-links"><span class="discipline-tag dtag-ementa">🧩 Virtualização</span><span class="discipline-tag dtag-ementa">☁️ Cloud Computing</span><span class="discipline-tag dtag-objetivo">🎯 Explorar provedor de nuvem</span><span class="discipline-tag dtag-competencia">⭐ Nivelamento NetAcad</span></div>
+        <div class="discipline-links"><span class="discipline-tag dtag-ementa">🧩 Virtualização</span><span class="discipline-tag dtag-ementa">☁️ Cloud Computing</span><span class="discipline-tag dtag-objetivo">🎯 Explorar provedor de nuvem</span><span class="discipline-tag dtag-competencia">⭐ Nivelamento EVG/Enap</span></div>
     </div>
 </div>
 
@@ -1970,8 +2014,8 @@ Portal: portal.azure.com (entre com sua conta institucional)</code></div>
                 <div class="discipline-item-text">Referência oficial para quando formos usar contêineres em ambientes de teste de Big Data.<br><a href="https://docs.docker.com/get-started/" target="_blank" rel="noopener" style="color:var(--accent);">docs.docker.com →</a></div>
             </div>
             <div class="discipline-item">
-                <div class="discipline-item-label">🎓 Cisco Networking Academy</div>
-                <div class="discipline-item-text">Portal da trilha de nivelamento gratuita usada nesta e nas próximas semanas.<br><a href="https://www.netacad.com" target="_blank" rel="noopener" style="color:var(--accent);">netacad.com →</a></div>
+                <div class="discipline-item-label">🎓 Escola Virtual Gov (Enap)</div>
+                <div class="discipline-item-text">Portal de cursos gratuitos do governo federal usado na tarefa desta semana.<br><a href="https://www.escolavirtual.gov.br" target="_blank" rel="noopener" style="color:var(--accent);">escolavirtual.gov.br →</a></div>
             </div>
         </div>
     </div>
@@ -1985,9 +2029,9 @@ Portal: portal.azure.com (entre com sua conta institucional)</code></div>
     <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px;">
         <div style="background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:22px; text-align:center;">
             <div style="font-size:2rem; margin-bottom:10px;">📥</div>
-            <div style="font-weight:700; color:#fff; margin-bottom:6px;">1. IT Essentials — Módulo 9</div>
-            <div style="font-size:0.82em; color:var(--text-dim); margin-bottom:14px;">NetAcad — Virtualization and Cloud Computing (tarefa desta semana, ver box abaixo)</div>
-            <a href="https://www.netacad.com/courses/it-essentials" target="_blank" rel="noopener" style="color:var(--accent2); font-family:var(--font-mono); font-size:0.75em;">netacad.com →</a>
+            <div style="font-weight:700; color:#fff; margin-bottom:6px;">1. Administração de Serviços na Nuvem de Governo</div>
+            <div style="font-size:0.82em; color:var(--text-dim); margin-bottom:14px;">Escola Virtual Gov (Enap) — 30h, infraestrutura em nuvem, virtualização e lock-in (tarefa desta semana, ver box abaixo)</div>
+            <a href="https://www.escolavirtual.gov.br/curso/259" target="_blank" rel="noopener" style="color:var(--accent2); font-family:var(--font-mono); font-size:0.75em;">escolavirtual.gov.br →</a>
         </div>
         <div style="background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:22px; text-align:center;">
             <div style="font-size:2rem; margin-bottom:10px;">☁️</div>
@@ -2014,7 +2058,7 @@ Portal: portal.azure.com (entre com sua conta institucional)</code></div>
         <div style="display:flex; flex-direction:column; gap:10px; margin-top:4px;">
             <div style="background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:14px 16px; font-size:0.85em; color:var(--text);"><strong style="color:#fff;">VELTE, A. T.; VELTE, T. J.; ELSENPETER, R.</strong> Cloud Computing: A Practical Approach. New York: McGraw-Hill, 2010.</div>
             <div style="background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:14px 16px; font-size:0.85em; color:var(--text);"><strong style="color:#fff;">MELL, P.; GRANCE, T.</strong> The NIST Definition of Cloud Computing. NIST Special Publication 800-145, 2011.</div>
-            <div style="background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:14px 16px; font-size:0.85em; color:var(--text);"><strong style="color:#fff;">CISCO NETWORKING ACADEMY.</strong> IT Essentials — Módulo 9: Virtualization and Cloud Computing. Disponível em: netacad.com</div>
+            <div style="background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:14px 16px; font-size:0.85em; color:var(--text);"><strong style="color:#fff;">ESCOLA VIRTUAL GOV — ENAP.</strong> Administração de Serviços na Nuvem de Governo. Disponível em: escolavirtual.gov.br</div>
             <div style="background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:14px 16px; font-size:0.85em; color:var(--text);"><strong style="color:#fff;">AMAZON WEB SERVICES.</strong> AWS Cloud Practitioner Essentials. Disponível em: skillbuilder.aws</div>
             <div style="background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:14px 16px; font-size:0.85em; color:var(--text);"><strong style="color:#fff;">WHITE, T.</strong> Hadoop: The Definitive Guide. 4ª Ed. Sebastopol: O'Reilly, 2015. <em>Cap. 1: Meet Hadoop</em> (contexto histórico de clusters escaláveis e computação em nuvem).</div>
         </div>
@@ -2105,19 +2149,56 @@ Portal: portal.azure.com (entre com sua conta institucional)</code></div>
     </div>
 
     <div class="netacad-box">
-        <div class="netacad-tag">🎓 NIVELAMENTO · NETACAD</div>
-        <div class="netacad-title">📥 Tarefa para entregar: Virtualization and Cloud Computing</div>
+        <div class="netacad-tag">🎓 NIVELAMENTO · ESCOLA VIRTUAL GOV (ENAP)</div>
+        <div class="netacad-title">📥 Tarefa para entregar: Administração de Serviços na Nuvem de Governo</div>
         <div class="netacad-body">
             Como identificamos que a grade do curso não tem disciplina de <strong>Infraestrutura de TI / Redes</strong>, vamos preencher essa base aos poucos, módulo por módulo, ao longo destas 4 semanas — direto conectado com o que você praticou hoje.<br><br>
-            <strong>O que fazer:</strong> acesse o link abaixo, faça login (ou crie conta gratuita) na NetAcad, e complete o <strong>Módulo 9: Virtualization and Cloud Computing</strong> do curso <em>IT Essentials</em>. Ao final, tire um print da tela de conclusão (com seu nome de perfil visível) e envie como comprovante.
+            <strong>O que fazer:</strong> acesse o link abaixo, faça login (ou crie conta gratuita) na Escola Virtual Gov (plataforma da Enap), e complete o curso <em>Administração de Serviços na Nuvem de Governo</em>. Ao final, tire um print do certificado de conclusão (com seu nome visível) e envie como comprovante.
         </div>
+
+        <div class="evg-course-card">
+            <div class="evg-course-rating">⭐⭐⭐⭐⭐ <strong style="color:var(--text);">5.0</strong> (7 avaliações) · Lançamento: 24/10/2019</div>
+            <div class="evg-course-meta-grid">
+                <div>
+                    <div class="evg-course-meta-label">Conteudista</div>
+                    <div class="evg-course-meta-value">Ministério da Fazenda</div>
+                </div>
+                <div>
+                    <div class="evg-course-meta-label">Certificador</div>
+                    <div class="evg-course-meta-value">Enap — Escola Nacional de Administração Pública</div>
+                </div>
+                <div>
+                    <div class="evg-course-meta-label">Carga Horária</div>
+                    <div class="evg-course-meta-value">30h</div>
+                </div>
+                <div>
+                    <div class="evg-course-meta-label">Disponibilidade</div>
+                    <div class="evg-course-meta-value">30 dias</div>
+                </div>
+                <div>
+                    <div class="evg-course-meta-label">Idioma</div>
+                    <div class="evg-course-meta-value">Português</div>
+                </div>
+            </div>
+            <div class="evg-course-modules-label">📋 Conteúdo Programático</div>
+            <div class="evg-course-modules-grid">
+                <div class="evg-course-module"><span class="evg-course-module-num">I</span><span>Visão Geral de Computação em Nuvem</span></div>
+                <div class="evg-course-module"><span class="evg-course-module-num">II</span><span>Itens Básicos de Infraestrutura</span></div>
+                <div class="evg-course-module"><span class="evg-course-module-num">III</span><span>Mecanismos de Segurança da Informação em Nuvem</span></div>
+                <div class="evg-course-module"><span class="evg-course-module-num">IV</span><span>Aprisionamento Tecnológico (Lock-in)</span></div>
+                <div class="evg-course-module"><span class="evg-course-module-num">V</span><span>Gerenciando Custo</span></div>
+            </div>
+            <div class="evg-course-audience">🎯 <strong>Público-alvo:</strong> Gestores públicos e/ou Analistas em TI. Curso aberto, gratuito e com certificado — qualquer pessoa pode se inscrever.</div>
+        </div>
+
         <div class="netacad-meta">
-            <span>📚 Curso: IT Essentials (Cisco NetAcad)</span>
+            <span>📚 Curso: Administração de Serviços na Nuvem de Governo (EV.G)</span>
+            <span>⏱ Carga horária: 30h</span>
             <span>🆓 Gratuito</span>
-            <span>🏅 Gera certificado Cisco</span>
+            <span>🏅 Gera certificado Enap</span>
             <span>⚠️ Bônus/nivelamento — não vale nota</span>
         </div>
-        <a class="netacad-link" href="https://www.netacad.com/courses/it-essentials" target="_blank" rel="noopener">🔗 Abrir Curso na NetAcad</a>
+        <a class="netacad-link" href="https://www.escolavirtual.gov.br/curso/259" target="_blank" rel="noopener">🔗 Abrir Curso na Escola Virtual Gov</a>
     </div>
 
 

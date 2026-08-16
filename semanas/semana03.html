@@ -264,10 +264,10 @@
             color: var(--accent);
             box-shadow: 0 0 16px rgba(0,212,255,0.3);
         }
-        .mission-dot.locked {
-            background: rgba(255,255,255,0.03);
-            border: 2px solid var(--border);
-            color: var(--text-dim);
+        .mission-dot.available {
+            background: rgba(0,212,255,0.04);
+            border: 2px solid rgba(0,212,255,0.18);
+            color: var(--text);
         }
         .mission-dot.done {
             background: rgba(0,255,157,0.12);
@@ -871,8 +871,9 @@
         .compare-table {
             margin: 14px 18px;
             border-radius: 10px;
-            overflow: hidden;
             border: 1px solid var(--border);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         .compare-table table {
             width: 100%;
@@ -1156,6 +1157,233 @@
             letter-spacing: 0.3px;
         }
         .netacad-link:hover { opacity: 0.88; }
+        /* ─── ASSIGNMENT (ATIVIDADE PARA ENTREGA) BOX ─── */
+        .assignment-box {
+            background: linear-gradient(135deg, rgba(190,60,190,0.1), rgba(120,80,220,0.06));
+            border: 1px solid rgba(190,60,190,0.3);
+            border-radius: 16px;
+            padding: 28px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .assignment-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #be3cbe, #7850dc, #be3cbe);
+        }
+        .assignment-tag {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.62em;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #e070e0;
+            background: rgba(190,60,190,0.12);
+            border: 1px solid rgba(190,60,190,0.35);
+            padding: 4px 12px;
+            border-radius: 100px;
+            margin-bottom: 12px;
+        }
+        .assignment-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.15em;
+            color: white;
+            margin-bottom: 10px;
+        }
+        .assignment-body {
+            font-size: 0.88em;
+            color: var(--text-dim);
+            line-height: 1.75;
+            margin-bottom: 16px;
+        }
+        .assignment-body strong { color: var(--text); }
+        .assignment-list {
+            margin: 10px 0 12px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 0.98em;
+        }
+        .assignment-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .assignment-meta span {
+            font-family: var(--font-mono);
+            font-size: 0.68em;
+            color: var(--text-dim);
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            padding: 5px 12px;
+            border-radius: 100px;
+        }
+        .assignment-link {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.75em;
+            font-weight: 700;
+            padding: 11px 22px;
+            background: #be3cbe;
+            color: #1a001a;
+            border-radius: 10px;
+            text-decoration: none;
+            letter-spacing: 0.3px;
+        }
+        .assignment-link:hover { opacity: 0.88; }
+        .example-mockup {
+            background: #0a0f1a;
+            border: 2px dashed rgba(190,60,190,0.35);
+            border-radius: 14px;
+            padding: 20px 22px;
+            margin: 18px 0;
+        }
+        .example-mockup-label {
+            font-family: var(--font-mono);
+            font-size: 0.65em;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #e070e0;
+            margin-bottom: 12px;
+        }
+        .example-mockup-project {
+            font-family: var(--font-display);
+            font-weight: 800;
+            color: #fff;
+            font-size: 1em;
+            margin-bottom: 14px;
+        }
+        .example-cloud-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        .example-cloud-card { border-radius: 10px; padding: 14px; text-align: center; }
+        .example-cloud-card.iaas { background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.3); }
+        .example-cloud-card.paas { background: rgba(255,107,53,0.08); border: 1px solid rgba(255,107,53,0.3); }
+        .example-cloud-card.saas { background: rgba(0,255,157,0.08); border: 1px solid rgba(0,255,157,0.3); }
+        .example-cloud-tag { font-family: var(--font-display); font-weight: 800; font-size: 0.85em; margin-bottom: 6px; }
+        .example-cloud-service { font-family: var(--font-mono); font-size: 0.72em; color: #fff; margin-bottom: 6px; }
+        .example-cloud-desc { font-size: 0.75em; color: var(--text-dim); line-height: 1.5; }
+        .example-note {
+            font-size: 0.8em; color: var(--text-dim);
+            background: rgba(255,255,255,0.03);
+            border-left: 3px solid #be3cbe;
+            padding: 10px 14px; border-radius: 6px; margin-top: 10px; line-height: 1.6;
+        }
+        .example-note strong { color: var(--text); }
+        .example-note.elastic { border-left-color: var(--accent2); }
+        /* ─── INTERACTIVE WIDGETS ─── */
+        .interactive-box {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px 26px;
+            margin: 22px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .interactive-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+        }
+        .interactive-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            color: #fff;
+            font-size: 1.05em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        .interactive-sub {
+            font-size: 0.82em;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+        }
+        .interactive-sub code { color: var(--accent2); }
+
+        .sim-btn {
+            background: var(--accent); color: #001622; border: none; border-radius: 8px;
+            padding: 10px 22px; font-weight: 700; cursor: pointer; font-family: var(--font-body);
+            font-size: 0.88em; transition: opacity .2s, transform .1s; white-space: nowrap;
+        }
+        .sim-btn:hover:not(:disabled) { opacity: 0.88; }
+        .sim-btn:active:not(:disabled) { transform: scale(0.97); }
+        .sim-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        .dns-status {
+            background: #060a10; border: 1px solid var(--border); border-radius: 10px;
+            padding: 13px 18px; font-family: var(--font-mono); font-size: 0.8em; color: var(--accent2);
+            min-height: 18px; margin-top: 12px;
+        }
+        .dns-result {
+            margin-top: 12px; padding: 14px 18px; border-radius: 10px;
+            background: rgba(0,255,157,0.08); border: 1px solid rgba(0,255,157,0.3);
+            font-size: 0.85em; color: var(--text); display: none;
+        }
+        .dns-result.show { display: block; }
+
+        /* ─── HYPERVISOR ALLOCATOR WIDGET ─── */
+        .hv-host-label {
+            font-family: var(--font-display); font-size: 0.68em; letter-spacing: 1.5px;
+            text-transform: uppercase; color: var(--text-dim); margin-top: 10px;
+        }
+        .hv-bar-wrap {
+            width: 100%; height: 12px; background: rgba(255,255,255,0.06);
+            border-radius: 7px; overflow: hidden; margin: 6px 0 4px;
+        }
+        .hv-bar-fill {
+            height: 100%; width: 0%; border-radius: 7px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            transition: width 0.5s cubic-bezier(.34,1.56,.64,1), background 0.3s;
+        }
+        .hv-bar-fill.ram { background: linear-gradient(90deg, var(--accent3), var(--warn)); }
+        .hv-bar-fill.full { background: linear-gradient(90deg, #ff4757, #ff8080) !important; }
+        .hv-bar-text { font-family: var(--font-mono); font-size: 0.72em; color: var(--text-dim); margin-bottom: 10px; }
+        .hv-vm-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(96px,1fr));
+            gap: 10px; margin: 16px 0 4px; min-height: 4px;
+        }
+        .hv-vm-card {
+            background: rgba(0,212,255,0.07); border: 1px solid rgba(0,212,255,0.25);
+            border-radius: 8px; padding: 10px 8px; text-align: center;
+            font-family: var(--font-mono); font-size: 0.68em; color: var(--accent);
+            animation: hvPop 0.3s ease;
+        }
+        @keyframes hvPop { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* ─── ELASTICITY WIDGET ─── */
+        .elastic-slider {
+            width: 100%; height: 6px; margin: 6px 0 4px; cursor: pointer;
+            accent-color: var(--accent);
+        }
+        .elastic-workers-row {
+            display: flex; align-items: flex-end; justify-content: center; gap: 12px;
+            flex-wrap: wrap; min-height: 70px; padding: 10px 0;
+        }
+        .elastic-worker { font-size: 1.7em; text-align: center; animation: hvPop 0.3s ease; }
+
+        /* ─── DND MULTI-SLOT (classificação) ─── */
+        .dnd-target-slot.multi {
+            flex-wrap: wrap; align-items: flex-start; align-content: flex-start;
+            height: auto; min-height: 64px; padding: 8px; gap: 6px;
+        }
+        .dnd-placed-tag {
+            font-family: var(--font-mono); font-size: 0.72em; color: var(--accent2);
+            background: rgba(0,255,157,0.1); border: 1px solid rgba(0,255,157,0.3);
+            border-radius: 5px; padding: 3px 8px; animation: hvPop 0.25s ease;
+        }
     </style>
 </head>
 <body>
@@ -1223,7 +1451,7 @@
 
 <div class="progress-overview">
     <div class="mission-map" id="missionMap">
-        <div class="mission-dot active" onclick="scrollToMission(0)" title="Missão 1: Virtualização">M1</div><div class="mission-line" id="line0"></div><div class="mission-dot locked" onclick="scrollToMission(1)" title="Missão 2: Cloud Computing">M2</div><div class="mission-line" id="line1"></div><div class="mission-dot locked" onclick="scrollToMission(2)" title="Missão 3: Prática">M3</div>
+        <div class="mission-dot active" onclick="scrollToMission(0)" title="Missão 1: Virtualização — clique para ir direto">M1</div><div class="mission-line" id="line0"></div><div class="mission-dot available" onclick="scrollToMission(1)" title="Missão 2: Cloud Computing — clique para ir direto">M2</div><div class="mission-line" id="line1"></div><div class="mission-dot available" onclick="scrollToMission(2)" title="Missão 3: Prática — clique para ir direto">M3</div>
     </div>
 </div>
 
@@ -1245,6 +1473,32 @@
             </div>
         </div>
         <div class="discipline-links"><span class="discipline-tag dtag-ementa">🧩 Virtualização</span><span class="discipline-tag dtag-ementa">☁️ Cloud Computing</span><span class="discipline-tag dtag-objetivo">🎯 Explorar provedor de nuvem</span><span class="discipline-tag dtag-competencia">⭐ Nivelamento NetAcad</span></div>
+    </div>
+</div>
+
+<div class="progress-overview">
+    <div class="netacad-box" style="margin: 0 0 28px;">
+        <div class="netacad-tag" style="color:var(--accent);background:rgba(0,212,255,0.12);border-color:rgba(0,212,255,0.35);">🗂️ USO DO PROFESSOR</div>
+        <div class="netacad-title">📄 Plano de Aula — Semana 03 (4 Aulas Síncronas Online)</div>
+        <div class="netacad-body">
+            Documento completo: identificação da disciplina, objetivos, metodologia (missões de acesso livre + quiz de arrastar + atividade Canva), cronograma detalhado para 4 encontros síncronos, critérios de avaliação e referências bibliográficas.
+        </div>
+        <div class="netacad-meta">
+            <span>📋 IAL008 · Semana 03</span>
+            <span>⏱ 4 encontros de ~50 min</span>
+            <span>🎓 Formato Word (.docx)</span>
+        </div>
+        <a class="netacad-link" style="background:var(--accent);color:#001622;" href="plano_de_aula_semana03.docx" target="_blank" rel="noopener">📄 Abrir plano_de_aula_semana03.docx</a>
+    </div>
+</div>
+
+<div class="progress-overview">
+    <div class="concept-box" style="margin: 0 0 28px;">
+        <div class="concept-box-title">📚 Recapitulando a Semana 02 — antes de continuar</div>
+        <div class="concept-box-body">
+            Na semana passada você aprendeu que toda infraestrutura de Big Data depende de máquinas se encontrando na rede: <strong>IP</strong> (o endereço), <strong>porta</strong> (o apartamento/serviço) e <strong>protocolo TCP/IP</strong> (o idioma combinado para trocar dados sem perder nada no caminho). Viu também que praticamente toda ferramenta de Big Data segue o padrão <strong>cliente-servidor</strong> e, dentro dele, o padrão <strong>master/worker</strong> — um nó coordenando vários outros, como no MapReduce. E praticou tudo isso no terminal Ubuntu com <code>ip a</code>, <code>ping</code>, <code>ss</code>, <code>nslookup</code>/<code>dig</code> e <code>curl</code>.<br><br>
+            Hoje a pergunta muda de <em>"como as máquinas conversam entre si?"</em> para <em>"de onde vêm essas máquinas, afinal?"</em> — e a resposta é a virtualização que você já usa desde a Semana 01 (sua VM Ubuntu dentro do VirtualBox), sem ainda saber o nome técnico de cada peça. É exatamente isso que vamos formalizar agora, e depois ver como esse mesmo princípio escala para clusters inteiros alugados na nuvem.
+        </div>
     </div>
 </div>
 
@@ -1280,12 +1534,71 @@
                 <div class="concept-box-body">Na Semana 01, você criou uma VM Ubuntu dentro do VirtualBox sem parar muito para pensar no que estava acontecendo por baixo. Vamos formalizar isso.<br><br><strong>Hypervisor</strong> — o software que cria e gerencia máquinas virtuais (o VirtualBox é um hypervisor tipo 2, que roda sobre um SO já instalado; existem também hypervisors tipo 1, que rodam direto no hardware, comuns em servidores de datacenter).<br><br><strong>Virtualização de hardware</strong> — o hypervisor "finge" para o sistema convidado (guest) que ele tem CPU, RAM e disco dedicados só para ele — mesmo compartilhando o hardware físico (host) com outras VMs.<br><br><strong>VT-x / AMD-V</strong> — lembra da Semana 01? Esse é o recurso do processador físico que permite a virtualização acontecer com boa performance, em vez de simular tudo por software (o que seria extremamente lento).<br><br><strong>Por que isso importa para clusters</strong> — um datacenter real não tem uma máquina física para cada nó do cluster. Ele roda <em>dezenas de VMs por servidor físico</em>, multiplicando a capacidade sem multiplicar o hardware.</div>
             </div>
 
+            <!-- WIDGET INTERATIVO: ALOCADOR DE HYPERVISOR -->
+            <div class="interactive-box">
+                <div class="interactive-title">🧮 Simulador — Alocando VMs em um Host Físico</div>
+                <div class="interactive-sub">Um servidor físico de datacenter tem <code>16 vCPUs</code> e <code>32 GB de RAM</code>. Cada VM que você "criar" consome uma fatia fixa (<code>2 vCPU / 4 GB</code>) — exatamente o que o hypervisor faz de verdade. Veja até quantas cabem, e o que acontece quando o host enche.</div>
+                <div class="hv-host-label">🖥️ Host Físico — CPU</div>
+                <div class="hv-bar-wrap"><div class="hv-bar-fill" id="hvCpuFill"></div></div>
+                <div class="hv-bar-text" id="hvCpuText">0 / 16 vCPUs usados</div>
+                <div class="hv-host-label">🖥️ Host Físico — RAM</div>
+                <div class="hv-bar-wrap"><div class="hv-bar-fill ram" id="hvRamFill"></div></div>
+                <div class="hv-bar-text" id="hvRamText">0 / 32 GB usados</div>
+                <div class="hv-vm-grid" id="hvVmGrid"></div>
+                <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="sim-btn" id="hvAddBtn" onclick="hvAddVM()">➕ Criar VM (2 vCPU / 4 GB)</button>
+                    <button class="sim-btn" id="hvResetBtn" onclick="hvReset()" style="background:transparent;border:1px solid var(--border);color:var(--text-dim);">🔄 Reiniciar Host</button>
+                </div>
+                <div class="dns-status" id="hvStatusText">👆 Clique em "Criar VM" e veja o hypervisor fatiar o hardware físico em pedaços isolados.</div>
+            </div>
+
+            <div class="compare-table">
+                <table>
+                    <thead><tr><th>Característica</th><th>Tipo 1 · Bare-Metal</th><th>Tipo 2 · Hosted</th></tr></thead>
+                    <tbody>
+                        <tr><td>Onde roda</td><td>Direto no hardware físico</td><td>Sobre um sistema operacional já instalado</td></tr>
+                        <tr><td>Performance</td><td class="td-good">Mais alta (acesso direto ao hardware)</td><td>Um pouco menor (camada extra do SO hospedeiro)</td></tr>
+                        <tr><td>Exemplos</td><td>VMware ESXi, Microsoft Hyper-V, KVM, Xen</td><td>VirtualBox, VMware Workstation, Parallels</td></tr>
+                        <tr><td>Uso típico</td><td>Servidores de datacenter, nuvens públicas</td><td>Notebook/desktop de desenvolvedor, testes locais</td></tr>
+                        <tr><td>É o seu caso?</td><td>—</td><td class="td-good">✅ é o que você usa na sua VM Ubuntu</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- EXERCÍCIO: CLASSIFICAÇÃO TIPO 1 x TIPO 2 -->
+            <div class="dnd-box" id="dndBoxTipo" data-total="6">
+                <div class="dnd-title">🧩 Arraste: Tipo 1 (Bare-Metal) ou Tipo 2 (Hosted)?</div>
+                <div class="dnd-sub">🎓 <strong>Conexão com Ciência de Dados:</strong> Tipo 1 é o que roda nos clusters de nuvem onde modelos são treinados de verdade (AWS/GCP); Tipo 2 é o que você (e todo Data Scientist) usa no notebook para prototipar local antes de escalar. Arraste cada hypervisor até a categoria correta — ou clique nele e depois clique na categoria.</div>
+                <div class="dnd-grid">
+                    <div class="dnd-pool" id="dndPoolTipo">
+                        <div class="dnd-chip" draggable="true" data-answer="tipo1" onclick="dndSelectChip(this)" ondragstart="dndDragStart(event)">VMware ESXi</div>
+                        <div class="dnd-chip" draggable="true" data-answer="tipo1" onclick="dndSelectChip(this)" ondragstart="dndDragStart(event)">Microsoft Hyper-V (Server)</div>
+                        <div class="dnd-chip" draggable="true" data-answer="tipo1" onclick="dndSelectChip(this)" ondragstart="dndDragStart(event)">KVM</div>
+                        <div class="dnd-chip" draggable="true" data-answer="tipo2" onclick="dndSelectChip(this)" ondragstart="dndDragStart(event)">Oracle VirtualBox</div>
+                        <div class="dnd-chip" draggable="true" data-answer="tipo2" onclick="dndSelectChip(this)" ondragstart="dndDragStart(event)">VMware Workstation</div>
+                        <div class="dnd-chip" draggable="true" data-answer="tipo2" onclick="dndSelectChip(this)" ondragstart="dndDragStart(event)">Parallels Desktop</div>
+                    </div>
+                    <div class="dnd-targets">
+                        <div class="dnd-target">
+                            <div class="dnd-target-label">🏢 Tipo 1<br>Bare-Metal</div>
+                            <div class="dnd-target-slot multi" data-type="tipo1" id="dndSlotTipo1" onclick="dndPlaceInTarget(this)" ondragover="dndDragOver(event)" ondragleave="dndDragLeave(event)" ondrop="dndDrop(event)"></div>
+                        </div>
+                        <div class="dnd-target">
+                            <div class="dnd-target-label">💻 Tipo 2<br>Hosted</div>
+                            <div class="dnd-target-slot multi" data-type="tipo2" id="dndSlotTipo2" onclick="dndPlaceInTarget(this)" ondragover="dndDragOver(event)" ondragleave="dndDragLeave(event)" ondrop="dndDrop(event)"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="dnd-feedback" id="dndFeedbackTipo">0 de 6 classificados corretamente</div>
+            </div>
+
             <div class="checkpoint">
                 <div class="checkpoint-title">🏁 Checkpoint M1</div>
                 <ul class="checkpoint-items">
                     <li class="checkpoint-item"><input type="checkbox" id="c0a"><label for="c0a">Sei o que é um hypervisor</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0b"><label for="c0b">Entendo a diferença entre host e guest</label></li>
-<li class="checkpoint-item"><input type="checkbox" id="c0c"><label for="c0c">Sei por que VT-x/AMD-V importa</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c0c"><label for="c0c">Sei diferenciar hypervisor Tipo 1 e Tipo 2</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c0d"><label for="c0d">Sei por que VT-x/AMD-V importa</label></li>
                 </ul>
             </div>
             <button class="complete-btn" id="btn0" onclick="completeMission(0, 150)">✅ Missão 1 Concluída — Coletar +150 XP</button>
@@ -1307,7 +1620,7 @@
                     <span class="tag tag-ementa">📋 Ementa: Recursos de hardware para Bigdata</span>
                 </div>
             </div>
-            <div class="mission-status" id="status1">🔒</div>
+            <div class="mission-status" id="status1">⚡</div>
             <div class="mission-toggle">▾</div>
         </div>
         <div class="mission-body">
@@ -1316,6 +1629,60 @@
             <div class="concept-box">
                 <div class="concept-box-title">☁️ Cloud Computing — Alugar em vez de Comprar Hardware</div>
                 <div class="concept-box-body">Conecta direto com a ementa ("recursos de hardware para Big Data"): hoje, a maioria das empresas não compra e mantém servidores próprios — <em>aluga</em> capacidade computacional sob demanda.<br><br><strong>IaaS (Infrastructure as a Service)</strong> — você aluga só a máquina virtual crua (CPU, RAM, disco, rede) e instala tudo você mesmo, como estamos fazendo com Hadoop/Spark. Ex: AWS EC2, Google Compute Engine.<br><br><strong>PaaS (Platform as a Service)</strong> — o provedor já entrega a ferramenta pronta para uso, sem você precisar instalar nada. Ex: AWS EMR (Hadoop/Spark já configurado), Google Dataproc.<br><br><strong>SaaS (Software as a Service)</strong> — a aplicação final já pronta para o usuário final usar direto no navegador. Ex: Google Analytics, Gmail.<br><br><strong>Elasticidade</strong> — a maior vantagem da nuvem: um cluster pode crescer de 3 para 300 máquinas em minutos quando o volume de dados aumenta, e encolher de novo depois — pagando só pelo que usa, ao contrário de comprar hardware que fica ocioso na maior parte do tempo.<br><br><strong>Contêineres (Docker)</strong> — uma forma mais leve de empacotar aplicações: em vez de uma VM inteira, empacota só a aplicação e suas dependências. Sobe muito mais rápido que uma VM completa — cada vez mais usado para subir ambientes de Big Data de teste rapidamente.</div>
+            </div>
+
+            <div class="compare-table">
+                <table>
+                    <thead><tr><th>Camada</th><th>IaaS</th><th>PaaS</th><th>SaaS</th></tr></thead>
+                    <tbody>
+                        <tr><td>Aplicação &amp; Dados</td><td class="td-bad">Você gerencia</td><td class="td-bad">Você gerencia</td><td class="td-good">Provedor gerencia</td></tr>
+                        <tr><td>Runtime &amp; Middleware</td><td class="td-bad">Você gerencia</td><td class="td-good">Provedor gerencia</td><td class="td-good">Provedor gerencia</td></tr>
+                        <tr><td>Sistema Operacional</td><td class="td-bad">Você gerencia</td><td class="td-good">Provedor gerencia</td><td class="td-good">Provedor gerencia</td></tr>
+                        <tr><td>Virtualização, Servidores, Storage e Rede</td><td class="td-good">Provedor gerencia</td><td class="td-good">Provedor gerencia</td><td class="td-good">Provedor gerencia</td></tr>
+                        <tr><td>Exemplo no seu dia a dia</td><td>EC2, Compute Engine</td><td>AWS EMR, Google Dataproc</td><td>Gmail, Google Analytics</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- WIDGET INTERATIVO: ELASTICIDADE -->
+            <div class="interactive-box">
+                <div class="interactive-title">📈 Simulador — Elasticidade em Ação (Autoscaling)</div>
+                <div class="interactive-sub">Arraste o controle para simular um pico de tráfego (ex: Black Friday) e veja o cluster crescer e encolher sozinho — pagando só pelo que usa nesse momento.</div>
+                <input type="range" min="0" max="100" value="10" id="elasticSlider" class="elastic-slider" oninput="updateElastic(this.value)">
+                <div class="dns-status" id="elasticLoadText">Carga atual: 10% — 🟢 tráfego baixo</div>
+                <div class="elastic-workers-row" id="elasticWorkers"></div>
+                <div class="dns-result show" id="elasticCost">💰 Custo estimado agora: <strong>R$ 0,10/hora</strong> com 1 VM ativa — se isso fosse hardware próprio, você teria comprado capacidade para o pico e deixado ociosa o resto do tempo.</div>
+            </div>
+
+            <!-- QUIZ DE ARRASTAR-E-SOLTAR: IaaS/PaaS/SaaS APLICADO A CIÊNCIA DE DADOS -->
+            <div class="dnd-box" id="dndBoxCloudDS" data-total="6">
+                <div class="dnd-title">🎯 Quiz — Qual camada de nuvem um Cientista de Dados usaria aqui?</div>
+                <div class="dnd-sub">Arraste cada tarefa do dia a dia de um projeto de Ciência de Dados até o modelo de nuvem correspondente. (Funciona arrastando com o mouse ou clicando na tarefa e depois na categoria.)</div>
+                <div class="dnd-grid">
+                    <div class="dnd-pool" id="dndPoolCloudDS">
+                        <div class="dnd-chip" draggable="true" data-answer="iaas" onclick="dndSelectChip(this)" ondragstart="dndDragStart(event)">Alugar uma VM com GPU para treinar um modelo de Deep Learning do zero</div>
+                        <div class="dnd-chip" draggable="true" data-answer="iaas" onclick="dndSelectChip(this)" ondragstart="dndDragStart(event)">Instalar Hadoop/Spark manualmente numa máquina virtual alugada</div>
+                        <div class="dnd-chip" draggable="true" data-answer="paas" onclick="dndSelectChip(this)" ondragstart="dndDragStart(event)">Rodar um cluster Spark gerenciado (AWS EMR / Google Dataproc) sem instalar nada</div>
+                        <div class="dnd-chip" draggable="true" data-answer="paas" onclick="dndSelectChip(this)" ondragstart="dndDragStart(event)">Rodar uma query SQL gigante no BigQuery sem gerenciar servidor</div>
+                        <div class="dnd-chip" draggable="true" data-answer="saas" onclick="dndSelectChip(this)" ondragstart="dndDragStart(event)">Abrir o Google Colab e rodar um notebook Python direto no navegador</div>
+                        <div class="dnd-chip" draggable="true" data-answer="saas" onclick="dndSelectChip(this)" ondragstart="dndDragStart(event)">Consultar métricas prontas no Google Analytics</div>
+                    </div>
+                    <div class="dnd-targets">
+                        <div class="dnd-target">
+                            <div class="dnd-target-label">🧱 IaaS</div>
+                            <div class="dnd-target-slot multi" data-type="iaas" onclick="dndPlaceInTarget(this)" ondragover="dndDragOver(event)" ondragleave="dndDragLeave(event)" ondrop="dndDrop(event)"></div>
+                        </div>
+                        <div class="dnd-target">
+                            <div class="dnd-target-label">🛠️ PaaS</div>
+                            <div class="dnd-target-slot multi" data-type="paas" onclick="dndPlaceInTarget(this)" ondragover="dndDragOver(event)" ondragleave="dndDragLeave(event)" ondrop="dndDrop(event)"></div>
+                        </div>
+                        <div class="dnd-target">
+                            <div class="dnd-target-label">📱 SaaS</div>
+                            <div class="dnd-target-slot multi" data-type="saas" onclick="dndPlaceInTarget(this)" ondragover="dndDragOver(event)" ondragleave="dndDragLeave(event)" ondrop="dndDrop(event)"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="dnd-feedback" id="dndFeedbackCloudDS">0 de 6 classificados corretamente</div>
             </div>
 
             <div class="checkpoint">
@@ -1345,7 +1712,7 @@
                     <span class="tag tag-ementa">📋 Ementa: Modos de configuração e funcionamento de um sistema para Big Data</span>
                 </div>
             </div>
-            <div class="mission-status" id="status2">🔒</div>
+            <div class="mission-status" id="status2">⚡</div>
             <div class="mission-toggle">▾</div>
         </div>
         <div class="mission-body">
@@ -1439,6 +1806,120 @@ Azure for Students: azure.microsoft.com/free/students</code></div>
         </div>
     </div>
 
+<!-- VÍDEOS RECOMENDADOS -->
+<div class="progress-overview">
+    <div class="discipline-panel">
+        <div class="discipline-panel-header">
+            <span>🎬</span>
+            <span class="discipline-panel-title">Vídeos Recomendados</span>
+            <span class="discipline-panel-subtitle">Assista antes ou durante as missões</span>
+        </div>
+        <div class="discipline-grid">
+            <div class="discipline-item">
+                <div class="discipline-item-label">🎯 Contexto</div>
+                <div class="discipline-item-text"><strong>Entenda o que é nuvem (cloud) em menos de 2 minutos</strong><br>Aquecimento rápido antes de entrar nos conceitos formais.<br><a href="https://www.youtube.com/watch?v=O8X5aJfi-SM" target="_blank" rel="noopener" style="color:var(--accent);">▶ Assistir →</a></div>
+            </div>
+            <div class="discipline-item">
+                <div class="discipline-item-label">🧩 Missão 1</div>
+                <div class="discipline-item-text"><strong>Introdução a virtualização e tipos de Hypervisor</strong><br>Panorama direto sobre o que é virtualização e a diferença entre Tipo 1 e Tipo 2.<br><a href="https://www.youtube.com/watch?v=QUDS8a1KaA4" target="_blank" rel="noopener" style="color:var(--accent);">▶ Assistir →</a></div>
+            </div>
+            <div class="discipline-item">
+                <div class="discipline-item-label">🧩 Missão 1</div>
+                <div class="discipline-item-text"><strong>Qual a diferença entre Docker e máquinas virtuais?</strong><br>Complementa o widget de alocação de VMs: por que containers são mais leves.<br><a href="https://www.youtube.com/watch?v=uYY6WKkhIiM" target="_blank" rel="noopener" style="color:var(--accent);">▶ Assistir →</a></div>
+            </div>
+            <div class="discipline-item">
+                <div class="discipline-item-label">☁️ Missão 2</div>
+                <div class="discipline-item-text"><strong>IaaS, PaaS e SaaS na Computação em Nuvem</strong><br>Explicação direta dos três modelos, com exemplos práticos.<br><a href="https://www.youtube.com/watch?v=5czsMlRc7Wk" target="_blank" rel="noopener" style="color:var(--accent);">▶ Assistir →</a></div>
+            </div>
+            <div class="discipline-item">
+                <div class="discipline-item-label">☁️ Missão 2</div>
+                <div class="discipline-item-text"><strong>Elasticidade em Cloud Computing</strong><br>O conceito por trás do simulador de autoscaling que você acabou de usar.<br><a href="https://www.youtube.com/watch?v=FsnfR5EFybw" target="_blank" rel="noopener" style="color:var(--accent);">▶ Assistir →</a></div>
+            </div>
+            <div class="discipline-item">
+                <div class="discipline-item-label">🛠️ Missão 3</div>
+                <div class="discipline-item-text"><strong>Como Criar uma Conta Gratuita na AWS</strong><br>Passo a passo guiado para o que você vai fazer na Missão 3.<br><a href="https://www.youtube.com/watch?v=DQj8_yZsH_E" target="_blank" rel="noopener" style="color:var(--accent);">▶ Assistir →</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MATERIAL DE APOIO -->
+<div class="progress-overview">
+    <div class="discipline-panel">
+        <div class="discipline-panel-header">
+            <span>🧰</span>
+            <span class="discipline-panel-title">Material de Apoio</span>
+            <span class="discipline-panel-subtitle">Ferramentas usadas nesta semana</span>
+        </div>
+        <div class="discipline-grid">
+            <div class="discipline-item">
+                <div class="discipline-item-label">🖥️ VirtualBox</div>
+                <div class="discipline-item-text">O hypervisor Tipo 2 que você já usa desde a Semana 01 — agora com o nome técnico certo.<br><a href="https://www.virtualbox.org" target="_blank" rel="noopener" style="color:var(--accent);">virtualbox.org →</a></div>
+            </div>
+            <div class="discipline-item">
+                <div class="discipline-item-label">☁️ AWS Free Tier</div>
+                <div class="discipline-item-text">Camada gratuita da Amazon Web Services — opção para a Missão 3.<br><a href="https://aws.amazon.com/free" target="_blank" rel="noopener" style="color:var(--accent);">aws.amazon.com/free →</a></div>
+            </div>
+            <div class="discipline-item">
+                <div class="discipline-item-label">☁️ Google Cloud Free Tier</div>
+                <div class="discipline-item-text">Camada gratuita do Google Cloud — outra opção para a Missão 3.<br><a href="https://cloud.google.com/free" target="_blank" rel="noopener" style="color:var(--accent);">cloud.google.com/free →</a></div>
+            </div>
+            <div class="discipline-item">
+                <div class="discipline-item-label">🐳 Documentação Docker</div>
+                <div class="discipline-item-text">Referência oficial para quando formos usar contêineres em ambientes de teste de Big Data.<br><a href="https://docs.docker.com/get-started/" target="_blank" rel="noopener" style="color:var(--accent);">docs.docker.com →</a></div>
+            </div>
+            <div class="discipline-item">
+                <div class="discipline-item-label">🎓 Cisco Networking Academy</div>
+                <div class="discipline-item-text">Portal da trilha de nivelamento gratuita usada nesta e nas próximas semanas.<br><a href="https://www.netacad.com" target="_blank" rel="noopener" style="color:var(--accent);">netacad.com →</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CURSOS COMPLEMENTARES -->
+<div class="progress-overview">
+    <div style="font-family: var(--font-mono); font-size: 0.7em; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; display:flex; align-items:center; gap:8px;">
+        <span>🎓</span> Cursos Complementares — gratuitos, com certificado (ordem de relevância)
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px;">
+        <div style="background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:22px; text-align:center;">
+            <div style="font-size:2rem; margin-bottom:10px;">📥</div>
+            <div style="font-weight:700; color:#fff; margin-bottom:6px;">1. IT Essentials — Módulo 9</div>
+            <div style="font-size:0.82em; color:var(--text-dim); margin-bottom:14px;">NetAcad — Virtualization and Cloud Computing (tarefa desta semana, ver box abaixo)</div>
+            <a href="https://www.netacad.com/courses/it-essentials" target="_blank" rel="noopener" style="color:var(--accent2); font-family:var(--font-mono); font-size:0.75em;">netacad.com →</a>
+        </div>
+        <div style="background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:22px; text-align:center;">
+            <div style="font-size:2rem; margin-bottom:10px;">☁️</div>
+            <div style="font-weight:700; color:#fff; margin-bottom:6px;">2. AWS Cloud Practitioner Essentials</div>
+            <div style="font-size:0.82em; color:var(--text-dim); margin-bottom:14px;">AWS Skill Builder — visão geral gratuita da nuvem AWS, direto da fonte</div>
+            <a href="https://skillbuilder.aws/learn/94T2BEN85A/aws-cloud-practitioner-essentials/8D79F3AVR7" target="_blank" rel="noopener" style="color:var(--accent2); font-family:var(--font-mono); font-size:0.75em;">skillbuilder.aws →</a>
+        </div>
+        <div style="background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:22px; text-align:center;">
+            <div style="font-size:2rem; margin-bottom:10px;">🌱</div>
+            <div style="font-weight:700; color:#fff; margin-bottom:6px;">3. Cloud Computing Fundamentals</div>
+            <div style="font-size:0.82em; color:var(--text-dim); margin-bottom:14px;">Google Cloud Skills Boost — introdução gratuita à nuvem do Google</div>
+            <a href="https://www.cloudskillsboost.google/course_templates/153" target="_blank" rel="noopener" style="color:var(--accent2); font-family:var(--font-mono); font-size:0.75em;">cloudskillsboost.google →</a>
+        </div>
+    </div>
+</div>
+
+<!-- BIBLIOGRAFIA -->
+<div class="progress-overview">
+    <div class="discipline-panel">
+        <div class="discipline-panel-header">
+            <span>📚</span>
+            <span class="discipline-panel-title">Bibliografia</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px; margin-top:4px;">
+            <div style="background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:14px 16px; font-size:0.85em; color:var(--text);"><strong style="color:#fff;">VELTE, A. T.; VELTE, T. J.; ELSENPETER, R.</strong> Cloud Computing: A Practical Approach. New York: McGraw-Hill, 2010.</div>
+            <div style="background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:14px 16px; font-size:0.85em; color:var(--text);"><strong style="color:#fff;">MELL, P.; GRANCE, T.</strong> The NIST Definition of Cloud Computing. NIST Special Publication 800-145, 2011.</div>
+            <div style="background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:14px 16px; font-size:0.85em; color:var(--text);"><strong style="color:#fff;">CISCO NETWORKING ACADEMY.</strong> IT Essentials — Módulo 9: Virtualization and Cloud Computing. Disponível em: netacad.com</div>
+            <div style="background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:14px 16px; font-size:0.85em; color:var(--text);"><strong style="color:#fff;">AMAZON WEB SERVICES.</strong> AWS Cloud Practitioner Essentials. Disponível em: skillbuilder.aws</div>
+            <div style="background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:14px 16px; font-size:0.85em; color:var(--text);"><strong style="color:#fff;">WHITE, T.</strong> Hadoop: The Definitive Guide. 4ª Ed. Sebastopol: O'Reilly, 2015. <em>Cap. 1: Meet Hadoop</em> (contexto histórico de clusters escaláveis e computação em nuvem).</div>
+        </div>
+    </div>
+</div>
+
 <!-- FINAL BADGE -->
 <div class="final-badge" id="finalBadge">
     <span class="final-badge-icon">🏆</span>
@@ -1447,6 +1928,80 @@ Azure for Students: azure.microsoft.com/free/students</code></div>
     <div class="final-xp">🏅 500 XP Coletados!</div>
 </div>
 
+    <div class="assignment-box">
+        <div class="assignment-tag">📤 ATIVIDADE PARA ENTREGA</div>
+        <div class="assignment-title">🎨 Infográfico no Canva — "Minha Arquitetura de Nuvem para Ciência de Dados"</div>
+        <div class="assignment-body">
+            Na Semana 02 a entrega foi um formulário com 10 questões. Esta semana a proposta é visual: usando o <strong>Canva.com</strong> (gratuito, não precisa de conta paga), monte um infográfico ou diagrama simples representando a arquitetura de nuvem de um projeto <em>hipotético</em> de Ciência de Dados — por exemplo, treinar um modelo de recomendação, montar um pipeline de ETL, ou publicar um dashboard de métricas.<br><br>
+            <strong>O que incluir no diagrama:</strong>
+            <ul class="assignment-list">
+                <li>Pelo menos <strong>1 elemento IaaS</strong>, <strong>1 PaaS</strong> e <strong>1 SaaS</strong> usados no seu projeto fictício (ex: EC2 para treinar o modelo, Dataproc para rodar o Spark, Google Analytics para acompanhar resultados)</li>
+                <li>Onde entra o <strong>hypervisor/VM</strong> — em qual camada a virtualização está acontecendo</li>
+                <li>Um momento em que a <strong>elasticidade</strong> ajudaria seu projeto (ex: pico de treinamento, pico de acesso ao dashboard)</li>
+            </ul>
+        </div>
+
+        <div class="example-mockup">
+            <div class="example-mockup-label">📐 Exemplo de referência — não copie, crie o seu com outro projeto!</div>
+            <div class="example-mockup-project">Projeto fictício: Sistema de Recomendação de Filmes</div>
+            <div class="example-cloud-grid">
+                <div class="example-cloud-card iaas">
+                    <div class="example-cloud-tag" style="color:var(--accent);">🧱 IaaS</div>
+                    <div class="example-cloud-service">AWS EC2 (GPU)</div>
+                    <div class="example-cloud-desc">Treina o modelo de recomendação — você instala e configura tudo na VM alugada</div>
+                </div>
+                <div class="example-cloud-card paas">
+                    <div class="example-cloud-tag" style="color:var(--accent3);">🛠️ PaaS</div>
+                    <div class="example-cloud-service">Google Dataproc</div>
+                    <div class="example-cloud-desc">Roda o pipeline Spark de ETL pronto — sem instalar nada</div>
+                </div>
+                <div class="example-cloud-card saas">
+                    <div class="example-cloud-tag" style="color:var(--accent2);">📱 SaaS</div>
+                    <div class="example-cloud-service">Streamlit Cloud</div>
+                    <div class="example-cloud-desc">Dashboard pronto onde o usuário final vê as recomendações</div>
+                </div>
+            </div>
+            <div class="example-note">🧩 <strong>Virtualização:</strong> por baixo de cada camada acima, o provedor usa um hypervisor para fatiar servidores físicos em VMs — é isso que torna possível alugar "só um pedacinho" de um servidor gigante.</div>
+            <div class="example-note elastic">📈 <strong>Elasticidade:</strong> no lançamento do sistema (pico de acesso), o Dataproc escala sozinho de 3 para 30 workers para processar os dados mais rápido, e volta a encolher depois — sem ninguém precisar comprar servidor novo.</div>
+        </div>
+
+        <div class="assignment-body">
+            <strong>Como entregar:</strong> exporte como PNG ou PDF direto pelo Canva (Compartilhar → Baixar) e envie o arquivo nomeado como <code style="color:var(--accent2); background:rgba(0,255,157,0.08); padding:1px 6px; border-radius:4px;">infografico_nome_sobrenome.png</code>, ou compartilhe o link público de visualização do design (Compartilhar → "Qualquer pessoa com o link pode ver").
+        </div>
+
+        <div class="checkpoint" style="background: rgba(190,60,190,0.05); border-color: rgba(190,60,190,0.25); margin: 4px 0 18px;">
+            <div class="checkpoint-title" style="color:#e070e0;">✅ Checklist antes de entregar</div>
+            <ul class="checkpoint-items">
+                <li class="checkpoint-item"><input type="checkbox" id="ac1"><label for="ac1">Coloquei pelo menos 1 exemplo real de serviço para cada camada — IaaS, PaaS e SaaS</label></li>
+                <li class="checkpoint-item"><input type="checkbox" id="ac2"><label for="ac2">Indiquei em qual camada a virtualização/VM está acontecendo</label></li>
+                <li class="checkpoint-item"><input type="checkbox" id="ac3"><label for="ac3">Descrevi um momento concreto de elasticidade (não só a palavra "elástico")</label></li>
+                <li class="checkpoint-item"><input type="checkbox" id="ac4"><label for="ac4">Exportei como PNG/PDF em boa resolução ou gerei o link público, com o arquivo nomeado corretamente</label></li>
+                <li class="checkpoint-item"><input type="checkbox" id="ac5"><label for="ac5">Dá para entender o diagrama numa primeira olhada rápida, sem precisar de mim explicando do lado</label></li>
+            </ul>
+        </div>
+
+        <div class="assignment-title" style="font-size: 1em; margin-top: 4px;">📋 Rubrica de Avaliação (10 pontos)</div>
+        <div class="compare-table" style="margin: 10px 0 16px;">
+            <table style="min-width: 640px;">
+                <thead><tr><th>Critério (peso)</th><th>Insuficiente</th><th>Parcial</th><th>Completo</th></tr></thead>
+                <tbody>
+                    <tr><td>3 camadas de nuvem<br><span style="color:var(--text-dim); font-size:0.85em;">(3 pts)</span></td><td class="td-bad">Nenhuma camada identificada, ou IaaS/PaaS/SaaS trocados entre si</td><td>Só 1-2 camadas corretas, ou exemplos genéricos demais ("nuvem" sem serviço específico)</td><td class="td-good">As 3 camadas identificadas corretamente, cada uma com um serviço real (ex: EC2, Dataproc, Analytics)</td></tr>
+                    <tr><td>Virtualização/VM<br><span style="color:var(--text-dim); font-size:0.85em;">(2 pts)</span></td><td class="td-bad">Hypervisor/VM não aparece em nenhum lugar do diagrama</td><td>Aparece mencionado, mas sem explicar onde ou por quê</td><td class="td-good">Fica claro em qual camada a virtualização acontece e por que ela é necessária</td></tr>
+                    <tr><td>Elasticidade<br><span style="color:var(--text-dim); font-size:0.85em;">(2 pts)</span></td><td class="td-bad">Não é mencionada em nenhum ponto</td><td>Mencionada, mas sem um cenário concreto de pico</td><td class="td-good">Um momento real de pico é descrito e a resposta elástica do sistema é explicada</td></tr>
+                    <tr><td>Clareza visual<br><span style="color:var(--text-dim); font-size:0.85em;">(2 pts)</span></td><td class="td-bad">Poluído, sem hierarquia, texto ilegível</td><td>Organizado, mas com informação em excesso ou ícones genéricos demais</td><td class="td-good">Hierarquia visual clara — dá pra entender de relance quem faz o quê</td></tr>
+                    <tr><td>Formato de entrega<br><span style="color:var(--text-dim); font-size:0.85em;">(1 pt)</span></td><td class="td-bad">Entregue em formato diferente do pedido, ou arquivo corrompido/inacessível</td><td>PNG/PDF de baixa resolução, ou link sem permissão de visualização pública</td><td class="td-good">PNG/PDF em boa resolução (ou link público funcionando), nomeado corretamente</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="assignment-meta">
+            <span>🎨 Ferramenta: Canva.com (gratuito)</span>
+            <span>⏱ ~20-30 min</span>
+            <span>📎 Entregar como PNG/PDF ou link</span>
+            <span>💯 Rubrica: 10 pontos</span>
+        </div>
+        <a class="assignment-link" href="https://www.canva.com/create/infographics/" target="_blank" rel="noopener">🔗 Abrir Canva — Criar Infográfico</a>
+    </div>
 
     <div class="netacad-box">
         <div class="netacad-tag">🎓 NIVELAMENTO · NETACAD</div>
@@ -1512,17 +2067,17 @@ Azure for Students: azure.microsoft.com/free/students</code></div>
                 card.classList.remove('active-mission');
                 if (btn) { btn.classList.add('done'); btn.textContent = '✅ Missão ' + (i+1) + ' Concluída!'; btn.disabled = true; }
                 if (statusEl) statusEl.textContent = '✅';
-                if (dots[i]) { dots[i].classList.remove('locked', 'active'); dots[i].classList.add('done'); }
+                if (dots[i]) { dots[i].classList.remove('available', 'active'); dots[i].classList.add('done'); }
                 if (lines[i]) lines[i].classList.add('done');
             }
         });
 
+        // Todas as missões ficam disponíveis desde o início — sem ordem obrigatória.
+        // O próximo item incompleto só ganha um destaque visual sutil (sugestão, não bloqueio).
         const nextIdx = completed.indexOf(false);
         if (nextIdx !== -1 && dots[nextIdx]) {
-            dots[nextIdx].classList.remove('locked');
+            dots[nextIdx].classList.remove('available');
             dots[nextIdx].classList.add('active');
-            const nextCard = document.getElementById('mission' + nextIdx);
-            if (nextCard) nextCard.classList.add('active-mission');
         }
 
         if (completed.every(v => v)) {
@@ -1532,10 +2087,6 @@ Azure for Students: azure.microsoft.com/free/students</code></div>
 
     function completeMission(idx, xp) {
         if (completed[idx]) return;
-        if (idx > 0 && !completed[idx - 1]) {
-            showToast('⚠️ Complete a Missão ' + idx + ' primeiro!', true);
-            return;
-        }
         completed[idx] = true;
         currentXP += xp;
         saveState();
@@ -1543,10 +2094,10 @@ Azure for Students: azure.microsoft.com/free/students</code></div>
         showToast('+' + xp + ' XP — Missão ' + (idx+1) + ' completa!');
 
         const nextIdx = idx + 1;
-        if (nextIdx < 3) {
+        if (nextIdx < 3 && !completed[nextIdx]) {
             setTimeout(() => {
                 const nextCard = document.getElementById('mission' + nextIdx);
-                if (nextCard) {
+                if (nextCard && !nextCard.classList.contains('open')) {
                     nextCard.classList.add('open');
                     nextCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
@@ -1569,7 +2120,10 @@ Azure for Students: azure.microsoft.com/free/students</code></div>
 
     function scrollToMission(idx) {
         const el = document.getElementById('mission' + idx);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (el) {
+            el.classList.add('open');
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     }
 
     function copyCode(btn, code) {
@@ -1592,6 +2146,162 @@ Azure for Students: azure.microsoft.com/free/students</code></div>
     }
 
     updateUI();
+
+    // ═══════════════════════════════════════════
+    //  WIDGET 1 — ALOCADOR DE RECURSOS DO HYPERVISOR
+    // ═══════════════════════════════════════════
+    const HV_TOTAL_CPU = 16, HV_TOTAL_RAM = 32, HV_VM_CPU = 2, HV_VM_RAM = 4;
+    let hvVmCount = 0;
+
+    function hvAddVM() {
+        if ((hvVmCount + 1) * HV_VM_CPU > HV_TOTAL_CPU || (hvVmCount + 1) * HV_VM_RAM > HV_TOTAL_RAM) {
+            document.getElementById('hvStatusText').textContent = '🚫 Host cheio! Não há mais CPU/RAM física para fatiar. É exatamente por isso que datacenters compram servidores com mais núcleos e RAM — cabe mais VM por real investido.';
+            document.getElementById('hvAddBtn').disabled = true;
+            return;
+        }
+        hvVmCount++;
+        const grid = document.getElementById('hvVmGrid');
+        const card = document.createElement('div');
+        card.className = 'hv-vm-card';
+        card.innerHTML = `🖥️<br>VM ${hvVmCount}<br>2 vCPU / 4GB`;
+        grid.appendChild(card);
+
+        const cpuUsed = hvVmCount * HV_VM_CPU, ramUsed = hvVmCount * HV_VM_RAM;
+        const cpuPct = (cpuUsed / HV_TOTAL_CPU) * 100, ramPct = (ramUsed / HV_TOTAL_RAM) * 100;
+        const cpuFill = document.getElementById('hvCpuFill'), ramFill = document.getElementById('hvRamFill');
+        cpuFill.style.width = cpuPct + '%';
+        ramFill.style.width = ramPct + '%';
+        cpuFill.classList.toggle('full', cpuPct >= 100);
+        ramFill.classList.toggle('full', ramPct >= 100);
+        document.getElementById('hvCpuText').textContent = cpuUsed + ' / ' + HV_TOTAL_CPU + ' vCPUs usados';
+        document.getElementById('hvRamText').textContent = ramUsed + ' / ' + HV_TOTAL_RAM + ' GB usados';
+
+        if (cpuPct >= 100 || ramPct >= 100) {
+            document.getElementById('hvStatusText').textContent = '✅ Host lotado com ' + hvVmCount + ' VMs! Um servidor físico virou ' + hvVmCount + ' máquinas independentes — isso é virtualização de hardware na prática.';
+            document.getElementById('hvAddBtn').disabled = true;
+        } else {
+            document.getElementById('hvStatusText').textContent = '✅ VM ' + hvVmCount + ' criada. O hypervisor reservou uma fatia isolada de CPU e RAM só para ela — as outras VMs nem percebem.';
+        }
+    }
+
+    function hvReset() {
+        hvVmCount = 0;
+        document.getElementById('hvVmGrid').innerHTML = '';
+        const cpuFill = document.getElementById('hvCpuFill'), ramFill = document.getElementById('hvRamFill');
+        cpuFill.style.width = '0%'; ramFill.style.width = '0%';
+        cpuFill.classList.remove('full'); ramFill.classList.remove('full');
+        document.getElementById('hvCpuText').textContent = '0 / ' + HV_TOTAL_CPU + ' vCPUs usados';
+        document.getElementById('hvRamText').textContent = '0 / ' + HV_TOTAL_RAM + ' GB usados';
+        document.getElementById('hvStatusText').textContent = '👆 Clique em "Criar VM" e veja o hypervisor fatiar o hardware físico em pedaços isolados.';
+        document.getElementById('hvAddBtn').disabled = false;
+    }
+
+    // ═══════════════════════════════════════════
+    //  WIDGET 2 — SIMULADOR DE ELASTICIDADE (AUTOSCALING)
+    // ═══════════════════════════════════════════
+    function updateElastic(val) {
+        val = Number(val);
+        const workersNeeded = Math.max(1, Math.ceil(val / 20));
+        const row = document.getElementById('elasticWorkers');
+        const current = row.children.length;
+
+        if (workersNeeded > current) {
+            for (let i = current; i < workersNeeded; i++) {
+                const w = document.createElement('div');
+                w.className = 'elastic-worker';
+                w.innerHTML = '🖥️';
+                row.appendChild(w);
+            }
+        } else if (workersNeeded < current) {
+            for (let i = current; i > workersNeeded; i--) {
+                row.removeChild(row.lastChild);
+            }
+        }
+
+        let label, emoji;
+        if (val < 20) { label = 'tráfego baixo'; emoji = '🟢'; }
+        else if (val < 50) { label = 'tráfego moderado'; emoji = '🟡'; }
+        else if (val < 80) { label = 'tráfego alto'; emoji = '🟠'; }
+        else { label = 'PICO de tráfego (ex: Black Friday)'; emoji = '🔴'; }
+
+        document.getElementById('elasticLoadText').textContent = 'Carga atual: ' + val + '% — ' + emoji + ' ' + label;
+
+        const cost = (workersNeeded * 0.10).toFixed(2);
+        const resultEl = document.getElementById('elasticCost');
+        if (workersNeeded === 1) {
+            resultEl.innerHTML = '💰 Custo estimado agora: <strong>R$ ' + cost + '/hora</strong> com 1 VM ativa — se isso fosse hardware próprio, você teria comprado capacidade para o pico e deixado ociosa o resto do tempo.';
+        } else {
+            resultEl.innerHTML = '💰 Custo estimado agora: <strong>R$ ' + cost + '/hora</strong> com ' + workersNeeded + ' VMs ativas — o cluster cresceu sozinho para aguentar a carga, e vai encolher de novo assim que ela cair. Isso é elasticidade.';
+        }
+    }
+    updateElastic(10);
+
+    // ═══════════════════════════════════════════
+    //  EXERCÍCIOS DE ARRASTAR-E-SOLTAR (genérico — suporta vários .dnd-box na página)
+    //  Funciona com mouse (drag nativo HTML5) e com toque/clique (seleciona → clica no alvo)
+    // ═══════════════════════════════════════════
+    let dndSelected = null;
+
+    function dndSelectChip(el) {
+        if (el.classList.contains('placed')) return;
+        const pool = el.closest('.dnd-pool');
+        if (pool) pool.querySelectorAll('.dnd-chip').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        dndSelected = el;
+    }
+
+    function dndDragStart(e) {
+        const el = e.currentTarget || e.target;
+        if (el.classList.contains('placed')) { e.preventDefault(); return; }
+        dndSelected = el;
+        el.classList.add('selected');
+        e.dataTransfer.effectAllowed = 'move';
+        try { e.dataTransfer.setData('text/plain', el.textContent); } catch (err) {}
+    }
+
+    function dndDragOver(e) {
+        e.preventDefault();
+        e.currentTarget.classList.add('dragover');
+    }
+
+    function dndDragLeave(e) {
+        e.currentTarget.classList.remove('dragover');
+    }
+
+    function dndDrop(e) {
+        e.preventDefault();
+        e.currentTarget.classList.remove('dragover');
+        dndPlaceInTarget(e.currentTarget);
+    }
+
+    function dndPlaceInTarget(slotEl) {
+        if (!dndSelected) return;
+        const box = slotEl.closest('.dnd-box');
+        const fb = box ? box.querySelector('.dnd-feedback') : null;
+        const total = box ? parseInt(box.dataset.total, 10) : 0;
+        const correct = dndSelected.dataset.answer === slotEl.dataset.type;
+        if (correct) {
+            const tag = document.createElement('span');
+            tag.className = 'dnd-placed-tag';
+            tag.textContent = dndSelected.textContent;
+            slotEl.appendChild(tag);
+            dndSelected.classList.add('placed');
+            dndSelected.classList.remove('selected');
+            dndSelected = null;
+            if (box && fb) {
+                const count = (parseInt(box.dataset.correct || '0', 10)) + 1;
+                box.dataset.correct = count;
+                fb.textContent = count + ' de ' + total + ' classificados corretamente';
+                if (count >= total) {
+                    fb.textContent = '🎉 Todos classificados! Mandou bem.';
+                    fb.classList.add('ok');
+                }
+            }
+        } else {
+            slotEl.classList.add('wrong');
+            setTimeout(() => slotEl.classList.remove('wrong'), 400);
+        }
+    }
 </script>
 </body>
 </html>

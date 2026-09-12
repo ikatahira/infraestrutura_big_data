@@ -1291,17 +1291,163 @@
                 <div class="concept-box-body">No cheat sheet de comandos Linux da Semana 01, tinha isso:<br><br><code>cat arquivo | grep "A" | sort | uniq -c | sort -rn</code><br><br>E o comentário dizia: <em>"Isso é basicamente um MapReduce manual!"</em> — e é verdade: <code>grep</code> é o <strong>Map</strong> (filtra/transforma linha por linha), <code>sort</code> é o <strong>Shuffle</strong> (agrupa iguais), e <code>uniq -c</code> é o <strong>Reduce</strong> (agrega contando). A diferença é que o Hadoop faz isso <em>em paralelo, em várias máquinas ao mesmo tempo</em>, em vez de um comando só numa máquina só.</div>
             </div>
 
+            <!-- ═══ SIMULADOR MAPREDUCE ═══ -->
+            <style>
+                .mr-sim { border: 1px solid var(--border); border-radius: 14px; background: var(--panel); padding: 20px; margin: 20px 0; }
+                .mr-sim-title { font-family: var(--font-display); font-weight: 700; color: white; font-size: 1.05em; margin-bottom: 4px; display:flex; align-items:center; gap:8px; }
+                .mr-sim-sub { color: var(--text-dim); font-size: 0.85em; margin-bottom: 16px; }
+                .mr-sim-input-row { display:flex; gap:10px; align-items:center; margin-bottom:14px; flex-wrap:wrap; }
+                .mr-sim-input-row input[type=text] { flex:1; min-width:220px; background: rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:8px; padding:9px 12px; color:white; font-family:var(--font-mono); font-size:0.85em; }
+                .mr-sim-btn { background: var(--accent); color:#001018; border:none; padding:8px 16px; border-radius:8px; font-weight:700; font-size:0.82em; cursor:pointer; font-family:var(--font-body); white-space:nowrap; }
+                .mr-sim-btn:hover:not(:disabled) { filter: brightness(1.15); }
+                .mr-sim-btn:disabled { opacity:0.35; cursor:not-allowed; }
+                .mr-sim-btn.secondary { background: transparent; border:1px solid var(--border); color: var(--text); }
+                .mr-sim-stages { display:flex; gap:6px; margin-bottom:20px; flex-wrap:wrap; }
+                .mr-sim-stage-pill { flex:1; min-width:110px; text-align:center; padding:8px 6px; border-radius:8px; font-size:0.75em; font-weight:700; font-family:var(--font-mono); background: rgba(255,255,255,0.03); color: var(--text-dim); border:1px solid var(--border); transition: all .25s; }
+                .mr-sim-stage-pill.active { background: rgba(0,212,255,0.12); border-color: var(--accent); color: var(--accent); transform: scale(1.03); }
+                .mr-sim-stage-pill.done { background: rgba(0,255,157,0.08); border-color: rgba(0,255,157,0.3); color: var(--accent2); }
+                .mr-sim-stagebox { min-height: 160px; padding: 16px; background: rgba(255,255,255,0.02); border-radius: 10px; border:1px dashed var(--border); }
+                .mr-sim-mappers-row { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
+                .mr-sim-mapper { flex:1; min-width:180px; background: rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; padding:12px; }
+                .mr-sim-mapper-title { font-family:var(--font-mono); font-weight:700; color: var(--accent); font-size:0.8em; margin-bottom:8px; }
+                .mr-sim-chip-row { display:flex; gap:6px; flex-wrap:wrap; }
+                .mr-sim-chip { padding:3px 9px; border-radius:6px; font-family:var(--font-mono); font-size:0.75em; font-weight:600; background: rgba(255,255,255,0.06); color: white; animation: mrFadeIn .35s ease both; }
+                .mr-sim-chip.pair { background: rgba(0,212,255,0.12); color: var(--accent); }
+                @keyframes mrFadeIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform:none; } }
+                .mr-sim-groups-grid { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
+                .mr-sim-group { background: rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; padding:12px; min-width:120px; }
+                .mr-sim-group-key { font-family:var(--font-mono); font-weight:700; font-size:0.85em; margin-bottom:8px; text-align:center; padding-bottom:6px; border-bottom:1px solid var(--border); }
+                .mr-sim-result-row { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; align-items:flex-end; }
+                .mr-sim-result-bar { display:flex; flex-direction:column; align-items:center; gap:6px; }
+                .mr-sim-result-bar-visual { width:46px; border-radius:6px 6px 0 0; background: linear-gradient(180deg, var(--accent2), rgba(0,255,157,0.35)); display:flex; align-items:flex-start; justify-content:center; padding-top:4px; color:#04101c; font-weight:800; font-family:var(--font-mono); font-size:0.78em; }
+                .mr-sim-result-label { font-family:var(--font-mono); font-size:0.78em; color: var(--text); }
+                .mr-sim-hint { margin-top:14px; padding:10px 12px; background: rgba(255,214,10,0.06); border:1px solid rgba(255,214,10,0.25); border-radius:8px; font-size:0.82em; color: var(--text); }
+            </style>
+            <div class="mr-sim">
+                <div class="mr-sim-title">🧪 Simulador — Map, Shuffle/Sort e Reduce ao vivo</div>
+                <div class="mr-sim-sub">Digite um texto (ou use o exemplo), divida entre "Mappers" e avance fase por fase para ver exatamente como o WordCount transforma texto em contagem — igual ao pipeline Linux da Semana 01, mas em paralelo.</div>
+
+                <div class="mr-sim-input-row">
+                    <input type="text" id="mrSimText" value="hadoop spark hadoop kafka spark hadoop hdfs spark">
+                    <button class="mr-sim-btn secondary" onclick="mrSimReset()">🔄 Reiniciar</button>
+                    <button class="mr-sim-btn" id="mrSimNextBtn" onclick="mrSimNext()">▶️ Avançar Fase</button>
+                </div>
+
+                <div class="mr-sim-stages" id="mrSimStages"></div>
+                <div class="mr-sim-stagebox" id="mrSimStageBox"></div>
+                <div class="mr-sim-hint" id="mrSimHint">💡 Clique em "Avançar Fase" para começar: primeiro o Hadoop divide seu texto em splits (um por Mapper) — igual aos blocos do HDFS na Semana 05.</div>
+            </div>
+            <!-- ═══ FIM SIMULADOR MAPREDUCE ═══ -->
+
             <div class="checkpoint">
                 <div class="checkpoint-title">🏁 Checkpoint M1</div>
                 <ul class="checkpoint-items">
                     <li class="checkpoint-item"><input type="checkbox" id="c0a"><label for="c0a">Sei explicar as 3 fases: Map, Shuffle/Sort, Reduce</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0b"><label for="c0b">Entendo a conexão entre o pipeline Linux da S01 e o MapReduce</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0c"><label for="c0c">Sei o exemplo clássico WordCount de cabeça</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c0d"><label for="c0d">Rodei o simulador com meu próprio texto e vi as 4 fases</label></li>
                 </ul>
             </div>
             <button class="complete-btn" id="btn0" onclick="completeMission(0, 150)">✅ Missão 1 Concluída — Coletar +150 XP</button>
         </div>
     </div>
+
+    <script>
+    (function () {
+        const STAGE_NAMES = ['Splits (Input)', 'Map', 'Shuffle & Sort', 'Reduce'];
+        const MAPPER_COUNT = 3;
+        const MAX_WORDS = 18;
+        let stage = 0; // 0..3
+        let words = [];
+        let mapperChunks = [];
+
+        function renderStagePills() {
+            const el = document.getElementById('mrSimStages');
+            el.innerHTML = STAGE_NAMES.map((name, i) => {
+                const cls = i === stage ? 'active' : (i < stage ? 'done' : '');
+                return `<div class="mr-sim-stage-pill ${cls}">${i + 1}. ${name}</div>`;
+            }).join('');
+        }
+
+        function splitIntoMappers(wordArr) {
+            const chunks = Array.from({ length: MAPPER_COUNT }, () => []);
+            wordArr.forEach((w, i) => chunks[i % MAPPER_COUNT].push(w));
+            return chunks;
+        }
+
+        function renderStage0() {
+            const box = document.getElementById('mrSimStageBox');
+            box.innerHTML = `<div class="mr-sim-mappers-row">` + mapperChunks.map((chunk, i) => `
+                <div class="mr-sim-mapper">
+                    <div class="mr-sim-mapper-title">📦 Split ${i + 1} → Mapper ${i + 1}</div>
+                    <div class="mr-sim-chip-row">${chunk.map(w => `<span class="mr-sim-chip">${w}</span>`).join('')}</div>
+                </div>`).join('') + `</div>`;
+            document.getElementById('mrSimHint').innerHTML = `💡 O Hadoop dividiu seu texto (${words.length} palavras) em ${MAPPER_COUNT} splits, um para cada Mapper processar <strong>em paralelo</strong> — exatamente como os blocos HDFS da Semana 05.`;
+        }
+
+        function renderStage1() {
+            const box = document.getElementById('mrSimStageBox');
+            box.innerHTML = `<div class="mr-sim-mappers-row">` + mapperChunks.map((chunk, i) => `
+                <div class="mr-sim-mapper">
+                    <div class="mr-sim-mapper-title">⚙️ Mapper ${i + 1} emite pares (chave, 1)</div>
+                    <div class="mr-sim-chip-row">${chunk.map(w => `<span class="mr-sim-chip pair">(${w}, 1)</span>`).join('')}</div>
+                </div>`).join('') + `</div>`;
+            document.getElementById('mrSimHint').innerHTML = `💡 Cada Mapper transformou cada palavra do seu pedaço em um par <strong>(palavra, 1)</strong> — ainda sem saber nada sobre o que os outros Mappers estão processando.`;
+        }
+
+        function renderStage2() {
+            const box = document.getElementById('mrSimStageBox');
+            const groups = {};
+            words.forEach(w => { (groups[w] = groups[w] || []).push(1); });
+            const keys = Object.keys(groups).sort();
+            box.innerHTML = `<div class="mr-sim-groups-grid">` + keys.map(k => `
+                <div class="mr-sim-group">
+                    <div class="mr-sim-group-key" style="color:var(--accent2)">${k}</div>
+                    <div class="mr-sim-chip-row">${groups[k].map(() => `<span class="mr-sim-chip pair">1</span>`).join('')}</div>
+                </div>`).join('') + `</div>`;
+            document.getElementById('mrSimHint').innerHTML = `💡 O Hadoop <strong>embaralhou e ordenou (Shuffle & Sort)</strong> todos os pares dos 3 Mappers, agrupando automaticamente por chave — não importa de qual Mapper cada "1" veio.`;
+        }
+
+        function renderStage3() {
+            const box = document.getElementById('mrSimStageBox');
+            const groups = {};
+            words.forEach(w => { groups[w] = (groups[w] || 0) + 1; });
+            const entries = Object.entries(groups).sort((a, b) => b[1] - a[1]);
+            const maxCount = Math.max(...entries.map(e => e[1]));
+            box.innerHTML = `<div class="mr-sim-result-row">` + entries.map(([k, c]) => `
+                <div class="mr-sim-result-bar">
+                    <div class="mr-sim-result-bar-visual" style="height:${20 + (c / maxCount) * 70}px;">${c}</div>
+                    <div class="mr-sim-result-label">${k}</div>
+                </div>`).join('') + `</div>`;
+            document.getElementById('mrSimHint').innerHTML = `✅ O <strong>Reduce</strong> somou os "1"s de cada grupo — pronto, esse é exatamente o resultado que um job WordCount real grava no HDFS. Rode com seu próprio texto e veja o resultado mudar!`;
+        }
+
+        const RENDERERS = [renderStage0, renderStage1, renderStage2, renderStage3];
+
+        window.mrSimNext = function () {
+            if (stage >= 3) return;
+            stage++;
+            renderStagePills();
+            RENDERERS[stage]();
+            document.getElementById('mrSimNextBtn').disabled = stage === 3;
+            if (stage === 3) document.getElementById('mrSimNextBtn').textContent = '✅ Concluído';
+        };
+
+        window.mrSimReset = function () {
+            const raw = document.getElementById('mrSimText').value.trim().toLowerCase();
+            words = (raw.length ? raw.split(/\s+/) : ['hadoop', 'spark', 'hadoop']).slice(0, MAX_WORDS);
+            mapperChunks = splitIntoMappers(words);
+            stage = 0;
+            document.getElementById('mrSimNextBtn').disabled = false;
+            document.getElementById('mrSimNextBtn').textContent = '▶️ Avançar Fase';
+            renderStagePills();
+            renderStage0();
+            document.getElementById('mrSimHint').innerHTML = '💡 Clique em "Avançar Fase" para começar: primeiro o Hadoop divide seu texto em splits (um por Mapper) — igual aos blocos do HDFS na Semana 05.';
+        };
+
+        mrSimReset();
+    })();
+    </script>
 
     <!-- ════════════════════════════════════════════════ -->
     <!-- MISSÃO 2 — Prática — Rodar seu Primeiro Job MapReduce (WordCount) -->

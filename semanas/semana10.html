@@ -1328,17 +1328,176 @@
             </table>
             </div>
 
+            <!-- ═══ SIMULADOR TEOREMA CAP ═══ -->
+            <style>
+                .cap-sim { border: 1px solid var(--border); border-radius: 14px; background: var(--panel); padding: 20px; margin: 20px 0; }
+                .cap-sim-title { font-family: var(--font-display); font-weight: 700; color: white; font-size: 1.05em; margin-bottom: 4px; display:flex; align-items:center; gap:8px; }
+                .cap-sim-sub { color: var(--text-dim); font-size: 0.85em; margin-bottom: 16px; }
+                .cap-sim-controls { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+                .cap-sim-mode-toggle { display:flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+                .cap-sim-mode-btn { padding:8px 14px; background:transparent; border:none; color:var(--text-dim); font-family:var(--font-mono); font-size:0.8em; font-weight:700; cursor:pointer; }
+                .cap-sim-mode-btn.active[data-m="CP"] { background: rgba(0,212,255,0.15); color: var(--accent); }
+                .cap-sim-mode-btn.active[data-m="AP"] { background: rgba(0,255,157,0.15); color: var(--accent2); }
+                .cap-sim-btn { background: var(--accent3); color:#1a0800; border:none; padding:8px 14px; border-radius:8px; font-weight:700; font-size:0.8em; cursor:pointer; font-family:var(--font-body); }
+                .cap-sim-btn:hover { filter:brightness(1.15); }
+                .cap-sim-btn.heal { background: var(--accent2); color:#04180f; }
+                .cap-sim-write-row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:18px; }
+                .cap-sim-write-row input[type=text] { background: rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:8px; padding:8px 12px; color:white; font-family:var(--font-mono); font-size:0.82em; width:150px; }
+                .cap-sim-write-btn { padding:8px 12px; border-radius:8px; border:1px solid var(--border); background: rgba(255,255,255,0.03); color:var(--text); font-size:0.78em; font-weight:700; cursor:pointer; font-family:var(--font-mono); }
+                .cap-sim-write-btn:hover { border-color: var(--accent); color:white; }
+                .cap-sim-cluster { display:flex; align-items:center; gap:14px; justify-content:center; flex-wrap:wrap; }
+                .cap-sim-group { display:flex; flex-direction:column; gap:8px; padding:14px; border-radius:12px; background: rgba(255,255,255,0.02); border:1px solid var(--border); min-width:160px; }
+                .cap-sim-group-title { text-align:center; font-family:var(--font-mono); font-weight:700; font-size:0.78em; color:var(--text-dim); margin-bottom:2px; }
+                .cap-sim-node { padding:8px 10px; border-radius:8px; background: rgba(255,255,255,0.04); border:1px solid var(--border); text-align:center; }
+                .cap-sim-node-val { font-family:var(--font-mono); font-weight:700; color:white; font-size:0.85em; }
+                .cap-sim-node-ts { font-family:var(--font-mono); font-size:0.65em; color:var(--text-dim); }
+                .cap-sim-link { font-size:1.6em; }
+                .cap-sim-link.broken { color:#ff5555; }
+                .cap-sim-link.ok { color: var(--accent2); }
+                .cap-sim-hint { margin-top:16px; padding:10px 12px; background: rgba(255,214,10,0.06); border:1px solid rgba(255,214,10,0.25); border-radius:8px; font-size:0.82em; color: var(--text); }
+            </style>
+            <div class="cap-sim">
+                <div class="cap-sim-title">🧪 Simulador — Teorema CAP na Prática</div>
+                <div class="cap-sim-sub">Um cluster de 5 nós se divide em 2 grupos por uma <strong>partição de rede</strong> (o "P" do CAP, que sempre pode acontecer). Escolha o modo do banco e veja o que acontece quando cada grupo tenta escrever um novo valor.</div>
+
+                <div class="cap-sim-controls">
+                    <div class="cap-sim-mode-toggle">
+                        <button class="cap-sim-mode-btn active" data-m="CP" onclick="capSimSetMode('CP')">🍃 Modo CP (MongoDB)</button>
+                        <button class="cap-sim-mode-btn" data-m="AP" onclick="capSimSetMode('AP')">📊 Modo AP (Cassandra)</button>
+                    </div>
+                    <button class="cap-sim-btn" id="capSimPartitionBtn" onclick="capSimTogglePartition()">💥 Causar Partição de Rede</button>
+                </div>
+
+                <div class="cap-sim-write-row">
+                    <input type="text" id="capSimValue" value="102" placeholder="novo valor">
+                    <button class="cap-sim-write-btn" onclick="capSimWrite('A')">✍️ Escrever no Grupo A (maioria, 3 nós)</button>
+                    <button class="cap-sim-write-btn" onclick="capSimWrite('B')">✍️ Escrever no Grupo B (minoria, 2 nós)</button>
+                </div>
+
+                <div class="cap-sim-cluster">
+                    <div class="cap-sim-group" id="capSimGroupA">
+                        <div class="cap-sim-group-title">GRUPO A (maioria)</div>
+                    </div>
+                    <div class="cap-sim-link ok" id="capSimLink">🔗</div>
+                    <div class="cap-sim-group" id="capSimGroupB">
+                        <div class="cap-sim-group-title">GRUPO B (minoria)</div>
+                    </div>
+                </div>
+
+                <div class="cap-sim-hint" id="capSimHint">💡 Tudo sincronizado. Clique em "Causar Partição de Rede" e depois tente escrever em cada grupo, nos dois modos, para comparar o comportamento.</div>
+            </div>
+            <!-- ═══ FIM SIMULADOR CAP ═══ -->
+
             <div class="checkpoint">
                 <div class="checkpoint-title">🏁 Checkpoint M2</div>
                 <ul class="checkpoint-items">
                     <li class="checkpoint-item"><input type="checkbox" id="c1a"><label for="c1a">Entendo o que é column-family</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c1b"><label for="c1b">Sei por que Cassandra não tem nó master</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c1c"><label for="c1c">Sei escolher entre MongoDB e Cassandra dado um cenário</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c1d"><label for="c1d">Testei o simulador de partição em modo CP e em modo AP</label></li>
                 </ul>
             </div>
             <button class="complete-btn" id="btn1" onclick="completeMission(1, 150)">✅ Missão 2 Concluída — Coletar +150 XP</button>
         </div>
     </div>
+
+    <script>
+    (function () {
+        const GROUP_A_SIZE = 3, GROUP_B_SIZE = 2, QUORUM = 3; // maioria de 5
+        let mode = 'CP';
+        let partitioned = false;
+        let ts = 0;
+        let nodes = {
+            A: Array.from({ length: GROUP_A_SIZE }, () => ({ value: '100', ts: 0 })),
+            B: Array.from({ length: GROUP_B_SIZE }, () => ({ value: '100', ts: 0 })),
+        };
+
+        function renderGroup(groupKey) {
+            const el = document.getElementById('capSimGroup' + groupKey);
+            const title = el.querySelector('.cap-sim-group-title');
+            el.innerHTML = '';
+            el.appendChild(title);
+            nodes[groupKey].forEach((n, i) => {
+                const div = document.createElement('div');
+                div.className = 'cap-sim-node';
+                div.innerHTML = `<div class="cap-sim-node-val">${n.value}</div><div class="cap-sim-node-ts">nó ${groupKey}${i + 1} · v${n.ts}</div>`;
+                el.appendChild(div);
+            });
+        }
+
+        function renderAll() {
+            renderGroup('A');
+            renderGroup('B');
+            const link = document.getElementById('capSimLink');
+            link.textContent = partitioned ? '⛓️‍💥' : '🔗';
+            link.className = 'cap-sim-link ' + (partitioned ? 'broken' : 'ok');
+            document.getElementById('capSimPartitionBtn').textContent = partitioned ? '🔧 Curar Partição de Rede' : '💥 Causar Partição de Rede';
+            document.getElementById('capSimPartitionBtn').className = 'cap-sim-btn' + (partitioned ? ' heal' : '');
+            document.querySelectorAll('.cap-sim-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.m === mode));
+        }
+
+        window.capSimSetMode = function (m) {
+            mode = m;
+            // reseta simulação ao trocar de modo, pra não misturar comportamento
+            partitioned = false;
+            ts = 0;
+            nodes = {
+                A: Array.from({ length: GROUP_A_SIZE }, () => ({ value: '100', ts: 0 })),
+                B: Array.from({ length: GROUP_B_SIZE }, () => ({ value: '100', ts: 0 })),
+            };
+            renderAll();
+            document.getElementById('capSimHint').innerHTML = mode === 'CP'
+                ? `💡 Modo <strong>CP</strong> selecionado (estilo MongoDB): durante uma partição, só o lado com <strong>quorum</strong> (maioria, ${QUORUM} de 5 nós) aceita escrever. O lado minoritário recusa, para nunca devolver um dado desatualizado.`
+                : `💡 Modo <strong>AP</strong> selecionado (estilo Cassandra): durante uma partição, <strong>os dois lados continuam aceitando escritas</strong> normalmente — o cluster prioriza estar sempre disponível, mesmo correndo o risco de os dois lados ficarem com valores diferentes por um tempo.`;
+        };
+
+        window.capSimTogglePartition = function () {
+            partitioned = !partitioned;
+            if (!partitioned) {
+                // curou a partição: reconciliar
+                const a = nodes.A[0], b = nodes.B[0];
+                if (a.value !== b.value) {
+                    const winner = a.ts >= b.ts ? a : b;
+                    nodes.A.forEach(n => { n.value = winner.value; n.ts = winner.ts; });
+                    nodes.B.forEach(n => { n.value = winner.value; n.ts = winner.ts; });
+                    document.getElementById('capSimHint').innerHTML = `🔧 <strong>Partição curada.</strong> Os grupos tinham valores diferentes (conflito!) — o cluster reconciliou usando <strong>last-write-wins</strong>: o valor mais recente (v${winner.ts} = "${winner.value}") venceu e foi propagado para todos os nós. É assim que bancos AP resolvem conflitos depois de uma partição.`;
+                } else {
+                    document.getElementById('capSimHint').innerHTML = `🔧 Partição curada. Como nenhum dado divergiu, os grupos já estavam sincronizados — nada para reconciliar.`;
+                }
+            } else {
+                document.getElementById('capSimHint').innerHTML = `💥 <strong>Partição de rede ativa!</strong> Grupo A e Grupo B não conseguem mais se comunicar. Tente escrever um novo valor em cada grupo e veja a diferença entre os modos CP e AP.`;
+            }
+            renderAll();
+        };
+
+        window.capSimWrite = function (groupKey) {
+            const val = document.getElementById('capSimValue').value || '0';
+            ts++;
+            if (!partitioned) {
+                // sem partição: replica normalmente pra todo mundo (like a rede saudável)
+                nodes.A.forEach(n => { n.value = val; n.ts = ts; });
+                nodes.B.forEach(n => { n.value = val; n.ts = ts; });
+                document.getElementById('capSimHint').innerHTML = `✅ Escrita replicada normalmente para os 5 nós (sem partição, tudo consistente).`;
+                renderAll();
+                return;
+            }
+            const groupSize = groupKey === 'A' ? GROUP_A_SIZE : GROUP_B_SIZE;
+            if (mode === 'CP' && groupSize < QUORUM) {
+                document.getElementById('capSimHint').innerHTML = `❌ <strong>Escrita RECUSADA</strong> no Grupo ${groupKey}: só ${groupSize} de 5 nós — não atinge o quorum (${QUORUM}). Em modo CP, o sistema prefere <strong>não responder</strong> a responder com um valor potencialmente desatualizado.`;
+                return;
+            }
+            nodes[groupKey].forEach(n => { n.value = val; n.ts = ts; });
+            renderAll();
+            if (mode === 'CP') {
+                document.getElementById('capSimHint').innerHTML = `✅ Escrita aceita no Grupo ${groupKey}: atingiu o quorum (${groupSize} ≥ ${QUORUM}). O Grupo ${groupKey === 'A' ? 'B' : 'A'} fica temporariamente indisponível para escrita até a rede voltar.`;
+            } else {
+                document.getElementById('capSimHint').innerHTML = `✅ Escrita aceita no Grupo ${groupKey} (modo AP aceita sempre). Repare que o outro grupo <strong>não sabe disso ainda</strong> — se ele também escrever um valor diferente, os dois lados vão divergir até a partição ser curada.`;
+            }
+        };
+
+        renderAll();
+    })();
+    </script>
 
     <!-- ════════════════════════════════════════════════ -->
     <!-- MISSÃO 3 — Prática — Instalar MongoDB e Inserir/Consultar Documentos -->

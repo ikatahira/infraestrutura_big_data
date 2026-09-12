@@ -1280,17 +1280,143 @@
                 <div class="concept-box-body">Tudo que você fez até agora (HDFS, MapReduce, Spark, MongoDB) trabalha com dados que já existem, parados — chamado de <strong>processamento em lote (batch)</strong>. Kafka resolve outro problema: dados que <em>não param de chegar</em>.<br><br><strong>Streaming</strong> — processar cada evento (uma venda, um clique, uma leitura de sensor) no exato momento em que ele acontece, em vez de esperar acumular um arquivo inteiro para processar depois.<br><br><strong>Producer</strong> — quem gera e envia as mensagens/eventos para o Kafka (ex: um app registrando cada clique do usuário).<br><br><strong>Consumer</strong> — quem lê e processa essas mensagens, podendo haver vários consumidores lendo o mesmo fluxo de dados para propósitos diferentes.<br><br><strong>Tópico (Topic)</strong> — o "canal" onde as mensagens de um mesmo assunto são publicadas (ex: um tópico "pedidos", outro "cliques").<br><br><strong>Partição</strong> — cada tópico é dividido em partições, distribuídas entre os nós do cluster — o mesmo princípio de distribuição que você já viu no HDFS (Semana 05), agora aplicado a um fluxo contínuo em vez de arquivos parados.</div>
             </div>
 
+            <!-- ═══ SIMULADOR KAFKA ═══ -->
+            <style>
+                .kfk-sim { border: 1px solid var(--border); border-radius: 14px; background: var(--panel); padding: 20px; margin: 20px 0; }
+                .kfk-sim-title { font-family: var(--font-display); font-weight: 700; color: white; font-size: 1.05em; margin-bottom: 4px; display:flex; align-items:center; gap:8px; }
+                .kfk-sim-sub { color: var(--text-dim); font-size: 0.85em; margin-bottom: 16px; }
+                .kfk-sim-producer { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:10px; }
+                .kfk-sim-producer input[type=text] { flex:1; min-width:200px; background: rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:8px; padding:8px 12px; color:white; font-family:var(--font-mono); font-size:0.82em; }
+                .kfk-sim-btn { background: var(--accent); color:#001018; border:none; padding:8px 14px; border-radius:8px; font-weight:700; font-size:0.8em; cursor:pointer; font-family:var(--font-body); white-space:nowrap; }
+                .kfk-sim-btn:hover { filter:brightness(1.15); }
+                .kfk-sim-presets { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:18px; }
+                .kfk-sim-preset { padding:5px 10px; border-radius:7px; border:1px solid var(--border); background: rgba(255,255,255,0.02); color:var(--text-dim); font-size:0.75em; cursor:pointer; font-family:var(--font-mono); }
+                .kfk-sim-preset:hover { border-color: var(--accent); color:white; }
+                .kfk-sim-section-label { font-family:var(--font-mono); font-size:0.72em; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.05em; margin: 14px 0 8px; }
+                .kfk-sim-partitions { display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:6px; }
+                .kfk-sim-partition { border:1px solid var(--border); border-radius:10px; padding:10px; background: rgba(255,255,255,0.02); min-height:70px; }
+                .kfk-sim-partition-title { font-family:var(--font-mono); font-weight:700; font-size:0.78em; margin-bottom:6px; }
+                .kfk-sim-msg { font-family:var(--font-mono); font-size:0.7em; color:var(--text); background: rgba(255,255,255,0.04); border-radius:5px; padding:3px 6px; margin-bottom:4px; animation: mrFadeIn2 .3s ease both; }
+                @keyframes mrFadeIn2 { from { opacity:0; transform: translateX(-6px); } to { opacity:1; transform:none; } }
+                .kfk-sim-groups { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:6px; }
+                .kfk-sim-group { border:1px solid var(--border); border-radius:10px; padding:12px; background: rgba(255,255,255,0.02); }
+                .kfk-sim-group-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+                .kfk-sim-group-name { font-weight:700; color:white; font-size:0.85em; }
+                .kfk-sim-offsets { display:flex; gap:4px; margin-bottom:8px; }
+                .kfk-sim-offset-badge { font-family:var(--font-mono); font-size:0.68em; padding:2px 6px; border-radius:5px; background: rgba(0,212,255,0.1); color:var(--accent); }
+                .kfk-sim-feed { min-height:50px; max-height:110px; overflow-y:auto; }
+                .kfk-sim-feed-item { font-family:var(--font-mono); font-size:0.7em; color: var(--accent2); padding:2px 0; }
+                .kfk-sim-consume-btn { width:100%; margin-top:8px; padding:6px; border-radius:7px; border:1px solid var(--accent2); background: rgba(0,255,157,0.08); color:var(--accent2); font-weight:700; font-size:0.75em; cursor:pointer; font-family:var(--font-mono); }
+                .kfk-sim-consume-btn:hover { background: rgba(0,255,157,0.18); }
+                .kfk-sim-consume-btn:disabled { opacity:0.3; cursor:not-allowed; }
+                .kfk-sim-hint { margin-top:14px; padding:10px 12px; background: rgba(255,214,10,0.06); border:1px solid rgba(255,214,10,0.25); border-radius:8px; font-size:0.82em; color: var(--text); }
+            </style>
+            <div class="kfk-sim">
+                <div class="kfk-sim-title">🧪 Simulador — Producer, Partições e Consumer Groups Independentes</div>
+                <div class="kfk-sim-sub">Envie eventos como um Producer e veja o Kafka distribuí-los entre 3 partições do tópico "cliques". Depois, consuma com os dois Consumer Groups abaixo e repare: cada grupo lê o fluxo <strong>inteiro, do seu próprio jeito e no seu próprio ritmo</strong>.</div>
+
+                <div class="kfk-sim-producer">
+                    <input type="text" id="kfkSimMsg" placeholder="digite um evento, ex: usuario_42_clicou" value="clique_no_botao_comprar">
+                    <button class="kfk-sim-btn" onclick="kfkSimProduce()">📤 Enviar Evento (Producer)</button>
+                </div>
+                <div class="kfk-sim-presets">
+                    <span class="kfk-sim-preset" onclick="kfkSimQuickSend('visualizou_produto')">👀 visualizou_produto</span>
+                    <span class="kfk-sim-preset" onclick="kfkSimQuickSend('adicionou_carrinho')">🛒 adicionou_carrinho</span>
+                    <span class="kfk-sim-preset" onclick="kfkSimQuickSend('finalizou_compra')">💳 finalizou_compra</span>
+                </div>
+
+                <div class="kfk-sim-section-label">📁 Tópico "cliques" — 3 partições</div>
+                <div class="kfk-sim-partitions" id="kfkSimPartitions"></div>
+
+                <div class="kfk-sim-section-label">👥 Consumer Groups (cada um lê o tópico inteiro, de forma independente)</div>
+                <div class="kfk-sim-groups" id="kfkSimGroups"></div>
+
+                <div class="kfk-sim-hint" id="kfkSimHint">💡 Envie alguns eventos e depois clique em "Consumir" em cada grupo separadamente — um representa um <em>dashboard em tempo real</em>, o outro um <em>job que grava tudo no Data Lake</em>. Repare que consumir em um grupo não afeta o outro!</div>
+            </div>
+            <!-- ═══ FIM SIMULADOR KAFKA ═══ -->
+
             <div class="checkpoint">
                 <div class="checkpoint-title">🏁 Checkpoint M1</div>
                 <ul class="checkpoint-items">
                     <li class="checkpoint-item"><input type="checkbox" id="c0a"><label for="c0a">Sei diferenciar processamento batch de streaming</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0b"><label for="c0b">Entendo o papel de producer e consumer</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0c"><label for="c0c">Sei o que é um tópico e uma partição</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c0d"><label for="c0d">Testei o simulador e vi 2 consumer groups lendo o mesmo tópico de forma independente</label></li>
                 </ul>
             </div>
             <button class="complete-btn" id="btn0" onclick="completeMission(0, 150)">✅ Missão 1 Concluída — Coletar +150 XP</button>
         </div>
     </div>
+
+    <script>
+    (function () {
+        const NUM_PARTITIONS = 3;
+        let partitions = Array.from({ length: NUM_PARTITIONS }, () => []);
+        let nextPartition = 0;
+        const groups = {
+            dashboard: { label: '📊 Grupo "dashboard-tempo-real"', offsets: [0, 0, 0], feed: [] },
+            datalake: { label: '🗄️ Grupo "grava-datalake"', offsets: [0, 0, 0], feed: [] },
+        };
+
+        function renderPartitions() {
+            const el = document.getElementById('kfkSimPartitions');
+            el.innerHTML = partitions.map((msgs, i) => `
+                <div class="kfk-sim-partition">
+                    <div class="kfk-sim-partition-title" style="color:${['#00d4ff', '#00ff9d', '#ff6b35'][i]}">Partição ${i}</div>
+                    ${msgs.length ? msgs.map((m, off) => `<div class="kfk-sim-msg">#${off} ${m}</div>`).join('') : '<div style="color:var(--text-dim); font-size:0.75em;">vazia</div>'}
+                </div>`).join('');
+        }
+
+        function renderGroups() {
+            const el = document.getElementById('kfkSimGroups');
+            el.innerHTML = Object.entries(groups).map(([key, g]) => {
+                const pending = g.offsets.reduce((acc, off, i) => acc + (partitions[i].length - off), 0);
+                return `<div class="kfk-sim-group">
+                    <div class="kfk-sim-group-head"><span class="kfk-sim-group-name">${g.label}</span></div>
+                    <div class="kfk-sim-offsets">${g.offsets.map((o, i) => `<span class="kfk-sim-offset-badge">P${i}@${o}</span>`).join('')}</div>
+                    <div class="kfk-sim-feed">${g.feed.length ? g.feed.slice(-6).map(f => `<div class="kfk-sim-feed-item">✔ ${f}</div>`).join('') : '<div style="color:var(--text-dim); font-size:0.75em;">nada consumido ainda</div>'}</div>
+                    <button class="kfk-sim-consume-btn" ${pending === 0 ? 'disabled' : ''} onclick="kfkSimConsume('${key}')">🔽 Consumir novas mensagens (${pending} pendente${pending !== 1 ? 's' : ''})</button>
+                </div>`;
+            }).join('');
+        }
+
+        window.kfkSimQuickSend = function (text) {
+            document.getElementById('kfkSimMsg').value = text;
+            kfkSimProduce();
+        };
+
+        window.kfkSimProduce = function () {
+            const val = document.getElementById('kfkSimMsg').value.trim();
+            if (!val) return;
+            const p = nextPartition;
+            partitions[p].push(val);
+            nextPartition = (nextPartition + 1) % NUM_PARTITIONS;
+            renderPartitions();
+            renderGroups();
+            document.getElementById('kfkSimHint').innerHTML = `📤 Evento <strong>"${val}"</strong> enviado pelo Producer e roteado para a <strong>Partição ${p}</strong>. Ele fica lá, em ordem, esperando algum consumer ler.`;
+        };
+
+        window.kfkSimConsume = function (key) {
+            const g = groups[key];
+            let consumedNow = [];
+            for (let i = 0; i < NUM_PARTITIONS; i++) {
+                while (g.offsets[i] < partitions[i].length) {
+                    consumedNow.push(`P${i}: ${partitions[i][g.offsets[i]]}`);
+                    g.feed.push(`P${i}: ${partitions[i][g.offsets[i]]}`);
+                    g.offsets[i]++;
+                }
+            }
+            renderGroups();
+            const other = key === 'dashboard' ? groups.datalake : groups.dashboard;
+            document.getElementById('kfkSimHint').innerHTML = consumedNow.length
+                ? `✅ <strong>${g.label}</strong> consumiu ${consumedNow.length} mensagem(ns) e avançou seu offset. O outro grupo <strong>nem percebeu</strong> — ele guarda seu próprio ponteiro de leitura, independente. É por isso que Kafka não é uma fila comum: a mesma mensagem pode ser lida várias vezes, por consumidores diferentes, cada um no seu ritmo.`
+                : `Esse grupo já está em dia — não há mensagens novas para ele consumir.`;
+        };
+
+        renderPartitions();
+        renderGroups();
+    })();
+    </script>
 
     <!-- ════════════════════════════════════════════════ -->
     <!-- MISSÃO 2 — Prática — Instalar Kafka e Publicar/Consumir Mensagens -->

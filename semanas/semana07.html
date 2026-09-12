@@ -1280,17 +1280,149 @@
                 <div class="concept-box-body">O MapReduce (Semana 06) tem um problema: entre cada fase (Map → Shuffle → Reduce), ele <em>escreve os resultados intermediários no disco</em>. Disco é lento comparado à memória RAM (lembra da Missão de Hardware da Semana 01?).<br><br><strong>Apache Spark</strong> resolve isso mantendo os dados <em>na memória RAM</em> entre as etapas de processamento, em vez de escrever no disco toda hora. Resultado: para jobs iterativos (que processam os mesmos dados várias vezes, como Machine Learning), o Spark pode ser <strong>até 100x mais rápido</strong> que o MapReduce tradicional.<br><br><strong>RDD (Resilient Distributed Dataset)</strong> — a estrutura de dados fundamental do Spark: uma coleção de dados distribuída entre os nós do cluster, mas que vive na memória. "Resilient" porque, mesmo em memória, o Spark sabe reconstruir os dados se um nó falhar (guarda o "histórico" de como aquele RDD foi criado).<br><br><strong>Quando usar cada um:</strong> MapReduce ainda é ótimo para processar um volume gigantesco de dados <em>uma única vez</em> (ex: gerar um relatório mensal). Spark ganha quando os mesmos dados são processados <em>repetidamente</em> (ex: treinar um modelo de Machine Learning testando várias configurações).<br><br>💡 <strong>Lembra da Semana 04?</strong> Você já sabe diferenciar RAM de swap — é exatamente essa RAM que o Spark disputa com o resto do seu sistema. Um Spark "lento" quase sempre é sinal de pouca RAM disponível.</div>
             </div>
 
+            <!-- ═══ SIMULADOR SPARK VS MAPREDUCE ═══ -->
+            <style>
+                .spk-sim { border: 1px solid var(--border); border-radius: 14px; background: var(--panel); padding: 20px; margin: 20px 0; }
+                .spk-sim-title { font-family: var(--font-display); font-weight: 700; color: white; font-size: 1.05em; margin-bottom: 4px; display:flex; align-items:center; gap:8px; }
+                .spk-sim-sub { color: var(--text-dim); font-size: 0.85em; margin-bottom: 16px; }
+                .spk-sim-controls { display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:20px; padding:12px 14px; background: rgba(255,255,255,0.03); border-radius:10px; }
+                .spk-sim-controls input[type=range] { width:160px; accent-color: var(--accent); }
+                .spk-sim-iter-label { font-family: var(--font-mono); color: var(--accent); font-weight:700; min-width:90px; }
+                .spk-sim-btn { background: var(--accent); color:#001018; border:none; padding:8px 16px; border-radius:8px; font-weight:700; font-size:0.82em; cursor:pointer; font-family:var(--font-body); }
+                .spk-sim-btn:hover { filter:brightness(1.15); }
+                .spk-sim-track-wrap { margin-bottom:16px; }
+                .spk-sim-track-label { font-family:var(--font-mono); font-size:0.8em; font-weight:700; margin-bottom:5px; display:flex; justify-content:space-between; }
+                .spk-sim-track { display:flex; height: 36px; border-radius:8px; overflow:hidden; background: rgba(255,255,255,0.03); border:1px solid var(--border); }
+                .spk-sim-seg { height:100%; display:flex; align-items:center; justify-content:center; font-size:0.62em; font-family:var(--font-mono); font-weight:700; color:#04101c; opacity:0; transform-origin:left center; animation: spkSegReveal .4s ease forwards; }
+                @keyframes spkSegReveal { from{ opacity:0; transform: scaleX(0.2); } to{ opacity:1; transform: scaleX(1); } }
+                .spk-sim-seg.disk { background: #ff5566; }
+                .spk-sim-seg.cpu { background: var(--accent2); }
+                .spk-sim-legend { display:flex; gap:16px; font-size:0.75em; color:var(--text-dim); margin: 4px 0 18px; }
+                .spk-sim-legend span { display:inline-flex; align-items:center; gap:5px; }
+                .spk-sim-dot { width:10px; height:10px; border-radius:3px; display:inline-block; }
+                .spk-sim-results { display:flex; gap:14px; flex-wrap:wrap; opacity:0; transition: opacity .5s ease; }
+                .spk-sim-results.show { opacity:1; }
+                .spk-sim-result-card { flex:1; min-width:150px; background: rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; padding:12px; text-align:center; }
+                .spk-sim-result-val { font-family:var(--font-mono); font-weight:800; font-size:1.3em; color:white; }
+                .spk-sim-result-label { font-size:0.75em; color:var(--text-dim); margin-top:2px; }
+                .spk-sim-hint { margin-top:14px; padding:10px 12px; background: rgba(255,214,10,0.06); border:1px solid rgba(255,214,10,0.25); border-radius:8px; font-size:0.82em; color: var(--text); }
+            </style>
+            <div class="spk-sim">
+                <div class="spk-sim-title">🧪 Simulador — Corrida: MapReduce (disco) vs Spark (RAM)</div>
+                <div class="spk-sim-sub">Um job <strong>iterativo</strong> (ex: treinar um modelo, testando o mesmo dado várias vezes) processado das duas formas. Veja onde cada engine toca o disco 💾 (lento) e onde fica só na RAM ⚙️ (rápido).</div>
+
+                <div class="spk-sim-controls">
+                    <label for="spkSimIter">🔁 Nº de iterações do job:</label>
+                    <input type="range" id="spkSimIter" min="1" max="10" step="1" value="4" oninput="document.getElementById('spkSimIterLabel').textContent = this.value + ' iterações'">
+                    <span class="spk-sim-iter-label" id="spkSimIterLabel">4 iterações</span>
+                    <button class="spk-sim-btn" onclick="spkSimRun()">🏁 Rodar Corrida</button>
+                </div>
+
+                <div class="spk-sim-track-wrap">
+                    <div class="spk-sim-track-label"><span>🐘 MapReduce</span><span id="spkSimMrTime">—</span></div>
+                    <div class="spk-sim-track" id="spkSimMrTrack"></div>
+                </div>
+                <div class="spk-sim-track-wrap">
+                    <div class="spk-sim-track-label"><span>⚡ Spark</span><span id="spkSimSparkTime">—</span></div>
+                    <div class="spk-sim-track" id="spkSimSparkTrack"></div>
+                </div>
+
+                <div class="spk-sim-legend">
+                    <span><span class="spk-sim-dot" style="background:#ff5566;"></span> Acesso a disco (leitura/escrita)</span>
+                    <span><span class="spk-sim-dot" style="background:var(--accent2);"></span> Processamento (CPU)</span>
+                </div>
+
+                <div class="spk-sim-results" id="spkSimResults">
+                    <div class="spk-sim-result-card"><div class="spk-sim-result-val" id="spkSimResMr">—</div><div class="spk-sim-result-label">Tempo simulado MapReduce</div></div>
+                    <div class="spk-sim-result-card"><div class="spk-sim-result-val" id="spkSimResSpark">—</div><div class="spk-sim-result-label">Tempo simulado Spark</div></div>
+                    <div class="spk-sim-result-card"><div class="spk-sim-result-val" id="spkSimResSpeedup" style="color:var(--accent2);">—</div><div class="spk-sim-result-label">Spark foi quantas vezes mais rápido</div></div>
+                </div>
+
+                <div class="spk-sim-hint" id="spkSimHint">💡 No MapReduce, <strong>toda iteração</strong> lê do disco, processa e grava no disco de novo. No Spark, só a <strong>primeira</strong> leitura e a <strong>última</strong> gravação tocam o disco — as iterações do meio ficam inteiramente na RAM. Aumente o número de iterações e rode de novo: repare que a vantagem do Spark cresce.</div>
+            </div>
+            <!-- ═══ FIM SIMULADOR SPARK VS MAPREDUCE ═══ -->
+
             <div class="checkpoint">
                 <div class="checkpoint-title">🏁 Checkpoint M1</div>
                 <ul class="checkpoint-items">
                     <li class="checkpoint-item"><input type="checkbox" id="c0a"><label for="c0a">Sei explicar por que Spark é mais rápido que MapReduce em jobs iterativos</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0b"><label for="c0b">Entendo o que é um RDD</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0c"><label for="c0c">Sei quando usar Spark vs. MapReduce</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c0d"><label for="c0d">Rodei a corrida com pelo menos 2 números de iterações diferentes</label></li>
                 </ul>
             </div>
             <button class="complete-btn" id="btn0" onclick="completeMission(0, 150)">✅ Missão 1 Concluída — Coletar +150 XP</button>
         </div>
     </div>
+
+    <script>
+    (function () {
+        const DISK_MS = 500;
+        const CPU_MS = 80;
+
+        function buildMapReduceSegments(n) {
+            const segs = [];
+            for (let i = 0; i < n; i++) {
+                segs.push({ type: 'disk', dur: DISK_MS, label: 'L' });
+                segs.push({ type: 'cpu', dur: CPU_MS, label: 'P' });
+                segs.push({ type: 'disk', dur: DISK_MS, label: 'G' });
+            }
+            return segs;
+        }
+
+        function buildSparkSegments(n) {
+            const segs = [{ type: 'disk', dur: DISK_MS, label: 'L' }];
+            for (let i = 0; i < n; i++) segs.push({ type: 'cpu', dur: CPU_MS, label: 'P' + (i + 1) });
+            segs.push({ type: 'disk', dur: DISK_MS, label: 'G' });
+            return segs;
+        }
+
+        function renderTrack(elId, segs, maxTotal, scaleDelay) {
+            const el = document.getElementById(elId);
+            let cum = 0;
+            el.innerHTML = segs.map(s => {
+                const widthPct = (s.dur / maxTotal) * 100;
+                const delay = cum * scaleDelay;
+                cum += s.dur;
+                const icon = s.type === 'disk' ? '💾' : '⚙️';
+                return `<div class="spk-sim-seg ${s.type}" style="width:${widthPct}%; animation-delay:${delay}ms;" title="${s.type === 'disk' ? 'Acesso a disco' : 'Processamento em memória'}">${widthPct > 4 ? icon : ''}</div>`;
+            }).join('');
+        }
+
+        window.spkSimRun = function () {
+            const n = parseInt(document.getElementById('spkSimIter').value, 10);
+            const mrSegs = buildMapReduceSegments(n);
+            const sparkSegs = buildSparkSegments(n);
+            const mrTotal = mrSegs.reduce((a, s) => a + s.dur, 0);
+            const sparkTotal = sparkSegs.reduce((a, s) => a + s.dur, 0);
+            const maxTotal = Math.max(mrTotal, sparkTotal);
+            const ANIM_SECONDS = 3.2;
+            const scaleDelay = (ANIM_SECONDS * 1000) / maxTotal;
+
+            document.getElementById('spkSimResults').classList.remove('show');
+            document.getElementById('spkSimMrTime').textContent = '';
+            document.getElementById('spkSimSparkTime').textContent = '';
+
+            renderTrack('spkSimMrTrack', mrSegs, maxTotal, scaleDelay);
+            renderTrack('spkSimSparkTrack', sparkSegs, maxTotal, scaleDelay);
+
+            document.getElementById('spkSimHint').innerHTML = `🏁 Corrida em andamento — observe o MapReduce tocando o disco (🟥) a cada iteração, enquanto o Spark fica a maior parte do tempo em verde (RAM)...`;
+
+            setTimeout(() => {
+                document.getElementById('spkSimMrTime').textContent = mrTotal + ' ms';
+                document.getElementById('spkSimSparkTime').textContent = sparkTotal + ' ms';
+                document.getElementById('spkSimResMr').textContent = mrTotal + ' ms';
+                document.getElementById('spkSimResSpark').textContent = sparkTotal + ' ms';
+                const speedup = (mrTotal / sparkTotal).toFixed(1);
+                document.getElementById('spkSimResSpeedup').textContent = speedup + 'x';
+                document.getElementById('spkSimResults').classList.add('show');
+                document.getElementById('spkSimHint').innerHTML = `✅ Com <strong>${n} iterações</strong>, o Spark terminou <strong>${speedup}x mais rápido</strong> nesta simulação — só tocando o disco no início e no fim. Em benchmarks reais com muito mais iterações e dados maiores, essa vantagem é o que gera números como "até 100x", citado no texto acima. Teste com 10 iterações e compare com 1!`;
+            }, ANIM_SECONDS * 1000 + 500);
+        };
+
+        spkSimRun();
+    })();
+    </script>
 
     <!-- ════════════════════════════════════════════════ -->
     <!-- MISSÃO 2 — Prática — Instalar PySpark e Rodar seu Primeiro Script -->

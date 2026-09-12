@@ -1280,17 +1280,106 @@
                 <div class="concept-box-body">Na Semana 03, você conheceu os conceitos de cloud computing (IaaS/PaaS/SaaS, elasticidade). Agora vai colocar a mão na maior plataforma de nuvem do mercado.<br><br><strong>Regiões e Zonas de Disponibilidade</strong> — a AWS tem datacenters físicos espalhados pelo mundo (regiões), cada uma dividida em zonas isoladas entre si (para o caso de uma falhar, as outras continuam de pé) — uma aplicação prática do que você estudou sobre tolerância a falhas desde a Semana 05 (replicação no HDFS).<br><br><strong>S3 (Simple Storage Service)</strong> — armazenamento de objetos na nuvem, praticamente ilimitado. É o "HDFS gerenciado" da AWS — muitas empresas usam S3 no lugar de manter seu próprio cluster Hadoop de armazenamento.<br><br><strong>EC2 (Elastic Compute Cloud)</strong> — máquinas virtuais na AWS (lembra do IaaS da Semana 03?). É onde você rodaria seu próprio Hadoop/Spark se não quisesse usar o EMR (que veremos na Semana 14).<br><br><strong>IAM (Identity and Access Management)</strong> — controla quem pode acessar o quê na sua conta AWS. Essencial para segurança — nunca se deve usar a conta "raiz" no dia a dia.</div>
             </div>
 
+            <!-- ═══ SIMULADOR IAM ═══ -->
+            <style>
+                .iam-sim { border: 1px solid var(--border); border-radius: 14px; background: var(--panel); padding: 20px; margin: 20px 0; }
+                .iam-sim-title { font-family: var(--font-display); font-weight: 700; color: white; font-size: 1.05em; margin-bottom: 4px; display:flex; align-items:center; gap:8px; }
+                .iam-sim-sub { color: var(--text-dim); font-size: 0.85em; margin-bottom: 16px; }
+                .iam-sim-roles { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+                .iam-sim-role-btn { flex:1; min-width:180px; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background: rgba(255,255,255,0.02); color:var(--text-dim); cursor:pointer; font-family:var(--font-mono); font-size:0.78em; text-align:left; }
+                .iam-sim-role-btn.active { border-color: var(--accent); background: rgba(0,212,255,0.1); color:white; }
+                .iam-sim-actions { display:grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap:10px; margin-bottom:14px; }
+                .iam-sim-action { padding:12px; border-radius:10px; border:1px solid var(--border); background: rgba(255,255,255,0.02); cursor:pointer; text-align:center; transition: all .15s; }
+                .iam-sim-action:hover { border-color: var(--accent); }
+                .iam-sim-action-label { font-size:0.8em; color:white; font-weight:600; margin-bottom:4px; }
+                .iam-sim-action-service { font-family:var(--font-mono); font-size:0.65em; color:var(--text-dim); }
+                .iam-sim-hint { margin-top:14px; padding:10px 12px; border-radius:8px; font-size:0.82em; transition: all .2s; background: rgba(255,214,10,0.06); border:1px solid rgba(255,214,10,0.25); color: var(--text); }
+                .iam-sim-hint.allow { background: rgba(0,255,157,0.08); border-color: rgba(0,255,157,0.3); }
+                .iam-sim-hint.deny { background: rgba(255,60,60,0.08); border-color: rgba(255,60,60,0.35); }
+            </style>
+            <div class="iam-sim">
+                <div class="iam-sim-title">🧪 Simulador — Permissões IAM na Prática</div>
+                <div class="iam-sim-sub">Escolha um papel (role) da equipe e clique nas ações para ver o que o IAM permite ou bloqueia. Por padrão, o IAM <strong>nega tudo</strong> que não está explicitamente permitido na policy — esse é o princípio do menor privilégio.</div>
+
+                <div class="iam-sim-roles" id="iamSimRoles"></div>
+                <div class="iam-sim-actions" id="iamSimActions"></div>
+                <div class="iam-sim-hint" id="iamSimHint">💡 Escolha um papel acima e clique em uma ação para testar.</div>
+            </div>
+            <!-- ═══ FIM SIMULADOR IAM ═══ -->
+
             <div class="checkpoint">
                 <div class="checkpoint-title">🏁 Checkpoint M1</div>
                 <ul class="checkpoint-items">
                     <li class="checkpoint-item"><input type="checkbox" id="c0a"><label for="c0a">Sei o que são regiões e zonas de disponibilidade</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0b"><label for="c0b">Entendo o papel do S3 e do EC2</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0c"><label for="c0c">Sei o que o IAM controla</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c0d"><label for="c0d">Testei os 3 papéis no simulador de IAM e vi o que cada um pode/não pode fazer</label></li>
                 </ul>
             </div>
             <button class="complete-btn" id="btn0" onclick="completeMission(0, 150)">✅ Missão 1 Concluída — Coletar +150 XP</button>
         </div>
     </div>
+
+    <script>
+    (function () {
+        const roles = {
+            estagiario: { label: '🧑‍🎓 Estagiário', sub: 'policy: S3 somente leitura', perms: { read: true, delete: false, createBucket: false, launchEC2: false, terminateEC2: false, billing: false } },
+            engenheiro: { label: '👷 Engenheiro de Dados', sub: 'policy: S3 total + EC2', perms: { read: true, delete: true, createBucket: true, launchEC2: true, terminateEC2: true, billing: false } },
+            admin: { label: '🛡️ Administrador', sub: 'policy: AdministratorAccess', perms: { read: true, delete: true, createBucket: true, launchEC2: true, terminateEC2: true, billing: true } },
+        };
+        const actions = [
+            { key: 'read', label: '📄 Ler arquivo do bucket S3', service: 's3:GetObject' },
+            { key: 'delete', label: '🗑️ Deletar arquivo do bucket S3', service: 's3:DeleteObject' },
+            { key: 'createBucket', label: '🪣 Criar novo bucket S3', service: 's3:CreateBucket' },
+            { key: 'launchEC2', label: '▶️ Lançar instância EC2', service: 'ec2:RunInstances' },
+            { key: 'terminateEC2', label: '⏹️ Terminar instância EC2', service: 'ec2:TerminateInstances' },
+            { key: 'billing', label: '💳 Ver fatura de cobrança', service: 'billing:ViewBilling' },
+        ];
+        let currentRole = 'estagiario';
+
+        function renderRoles() {
+            const el = document.getElementById('iamSimRoles');
+            el.innerHTML = Object.entries(roles).map(([key, r]) => `
+                <div class="iam-sim-role-btn ${key === currentRole ? 'active' : ''}" onclick="iamSimSetRole('${key}')">
+                    <div style="font-weight:700; color:white; margin-bottom:2px;">${r.label}</div>
+                    <div>${r.sub}</div>
+                </div>`).join('');
+        }
+
+        function renderActions() {
+            const el = document.getElementById('iamSimActions');
+            el.innerHTML = actions.map(a => `
+                <div class="iam-sim-action" onclick="iamSimTry('${a.key}')">
+                    <div class="iam-sim-action-label">${a.label}</div>
+                    <div class="iam-sim-action-service">${a.service}</div>
+                </div>`).join('');
+        }
+
+        window.iamSimSetRole = function (key) {
+            currentRole = key;
+            renderRoles();
+            document.getElementById('iamSimHint').className = 'iam-sim-hint';
+            document.getElementById('iamSimHint').innerHTML = `💡 Papel <strong>${roles[key].label}</strong> selecionado. Clique em uma ação para testar o que a policy dele permite.`;
+        };
+
+        window.iamSimTry = function (actionKey) {
+            const role = roles[currentRole];
+            const action = actions.find(a => a.key === actionKey);
+            const allowed = role.perms[actionKey];
+            const hint = document.getElementById('iamSimHint');
+            if (allowed) {
+                hint.className = 'iam-sim-hint allow';
+                hint.innerHTML = `✅ <strong>PERMITIDO</strong> — a policy de <strong>${role.label}</strong> inclui <code>${action.service}</code>.`;
+            } else {
+                hint.className = 'iam-sim-hint deny';
+                hint.innerHTML = `❌ <strong>NEGADO</strong> — <strong>${role.label}</strong> não tem <code>${action.service}</code> na sua policy. No IAM, tudo que não está explicitamente permitido é <strong>negado por padrão</strong> (deny implícito) — é assim que se aplica o princípio do menor privilégio.`;
+            }
+        };
+
+        renderRoles();
+        renderActions();
+    })();
+    </script>
 
     <!-- ════════════════════════════════════════════════ -->
     <!-- MISSÃO 2 — Prática — Explorando o Console AWS e Criando um Bucket S3 -->

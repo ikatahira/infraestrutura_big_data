@@ -1280,17 +1280,93 @@
                 <div class="concept-box-body">Lembra do PaaS que você estudou na Semana 03? O <strong>EMR (Elastic MapReduce)</strong> é o exemplo perfeito: em vez de instalar Java, configurar SSH, baixar o tar.gz do Hadoop (como você fez manualmente na Semana 05), o EMR já entrega um cluster Hadoop/Spark pronto em minutos.<br><br><strong>O que o EMR gerencia por você</strong> — provisionamento das máquinas EC2, instalação do Hadoop/Spark/Hive, configuração de rede entre os nós (lembra da Semana 02?), monitoramento e desligamento automático.<br><br><strong>Trade-off</strong> — você ganha velocidade e menos trabalho operacional, mas perde o controle fino de configuração que teve ao instalar manualmente. Por isso vale ter feito a instalação manual primeiro (Semana 05) — agora você entende <em>o que</em> o EMR está fazendo por baixo dos panos.</div>
             </div>
 
+            <!-- ═══ SIMULADOR ELASTICIDADE EMR ═══ -->
+            <style>
+                .emr-sim { border: 1px solid var(--border); border-radius: 14px; background: var(--panel); padding: 20px; margin: 20px 0; }
+                .emr-sim-title { font-family: var(--font-display); font-weight: 700; color: white; font-size: 1.05em; margin-bottom: 4px; display:flex; align-items:center; gap:8px; }
+                .emr-sim-sub { color: var(--text-dim); font-size: 0.85em; margin-bottom: 16px; }
+                .emr-sim-controls { display:flex; flex-direction:column; gap:12px; margin-bottom:16px; padding:14px; background: rgba(255,255,255,0.03); border-radius:10px; }
+                .emr-sim-slider-row { display:flex; align-items:center; gap:12px; }
+                .emr-sim-slider-row label { font-size:0.82em; color:var(--text); min-width:190px; }
+                .emr-sim-slider-row input[type=range] { flex:1; accent-color: var(--accent); }
+                .emr-sim-slider-val { font-family:var(--font-mono); color:var(--accent); font-weight:700; min-width:80px; text-align:right; }
+                .emr-sim-nodes-grid { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px; min-height:34px; }
+                .emr-sim-node-icon { width:30px; height:30px; border-radius:6px; background: rgba(0,212,255,0.12); border:1px solid rgba(0,212,255,0.35); display:flex; align-items:center; justify-content:center; font-size:0.85em; animation: emrPop .25s ease both; }
+                @keyframes emrPop { from { opacity:0; transform: scale(0.5); } to { opacity:1; transform: scale(1); } }
+                .emr-sim-results { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:6px; }
+                .emr-sim-result-card { flex:1; min-width:150px; background: rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; padding:12px; text-align:center; }
+                .emr-sim-result-val { font-family:var(--font-mono); font-weight:800; font-size:1.3em; color:white; }
+                .emr-sim-result-label { font-size:0.75em; color:var(--text-dim); margin-top:2px; }
+                .emr-sim-hint { margin-top:14px; padding:10px 12px; background: rgba(255,214,10,0.06); border:1px solid rgba(255,214,10,0.25); border-radius:8px; font-size:0.82em; color: var(--text); }
+            </style>
+            <div class="emr-sim">
+                <div class="emr-sim-title">🧪 Simulador — Elasticidade de um Cluster EMR</div>
+                <div class="emr-sim-sub">Ajuste o volume de dados e o número de Core Nodes do cluster. Valores ilustrativos (throughput de 50 GB/h por nó, $0,30/nó-hora), mas a relação entre eles é real.</div>
+
+                <div class="emr-sim-controls">
+                    <div class="emr-sim-slider-row">
+                        <label for="emrSimData">📦 Volume de dados a processar:</label>
+                        <input type="range" id="emrSimData" min="100" max="2000" step="100" value="500" oninput="emrSimUpdate()">
+                        <span class="emr-sim-slider-val" id="emrSimDataVal">500 GB</span>
+                    </div>
+                    <div class="emr-sim-slider-row">
+                        <label for="emrSimNodes">🖥️ Nº de Core Nodes do cluster:</label>
+                        <input type="range" id="emrSimNodes" min="1" max="20" step="1" value="4" oninput="emrSimUpdate()">
+                        <span class="emr-sim-slider-val" id="emrSimNodesVal">4 nós</span>
+                    </div>
+                </div>
+
+                <div class="emr-sim-nodes-grid" id="emrSimNodesGrid"></div>
+
+                <div class="emr-sim-results">
+                    <div class="emr-sim-result-card"><div class="emr-sim-result-val" id="emrSimTime">—</div><div class="emr-sim-result-label">Tempo estimado do job</div></div>
+                    <div class="emr-sim-result-card"><div class="emr-sim-result-val" id="emrSimCost">—</div><div class="emr-sim-result-label">Custo total estimado</div></div>
+                </div>
+
+                <div class="emr-sim-hint" id="emrSimHint">💡 Mexa nos dois sliders e observe: dobrar os nós corta o tempo praticamente pela metade — mas repare no custo total.</div>
+            </div>
+            <!-- ═══ FIM SIMULADOR ELASTICIDADE EMR ═══ -->
+
             <div class="checkpoint">
                 <div class="checkpoint-title">🏁 Checkpoint M1</div>
                 <ul class="checkpoint-items">
                     <li class="checkpoint-item"><input type="checkbox" id="c0a"><label for="c0a">Entendo o que o EMR automatiza</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0b"><label for="c0b">Sei o trade-off entre EMR e instalação manual</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0c"><label for="c0c">Consigo explicar por que instalar manualmente primeiro ajudou a entender o EMR</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c0d"><label for="c0d">Testei o simulador e entendi por que mais nós custa quase o mesmo, só termina mais rápido</label></li>
                 </ul>
             </div>
             <button class="complete-btn" id="btn0" onclick="completeMission(0, 150)">✅ Missão 1 Concluída — Coletar +150 XP</button>
         </div>
     </div>
+
+    <script>
+    (function () {
+        const THROUGHPUT_PER_NODE_GBH = 50;
+        const COST_PER_NODE_HOUR = 0.30;
+
+        window.emrSimUpdate = function () {
+            const data = parseInt(document.getElementById('emrSimData').value, 10);
+            const nodes = parseInt(document.getElementById('emrSimNodes').value, 10);
+            document.getElementById('emrSimDataVal').textContent = data + ' GB';
+            document.getElementById('emrSimNodesVal').textContent = nodes + (nodes === 1 ? ' nó' : ' nós');
+
+            const grid = document.getElementById('emrSimNodesGrid');
+            grid.innerHTML = Array.from({ length: nodes }, () => '<div class="emr-sim-node-icon">🖥️</div>').join('');
+
+            const timeHours = data / (nodes * THROUGHPUT_PER_NODE_GBH);
+            const cost = nodes * COST_PER_NODE_HOUR * timeHours;
+
+            const timeLabel = timeHours < 1 ? Math.round(timeHours * 60) + ' min' : timeHours.toFixed(1) + ' h';
+            document.getElementById('emrSimTime').textContent = timeLabel;
+            document.getElementById('emrSimCost').textContent = 'US$ ' + cost.toFixed(2);
+
+            document.getElementById('emrSimHint').innerHTML = `💡 Com <strong>${nodes} nó${nodes > 1 ? 's' : ''}</strong> processando <strong>${data} GB</strong>: tempo estimado ${timeLabel}, custo ~US$ ${cost.toFixed(2)}. Repare que o custo total <strong>quase não muda</strong> quando você altera só o número de nós — porque você está comprando a mesma quantidade de "nó-hora" (capacidade × tempo), só dividida entre mais ou menos máquinas. É por isso que, em jobs paralelizáveis, <strong>escalar para terminar mais rápido raramente sai muito mais caro</strong> — essa é a essência da elasticidade que você viu na Semana 03.`;
+        };
+
+        emrSimUpdate();
+    })();
+    </script>
 
     <!-- ════════════════════════════════════════════════ -->
     <!-- MISSÃO 2 — Data Lakes e AWS S3 como Armazenamento Central -->

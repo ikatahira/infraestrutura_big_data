@@ -1280,17 +1280,111 @@
                 <div class="concept-box-body">Muito do Big Data do mundo real vem de sensores físicos, não de arquivos ou cliques em um site. IoT (Internet of Things) é exatamente isso: dispositivos físicos coletando e enviando dados continuamente.<br><br><strong>Microcontrolador</strong> — um pequeno computador dedicado (o ESP32 que você vai usar) capaz de ler sensores (temperatura, umidade, movimento) e enviar essas leituras pela rede — aplicando direto os conceitos de rede que você estudou na Semana 02.<br><br><strong>Por que IoT gera Big Data</strong> — um único sensor enviando uma leitura por segundo já gera 86.400 registros por dia. Multiplique por milhares de sensores (uma fábrica, uma cidade inteligente) e você tem volume, velocidade e variedade — os 5Vs da Semana 01, na origem dos dados.<br><br><strong>MQTT</strong> — um protocolo leve, feito especialmente para dispositivos IoT com pouca energia/processamento, muito usado para publicar dados de sensores — funciona de forma parecida com o modelo producer/consumer do Kafka que você já conhece (Semana 11).</div>
             </div>
 
+            <!-- ═══ SIMULADOR MQTT ═══ -->
+            <style>
+                .mqtt-sim { border: 1px solid var(--border); border-radius: 14px; background: var(--panel); padding: 20px; margin: 20px 0; }
+                .mqtt-sim-title { font-family: var(--font-display); font-weight: 700; color: white; font-size: 1.05em; margin-bottom: 4px; display:flex; align-items:center; gap:8px; }
+                .mqtt-sim-sub { color: var(--text-dim); font-size: 0.85em; margin-bottom: 16px; }
+                .mqtt-sim-publisher { display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:18px; padding:12px 14px; background: rgba(255,255,255,0.03); border-radius:10px; }
+                .mqtt-sim-btn { background: var(--accent); color:#001018; border:none; padding:8px 16px; border-radius:8px; font-weight:700; font-size:0.82em; cursor:pointer; font-family:var(--font-body); }
+                .mqtt-sim-btn:hover { filter:brightness(1.15); }
+                .mqtt-sim-broker { text-align:center; margin-bottom:16px; }
+                .mqtt-sim-broker-box { display:inline-flex; align-items:center; gap:8px; background: rgba(0,212,255,0.08); border:1px solid rgba(0,212,255,0.35); color: var(--accent); padding:8px 18px; border-radius:10px; font-family:var(--font-mono); font-size:0.85em; font-weight:600; }
+                .mqtt-sim-subs { display:grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap:12px; }
+                .mqtt-sim-sub { border:1px solid var(--border); border-radius:10px; padding:12px; background: rgba(255,255,255,0.02); }
+                .mqtt-sim-sub.offline { opacity:0.55; border-color: rgba(255,60,60,0.35); background: rgba(255,60,60,0.04); }
+                .mqtt-sim-sub-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+                .mqtt-sim-sub-name { font-weight:700; color:white; font-size:0.85em; }
+                .mqtt-sim-sub-toggle { font-size:0.68em; padding:2px 8px; border-radius:6px; border:1px solid var(--border); background:transparent; color:var(--text-dim); cursor:pointer; font-family:var(--font-mono); }
+                .mqtt-sim-feed { min-height:60px; max-height:110px; overflow-y:auto; font-family:var(--font-mono); font-size:0.72em; }
+                .mqtt-sim-feed-item { padding:2px 0; color: var(--accent2); animation: mqttFade .3s ease both; }
+                .mqtt-sim-feed-item.alert { color:#ff5566; font-weight:700; }
+                @keyframes mqttFade { from{opacity:0;} to{opacity:1;} }
+                .mqtt-sim-hint { margin-top:14px; padding:10px 12px; background: rgba(255,214,10,0.06); border:1px solid rgba(255,214,10,0.25); border-radius:8px; font-size:0.82em; color: var(--text); }
+            </style>
+            <div class="mqtt-sim">
+                <div class="mqtt-sim-title">🧪 Simulador — Publish/Subscribe com MQTT</div>
+                <div class="mqtt-sim-sub">Um ESP32 publica leituras de temperatura no tópico <code>sensores/temperatura</code>. Três sistemas assinam esse tópico. Desconecte um deles e publique de novo — repare no que acontece.</div>
+
+                <div class="mqtt-sim-publisher">
+                    <button class="mqtt-sim-btn" onclick="mqttSimPublish()">📡 ESP32: Publicar Leitura Aleatória</button>
+                </div>
+
+                <div class="mqtt-sim-broker">
+                    <div class="mqtt-sim-broker-box">🔀 Broker MQTT — tópico: sensores/temperatura</div>
+                </div>
+
+                <div class="mqtt-sim-subs" id="mqttSimSubs"></div>
+
+                <div class="mqtt-sim-hint" id="mqttSimHint">💡 Publique algumas leituras. Depois clique em "Desconectar" no Data Lake e publique de novo — veja se ele recebeu a mensagem.</div>
+            </div>
+            <!-- ═══ FIM SIMULADOR MQTT ═══ -->
+
             <div class="checkpoint">
                 <div class="checkpoint-title">🏁 Checkpoint M1</div>
                 <ul class="checkpoint-items">
                     <li class="checkpoint-item"><input type="checkbox" id="c0a"><label for="c0a">Sei o que é um microcontrolador e o papel dele em IoT</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0b"><label for="c0b">Entendo por que IoT gera grandes volumes de dados</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0c"><label for="c0c">Sei o que é o protocolo MQTT</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c0d"><label for="c0d">Testei desconectar um subscriber e vi que ele perde a mensagem publicada nesse período</label></li>
                 </ul>
             </div>
             <button class="complete-btn" id="btn0" onclick="completeMission(0, 150)">✅ Missão 1 Concluída — Coletar +150 XP</button>
         </div>
     </div>
+
+    <script>
+    (function () {
+        const THRESHOLD = 30;
+        const subs = {
+            dashboard: { label: '📊 Dashboard em Tempo Real', online: true, feed: [] },
+            alerta: { label: '🚨 Sistema de Alerta', online: true, feed: [] },
+            datalake: { label: '💾 Gravador Data Lake', online: true, feed: [] },
+        };
+
+        function renderSubs() {
+            const el = document.getElementById('mqttSimSubs');
+            el.innerHTML = Object.entries(subs).map(([key, s]) => `
+                <div class="mqtt-sim-sub ${s.online ? '' : 'offline'}">
+                    <div class="mqtt-sim-sub-head">
+                        <span class="mqtt-sim-sub-name">${s.label}</span>
+                        <button class="mqtt-sim-sub-toggle" onclick="mqttSimToggle('${key}')">${s.online ? '🔌 Desconectar' : '🔗 Reconectar'}</button>
+                    </div>
+                    <div class="mqtt-sim-feed">${s.feed.length ? s.feed.slice(-5).map(f => `<div class="mqtt-sim-feed-item${f.alert ? ' alert' : ''}">${f.text}</div>`).join('') : `<div style="color:var(--text-dim);">${s.online ? 'aguardando mensagens...' : 'offline — não recebe nada'}</div>`}</div>
+                </div>`).join('');
+        }
+
+        window.mqttSimToggle = function (key) {
+            subs[key].online = !subs[key].online;
+            renderSubs();
+        };
+
+        window.mqttSimPublish = function () {
+            const temp = (Math.random() * 20 + 18).toFixed(1); // 18.0 a 38.0
+            const isAlert = parseFloat(temp) > THRESHOLD;
+            const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            let anyOffline = false;
+            Object.values(subs).forEach(s => {
+                if (s.online) {
+                    s.feed.push({ text: `[${time}] ${temp}°C${isAlert ? ' ⚠️' : ''}`, alert: isAlert });
+                } else {
+                    anyOffline = true;
+                }
+            });
+            renderSubs();
+            const hint = document.getElementById('mqttSimHint');
+            if (anyOffline) {
+                hint.innerHTML = `📡 Publicado: <strong>${temp}°C</strong>. O(s) subscriber(s) desconectado(s) <strong>NÃO recebeu(ram)</strong> essa leitura — e nunca vai(ão) receber, mesmo reconectando depois. No MQTT básico, o broker só entrega para quem está <em>online no momento do publish</em> — diferente do Kafka (Semana 11), que guarda a mensagem no log e deixa cada consumer group ler no seu próprio ritmo.`;
+            } else if (isAlert) {
+                hint.innerHTML = `⚠️ Publicado: <strong>${temp}°C</strong> — acima do limite de ${THRESHOLD}°C! O Sistema de Alerta reagiu na hora. Isso ilustra por que streaming (MQTT/Kafka) é essencial para IoT: um relatório em batch rodando 1x por dia chegaria tarde demais para esse tipo de alerta.`;
+            } else {
+                hint.innerHTML = `📡 Publicado: <strong>${temp}°C</strong>. Todos os subscribers conectados receberam a leitura instantaneamente.`;
+            }
+        };
+
+        renderSubs();
+    })();
+    </script>
 
     <!-- ════════════════════════════════════════════════ -->
     <!-- MISSÃO 2 — Prática — Programando um ESP32 para Gerar Dados -->

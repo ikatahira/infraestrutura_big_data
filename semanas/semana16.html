@@ -1357,17 +1357,123 @@ Dim_Data: id_data, dia, mes, ano, trimestre
 Dim_Categoria: id_categoria, nome_categoria</code></div>
                 </div>
 
+                <!-- ═══ SIMULADOR CONSULTA OLAP ═══ -->
+                <style>
+                    .olap-sim { border: 1px solid var(--border); border-radius: 14px; background: var(--panel); padding: 20px; margin: 20px 0; }
+                    .olap-sim-title { font-family: var(--font-display); font-weight: 700; color: white; font-size: 1.05em; margin-bottom: 4px; display:flex; align-items:center; gap:8px; }
+                    .olap-sim-sub { color: var(--text-dim); font-size: 0.85em; margin-bottom: 16px; }
+                    .olap-sim-btns { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+                    .olap-sim-dim-btn { padding:8px 16px; border-radius:8px; border:1px solid var(--border); background: rgba(255,255,255,0.02); color:var(--text-dim); cursor:pointer; font-family:var(--font-mono); font-size:0.8em; font-weight:700; }
+                    .olap-sim-dim-btn.active { border-color: var(--accent); background: rgba(0,212,255,0.12); color:var(--accent); }
+                    .olap-sim-section-label { font-family:var(--font-mono); font-size:0.72em; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.05em; margin: 14px 0 8px; }
+                    .olap-sim-table { width:100%; border-collapse:collapse; font-size:0.78em; }
+                    .olap-sim-table th { text-align:left; color:var(--text-dim); font-weight:600; padding:5px 8px; border-bottom:1px solid var(--border); }
+                    .olap-sim-table td { padding:5px 8px; border-bottom:1px solid rgba(255,255,255,0.04); font-family:var(--font-mono); color:var(--text); }
+                    .olap-sim-table td.fk { color: var(--accent); font-weight:700; }
+                    .olap-sim-join-arrow { text-align:center; font-size:1.4em; margin:6px 0; color:var(--text-dim); }
+                    .olap-sim-result-row { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; align-items:flex-end; margin-top:6px; }
+                    .olap-sim-result-bar { display:flex; flex-direction:column; align-items:center; gap:6px; }
+                    .olap-sim-result-bar-visual { width:64px; border-radius:6px 6px 0 0; background: linear-gradient(180deg, var(--accent2), rgba(0,255,157,0.35)); display:flex; align-items:flex-start; justify-content:center; padding-top:4px; color:#04101c; font-weight:800; font-family:var(--font-mono); font-size:0.68em; }
+                    .olap-sim-result-label { font-family:var(--font-mono); font-size:0.72em; color: var(--text); text-align:center; max-width:80px; }
+                    .olap-sim-hint { margin-top:14px; padding:10px 12px; background: rgba(255,214,10,0.06); border:1px solid rgba(255,214,10,0.25); border-radius:8px; font-size:0.82em; color: var(--text); }
+                </style>
+                <div class="olap-sim">
+                    <div class="olap-sim-title">🧪 Simulador — JOIN + Agregação no Modelo Estrela</div>
+                    <div class="olap-sim-sub">O mesmo <code>vendas.csv</code> da Semana 01, agora como Fato_Vendas. Escolha por qual dimensão "fatiar" a análise (isso se chama <em>slice and dice</em> em OLAP) e veja o JOIN + SUM acontecer.</div>
+
+                    <div class="olap-sim-btns" id="olapSimBtns"></div>
+
+                    <div class="olap-sim-section-label">📋 Fato_Vendas (chave estrangeira em destaque)</div>
+                    <table class="olap-sim-table" id="olapSimFactTable"></table>
+
+                    <div class="olap-sim-join-arrow">⬇️ JOIN com <span id="olapSimDimName">Dim_Categoria</span> + GROUP BY + SUM(valor_total) ⬇️</div>
+
+                    <div class="olap-sim-section-label">📊 Resultado da consulta OLAP</div>
+                    <div class="olap-sim-result-row" id="olapSimResult"></div>
+
+                    <div class="olap-sim-hint" id="olapSimHint">💡 Clique em cada botão acima para ver a mesma tabela fato sendo agregada de formas diferentes — é exatamente isso que ferramentas de BI fazem quando você arrasta um campo diferente para um gráfico.</div>
+                </div>
+                <!-- ═══ FIM SIMULADOR OLAP ═══ -->
+
             <div class="checkpoint">
                 <div class="checkpoint-title">🏁 Checkpoint M2</div>
                 <ul class="checkpoint-items">
                     <li class="checkpoint-item"><input type="checkbox" id="c1a"><label for="c1a">Identifiquei a tabela fato do meu cenário</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c1b"><label for="c1b">Modelei ao menos 2 tabelas dimensão</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c1c"><label for="c1c">Entendo por que esse modelo facilita consultas analíticas</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c1d"><label for="c1d">Testei o simulador agrupando por Categoria, Produto e Dia</label></li>
                 </ul>
             </div>
             <button class="complete-btn" id="btn1" onclick="completeMission(1, 200)">✅ Missão 2 Concluída — Coletar +200 XP</button>
         </div>
     </div>
+
+    <script>
+    (function () {
+        // mesmo dataset do vendas.csv usado desde a Semana 01
+        const fato = [
+            { produto: 'Notebook', categoria: 'Eletrônicos', dia: '15/jan', valor: 7000.00 },
+            { produto: 'Cadeira Gamer', categoria: 'Móveis', dia: '15/jan', valor: 4252.50 },
+            { produto: 'Monitor 4K', categoria: 'Eletrônicos', dia: '16/jan', valor: 3600.00 },
+            { produto: 'Teclado Mecânico', categoria: 'Periféricos', dia: '16/jan', valor: 3200.00 },
+            { produto: 'Smartphone', categoria: 'Eletrônicos', dia: '17/jan', valor: 22400.00 },
+            { produto: 'Mesa de Escritório', categoria: 'Móveis', dia: '17/jan', valor: 1300.00 },
+            { produto: 'Headset', categoria: 'Periféricos', dia: '18/jan', valor: 2700.00 },
+            { produto: 'Webcam HD', categoria: 'Periféricos', dia: '18/jan', valor: 1540.00 },
+        ];
+        const dims = {
+            categoria: { label: 'Dim_Categoria', field: 'categoria' },
+            produto: { label: 'Dim_Produto', field: 'produto' },
+            dia: { label: 'Dim_Data', field: 'dia' },
+        };
+        let currentDim = 'categoria';
+
+        function fmt(v) { return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+        function renderBtns() {
+            document.getElementById('olapSimBtns').innerHTML = Object.entries(dims).map(([key, d]) => `
+                <button class="olap-sim-dim-btn ${key === currentDim ? 'active' : ''}" onclick="olapSimSetDim('${key}')">Agrupar por ${d.label.replace('Dim_', '')}</button>`).join('');
+        }
+
+        function renderFactTable() {
+            const field = dims[currentDim].field;
+            const rows = fato.map(r => `<tr>
+                <td>${r.produto}</td>
+                <td class="${field === 'categoria' ? 'fk' : ''}">${r.categoria}</td>
+                <td class="${field === 'dia' ? 'fk' : ''}">${r.dia}</td>
+                <td>${fmt(r.valor)}</td>
+            </tr>`).join('');
+            document.getElementById('olapSimFactTable').innerHTML = `
+                <tr><th>Produto</th><th>Categoria (FK)</th><th>Dia (FK)</th><th>Valor Total</th></tr>${rows}`;
+            document.getElementById('olapSimDimName').textContent = dims[currentDim].label;
+        }
+
+        function renderResult() {
+            const field = dims[currentDim].field;
+            const groups = {};
+            fato.forEach(r => { groups[r[field]] = (groups[r[field]] || 0) + r.valor; });
+            const entries = Object.entries(groups).sort((a, b) => b[1] - a[1]);
+            const maxVal = Math.max(...entries.map(e => e[1]));
+            document.getElementById('olapSimResult').innerHTML = entries.map(([k, v]) => `
+                <div class="olap-sim-result-bar">
+                    <div class="olap-sim-result-bar-visual" style="height:${20 + (v / maxVal) * 90}px;">${fmt(v)}</div>
+                    <div class="olap-sim-result-label">${k}</div>
+                </div>`).join('');
+        }
+
+        window.olapSimSetDim = function (key) {
+            currentDim = key;
+            renderBtns();
+            renderFactTable();
+            renderResult();
+            document.getElementById('olapSimHint').innerHTML = `✅ Consulta refeita agrupando por <strong>${dims[key].label.replace('Dim_', '')}</strong> — o motor de OLAP fez o JOIN entre Fato_Vendas e ${dims[key].label} usando a chave estrangeira destacada, depois somou <code>valor_total</code> por grupo.`;
+        };
+
+        renderBtns();
+        renderFactTable();
+        renderResult();
+    })();
+    </script>
 
 <!-- FINAL BADGE -->
 <div class="final-badge" id="finalBadge">

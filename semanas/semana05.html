@@ -1201,7 +1201,7 @@
     <div class="hero-stats">
         <div class="hero-stat"><div class="hero-stat-val">2</div><div class="hero-stat-label">Missões</div></div>
         <div class="hero-stat"><div class="hero-stat-val">350</div><div class="hero-stat-label">XP Total</div></div>
-        <div class="hero-stat"><div class="hero-stat-val">~50min</div><div class="hero-stat-label">Duração</div></div>
+        <div class="hero-stat"><div class="hero-stat-val">~60min</div><div class="hero-stat-label">Duração</div></div>
         <div class="hero-stat"><div class="hero-stat-val">Ubuntu 22.04</div><div class="hero-stat-label">Ambiente</div></div>
     </div>
 </section>
@@ -1308,7 +1308,7 @@
                 <div class="mission-title">🛠️ Prática — Instalar Hadoop e Rodar os Primeiros Comandos HDFS</div>
                 <div class="mission-tags">
                     <span class="tag tag-xp">⚡ +200 XP</span>
-                    <span class="tag tag-time">⏱ ~35 min</span>
+                    <span class="tag tag-time">⏱ ~45 min</span>
                     <span class="tag tag-type">Instalação</span>
                     <span class="tag tag-ementa">📋 Ementa: Modos de configuração e funcionamento de um sistema para Big Data</span>
                 </div>
@@ -1415,8 +1415,100 @@ sudo mv hadoop-3.3.6 /usr/local/hadoop</code></div>
                 <div class="step-header">
                     <div class="step-num">05</div>
                     <div class="step-content">
+                        <div class="step-title">Configurar variáveis de ambiente e arquivos XML do Hadoop</div>
+                        <div class="step-desc">Antes de formatar o NameNode, o Hadoop precisa saber onde está o Java e como este nó (pseudo-distribuído) vai se comportar. Primeiro, adicione as variáveis de ambiente ao final do <code>~/.bashrc</code>:</div>
+                    </div>
+                </div>
+
+                <div class="code-block" style="margin: 16px 0;">
+                    <div class="code-block-header">
+                        <span class="code-lang">bash</span>
+                        <button class="copy-btn" onclick="copyCode(this, `echo 'export HADOOP_HOME=/usr/local/hadoop' >> ~/.bashrc
+echo 'export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin' >> ~/.bashrc
+echo 'export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))' >> ~/.bashrc
+source ~/.bashrc`)">📋 Copiar</button>
+                    </div>
+                    <div class="code-body"><code>echo 'export HADOOP_HOME=/usr/local/hadoop' >> ~/.bashrc
+echo 'export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin' >> ~/.bashrc
+echo 'export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))' >> ~/.bashrc
+source ~/.bashrc</code></div>
+                </div>
+
+                <div class="step-desc" style="margin-top:14px;">Em seguida, informe o mesmo <code>JAVA_HOME</code> dentro do próprio Hadoop, editando <code>hadoop-env.sh</code>:</div>
+                <div class="code-block" style="margin: 16px 0;">
+                    <div class="code-block-header">
+                        <span class="code-lang">bash</span>
+                        <button class="copy-btn" onclick="copyCode(this, `echo \"export JAVA_HOME=$JAVA_HOME\" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh`)">📋 Copiar</button>
+                    </div>
+                    <div class="code-body"><code>echo "export JAVA_HOME=$JAVA_HOME" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh</code></div>
+                </div>
+
+                <div class="step-desc" style="margin-top:14px;">Agora edite <code>core-site.xml</code> (<code>$HADOOP_HOME/etc/hadoop/core-site.xml</code>) para dizer ao Hadoop onde fica o NameNode:</div>
+                <div class="code-block" style="margin: 16px 0;">
+                    <div class="code-block-header">
+                        <span class="code-lang">xml</span>
+                        <button class="copy-btn" onclick="copyCode(this, `<configuration>
+  <property>
+    <name>fs.defaultFS</name>
+    <value>hdfs://localhost:9000</value>
+  </property>
+</configuration>`)">📋 Copiar</button>
+                    </div>
+                    <div class="code-body"><code>&lt;configuration&gt;
+  &lt;property&gt;
+    &lt;name&gt;fs.defaultFS&lt;/name&gt;
+    &lt;value&gt;hdfs://localhost:9000&lt;/value&gt;
+  &lt;/property&gt;
+&lt;/configuration&gt;</code></div>
+                </div>
+
+                <div class="step-desc" style="margin-top:14px;">Por fim, edite <code>hdfs-site.xml</code> (mesma pasta) para definir o fator de replicação e onde o NameNode/DataNode vão guardar seus dados neste nó único:</div>
+                <div class="code-block" style="margin: 16px 0;">
+                    <div class="code-block-header">
+                        <span class="code-lang">xml</span>
+                        <button class="copy-btn" onclick="copyCode(this, `<configuration>
+  <property>
+    <name>dfs.replication</name>
+    <value>1</value>
+  </property>
+  <property>
+    <name>dfs.namenode.name.dir</name>
+    <value>/usr/local/hadoop/data/namenode</value>
+  </property>
+  <property>
+    <name>dfs.datanode.data.dir</name>
+    <value>/usr/local/hadoop/data/datanode</value>
+  </property>
+</configuration>`)">📋 Copiar</button>
+                    </div>
+                    <div class="code-body"><code>&lt;configuration&gt;
+  &lt;property&gt;
+    &lt;name&gt;dfs.replication&lt;/name&gt;
+    &lt;value&gt;1&lt;/value&gt;
+  &lt;/property&gt;
+  &lt;property&gt;
+    &lt;name&gt;dfs.namenode.name.dir&lt;/name&gt;
+    &lt;value&gt;/usr/local/hadoop/data/namenode&lt;/value&gt;
+  &lt;/property&gt;
+  &lt;property&gt;
+    &lt;name&gt;dfs.datanode.data.dir&lt;/name&gt;
+    &lt;value&gt;/usr/local/hadoop/data/datanode&lt;/value&gt;
+  &lt;/property&gt;
+&lt;/configuration&gt;</code></div>
+                </div>
+
+                <div class="alert alert-warn">
+                    <span class="alert-icon">⚠️</span>
+                    <span><strong>Por que <code>dfs.replication = 1</code> aqui?</strong> Na Missão 1 você aprendeu que o padrão do HDFS é replicar cada bloco 3 vezes entre DataNodes diferentes. Como este é um cluster pseudo-distribuído (1 máquina só, 1 único DataNode), não existe "outra máquina" para guardar as cópias extras — por isso usamos fator 1 apenas neste ambiente de estudo. Em um cluster real, com vários nós, você manteria o padrão (3).</span>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-num">06</div>
+                    <div class="step-content">
                         <div class="step-title">Formatar o NameNode e iniciar os serviços</div>
-                        <div class="step-desc">Depois de configurar as variáveis de ambiente (JAVA_HOME, HADOOP_HOME) e os arquivos XML de configuração:</div>
+                        <div class="step-desc">Agora que as variáveis de ambiente e os arquivos XML de configuração estão prontos:</div>
                     </div>
                 </div>
                 
@@ -1441,7 +1533,7 @@ jps  # deve listar NameNode, DataNode, SecondaryNameNode</code></div>
 
             <div class="step">
                 <div class="step-header">
-                    <div class="step-num">06</div>
+                    <div class="step-num">07</div>
                     <div class="step-content">
                         <div class="step-title">Carregar seus arquivos da Semana 01 no HDFS</div>
                         <div class="step-desc">Use os comandos que você acabou de instalar para subir os arquivos que já existem no seu sistema local para dentro do HDFS:</div>

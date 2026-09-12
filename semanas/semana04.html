@@ -1179,7 +1179,7 @@
         <div class="xp-hud">
             <div class="xp-label">XP</div>
             <div class="xp-bar-wrap"><div class="xp-bar-fill" id="xpBarFill"></div></div>
-            <div class="xp-points" id="xpPoints">0 / 500 XP</div>
+            <div class="xp-points" id="xpPoints">0 / 650 XP</div>
         </div>
     </div>
 </header>
@@ -1199,8 +1199,8 @@
     <h1>Linux<br><span>Aprofundado</span></h1>
     <p class="hero-desc">Última semana do mês de nivelamento: processos, memória, permissões e seu primeiro shell script — a base que sustenta tudo que vem a partir da Semana 05.</p>
     <div class="hero-stats">
-        <div class="hero-stat"><div class="hero-stat-val">3</div><div class="hero-stat-label">Missões</div></div>
-        <div class="hero-stat"><div class="hero-stat-val">500</div><div class="hero-stat-label">XP Total</div></div>
+        <div class="hero-stat"><div class="hero-stat-val">4</div><div class="hero-stat-label">Missões</div></div>
+        <div class="hero-stat"><div class="hero-stat-val">650</div><div class="hero-stat-label">XP Total</div></div>
         <div class="hero-stat"><div class="hero-stat-val">~60min</div><div class="hero-stat-label">Duração</div></div>
         <div class="hero-stat"><div class="hero-stat-val">Ubuntu 22.04</div><div class="hero-stat-label">Ambiente</div></div>
     </div>
@@ -1223,7 +1223,7 @@
 
 <div class="progress-overview">
     <div class="mission-map" id="missionMap">
-        <div class="mission-dot active" onclick="scrollToMission(0)" title="Missão 1: Processos e Memória">M1</div><div class="mission-line" id="line0"></div><div class="mission-dot locked" onclick="scrollToMission(1)" title="Missão 2: Permissões e Scripts">M2</div><div class="mission-line" id="line1"></div><div class="mission-dot locked" onclick="scrollToMission(2)" title="Missão 3: Prática">M3</div>
+        <div class="mission-dot active" onclick="scrollToMission(0)" title="Missão 1: Processos e Memória">M1</div><div class="mission-line" id="line0"></div><div class="mission-dot locked" onclick="scrollToMission(1)" title="Missão 2: Permissões e Scripts">M2</div><div class="mission-line" id="line1"></div><div class="mission-dot locked" onclick="scrollToMission(2)" title="Missão 3: Prática">M3</div><div class="mission-line" id="line2"></div><div class="mission-dot locked" onclick="scrollToMission(3)" title="Missão 4: Segurança do Cluster">M4</div>
     </div>
 </div>
 
@@ -1577,12 +1577,120 @@ ls -l verificar.sh</code></div>
         </div>
     </div>
 
+    <!-- ════════════════════════════════════════════════ -->
+    <!-- MISSÃO 4 — Segurança em Clusters de Big Data -->
+    <!-- ════════════════════════════════════════════════ -->
+    <div class="mission-card" id="mission3">
+        <div class="mission-header" onclick="toggleMission(3)">
+            <div class="mission-num">M4</div>
+            <div class="mission-meta">
+                <div class="mission-title">🔐 Segurança em Clusters de Big Data</div>
+                <div class="mission-tags">
+                    <span class="tag tag-xp">⚡ +150 XP</span>
+                    <span class="tag tag-time">⏱ ~15 min</span>
+                    <span class="tag tag-type">Conceitual · Nivelamento</span>
+                    <span class="tag tag-ementa">📋 Ementa: Desempenho e segurança de sistemas operacionais para Big Data</span>
+                </div>
+            </div>
+            <div class="mission-status" id="status3">🔒</div>
+            <div class="mission-toggle">▾</div>
+        </div>
+        <div class="mission-body">
+            <div class="mission-intro">Você já sabe fazer o Hadoop <em>funcionar</em>. Falta a última peça do nivelamento: fazer isso de forma <strong>segura</strong> — porque, por padrão, o Hadoop confia em qualquer um que conseguir falar com ele pela rede.</div>
+
+            <div class="concept-box">
+                <div class="concept-box-title">🔐 As 3 Camadas de Segurança de um Cluster</div>
+                <div class="concept-box-body"><strong>Autenticação com Kerberos</strong> — por padrão, o Hadoop roda em modo <code>simple</code>: ele confia na identidade que o cliente <em>diz</em> ter, sem provar nada (parecido com chegar numa portaria e falar seu nome, sem crachá). O <strong>Kerberos</strong> resolve isso: um servidor central (KDC — Key Distribution Center) emite "tickets" criptografados e com prazo de validade, que provam a identidade de cada usuário/serviço antes de qualquer acesso ao NameNode ou DataNode.<br><br><strong>Firewall entre nós</strong> — lembra das portas da Semana 02 (9870 do NameNode, 9000 do HDFS, 8088 do YARN)? Num cluster de produção, essas portas devem ficar abertas <em>só</em> entre as máquinas do próprio cluster (a mesma LAN da Semana 02), e bloqueadas para qualquer acesso vindo de fora.<br><br><strong>Criptografia em repouso e em trânsito</strong> — "em repouso" protege os blocos gravados no disco de cada DataNode (HDFS Transparent Encryption), para o caso de alguém roubar o HD fisicamente. "Em trânsito" protege os dados enquanto viajam entre NameNode e DataNode pela rede (TLS/SSL), para o caso de alguém estar "escutando" o tráfego da LAN.</div>
+            </div>
+
+            <!-- ═══ SIMULADOR KERBEROS ═══ -->
+            <style>
+                .krb-sim { border: 1px solid var(--border); border-radius: 14px; background: var(--panel); padding: 20px; margin: 20px 0; }
+                .krb-sim-title { font-family: var(--font-display); font-weight: 700; color: white; font-size: 1.05em; margin-bottom: 4px; display:flex; align-items:center; gap:8px; }
+                .krb-sim-sub { color: var(--text-dim); font-size: 0.85em; margin-bottom: 16px; }
+                .krb-sim-toggle { display:flex; border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:18px; }
+                .krb-sim-toggle-btn { flex:1; padding:10px; background:transparent; border:none; color:var(--text-dim); font-family:var(--font-mono); font-size:0.8em; font-weight:700; cursor:pointer; }
+                .krb-sim-toggle-btn.active[data-m="off"] { background: rgba(255,60,60,0.15); color:#ff8080; }
+                .krb-sim-toggle-btn.active[data-m="on"] { background: rgba(0,255,157,0.15); color: var(--accent2); }
+                .krb-sim-cluster { display:flex; align-items:center; justify-content:center; gap:22px; flex-wrap:wrap; margin-bottom:16px; }
+                .krb-sim-node { text-align:center; }
+                .krb-sim-node-icon { width:56px; height:56px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.6em; margin:0 auto 6px; border:1px solid var(--border); background: rgba(255,255,255,0.03); }
+                .krb-sim-node.legit .krb-sim-node-icon { border-color: rgba(0,255,157,0.35); background: rgba(0,255,157,0.08); }
+                .krb-sim-node.attacker .krb-sim-node-icon { border-color: rgba(255,60,60,0.4); background: rgba(255,60,60,0.08); }
+                .krb-sim-node-label { font-family:var(--font-mono); font-size:0.68em; color:var(--text-dim); max-width:90px; }
+                .krb-sim-btn { display:block; margin:0 auto 16px; background: var(--accent3); color:#1a0800; border:none; padding:9px 18px; border-radius:8px; font-weight:700; font-size:0.82em; cursor:pointer; font-family:var(--font-body); }
+                .krb-sim-btn:hover { filter:brightness(1.15); }
+                .krb-sim-result { padding:12px 14px; border-radius:8px; font-size:0.85em; text-align:center; min-height:20px; }
+                .krb-sim-result.breach { background: rgba(255,60,60,0.12); border:1px solid rgba(255,60,60,0.4); color:#ff9a9a; }
+                .krb-sim-result.blocked { background: rgba(0,255,157,0.1); border:1px solid rgba(0,255,157,0.35); color: var(--accent2); }
+                .krb-sim-hint { margin-top:14px; padding:10px 12px; background: rgba(255,214,10,0.06); border:1px solid rgba(255,214,10,0.25); border-radius:8px; font-size:0.82em; color: var(--text); }
+            </style>
+            <div class="krb-sim">
+                <div class="krb-sim-title">🧪 Simulador — Cluster Com e Sem Kerberos</div>
+                <div class="krb-sim-sub">Um atacante, sem nenhuma credencial válida, tenta se conectar ao NameNode se passando por um DataNode legítimo. O resultado muda completamente dependendo do modo de autenticação.</div>
+
+                <div class="krb-sim-toggle">
+                    <button class="krb-sim-toggle-btn active" data-m="off" onclick="krbSimSetMode('off')">🔓 Simple (padrão, sem Kerberos)</button>
+                    <button class="krb-sim-toggle-btn" data-m="on" onclick="krbSimSetMode('on')">🔐 Kerberos Ativado</button>
+                </div>
+
+                <div class="krb-sim-cluster">
+                    <div class="krb-sim-node legit"><div class="krb-sim-node-icon">🗂️</div><div class="krb-sim-node-label">NameNode</div></div>
+                    <div class="krb-sim-node legit"><div class="krb-sim-node-icon">🖥️</div><div class="krb-sim-node-label">DataNode legítimo<br>(com credencial)</div></div>
+                    <div class="krb-sim-node attacker"><div class="krb-sim-node-icon">🕵️</div><div class="krb-sim-node-label">Atacante<br>(sem credencial)</div></div>
+                </div>
+
+                <button class="krb-sim-btn" onclick="krbSimAttack()">🚨 Atacante tenta se conectar como DataNode</button>
+
+                <div class="krb-sim-result" id="krbSimResult"></div>
+                <div class="krb-sim-hint" id="krbSimHint">💡 Teste primeiro em modo Simple (padrão do Hadoop se você não configurar nada), depois ative o Kerberos e tente de novo.</div>
+            </div>
+            <!-- ═══ FIM SIMULADOR KERBEROS ═══ -->
+
+            <div class="checkpoint">
+                <div class="checkpoint-title">🏁 Checkpoint M4</div>
+                <ul class="checkpoint-items">
+                    <li class="checkpoint-item"><input type="checkbox" id="c3a"><label for="c3a">Sei o que o Kerberos resolve que o modo "simple" não resolve</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c3b"><label for="c3b">Entendo por que as portas do cluster devem ficar fechadas para fora da LAN</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c3c"><label for="c3c">Diferencio criptografia em repouso de criptografia em trânsito</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c3d"><label for="c3d">Testei o simulador nos dois modos e vi o ataque ser bloqueado com Kerberos</label></li>
+                </ul>
+            </div>
+            <button class="complete-btn" id="btn3" onclick="completeMission(3, 150)">✅ Missão 4 Concluída — Coletar +150 XP</button>
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        let krbMode = 'off';
+        window.krbSimSetMode = function (m) {
+            krbMode = m;
+            document.querySelectorAll('.krb-sim-toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.m === m));
+            document.getElementById('krbSimResult').textContent = '';
+            document.getElementById('krbSimResult').className = 'krb-sim-result';
+        };
+        window.krbSimAttack = function () {
+            const result = document.getElementById('krbSimResult');
+            const hint = document.getElementById('krbSimHint');
+            if (krbMode === 'off') {
+                result.className = 'krb-sim-result breach';
+                result.innerHTML = '💥 <strong>ACESSO CONCEDIDO.</strong> O NameNode aceitou a conexão só porque o atacante <em>disse</em> ser um DataNode — ninguém verificou isso. Ele agora consegue ler/escrever blocos no cluster.';
+                hint.innerHTML = '⚠️ Isso é o modo <code>hadoop.security.authentication = simple</code> — o padrão de fábrica do Hadoop. Funciona bem para estudar (como você fez na Semana 05), mas é inaceitável em produção.';
+            } else {
+                result.className = 'krb-sim-result blocked';
+                result.innerHTML = '✅ <strong>ACESSO NEGADO.</strong> O NameNode exigiu um ticket Kerberos válido, emitido pelo KDC. O atacante não tem esse ticket (e não consegue forjar um, pois é criptografado) — a conexão é recusada antes mesmo de qualquer dado ser trocado.';
+                hint.innerHTML = '🔐 Isso é o modo <code>hadoop.security.authentication = kerberos</code> — obrigatório em qualquer cluster Hadoop de produção que lide com dados sensíveis.';
+            }
+        };
+    })();
+    </script>
+
 <!-- FINAL BADGE -->
 <div class="final-badge" id="finalBadge">
     <span class="final-badge-icon">🏆</span>
     <h2>Semana 04 — Mês de Nivelamento Completo Concluída!</h2>
-    <p>Você concluiu o mês de nivelamento: Hardware (S01), Redes (S02), Virtualização/Cloud (S03) e Linux Aprofundado (S04). A partir daqui, o curso segue 100% para as ferramentas de Big Data.</p>
-    <div class="final-xp">🏅 500 XP Coletados!</div>
+    <p>Você concluiu o mês de nivelamento: Hardware (S01), Redes (S02), Virtualização/Cloud (S03), Linux Aprofundado e Segurança (S04). A partir daqui, o curso segue 100% para as ferramentas de Big Data.</p>
+    <div class="final-xp">🏅 650 XP Coletados!</div>
 </div>
 
 
@@ -1618,9 +1726,9 @@ ls -l verificar.sh</code></div>
 </div>
 
 <script>
-    const TOTAL_XP = 500;
-    const missionXP = [150, 150, 200];
-    let completed = new Array(3).fill(false);
+    const TOTAL_XP = 650;
+    const missionXP = [150, 150, 200, 150];
+    let completed = new Array(4).fill(false);
     let currentXP = 0;
 
     try {
@@ -1681,7 +1789,7 @@ ls -l verificar.sh</code></div>
         showToast('+' + xp + ' XP — Missão ' + (idx+1) + ' completa!');
 
         const nextIdx = idx + 1;
-        if (nextIdx < 3) {
+        if (nextIdx < 4) {
             setTimeout(() => {
                 const nextCard = document.getElementById('mission' + nextIdx);
                 if (nextCard) {

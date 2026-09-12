@@ -1280,17 +1280,149 @@
                 <div class="concept-box-body">Na Semana 07, você usou <strong>RDDs</strong> — coleções distribuídas "cruas", sem noção de colunas ou tipos. <strong>DataFrames</strong> são a evolução: dados organizados em linhas e colunas, com <em>schema</em> definido (como uma tabela SQL ou uma planilha).<br><br><strong>Por que DataFrames em vez de RDDs?</strong> O Spark consegue <em>otimizar automaticamente</em> consultas em DataFrames (usando o Catalyst Optimizer), algo que não é possível com RDDs, onde você programa manualmente cada transformação. Na prática: mesmo código, mais rápido.<br><br><strong>Spark SQL</strong> — permite rodar consultas <code>SELECT ... WHERE ... GROUP BY</code> normais de SQL diretamente sobre um DataFrame, mesmo ele sendo um conjunto de dados distribuído em vários nós.<br><br><strong>Schema</strong> — a definição de quais colunas existem e de que tipo (inteiro, texto, data). O Spark pode inferir automaticamente a partir de um CSV, ou você pode declarar manualmente para mais controle.</div>
             </div>
 
+            <!-- ═══ SIMULADOR CATALYST OPTIMIZER ═══ -->
+            <style>
+                .cat-sim { border: 1px solid var(--border); border-radius: 14px; background: var(--panel); padding: 20px; margin: 20px 0; }
+                .cat-sim-title { font-family: var(--font-display); font-weight: 700; color: white; font-size: 1.05em; margin-bottom: 4px; display:flex; align-items:center; gap:8px; }
+                .cat-sim-sub { color: var(--text-dim); font-size: 0.85em; margin-bottom: 16px; }
+                .cat-sim-controls { display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; margin-bottom:18px; padding:12px 14px; background: rgba(255,255,255,0.03); border-radius:10px; }
+                .cat-sim-controls select { background: rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:6px; color:white; padding:5px 8px; font-family:var(--font-mono); font-size:0.8em; }
+                .cat-sim-cols { display:flex; gap:10px; flex-wrap:wrap; }
+                .cat-sim-col-chip { font-size:0.75em; padding:4px 9px; border-radius:6px; border:1px solid var(--border); cursor:pointer; font-family:var(--font-mono); color:var(--text-dim); }
+                .cat-sim-col-chip.active { border-color: var(--accent2); color:var(--accent2); background: rgba(0,255,157,0.08); }
+                .cat-sim-btn { background: var(--accent); color:#001018; border:none; padding:8px 16px; border-radius:8px; font-weight:700; font-size:0.82em; cursor:pointer; font-family:var(--font-body); align-self:flex-start; }
+                .cat-sim-plans { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+                .cat-sim-plan-title { font-family:var(--font-mono); font-weight:700; font-size:0.8em; margin-bottom:8px; text-align:center; padding:6px; border-radius:6px; }
+                .cat-sim-plan-title.naive { background: rgba(255,80,80,0.12); color:#ff8080; }
+                .cat-sim-plan-title.opt { background: rgba(0,255,157,0.12); color:var(--accent2); }
+                .cat-sim-stage { margin-bottom:10px; }
+                .cat-sim-stage-label { font-family:var(--font-mono); font-size:0.7em; color:var(--text-dim); margin-bottom:3px; }
+                .cat-sim-stage-bar-wrap { background: rgba(255,255,255,0.03); border-radius:6px; height:26px; overflow:hidden; border:1px solid var(--border); }
+                .cat-sim-stage-bar { height:100%; display:flex; align-items:center; padding-left:8px; font-family:var(--font-mono); font-size:0.68em; font-weight:700; color:#04101c; transition: width .5s ease; white-space:nowrap; }
+                .cat-sim-summary { margin-top:16px; display:flex; gap:14px; flex-wrap:wrap; }
+                .cat-sim-summary-card { flex:1; min-width:150px; background: rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; padding:12px; text-align:center; }
+                .cat-sim-summary-val { font-family:var(--font-mono); font-weight:800; font-size:1.2em; color:white; }
+                .cat-sim-summary-label { font-size:0.72em; color:var(--text-dim); margin-top:2px; }
+                .cat-sim-hint { margin-top:14px; padding:10px 12px; background: rgba(255,214,10,0.06); border:1px solid rgba(255,214,10,0.25); border-radius:8px; font-size:0.82em; color: var(--text); }
+            </style>
+            <div class="cat-sim">
+                <div class="cat-sim-title">🧪 Simulador — Catalyst Optimizer em Ação</div>
+                <div class="cat-sim-sub">Mesma consulta sobre o <code>vendas.csv</code> (8 linhas, 4 colunas), rodada de dois jeitos: um plano "ingênuo" (como um RDD manual faria) e o plano que o Catalyst realmente gera para um DataFrame.</div>
+
+                <div class="cat-sim-controls">
+                    <div>
+                        <div style="font-size:0.78em; color:var(--text-dim); margin-bottom:6px;">WHERE categoria =</div>
+                        <select id="catSimFilter" onchange="catSimRun()">
+                            <option value="Eletrônicos">Eletrônicos</option>
+                            <option value="Móveis">Móveis</option>
+                            <option value="Periféricos">Periféricos</option>
+                        </select>
+                    </div>
+                    <div>
+                        <div style="font-size:0.78em; color:var(--text-dim); margin-bottom:6px;">SELECT colunas:</div>
+                        <div class="cat-sim-cols" id="catSimCols"></div>
+                    </div>
+                </div>
+
+                <div class="cat-sim-plans">
+                    <div>
+                        <div class="cat-sim-plan-title naive">🐢 Plano Ingênuo (estilo RDD)</div>
+                        <div id="catSimNaive"></div>
+                    </div>
+                    <div>
+                        <div class="cat-sim-plan-title opt">⚡ Plano do Catalyst (DataFrame)</div>
+                        <div id="catSimOpt"></div>
+                    </div>
+                </div>
+
+                <div class="cat-sim-summary" id="catSimSummary"></div>
+                <div class="cat-sim-hint" id="catSimHint"></div>
+            </div>
+            <!-- ═══ FIM SIMULADOR CATALYST ═══ -->
+
             <div class="checkpoint">
                 <div class="checkpoint-title">🏁 Checkpoint M1</div>
                 <ul class="checkpoint-items">
                     <li class="checkpoint-item"><input type="checkbox" id="c0a"><label for="c0a">Entendo a diferença entre RDD e DataFrame</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0b"><label for="c0b">Sei por que DataFrames são mais otimizados</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0c"><label for="c0c">Sei o que é um schema</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c0d"><label for="c0d">Testei o simulador do Catalyst com pelo menos 2 filtros diferentes</label></li>
                 </ul>
             </div>
             <button class="complete-btn" id="btn0" onclick="completeMission(0, 150)">✅ Missão 1 Concluída — Coletar +150 XP</button>
         </div>
     </div>
+
+    <script>
+    (function () {
+        const dataset = [
+            { produto: 'Notebook', categoria: 'Eletrônicos', dia: '15/jan', valor_total: 7000.00 },
+            { produto: 'Cadeira Gamer', categoria: 'Móveis', dia: '15/jan', valor_total: 4252.50 },
+            { produto: 'Monitor 4K', categoria: 'Eletrônicos', dia: '16/jan', valor_total: 3600.00 },
+            { produto: 'Teclado Mecânico', categoria: 'Periféricos', dia: '16/jan', valor_total: 3200.00 },
+            { produto: 'Smartphone', categoria: 'Eletrônicos', dia: '17/jan', valor_total: 22400.00 },
+            { produto: 'Mesa de Escritório', categoria: 'Móveis', dia: '17/jan', valor_total: 1300.00 },
+            { produto: 'Headset', categoria: 'Periféricos', dia: '18/jan', valor_total: 2700.00 },
+            { produto: 'Webcam HD', categoria: 'Periféricos', dia: '18/jan', valor_total: 1540.00 },
+        ];
+        const ALL_COLS = ['produto', 'categoria', 'dia', 'valor_total'];
+        let selectedCols = new Set(['produto', 'valor_total']);
+
+        function renderColChips() {
+            document.getElementById('catSimCols').innerHTML = ALL_COLS.map(c => `
+                <span class="cat-sim-col-chip ${selectedCols.has(c) ? 'active' : ''}" onclick="catSimToggleCol('${c}')">${c}</span>`).join('');
+        }
+
+        window.catSimToggleCol = function (c) {
+            if (selectedCols.has(c)) { if (selectedCols.size > 1) selectedCols.delete(c); }
+            else selectedCols.add(c);
+            renderColChips();
+            catSimRun();
+        };
+
+        function stageHtml(label, rows, cols, color) {
+            const cells = rows * cols;
+            const pct = Math.min(100, (cells / 32) * 100);
+            return `<div class="cat-sim-stage">
+                <div class="cat-sim-stage-label">${label}</div>
+                <div class="cat-sim-stage-bar-wrap"><div class="cat-sim-stage-bar" style="width:${Math.max(pct, 12)}%; background:${color};">${rows}L × ${cols}C = ${cells} células</div></div>
+            </div>`;
+        }
+
+        window.catSimRun = function () {
+            renderColChips();
+            const filterVal = document.getElementById('catSimFilter').value;
+            const matchingRows = dataset.filter(r => r.categoria === filterVal).length;
+            const nSelectedCols = selectedCols.size;
+            const neededColsOpt = new Set([...selectedCols, 'categoria']).size; // scan já inclui a coluna do filtro
+
+            // plano ingênuo: scan tudo, filtra depois (ainda com todas colunas), projeta por último
+            document.getElementById('catSimNaive').innerHTML =
+                stageHtml('1. Scan (lê tudo)', 8, 4, '#ff8080') +
+                stageHtml('2. Filter (depois de carregado)', matchingRows, 4, '#ff8080') +
+                stageHtml('3. Project (só agora descarta colunas)', matchingRows, nSelectedCols, '#ff8080');
+            const naiveTotal = 8 * 4 + matchingRows * 4 + matchingRows * nSelectedCols;
+
+            // plano catalyst: predicate pushdown + column pruning já no scan
+            document.getElementById('catSimOpt').innerHTML =
+                stageHtml('1. Scan (pushdown + pruning)', matchingRows, neededColsOpt, '#00ff9d') +
+                stageHtml('2. Filter (já aplicado no scan)', matchingRows, neededColsOpt, '#00ff9d') +
+                stageHtml('3. Project (final)', matchingRows, nSelectedCols, '#00ff9d');
+            const optTotal = matchingRows * neededColsOpt * 2 + matchingRows * nSelectedCols;
+
+            const reduction = (((naiveTotal - optTotal) / naiveTotal) * 100).toFixed(0);
+            document.getElementById('catSimSummary').innerHTML = `
+                <div class="cat-sim-summary-card"><div class="cat-sim-summary-val" style="color:#ff8080;">${naiveTotal}</div><div class="cat-sim-summary-label">Células processadas — Ingênuo</div></div>
+                <div class="cat-sim-summary-card"><div class="cat-sim-summary-val" style="color:var(--accent2);">${optTotal}</div><div class="cat-sim-summary-label">Células processadas — Catalyst</div></div>
+                <div class="cat-sim-summary-card"><div class="cat-sim-summary-val" style="color:white;">${reduction}%</div><div class="cat-sim-summary-label">Menos dados processados</div></div>`;
+
+            document.getElementById('catSimHint').innerHTML = `💡 Com <strong>WHERE categoria = "${filterVal}"</strong> (${matchingRows} de 8 linhas batem) e <strong>${nSelectedCols} coluna(s)</strong> selecionada(s): o Catalyst aplica o filtro <em>durante</em> a leitura (predicate pushdown) e já descarta colunas não usadas (column pruning), em vez de carregar tudo e só filtrar/projetar no final como um RDD manual faria. Resultado: <strong>${reduction}% menos dados</strong> passando pelo pipeline.`;
+        };
+
+        renderColChips();
+        catSimRun();
+    })();
+    </script>
 
     <!-- ════════════════════════════════════════════════ -->
     <!-- MISSÃO 2 — Prática — DataFrames e Spark SQL -->

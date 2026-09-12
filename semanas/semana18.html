@@ -1280,17 +1280,159 @@
                 <div class="concept-box-body">Treinar um modelo de ML com uma planilha de 1.000 linhas no seu notebook é trivial. Treinar com 1 bilhão de linhas exige a mesma infraestrutura distribuída que você construiu o semestre inteiro.<br><br><strong>Spark MLlib</strong> — a biblioteca de Machine Learning distribuída do Spark, capaz de treinar modelos usando <em>todos os nós do cluster ao mesmo tempo</em>, em vez de um script Python rodando em uma máquina só.<br><br><strong>Por que Spark e não scikit-learn puro</strong> — bibliotecas tradicionais de ML (scikit-learn) esperam que os dados caibam na memória de uma única máquina. Quando os dados excedem isso, você precisa de processamento distribuído — exatamente o problema que Spark resolve desde a Semana 07.<br><br><strong>Pipeline de ML</strong> — no MLlib, você monta um pipeline com etapas (preparar dados → treinar → avaliar), reaproveitando a mesma lógica de DataFrames que você já domina desde a Semana 08.</div>
             </div>
 
+            <!-- ═══ SIMULADOR GRADIENTE DESCENDENTE ═══ -->
+            <style>
+                .gd-sim { border: 1px solid var(--border); border-radius: 14px; background: var(--panel); padding: 20px; margin: 20px 0; }
+                .gd-sim-title { font-family: var(--font-display); font-weight: 700; color: white; font-size: 1.05em; margin-bottom: 4px; display:flex; align-items:center; gap:8px; }
+                .gd-sim-sub { color: var(--text-dim); font-size: 0.85em; margin-bottom: 16px; }
+                .gd-sim-controls { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+                .gd-sim-btn { background: var(--accent); color:#001018; border:none; padding:8px 14px; border-radius:8px; font-weight:700; font-size:0.8em; cursor:pointer; font-family:var(--font-body); }
+                .gd-sim-btn:hover:not(:disabled) { filter:brightness(1.15); }
+                .gd-sim-btn:disabled { opacity:0.4; cursor:not-allowed; }
+                .gd-sim-btn.secondary { background: transparent; border:1px solid var(--border); color:var(--text); }
+                .gd-sim-svg-wrap { background: rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:10px; padding:10px; }
+                .gd-sim-svg-wrap svg { width:100%; height:auto; display:block; }
+                .gd-sim-line { stroke: var(--accent2); stroke-width:2.5; transition: x1 .35s ease, y1 .35s ease, x2 .35s ease, y2 .35s ease; }
+                .gd-sim-point { fill: var(--accent); }
+                .gd-sim-stats { display:flex; gap:14px; flex-wrap:wrap; margin-top:14px; }
+                .gd-sim-stat-card { flex:1; min-width:130px; background: rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; padding:10px; text-align:center; }
+                .gd-sim-stat-val { font-family:var(--font-mono); font-weight:800; font-size:1.15em; color:white; }
+                .gd-sim-stat-label { font-size:0.7em; color:var(--text-dim); margin-top:2px; }
+                .gd-sim-hint { margin-top:14px; padding:10px 12px; background: rgba(255,214,10,0.06); border:1px solid rgba(255,214,10,0.25); border-radius:8px; font-size:0.82em; color: var(--text); }
+            </style>
+            <div class="gd-sim">
+                <div class="gd-sim-title">🧪 Simulador — Gradiente Descendente Ajustando uma Reta</div>
+                <div class="gd-sim-sub">Um modelo de regressão linear (y = m·x + b) começa "no chute" e vai se ajustando aos pontos, um passo de treino de cada vez — é isso que o MLlib faz internamente, só que em paralelo, em milhões de pontos.</div>
+
+                <div class="gd-sim-controls">
+                    <button class="gd-sim-btn" onclick="gdSimStep()">▶️ Treinar 1 Passo</button>
+                    <button class="gd-sim-btn" onclick="gdSimAuto()" id="gdSimAutoBtn">⏩ Treinar até Convergir</button>
+                    <button class="gd-sim-btn secondary" onclick="gdSimReset()">🔄 Resetar Modelo</button>
+                </div>
+
+                <div class="gd-sim-svg-wrap">
+                    <svg viewBox="0 0 340 200" id="gdSimSvg">
+                        <line class="gd-sim-line" id="gdSimLine" x1="30" y1="190" x2="300" y2="190"></line>
+                    </svg>
+                </div>
+
+                <div class="gd-sim-stats">
+                    <div class="gd-sim-stat-card"><div class="gd-sim-stat-val" id="gdSimIter">0</div><div class="gd-sim-stat-label">Iterações de treino</div></div>
+                    <div class="gd-sim-stat-card"><div class="gd-sim-stat-val" id="gdSimError">—</div><div class="gd-sim-stat-label">Erro (MSE)</div></div>
+                    <div class="gd-sim-stat-card"><div class="gd-sim-stat-val" id="gdSimEq">y = 0.00x + 0.00</div><div class="gd-sim-stat-label">Equação atual do modelo</div></div>
+                </div>
+
+                <div class="gd-sim-hint" id="gdSimHint">💡 Clique em "Treinar 1 Passo" algumas vezes e observe a reta se aproximando dos pontos, e o erro (MSE) caindo a cada passo.</div>
+            </div>
+            <!-- ═══ FIM SIMULADOR GRADIENTE DESCENDENTE ═══ -->
+
             <div class="checkpoint">
                 <div class="checkpoint-title">🏁 Checkpoint M1</div>
                 <ul class="checkpoint-items">
                     <li class="checkpoint-item"><input type="checkbox" id="c0a"><label for="c0a">Entendo por que ML em Big Data precisa ser distribuído</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0b"><label for="c0b">Sei o que é o Spark MLlib</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0c"><label for="c0c">Entendo o conceito de pipeline de ML</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c0d"><label for="c0d">Rodei o gradiente descendente até o erro parar de cair</label></li>
                 </ul>
             </div>
             <button class="complete-btn" id="btn0" onclick="completeMission(0, 150)">✅ Missão 1 Concluída — Coletar +150 XP</button>
         </div>
     </div>
+
+    <script>
+    (function () {
+        const points = [[1, 2.2], [2, 3.8], [3, 5.1], [4, 6.9], [5, 7.8], [6, 9.5], [7, 10.9], [8, 12.4]];
+        const LR = 0.012;
+        let m = 0, b = 0, iter = 0;
+        let autoTimer = null;
+
+        function xToPx(x) { return 30 + x * 33; }
+        function yToPx(y) { return 190 - y * 13; }
+
+        function mse() {
+            return points.reduce((a, [x, y]) => a + (m * x + b - y) ** 2, 0) / points.length;
+        }
+
+        function renderPoints() {
+            const svg = document.getElementById('gdSimSvg');
+            document.querySelectorAll('.gd-sim-point').forEach(el => el.remove());
+            points.forEach(([x, y]) => {
+                const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                c.setAttribute('cx', xToPx(x));
+                c.setAttribute('cy', yToPx(y));
+                c.setAttribute('r', 4);
+                c.setAttribute('class', 'gd-sim-point');
+                svg.appendChild(c);
+            });
+        }
+
+        function renderLine() {
+            const line = document.getElementById('gdSimLine');
+            line.setAttribute('x1', xToPx(0));
+            line.setAttribute('y1', yToPx(b));
+            line.setAttribute('x2', xToPx(9));
+            line.setAttribute('y2', yToPx(m * 9 + b));
+        }
+
+        function renderStats() {
+            document.getElementById('gdSimIter').textContent = iter;
+            document.getElementById('gdSimError').textContent = mse().toFixed(2);
+            document.getElementById('gdSimEq').textContent = `y = ${m.toFixed(2)}x + ${b.toFixed(2)}`;
+        }
+
+        function doStep() {
+            const n = points.length;
+            let dm = 0, db = 0;
+            points.forEach(([x, y]) => {
+                const err = (m * x + b) - y;
+                dm += (2 / n) * err * x;
+                db += (2 / n) * err;
+            });
+            m -= LR * dm;
+            b -= LR * db;
+            iter++;
+        }
+
+        window.gdSimStep = function () {
+            doStep();
+            renderLine();
+            renderStats();
+            document.getElementById('gdSimHint').innerHTML = `📉 Passo ${iter}: o gradiente descendente ajustou m e b na direção que <strong>reduz o erro</strong>. MSE atual: ${mse().toFixed(2)}.`;
+        };
+
+        window.gdSimAuto = function () {
+            const btn = document.getElementById('gdSimAutoBtn');
+            if (autoTimer) { clearInterval(autoTimer); autoTimer = null; btn.textContent = '⏩ Treinar até Convergir'; return; }
+            btn.textContent = '⏸️ Parar';
+            let lastMse = mse();
+            autoTimer = setInterval(() => {
+                doStep();
+                renderLine();
+                renderStats();
+                const currentMse = mse();
+                if (iter > 200 || Math.abs(lastMse - currentMse) < 0.0005) {
+                    clearInterval(autoTimer);
+                    autoTimer = null;
+                    btn.textContent = '⏩ Treinar até Convergir';
+                    document.getElementById('gdSimHint').innerHTML = `✅ <strong>Convergiu</strong> após ${iter} iterações — o erro parou de cair de forma significativa (MSE ≈ ${currentMse.toFixed(2)}). É esse ponto de "parar de melhorar" que os algoritmos de ML usam como critério de parada.`;
+                }
+                lastMse = currentMse;
+            }, 90);
+        };
+
+        window.gdSimReset = function () {
+            if (autoTimer) { clearInterval(autoTimer); autoTimer = null; document.getElementById('gdSimAutoBtn').textContent = '⏩ Treinar até Convergir'; }
+            m = 0; b = 0; iter = 0;
+            renderLine();
+            renderStats();
+            document.getElementById('gdSimHint').innerHTML = `💡 Modelo resetado (m=0, b=0). Clique em "Treinar 1 Passo" algumas vezes e observe a reta se aproximando dos pontos.`;
+        };
+
+        renderPoints();
+        renderLine();
+        renderStats();
+    })();
+    </script>
 
     <!-- ════════════════════════════════════════════════ -->
     <!-- MISSÃO 2 — Prática — Treinando um Modelo com Spark MLlib -->

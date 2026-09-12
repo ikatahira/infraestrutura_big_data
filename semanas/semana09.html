@@ -1318,6 +1318,58 @@
                 <div class="concept-box-body"><strong>Documento</strong> — guarda dados como documentos JSON/BSON flexíveis, cada um podendo ter campos diferentes. Ex: MongoDB (Semana 10).<br><br><strong>Chave-valor</strong> — o mais simples: cada dado é acessado por uma chave única, como um dicionário gigante. Extremamente rápido. Ex: Redis, DynamoDB.<br><br><strong>Colunar (column-family)</strong> — otimizado para ler/escrever colunas inteiras rapidamente, ótimo para grandes volumes com escrita constante. Ex: Cassandra (comparado na Semana 10), HBase.<br><br><strong>Grafo</strong> — modela dados como nós e relacionamentos (arestas), ideal para redes sociais e sistemas de recomendação. Ex: Neo4j.<br><br>💡 <strong>Não existe "o melhor"</strong> — a escolha depende do padrão de acesso aos dados. É comum uma empresa usar vários tipos ao mesmo tempo, cada um para o problema certo.</div>
             </div>
 
+            <!-- ═══ SIMULADOR CHAVE-VALOR ═══ -->
+            <style>
+                .kv-sim { border: 1px solid var(--border); border-radius: 14px; background: var(--panel); padding: 20px; margin: 20px 0; }
+                .kv-sim-title { font-family: var(--font-display); font-weight: 700; color: white; font-size: 1.05em; margin-bottom: 4px; display:flex; align-items:center; gap:8px; }
+                .kv-sim-sub { color: var(--text-dim); font-size: 0.85em; margin-bottom: 16px; }
+                .kv-sim-controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:18px; }
+                .kv-sim-controls select { flex:1; min-width:180px; background: rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:8px; color:white; padding:8px 10px; font-family:var(--font-mono); font-size:0.82em; }
+                .kv-sim-btn { background: var(--accent); color:#001018; border:none; padding:8px 16px; border-radius:8px; font-weight:700; font-size:0.82em; cursor:pointer; font-family:var(--font-body); }
+                .kv-sim-btn:hover:not(:disabled) { filter:brightness(1.15); }
+                .kv-sim-btn:disabled { opacity:0.4; cursor:not-allowed; }
+                .kv-sim-panels { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+                .kv-sim-panel-title { font-family:var(--font-mono); font-weight:700; font-size:0.78em; margin-bottom:8px; text-align:center; padding:6px; border-radius:6px; }
+                .kv-sim-panel-title.hash { background: rgba(0,255,157,0.12); color:var(--accent2); }
+                .kv-sim-panel-title.scan { background: rgba(255,80,80,0.12); color:#ff8080; }
+                .kv-sim-row { display:flex; justify-content:space-between; padding:6px 10px; border-radius:6px; margin-bottom:4px; font-family:var(--font-mono); font-size:0.75em; background: rgba(255,255,255,0.03); border:1px solid var(--border); transition: all .2s; }
+                .kv-sim-row.checking { background: rgba(255,214,10,0.15); border-color: rgba(255,214,10,0.4); }
+                .kv-sim-row.found { background: rgba(0,255,157,0.15); border-color: var(--accent2); }
+                .kv-sim-steps { text-align:center; margin-top:8px; font-family:var(--font-mono); font-size:0.78em; color:var(--text-dim); }
+                .kv-sim-steps b { color:white; }
+                .kv-sim-summary { display:flex; gap:14px; flex-wrap:wrap; margin-top:16px; }
+                .kv-sim-summary-card { flex:1; min-width:150px; background: rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; padding:12px; text-align:center; }
+                .kv-sim-summary-val { font-family:var(--font-mono); font-weight:800; font-size:1.3em; color:white; }
+                .kv-sim-summary-label { font-size:0.75em; color:var(--text-dim); margin-top:2px; }
+                .kv-sim-hint { margin-top:14px; padding:10px 12px; background: rgba(255,214,10,0.06); border:1px solid rgba(255,214,10,0.25); border-radius:8px; font-size:0.82em; color: var(--text); }
+            </style>
+            <div class="kv-sim">
+                <div class="kv-sim-title">🧪 Simulador — Banco Chave-Valor: Hash x Busca Linear</div>
+                <div class="kv-sim-sub">7 registros guardados. Escolha uma chave e busque dos dois jeitos: um banco chave-valor (hash, acesso direto) e uma busca linear item-por-item (como um CSV sem índice).</div>
+
+                <div class="kv-sim-controls">
+                    <select id="kvSimKey"></select>
+                    <button class="kv-sim-btn" id="kvSimBtn" onclick="kvSimSearch()">🔍 Buscar nos dois modos</button>
+                </div>
+
+                <div class="kv-sim-panels">
+                    <div>
+                        <div class="kv-sim-panel-title hash">⚡ Chave-Valor (hash)</div>
+                        <div id="kvSimHashPanel"></div>
+                        <div class="kv-sim-steps" id="kvSimHashSteps"></div>
+                    </div>
+                    <div>
+                        <div class="kv-sim-panel-title scan">🐢 Busca Linear (sem índice)</div>
+                        <div id="kvSimScanPanel"></div>
+                        <div class="kv-sim-steps" id="kvSimScanSteps"></div>
+                    </div>
+                </div>
+
+                <div class="kv-sim-summary" id="kvSimSummary"></div>
+                <div class="kv-sim-hint" id="kvSimHint">💡 Escolha uma chave (repare que algumas estão no fim da lista) e clique em buscar — quanto mais perto do fim, maior a diferença entre os dois métodos.</div>
+            </div>
+            <!-- ═══ FIM SIMULADOR CHAVE-VALOR ═══ -->
+
             <div class="step">
                 <div class="step-header">
                     <div class="step-num">01</div>
@@ -1368,11 +1420,82 @@
                     <li class="checkpoint-item"><input type="checkbox" id="c1a"><label for="c1a">Sei diferenciar os 4 tipos de NoSQL</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c1b"><label for="c1b">Modelei um dado relacional como documento JSON</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c1c"><label for="c1c">Entendo quando um campo aninhado faz sentido</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c1d"><label for="c1d">Testei o simulador chave-valor com uma chave no início e outra no fim da lista</label></li>
                 </ul>
             </div>
             <button class="complete-btn" id="btn1" onclick="completeMission(1, 200)">✅ Missão 2 Concluída — Coletar +200 XP</button>
         </div>
     </div>
+
+    <script>
+    (function () {
+        const store = [
+            { key: 'usuario_123', value: 'João Silva' },
+            { key: 'usuario_456', value: 'Maria Costa' },
+            { key: 'usuario_789', value: 'Pedro Alves' },
+            { key: 'usuario_234', value: 'Ana Souza' },
+            { key: 'usuario_567', value: 'Carlos Lima' },
+            { key: 'usuario_890', value: 'Beatriz Nunes' },
+            { key: 'usuario_345', value: 'Rafael Dias' },
+        ];
+
+        function renderSelect() {
+            document.getElementById('kvSimKey').innerHTML = store.map(s => `<option value="${s.key}">${s.key}</option>`).join('');
+            document.getElementById('kvSimKey').value = store[store.length - 1].key; // pré-seleciona a última (pior caso pra scan)
+        }
+
+        function renderPanels() {
+            document.getElementById('kvSimHashPanel').innerHTML = store.map(s => `<div class="kv-sim-row" id="kvHashRow-${s.key}"><span>${s.key}</span><span>${s.value}</span></div>`).join('');
+            document.getElementById('kvSimScanPanel').innerHTML = store.map(s => `<div class="kv-sim-row" id="kvScanRow-${s.key}"><span>${s.key}</span><span>${s.value}</span></div>`).join('');
+            document.getElementById('kvSimHashSteps').textContent = '';
+            document.getElementById('kvSimScanSteps').textContent = '';
+            document.getElementById('kvSimSummary').innerHTML = '';
+        }
+
+        window.kvSimSearch = function () {
+            const key = document.getElementById('kvSimKey').value;
+            const btn = document.getElementById('kvSimBtn');
+            btn.disabled = true;
+            renderPanels();
+
+            // hash: acesso direto, 1 passo
+            setTimeout(() => {
+                const row = document.getElementById('kvHashRow-' + key);
+                row.classList.add('found');
+                document.getElementById('kvSimHashSteps').innerHTML = `Comparações: <b>1</b> (acesso direto pelo hash da chave)`;
+            }, 200);
+
+            // scan: percorre sequencialmente até achar
+            const idx = store.findIndex(s => s.key === key);
+            let i = 0;
+            function stepScan() {
+                if (i > 0) {
+                    const prevRow = document.getElementById('kvScanRow-' + store[i - 1].key);
+                    if (prevRow) prevRow.classList.remove('checking');
+                }
+                if (i > idx) {
+                    document.getElementById('kvSimScanSteps').innerHTML = `Comparações: <b>${idx + 1}</b> (verificou item por item até achar)`;
+                    const summary = document.getElementById('kvSimSummary');
+                    summary.innerHTML = `
+                        <div class="kv-sim-summary-card"><div class="kv-sim-summary-val" style="color:var(--accent2);">1</div><div class="kv-sim-summary-label">Passos — Chave-Valor (hash)</div></div>
+                        <div class="kv-sim-summary-card"><div class="kv-sim-summary-val" style="color:#ff8080;">${idx + 1}</div><div class="kv-sim-summary-label">Passos — Busca Linear</div></div>`;
+                    document.getElementById('kvSimHint').innerHTML = `✅ Buscar <strong>${key}</strong>: o banco chave-valor achou em <strong>1 passo</strong> (foi direto pelo hash), enquanto a busca linear precisou checar <strong>${idx + 1} item(ns)</strong> um por um. Com milhões de registros, essa diferença é a diferença entre milissegundos e segundos — por isso Redis/DynamoDB são tão usados para cache e sessões de usuário.`;
+                    btn.disabled = false;
+                    return;
+                }
+                const row = document.getElementById('kvScanRow-' + store[i].key);
+                if (i === idx) row.classList.add('found');
+                else row.classList.add('checking');
+                i++;
+                setTimeout(stepScan, 220);
+            }
+            stepScan();
+        };
+
+        renderSelect();
+        renderPanels();
+    })();
+    </script>
 
 <!-- FINAL BADGE -->
 <div class="final-badge" id="finalBadge">

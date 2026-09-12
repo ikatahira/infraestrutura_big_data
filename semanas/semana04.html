@@ -1280,17 +1280,126 @@
                 <div class="concept-box-body">Toda ferramenta de Big Data que você vai instalar (Hadoop, Spark) roda como <em>processos</em> Linux consumindo RAM. Entender isso evita muita dor de cabeça de VM travando.<br><br><strong>Processo (PID)</strong> — cada programa em execução no Linux tem um número único de identificação. Você já viu isso na Semana 01 com <code>ps aux</code>. Um serviço Hadoop, por exemplo, roda como vários processos (NameNode, DataNode) simultaneamente.<br><br><strong>RAM (memória de trabalho)</strong> — onde tudo que está sendo processado agora fica temporariamente. Quando você inicia o Hadoop, ele reserva uma parte da RAM só para ele.<br><br><strong>Swap</strong> — quando a RAM enche, o Linux usa uma parte do disco como "memória de emergência". É <em>muito</em> mais lento que RAM. Se seu Hadoop/Spark começa a usar swap pesadamente, é sinal de que a VM precisa de mais RAM.<br><br><strong>htop / free -h</strong> — ferramentas de diagnóstico que você já viu de relance na Semana 01. Agora, preste atenção: RAM livre baixa + swap sendo usado = hora de fechar processos ou aumentar a RAM da VM.</div>
             </div>
 
+            <!-- ═══ SIMULADOR HTOP / RAM+SWAP ═══ -->
+            <style>
+                .htop-sim { border: 1px solid var(--border); border-radius: 14px; background: var(--panel); padding: 20px; margin: 20px 0; }
+                .htop-sim-title { font-family: var(--font-display); font-weight: 700; color: white; font-size: 1.05em; margin-bottom: 4px; display:flex; align-items:center; gap:8px; }
+                .htop-sim-sub { color: var(--text-dim); font-size: 0.85em; margin-bottom: 16px; }
+                .htop-sim-ram-row { display:flex; align-items:center; gap:12px; margin-bottom:16px; padding:10px 14px; background: rgba(255,255,255,0.03); border-radius:10px; }
+                .htop-sim-ram-row input[type=range] { flex:1; accent-color: var(--accent); }
+                .htop-sim-ram-val { font-family:var(--font-mono); color:var(--accent); font-weight:700; min-width:80px; text-align:right; }
+                .htop-sim-procs { display:grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap:8px; margin-bottom:18px; }
+                .htop-sim-proc { padding:10px 12px; border-radius:10px; border:1px solid var(--border); background: rgba(255,255,255,0.02); cursor:pointer; }
+                .htop-sim-proc.on { border-color: var(--accent2); background: rgba(0,255,157,0.08); }
+                .htop-sim-proc.fixed { cursor:default; opacity:0.75; }
+                .htop-sim-proc-label { font-size:0.8em; color:white; font-weight:600; }
+                .htop-sim-proc-ram { font-family:var(--font-mono); font-size:0.7em; color:var(--text-dim); }
+                .htop-sim-bar-label { display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:0.78em; margin-bottom:5px; }
+                .htop-sim-bar { display:flex; height:38px; border-radius:8px; overflow:hidden; border:1px solid var(--border); background: rgba(255,255,255,0.03); }
+                .htop-sim-seg { height:100%; display:flex; align-items:center; justify-content:center; font-size:0.62em; font-family:var(--font-mono); font-weight:700; color:#04101c; transition: width .3s ease; }
+                .htop-sim-seg.swap { background: repeating-linear-gradient(45deg, #ff5566, #ff5566 6px, #cc2233 6px, #cc2233 12px); color:white; animation: htopPulse 1s infinite; }
+                @keyframes htopPulse { 0%,100%{opacity:1;} 50%{opacity:0.6;} }
+                .htop-sim-hint { margin-top:14px; padding:10px 12px; border-radius:8px; font-size:0.82em; transition: all .2s; background: rgba(255,214,10,0.06); border:1px solid rgba(255,214,10,0.25); color: var(--text); }
+                .htop-sim-hint.crit { background: rgba(255,60,60,0.1); border-color: rgba(255,60,60,0.4); }
+                .htop-sim-hint.ok { background: rgba(0,255,157,0.08); border-color: rgba(0,255,157,0.3); }
+            </style>
+            <div class="htop-sim">
+                <div class="htop-sim-title">🧪 Simulador — htop: RAM x Swap</div>
+                <div class="htop-sim-sub">Ajuste a RAM da sua VM e ligue/desligue processos de Big Data. Veja o que acontece quando a soma passa da RAM disponível.</div>
+
+                <div class="htop-sim-ram-row">
+                    <label for="htopSimRam">💾 RAM total da VM:</label>
+                    <input type="range" id="htopSimRam" min="2" max="16" step="1" value="4" oninput="htopSimUpdate()">
+                    <span class="htop-sim-ram-val" id="htopSimRamVal">4 GB</span>
+                </div>
+
+                <div class="htop-sim-procs" id="htopSimProcs"></div>
+
+                <div class="htop-sim-bar-label"><span>RAM + Swap em uso</span><span id="htopSimBarLabel">—</span></div>
+                <div class="htop-sim-bar" id="htopSimBar"></div>
+
+                <div class="htop-sim-hint" id="htopSimHint">💡 Ligue o NameNode e o DataNode, depois adicione Spark Executors até passar da RAM disponível.</div>
+            </div>
+            <!-- ═══ FIM SIMULADOR HTOP ═══ -->
+
             <div class="checkpoint">
                 <div class="checkpoint-title">🏁 Checkpoint M1</div>
                 <ul class="checkpoint-items">
                     <li class="checkpoint-item"><input type="checkbox" id="c0a"><label for="c0a">Sei o que é um PID e um processo</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0b"><label for="c0b">Diferencio RAM de swap</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0c"><label for="c0c">Sei diagnosticar falta de RAM com htop/free -h</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c0d"><label for="c0d">Consegui fazer o simulador entrar em swap e entendi por quê</label></li>
                 </ul>
             </div>
             <button class="complete-btn" id="btn0" onclick="completeMission(0, 150)">✅ Missão 1 Concluída — Coletar +150 XP</button>
         </div>
     </div>
+
+    <script>
+    (function () {
+        const procs = [
+            { key: 'so', label: '🐧 Sistema Operacional', ram: 0.5, on: true, fixed: true },
+            { key: 'namenode', label: '🗂️ Hadoop NameNode', ram: 1.0, on: false },
+            { key: 'datanode', label: '🖥️ Hadoop DataNode', ram: 1.0, on: false },
+            { key: 'spark1', label: '⚡ Spark Executor 1', ram: 2.0, on: false },
+            { key: 'spark2', label: '⚡ Spark Executor 2', ram: 2.0, on: false },
+            { key: 'ide', label: '💻 Navegador/IDE', ram: 1.5, on: false },
+        ];
+        const COLORS = ['#5a7080', '#00d4ff', '#00a8e8', '#00ff9d', '#00cc7d', '#ffd60a'];
+
+        function renderProcs() {
+            document.getElementById('htopSimProcs').innerHTML = procs.map(p => `
+                <div class="htop-sim-proc ${p.on ? 'on' : ''} ${p.fixed ? 'fixed' : ''}" onclick="${p.fixed ? '' : `htopSimToggle('${p.key}')`}">
+                    <div class="htop-sim-proc-label">${p.label}</div>
+                    <div class="htop-sim-proc-ram">${p.ram} GB ${p.fixed ? '(sempre ativo)' : (p.on ? '· rodando' : '· parado')}</div>
+                </div>`).join('');
+        }
+
+        window.htopSimToggle = function (key) {
+            const p = procs.find(x => x.key === key);
+            p.on = !p.on;
+            renderProcs();
+            htopSimUpdate();
+        };
+
+        window.htopSimUpdate = function () {
+            const ramTotal = parseFloat(document.getElementById('htopSimRam').value);
+            document.getElementById('htopSimRamVal').textContent = ramTotal + ' GB';
+            renderProcs();
+
+            const active = procs.filter(p => p.on);
+            const used = active.reduce((a, p) => a + p.ram, 0);
+            const bar = document.getElementById('htopSimBar');
+            const totalForWidth = Math.max(ramTotal, used);
+
+            let segsHtml = active.map((p, i) => {
+                const pct = (p.ram / totalForWidth) * 100;
+                return `<div class="htop-sim-seg" style="width:${pct}%; background:${COLORS[procs.indexOf(p) % COLORS.length]};" title="${p.label}">${pct > 8 ? p.label.split(' ')[0] : ''}</div>`;
+            }).join('');
+
+            if (used > ramTotal) {
+                const swapPct = ((used - ramTotal) / totalForWidth) * 100;
+                segsHtml += `<div class="htop-sim-seg swap" style="width:${swapPct}%;">💾 SWAP</div>`;
+            }
+            bar.innerHTML = segsHtml;
+
+            const hint = document.getElementById('htopSimHint');
+            const label = document.getElementById('htopSimBarLabel');
+            if (used > ramTotal) {
+                label.textContent = `${used.toFixed(1)} GB usados / ${ramTotal} GB RAM (⚠️ +${(used - ramTotal).toFixed(1)} GB em swap)`;
+                hint.className = 'htop-sim-hint crit';
+                hint.innerHTML = `🔴 <strong>RAM estourou!</strong> Os processos ativos precisam de ${used.toFixed(1)} GB, mas a VM só tem ${ramTotal} GB. O Linux mandou ${(used - ramTotal).toFixed(1)} GB para o <strong>swap</strong> (disco) — é exatamente esse cenário que deixa o Hadoop/Spark "travando" sem erro nenhum aparecer. Solução: desligue processos ou aumente a RAM da VM.`;
+            } else {
+                label.textContent = `${used.toFixed(1)} GB usados / ${ramTotal} GB RAM`;
+                hint.className = 'htop-sim-hint ok';
+                hint.innerHTML = `✅ Tudo cabe na RAM (sobram ${(ramTotal - used).toFixed(1)} GB livres). Nenhum processo precisou de swap — é assim que sua VM deveria estar rodando.`;
+            }
+        };
+
+        renderProcs();
+        htopSimUpdate();
+    })();
+    </script>
 
     <!-- ════════════════════════════════════════════════ -->
     <!-- MISSÃO 2 — Permissões de Arquivo e Introdução a Shell Scripting -->

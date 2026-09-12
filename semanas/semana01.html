@@ -1181,7 +1181,7 @@
             <div class="xp-bar-wrap">
                 <div class="xp-bar-fill" id="xpBarFill"></div>
             </div>
-            <div class="xp-points" id="xpPoints">0 / 650 XP</div>
+            <div class="xp-points" id="xpPoints">0 / 550 XP</div>
         </div>
     </div>
 </header>
@@ -1202,11 +1202,11 @@
     <p class="hero-desc">Esta é a sua primeira missão. Você vai entender <em>por que</em> o Big Data existe, o que o diferencia do processamento tradicional, e vai preparar seu ambiente de trabalho (Ubuntu 22.04 ou WSL) para as próximas semanas.</p>
     <div class="hero-stats">
         <div class="hero-stat">
-            <div class="hero-stat-val">6</div>
+            <div class="hero-stat-val">5</div>
             <div class="hero-stat-label">Missões</div>
         </div>
         <div class="hero-stat">
-            <div class="hero-stat-val">650</div>
+            <div class="hero-stat-val">550</div>
             <div class="hero-stat-label">XP Total</div>
         </div>
         <div class="hero-stat">
@@ -1251,9 +1251,7 @@
         <div class="mission-line" id="line2"></div>
         <div class="mission-dot locked" onclick="scrollToMission(3)" title="Missão 4: Ambiente Ubuntu 22.04">M4</div>
         <div class="mission-line" id="line3"></div>
-        <div class="mission-dot locked" onclick="scrollToMission(4)" title="Missão 5: Ambiente WSL">M5</div>
-        <div class="mission-line" id="line4"></div>
-        <div class="mission-dot locked" onclick="scrollToMission(5)" title="Missão 6: Exploração de Dados">M6</div>
+        <div class="mission-dot locked" onclick="scrollToMission(4)" title="Missão 6: Exploração de Dados">M6</div>
     </div>
 </div>
 
@@ -1263,7 +1261,7 @@
         <div class="discipline-panel-header">
             <span>🎓</span>
             <span class="discipline-panel-title">Contexto da Disciplina — Por que estamos aqui?</span>
-            <span class="discipline-panel-subtitle">2º Sem/2026 · Prof. Isaque Katahira</span>
+            <span class="discipline-panel-subtitle">IAL008 · 2º Sem/2026 · Prof. Isaque Katahira</span>
         </div>
         <div class="discipline-grid">
             <div class="discipline-item">
@@ -1275,7 +1273,7 @@
             <div class="discipline-item">
                 <div class="discipline-item-label">🎯 O que você vai dominar hoje</div>
                 <div class="discipline-item-text">
-                    Ao concluir as 6 missões, você saberá <strong>explicar o que é Big Data e por que ele surgiu</strong>, identificar os <strong>5Vs na prática</strong>, entender o ecossistema Hadoop em alto nível, e terá o <strong>ambiente Linux preparado</strong> para instalar o Hadoop na próxima semana.
+                    Ao concluir as 5 missões, você saberá <strong>explicar o que é Big Data e por que ele surgiu</strong>, identificar os <strong>5Vs na prática</strong>, entender o ecossistema Hadoop em alto nível, e terá o <strong>ambiente Linux preparado</strong> para o mês de nivelamento que começa na próxima semana.
                 </div>
             </div>
         </div>
@@ -1857,7 +1855,7 @@ Filesystem      Size  Used Avail Use% Mounted on
 
             <div class="alert alert-success">
                 <span class="alert-icon">✅</span>
-                <span><strong>Ambiente Ubuntu pronto!</strong> Guarde as informações do seu sistema — você precisará saber o número de CPUs e a quantidade de RAM ao configurar o Hadoop na próxima semana.</span>
+                <span><strong>Ambiente Ubuntu pronto!</strong> Guarde as informações do seu sistema — você vai usar esse mesmo ambiente durante todo o mês de nivelamento, e vai precisar saber o número de CPUs e a quantidade de RAM quando for configurar o Hadoop, na Semana 05.</span>
             </div>
             <div style="margin-top:14px;border-radius:8px;overflow:hidden;border:1px solid var(--border);text-align:center;">
                 <div style="background:var(--surface2);padding:7px 14px;font-size:.75em;color:var(--text-muted);text-align:left;border-bottom:1px solid var(--border);">🖥️ Saída dos comandos <code>uname -a</code>, <code>nproc</code>, <code>free -h</code> e <code>df -h /</code> — informações do sistema</div>
@@ -1885,8 +1883,8 @@ Filesystem      Size  Used Avail Use% Mounted on
     <!-- ════════════════════════════════════════════════ -->
     <!-- MISSÃO 6 — Exploração de Dados no Terminal -->
     <!-- ════════════════════════════════════════════════ -->
-    <div class="mission-card" id="mission5">
-        <div class="mission-header" onclick="toggleMission(5)">
+    <div class="mission-card" id="mission4">
+        <div class="mission-header" onclick="toggleMission(4)">
             <div class="mission-num">M6</div>
             <div class="mission-meta">
                 <div class="mission-title">🔬 Mão na Massa — Explorar Dados com Linux</div>
@@ -1898,7 +1896,7 @@ Filesystem      Size  Used Avail Use% Mounted on
                     <span class="tag tag-ementa">📋 Ementa: Tipos de dados — estruturado, semi-estruturado, não-estruturado</span>
                 </div>
             </div>
-            <div class="mission-status" id="status5">🔒</div>
+            <div class="mission-status" id="status4">🔒</div>
             <div class="mission-toggle">▾</div>
         </div>
         <div class="mission-body">
@@ -2080,7 +2078,7 @@ EOF
                     <li class="checkpoint-item"><input type="checkbox" id="c5d"><label for="c5d">Consigo explicar por que o MongoDB existe (campos variáveis no JSON)</label></li>
                 </ul>
             </div>
-            <button class="complete-btn" id="btn5" onclick="completeMission(5, 100)">✅ Missão 6 Concluída — Coletar +100 XP</button>
+            <button class="complete-btn" id="btn4" onclick="completeMission(4, 100)">✅ Missão 6 Concluída — Coletar +100 XP</button>
         </div>
     </div>
 
@@ -2088,8 +2086,8 @@ EOF
     <div class="final-badge" id="finalBadge">
         <span class="final-badge-icon">🏆</span>
         <h2>Semana 01 Concluída!</h2>
-        <p>Você dominou os fundamentos de Big Data, os 5Vs, o ecossistema Hadoop e preparou seu ambiente Linux. Está pronto para instalar o Hadoop na próxima semana!</p>
-        <div class="final-xp">🏅 650 XP Coletados!</div>
+        <p>Você dominou os fundamentos de Big Data, os 5Vs, o ecossistema Hadoop e preparou seu ambiente Linux. Está pronto para o mês de nivelamento (redes, virtualização/cloud e Linux aprofundado) antes de instalar o Hadoop na Semana 05!</p>
+        <div class="final-xp">🏅 550 XP Coletados!</div>
     </div>
 
     <!-- SEÇÃO DE REFERÊNCIA RÁPIDA -->
@@ -2194,9 +2192,9 @@ EOF
 </div>
 
 <script>
-    const TOTAL_XP = 650;
-    const missionXP = [100, 100, 100, 150, 100, 100];
-    let completed = new Array(6).fill(false);
+    const TOTAL_XP = 550;
+    const missionXP = [100, 100, 100, 150, 100];
+    let completed = new Array(5).fill(false);
     let currentXP = 0;
 
     try {
@@ -2258,7 +2256,7 @@ EOF
         showToast('+' + xp + ' XP — Missão ' + (idx+1) + ' completa!');
 
         const nextIdx = idx + 1;
-        if (nextIdx < 6) {
+        if (nextIdx < 5) {
             setTimeout(() => {
                 const nextCard = document.getElementById('mission' + nextIdx);
                 if (nextCard) {

@@ -1286,17 +1286,202 @@
                 <div class="concept-box-body">O <strong>HDFS (Hadoop Distributed File System)</strong> divide arquivos grandes em <em>blocos</em> (128 MB por padrão) e espalha esses blocos entre várias máquinas (nós) do cluster — em vez de guardar tudo em um único disco.<br><br><strong>NameNode</strong> — o "bibliotecário": guarda o catálogo (metadados) de onde cada bloco está, mas não guarda os dados em si. Existe só 1 por cluster (é o cérebro).<br><br><strong>DataNode</strong> — as "estantes": guardam os blocos de dados de verdade. Um cluster tem vários DataNodes (são os braços que fazem o trabalho pesado).<br><br><strong>Replicação</strong> — por padrão, cada bloco é copiado em <em>3 DataNodes diferentes</em>. Se uma máquina quebrar, os dados continuam disponíveis nas outras duas — essa é a base da <em>tolerância a falhas</em> do Big Data.<br><br>💡 <strong>Lembra da Semana 02?</strong> O NameNode e os DataNodes se comunicam pela rede que você estudou — cada requisição de leitura/escrita é literalmente o modelo cliente-servidor que você já conhece.</div>
             </div>
 
+            <!-- ═══ SIMULADOR HDFS ═══ -->
+            <style>
+                .hdfs-sim { border: 1px solid var(--border); border-radius: 14px; background: var(--panel); padding: 20px; margin: 20px 0; }
+                .hdfs-sim-title { font-family: var(--font-display); font-weight: 700; color: white; font-size: 1.05em; margin-bottom: 4px; display:flex; align-items:center; gap:8px; }
+                .hdfs-sim-sub { color: var(--text-dim); font-size: 0.85em; margin-bottom: 16px; }
+                .hdfs-sim-controls { display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:18px; padding:12px 14px; background: rgba(255,255,255,0.03); border-radius:10px; }
+                .hdfs-sim-controls label { font-size:0.85em; color:var(--text); white-space:nowrap; }
+                .hdfs-sim-controls input[type=range] { width:180px; accent-color: var(--accent); }
+                .hdfs-sim-filesize { font-family: var(--font-mono); color: var(--accent); font-weight:600; min-width:64px; display:inline-block; }
+                .hdfs-sim-btn { background: var(--accent); color:#001018; border:none; padding:7px 14px; border-radius:8px; font-weight:600; font-size:0.82em; cursor:pointer; font-family:var(--font-body); }
+                .hdfs-sim-btn:hover { filter: brightness(1.15); }
+                .hdfs-sim-namenode { text-align:center; margin-bottom:14px; }
+                .hdfs-sim-namenode-box { display:inline-flex; align-items:center; gap:8px; background: rgba(0,212,255,0.08); border:1px solid rgba(0,212,255,0.35); color: var(--accent); padding:8px 18px; border-radius:10px; font-family:var(--font-mono); font-size:0.85em; font-weight:600; }
+                .hdfs-sim-blocks-row { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:18px; }
+                .hdfs-sim-block { width:64px; height:44px; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:0.68em; font-weight:700; color:#04101c; }
+                .hdfs-sim-nodes-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:12px; margin-bottom:16px; }
+                .hdfs-sim-node { border:1px solid var(--border); border-radius:10px; padding:12px; background: rgba(255,255,255,0.02); transition: all .2s; cursor:pointer; }
+                .hdfs-sim-node.down { background: rgba(255,60,60,0.08); border-color: rgba(255,60,60,0.4); opacity:0.75; }
+                .hdfs-sim-node-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+                .hdfs-sim-node-name { font-weight:700; color:white; font-size:0.9em; }
+                .hdfs-sim-node-state { font-size:0.72em; font-family:var(--font-mono); }
+                .hdfs-sim-node.down .hdfs-sim-node-state { color:#ff6666; }
+                .hdfs-sim-node:not(.down) .hdfs-sim-node-state { color: var(--accent2); }
+                .hdfs-sim-node-blocks { display:flex; gap:5px; flex-wrap:wrap; min-height:26px; }
+                .hdfs-sim-mini-block { width:22px; height:22px; border-radius:5px; font-size:0.6em; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-weight:700; color:#04101c; }
+                .hdfs-sim-node.down .hdfs-sim-mini-block { filter: grayscale(1); opacity:0.4; }
+                .hdfs-sim-table { width:100%; border-collapse: collapse; font-size:0.82em; }
+                .hdfs-sim-table th { text-align:left; color: var(--text-dim); font-weight:600; padding:6px 8px; border-bottom:1px solid var(--border); font-size:0.85em; }
+                .hdfs-sim-table td { padding:6px 8px; border-bottom:1px solid rgba(255,255,255,0.04); font-family:var(--font-mono); }
+                .hdfs-sim-status-ok { color: var(--accent2); font-weight:700; }
+                .hdfs-sim-status-lost { color:#ff5555; font-weight:700; }
+                .hdfs-sim-node-badge { display:inline-flex; align-items:center; gap:3px; padding:1px 6px; border-radius:5px; font-size:0.75em; margin-right:4px; }
+                .hdfs-sim-node-badge.dead { text-decoration: line-through; opacity:0.5; }
+                .hdfs-sim-hint { margin-top:14px; padding:10px 12px; background: rgba(255,214,10,0.06); border:1px solid rgba(255,214,10,0.25); border-radius:8px; font-size:0.82em; color: var(--text); }
+            </style>
+            <div class="hdfs-sim">
+                <div class="hdfs-sim-title">🧪 Simulador — Distribuição e Replicação de Blocos</div>
+                <div class="hdfs-sim-sub">Escolha um tamanho de arquivo e veja o NameNode dividir em blocos de 128 MB e replicar cada um em 3 DataNodes diferentes. Depois, clique nos DataNodes para "derrubá-los" e veja o que acontece com os dados.</div>
+
+                <div class="hdfs-sim-controls">
+                    <label for="hdfsSimRange">📄 Tamanho do arquivo:</label>
+                    <input type="range" id="hdfsSimRange" min="128" max="768" step="64" value="384" oninput="hdfsSimOnResize()">
+                    <span class="hdfs-sim-filesize" id="hdfsSimSizeLabel">384 MB</span>
+                    <button class="hdfs-sim-btn" onclick="hdfsSimShuffle()">🔀 Redistribuir</button>
+                    <button class="hdfs-sim-btn" onclick="hdfsSimResetNodes()" style="background:var(--accent3);">♻️ Religar todos os nós</button>
+                </div>
+
+                <div class="hdfs-sim-namenode">
+                    <div class="hdfs-sim-namenode-box">🧠 NameNode <span id="hdfsSimBlockCount">— 3 blocos</span></div>
+                </div>
+
+                <div class="hdfs-sim-blocks-row" id="hdfsSimBlocksRow"></div>
+
+                <div class="hdfs-sim-nodes-grid" id="hdfsSimNodesGrid"></div>
+
+                <table class="hdfs-sim-table">
+                    <thead><tr><th>Bloco</th><th>Tamanho</th><th>Réplicas (DataNodes)</th><th>Status</th></tr></thead>
+                    <tbody id="hdfsSimTableBody"></tbody>
+                </table>
+
+                <div class="hdfs-sim-hint" id="hdfsSimHint">💡 Com fator de replicação 3 e 4 DataNodes, um bloco só é <strong>perdido de verdade</strong> se os 3 nós que guardam suas réplicas caírem ao mesmo tempo. Tente derrubar 1 ou 2 nós — repare que os dados continuam 100% disponíveis!</div>
+            </div>
+            <!-- ═══ FIM SIMULADOR HDFS ═══ -->
+
             <div class="checkpoint">
                 <div class="checkpoint-title">🏁 Checkpoint M1</div>
                 <ul class="checkpoint-items">
                     <li class="checkpoint-item"><input type="checkbox" id="c0a"><label for="c0a">Sei explicar a diferença entre NameNode e DataNode</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0b"><label for="c0b">Entendo por que os dados são divididos em blocos</label></li>
 <li class="checkpoint-item"><input type="checkbox" id="c0c"><label for="c0c">Sei por que a replicação (fator 3) existe</label></li>
+<li class="checkpoint-item"><input type="checkbox" id="c0d"><label for="c0d">Usei o simulador e testei o que acontece derrubando DataNodes</label></li>
                 </ul>
             </div>
             <button class="complete-btn" id="btn0" onclick="completeMission(0, 150)">✅ Missão 1 Concluída — Coletar +150 XP</button>
         </div>
     </div>
+
+    <script>
+    (function () {
+        const HDFS_BLOCK_SIZE = 128;
+        const NODE_COUNT = 4;
+        const NODE_COLORS = ['#00d4ff', '#00ff9d', '#ff6b35', '#ffd60a'];
+        const BLOCK_COLORS = ['#00d4ff', '#00ff9d', '#ff6b35', '#ffd60a', '#c792ea', '#ff6bcb'];
+
+        let nodesDown = new Array(NODE_COUNT).fill(false);
+        let blocks = []; // {size, replicas: [nodeIdx,...]}
+
+        function shuffleArray(arr) {
+            const a = arr.slice();
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function buildBlocks(fileSizeMB) {
+            const n = Math.ceil(fileSizeMB / HDFS_BLOCK_SIZE);
+            const result = [];
+            let remaining = fileSizeMB;
+            for (let i = 0; i < n; i++) {
+                const size = Math.min(HDFS_BLOCK_SIZE, remaining);
+                remaining -= size;
+                const nodeOrder = shuffleArray([...Array(NODE_COUNT).keys()]);
+                result.push({ size, replicas: nodeOrder.slice(0, 3) });
+            }
+            return result;
+        }
+
+        window.hdfsSimOnResize = function () {
+            const val = parseInt(document.getElementById('hdfsSimRange').value, 10);
+            document.getElementById('hdfsSimSizeLabel').textContent = val + ' MB';
+            blocks = buildBlocks(val);
+            hdfsSimRender();
+        };
+
+        window.hdfsSimShuffle = function () {
+            const val = parseInt(document.getElementById('hdfsSimRange').value, 10);
+            blocks = buildBlocks(val);
+            hdfsSimRender();
+        };
+
+        window.hdfsSimResetNodes = function () {
+            nodesDown = new Array(NODE_COUNT).fill(false);
+            hdfsSimRender();
+        };
+
+        window.hdfsSimToggleNode = function (idx) {
+            nodesDown[idx] = !nodesDown[idx];
+            hdfsSimRender();
+        };
+
+        function nodeBadge(idx) {
+            const dead = nodesDown[idx];
+            return `<span class="hdfs-sim-node-badge${dead ? ' dead' : ''}" style="background:${NODE_COLORS[idx]}22; color:${NODE_COLORS[idx]};">DN${idx + 1}${dead ? ' 💀' : ''}</span>`;
+        }
+
+        function hdfsSimRender() {
+            document.getElementById('hdfsSimBlockCount').textContent = `— ${blocks.length} bloco${blocks.length > 1 ? 's' : ''}`;
+
+            // linha de blocos (visão do arquivo original)
+            const blocksRow = document.getElementById('hdfsSimBlocksRow');
+            blocksRow.innerHTML = blocks.map((b, i) => `
+                <div class="hdfs-sim-block" style="background:${BLOCK_COLORS[i % BLOCK_COLORS.length]}">
+                    <span>Bloco ${i + 1}</span><span>${b.size}MB</span>
+                </div>`).join('');
+
+            // grid de datanodes
+            const grid = document.getElementById('hdfsSimNodesGrid');
+            grid.innerHTML = '';
+            for (let n = 0; n < NODE_COUNT; n++) {
+                const down = nodesDown[n];
+                const heldBlocks = blocks.map((b, i) => ({ i, has: b.replicas.includes(n) })).filter(x => x.has);
+                const div = document.createElement('div');
+                div.className = 'hdfs-sim-node' + (down ? ' down' : '');
+                div.onclick = () => hdfsSimToggleNode(n);
+                div.innerHTML = `
+                    <div class="hdfs-sim-node-head">
+                        <span class="hdfs-sim-node-name" style="color:${NODE_COLORS[n]}">🖥️ DataNode ${n + 1}</span>
+                        <span class="hdfs-sim-node-state">${down ? '❌ OFFLINE' : '✅ online'}</span>
+                    </div>
+                    <div class="hdfs-sim-node-blocks">
+                        ${heldBlocks.length ? heldBlocks.map(x => `<span class="hdfs-sim-mini-block" style="background:${BLOCK_COLORS[x.i % BLOCK_COLORS.length]}">B${x.i + 1}</span>`).join('') : '<span style="color:var(--text-dim); font-size:0.75em;">sem blocos</span>'}
+                    </div>`;
+                grid.appendChild(div);
+            }
+
+            // tabela de metadados do NameNode
+            const tbody = document.getElementById('hdfsSimTableBody');
+            let anyLost = false;
+            tbody.innerHTML = blocks.map((b, i) => {
+                const alive = b.replicas.some(n => !nodesDown[n]);
+                if (!alive) anyLost = true;
+                return `<tr>
+                    <td style="color:${BLOCK_COLORS[i % BLOCK_COLORS.length]}; font-weight:700;">Bloco ${i + 1}</td>
+                    <td>${b.size} MB</td>
+                    <td>${b.replicas.map(n => nodeBadge(n)).join('')}</td>
+                    <td>${alive ? '<span class="hdfs-sim-status-ok">✅ disponível</span>' : '<span class="hdfs-sim-status-lost">❌ PERDIDO</span>'}</td>
+                </tr>`;
+            }).join('');
+
+            const hint = document.getElementById('hdfsSimHint');
+            const downCount = nodesDown.filter(Boolean).length;
+            if (anyLost) {
+                hint.innerHTML = `⚠️ Com <strong>${downCount} DataNodes offline</strong>, pelo menos um bloco perdeu <strong>todas</strong> as suas réplicas — esses dados estão indisponíveis até o nó voltar. É por isso que clusters reais espalham réplicas em racks/servidores diferentes!`;
+            } else if (downCount > 0) {
+                hint.innerHTML = `✅ Mesmo com <strong>${downCount} DataNode(s) offline</strong>, todos os blocos continuam com pelo menos 1 réplica viva — nenhum dado foi perdido. É a replicação em ação!`;
+            } else {
+                hint.innerHTML = `💡 Com fator de replicação 3 e 4 DataNodes, um bloco só é <strong>perdido de verdade</strong> se os 3 nós que guardam suas réplicas caírem ao mesmo tempo. Tente derrubar 1 ou 2 nós — repare que os dados continuam 100% disponíveis!`;
+            }
+        }
+
+        blocks = buildBlocks(384);
+        hdfsSimRender();
+    })();
+    </script>
 
     <!-- ════════════════════════════════════════════════ -->
     <!-- MISSÃO 2 — Prática — Instalar Hadoop e Rodar os Primeiros Comandos HDFS -->

@@ -1318,6 +1318,7 @@
                 <div class="kfk-sim-producer">
                     <input type="text" id="kfkSimMsg" placeholder="digite um evento, ex: usuario_42_clicou" value="clique_no_botao_comprar">
                     <button class="kfk-sim-btn" onclick="kfkSimProduce()">📤 Enviar Evento (Producer)</button>
+                    <button class="kfk-sim-btn" style="background:transparent;border:1px solid var(--border);color:var(--text);" onclick="kfkSimReset()">🔄 Resetar Tópico</button>
                 </div>
                 <div class="kfk-sim-presets">
                     <span class="kfk-sim-preset" onclick="kfkSimQuickSend('visualizou_produto')">👀 visualizou_produto</span>
@@ -1383,6 +1384,15 @@
         window.kfkSimQuickSend = function (text) {
             document.getElementById('kfkSimMsg').value = text;
             kfkSimProduce();
+        };
+
+        window.kfkSimReset = function () {
+            partitions = Array.from({ length: NUM_PARTITIONS }, () => []);
+            nextPartition = 0;
+            Object.values(groups).forEach(g => { g.offsets = [0, 0, 0]; g.feed = []; });
+            renderPartitions();
+            renderGroups();
+            document.getElementById('kfkSimHint').innerHTML = `🔄 Tópico resetado — partições e consumer groups voltaram ao estado inicial.`;
         };
 
         window.kfkSimProduce = function () {

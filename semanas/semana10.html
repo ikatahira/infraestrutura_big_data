@@ -1366,6 +1366,7 @@
                         <button class="cap-sim-mode-btn" data-m="AP" onclick="capSimSetMode('AP')">📊 Modo AP (Cassandra)</button>
                     </div>
                     <button class="cap-sim-btn" id="capSimPartitionBtn" onclick="capSimTogglePartition()">💥 Causar Partição de Rede</button>
+                    <button class="cap-sim-btn" style="background:transparent;border:1px solid var(--border);color:var(--text);" onclick="capSimSetMode(document.querySelector('.cap-sim-mode-btn.active').dataset.m)">🔄 Resetar Simulação</button>
                 </div>
 
                 <div class="cap-sim-write-row">

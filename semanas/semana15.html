@@ -1308,6 +1308,7 @@
 
                 <div class="mqtt-sim-publisher">
                     <button class="mqtt-sim-btn" onclick="mqttSimPublish()">📡 ESP32: Publicar Leitura Aleatória</button>
+                    <button class="mqtt-sim-btn" style="background:transparent;border:1px solid var(--border);color:var(--text);" onclick="mqttSimReset()">🔄 Resetar Simulação</button>
                 </div>
 
                 <div class="mqtt-sim-broker">
@@ -1357,6 +1358,12 @@
         window.mqttSimToggle = function (key) {
             subs[key].online = !subs[key].online;
             renderSubs();
+        };
+
+        window.mqttSimReset = function () {
+            Object.values(subs).forEach(s => { s.online = true; s.feed = []; });
+            renderSubs();
+            document.getElementById('mqttSimHint').innerHTML = '🔄 Simulação resetada — todos os subscribers online de novo, sem mensagens.';
         };
 
         window.mqttSimPublish = function () {

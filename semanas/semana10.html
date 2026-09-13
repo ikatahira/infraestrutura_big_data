@@ -1206,6 +1206,33 @@
     </div>
 </section>
 
+<style>
+    .device-banner { border: 1px solid var(--border); border-radius: 14px; background: var(--panel); padding: 18px 20px; margin: -10px auto 24px; max-width: 1100px; }
+    .device-banner-title { font-family: var(--font-display); font-weight: 700; color: white; font-size: 0.95em; margin-bottom: 12px; text-align: center; }
+    .device-banner-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .device-banner-col { border-radius: 10px; padding: 12px 14px; border: 1px solid var(--border); background: rgba(255,255,255,0.02); }
+    .device-banner-col.pc { border-color: rgba(0,255,157,0.3); background: rgba(0,255,157,0.05); }
+    .device-banner-col.mobile { border-color: rgba(0,212,255,0.3); background: rgba(0,212,255,0.05); }
+    .device-banner-label { font-family: var(--font-mono); font-weight: 700; font-size: 0.85em; margin-bottom: 6px; color: white; }
+    .device-banner-text { font-size: 0.82em; color: var(--text); line-height: 1.5; }
+    @media (max-width: 600px) { .device-banner-cols { grid-template-columns: 1fr; } }
+</style>
+
+<div class="device-banner">
+    <div class="device-banner-title">📲 Antes de começar: como você vai acompanhar esta semana?</div>
+    <div class="device-banner-cols">
+        <div class="device-banner-col pc">
+            <div class="device-banner-label">💻 Computador / Notebook</div>
+            <div class="device-banner-text">Siga a semana normalmente, sem nenhum ajuste.</div>
+        </div>
+        <div class="device-banner-col mobile">
+            <div class="device-banner-label">📱 Só Celular</div>
+            <div class="device-banner-text">⚠️ Esta semana usa um ambiente Linux real (Hadoop/Spark/Kafka/MongoDB). Peça ao professor o <strong>Guia de Acesso Mobile (Google Cloud Shell)</strong> — dá pra fazer tudo pelo navegador do celular, sem instalar nada no aparelho.</div>
+        </div>
+    </div>
+</div>
+
+
 <div class="progress-overview">
     <div class="context-row">
         <div class="context-panel prev">
@@ -1520,6 +1547,11 @@
         </div>
         <div class="mission-body">
             <div class="mission-intro">Vamos instalar o MongoDB de verdade e inserir o documento que você modelou na Semana 09.</div>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">📱</span>
+                <span><strong>Só tem celular?</strong> Dá pra fazer essa instalação inteira, de verdade, direto do navegador do seu celular — sem precisar de PC. Peça ao professor o <strong>"Guia de Acesso Mobile — Google Cloud Shell"</strong>, que usa um terminal Linux gratuito na nuvem do Google.</span>
+            </div>
             
             <div class="step">
                 <div class="step-header">
